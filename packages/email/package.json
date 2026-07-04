@@ -1,0 +1,12 @@
+{
+  "name": "@da/email",
+  "version": "3.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "dependencies": {
+    "resend": "^6.0.0"
+  }
+}

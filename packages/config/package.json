@@ -1,0 +1,13 @@
+{
+  "name": "@da/config",
+  "version": "3.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./tsconfig.base.json": "./tsconfig.base.json",
+    "./env": "./env.ts"
+  },
+  "dependencies": {
+    "zod": "^3.25.0"
+  }
+}

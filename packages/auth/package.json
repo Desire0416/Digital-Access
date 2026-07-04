@@ -1,0 +1,23 @@
+{
+  "name": "@da/auth",
+  "version": "3.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./guards": "./src/guards.ts"
+  },
+  "dependencies": {
+    "@da/db": "*",
+    "bcryptjs": "^2.4.3",
+    "next-auth": "5.0.0-beta.31",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6"
+  },
+  "peerDependencies": {
+    "next": "^15.0.0",
+    "react": "^19.0.0"
+  }
+}

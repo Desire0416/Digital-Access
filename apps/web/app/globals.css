@@ -1,0 +1,245 @@
+@import "tailwindcss";
+
+/* Scanne les composants du design system partagé */
+@source "../../../packages/ui/src";
+
+/* ─────────────────────────── Tokens de marque DA ─────────────────────────── */
+@theme {
+  /* Dégradé signature (ADN visuel) */
+  --gradient-da: linear-gradient(
+    135deg,
+    #5b3fa8 0%,
+    #2b5cc6 38%,
+    #1e8fe1 70%,
+    #00bcd4 100%
+  );
+
+  /* Couleurs de marque */
+  --color-brand-violet: #5b3fa8;
+  --color-brand-blue-royal: #2b5cc6;
+  --color-brand-blue-vif: #1e8fe1;
+  --color-brand-cyan: #00bcd4;
+
+  /* Interface */
+  --color-primary: #2b3a8c;
+  --color-secondary: #06b6d4;
+  --color-accent: #7c3aed;
+  --color-navy: #1a1a2e;
+
+  /* Fonctionnelles */
+  --color-success: #059669;
+  --color-error: #dc2626;
+  --color-warning: #f59e0b;
+  --color-info: #3b82f6;
+
+  /* Surfaces */
+  --color-surface-primary: #ffffff;
+  --color-surface-secondary: #f9fafb;
+  --color-surface-dark: #0f0f1a;
+  --color-surface-dark-card: #1a1a2e;
+
+  /* Texte */
+  --color-text-primary: #1a1a2e;
+  --color-text-secondary: #6b7280;
+  --color-text-muted: #9ca3af;
+
+  /* Polices (branchées via next/font) */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+
+  /* Ombres de marque (au survol uniquement) */
+  --shadow-brand: 0 8px 24px -8px rgba(43, 58, 140, 0.35);
+  --shadow-brand-lg: 0 22px 48px -12px rgba(43, 58, 140, 0.42);
+
+  /* Cadence d'animation */
+  --ease-da: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ─────────────────────────── Utilitaires custom ──────────────────────────── */
+@utility bg-gradient-da {
+  background-image: var(--gradient-da);
+}
+
+@utility text-gradient-da {
+  background-image: var(--gradient-da);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+@utility card-gradient-border {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--color-surface-primary), var(--color-surface-primary))
+      padding-box,
+    var(--gradient-da) border-box;
+}
+
+@utility bg-grid {
+  background-image:
+    linear-gradient(to right, rgba(43, 58, 140, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(43, 58, 140, 0.06) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+@utility bg-dots {
+  background-image: radial-gradient(
+    rgba(43, 58, 140, 0.14) 1px,
+    transparent 1px
+  );
+  background-size: 22px 22px;
+}
+
+/* ──────────────────────────────── Base ───────────────────────────────────── */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--color-surface-primary);
+    color: var(--color-navy);
+    line-height: 1.6;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+
+  ::selection {
+    background-color: rgba(30, 143, 225, 0.2);
+    color: var(--color-navy);
+  }
+
+  /* Barre de défilement discrète et brandée */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #2b5cc6, #00bcd4);
+    border-radius: 9999px;
+    border: 2px solid var(--color-surface-primary);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand-blue-vif);
+    outline-offset: 2px;
+  }
+}
+
+/* ──────────────────────── Animations décoratives ─────────────────────────── */
+@keyframes da-float {
+  0%,
+  100% {
+    transform: translateY(0) translateX(0);
+  }
+  50% {
+    transform: translateY(-22px) translateX(10px);
+  }
+}
+
+@keyframes da-blob {
+  0%,
+  100% {
+    border-radius: 42% 58% 63% 37% / 41% 44% 56% 59%;
+    transform: translate(0, 0) rotate(0deg);
+  }
+  33% {
+    border-radius: 60% 40% 34% 66% / 63% 46% 54% 37%;
+    transform: translate(24px, -18px) rotate(60deg);
+  }
+  66% {
+    border-radius: 35% 65% 55% 45% / 48% 62% 38% 52%;
+    transform: translate(-18px, 20px) rotate(140deg);
+  }
+}
+
+@keyframes da-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes da-gradient-move {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes da-pulse-ring {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+.animate-float {
+  animation: da-float 9s ease-in-out infinite;
+}
+.animate-blob {
+  animation: da-blob 18s ease-in-out infinite;
+}
+.animate-gradient-move {
+  background-size: 200% 200%;
+  animation: da-gradient-move 8s ease infinite;
+}
+.animate-pulse-ring {
+  animation: da-pulse-ring 2.4s ease-out infinite;
+}
+
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.55),
+    transparent
+  );
+  animation: da-shimmer 1.6s infinite;
+}
+
+/* Grain léger pour éviter le « tout plat » */
+.noise-overlay {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+}
+
+/* ─────────────────────── Respect de prefers-reduced-motion ───────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

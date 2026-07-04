@@ -1,0 +1,30 @@
+{
+  "name": "digital-access",
+  "version": "3.0.0",
+  "private": true,
+  "description": "Écosystème Digital Access — apps/web (digitalaccess.ci) + apps/academy (academy.digitalaccess.ci)",
+  "packageManager": "npm@11.13.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "clean": "turbo run clean",
+    "db:generate": "npm run db:generate -w @da/db",
+    "db:push": "npm run db:push -w @da/db",
+    "db:seed": "npm run db:seed -w @da/db",
+    "web": "npm run dev -w web"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.0",
+    "typescript": "^5.7.0",
+    "prettier": "^3.4.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
