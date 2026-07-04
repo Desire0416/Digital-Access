@@ -601,9 +601,9 @@ Focus: Turborepo setup, database schema, authentication with email verification,
 ### Done
 - [x] Turborepo init with apps/web + all packages (@da/config, @da/db, @da/ui) — build green
 - [x] Prisma schema (complete — all ~35 entities, both poles) — `prisma validate` OK
-- [ ] Neon database provisioned — *pending real DATABASE_URL; site runs on @da/db mock data*
-- [~] Auth.js v5 with email/password + Google OAuth — *auth UI + simulated server actions done; real Auth.js wiring pending*
-- [~] Email verification flow with Resend — *register→verify-email→verify UX built; Resend send pending*
+- [x] Neon database provisioned + seeded — schema pushed, verified end-to-end (register/verify/login/lead round-trip)
+- [x] Auth.js v5 email/password (`@da/auth`, credentials + JWT sessions) — real login→session→protected `/mon-espace`; password reset done; Google OAuth pending real creds
+- [x] Email verification flow with Resend (`@da/email`, branded templates) — register→verify token→activate works; ⚠️ verify `digitalaccess.ci` domain in Resend to deliver to arbitrary recipients (currently onboarding@resend.dev test mode)
 - [x] packages/ui: design system foundation (Monogram/Loader, Button, Card, Field, tokens…)
 - [x] Role-based layout and navigation (SiteHeader/SiteFooter, PageTransition)
 - [x] Tailwind CSS 4 config with DA brand tokens (`@theme` in apps/web/app/globals.css)
