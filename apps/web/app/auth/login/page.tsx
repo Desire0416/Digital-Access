@@ -9,6 +9,9 @@ export const metadata: Metadata = {
 };
 
 export default function LoginPage() {
+  const googleEnabled = Boolean(
+    process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET,
+  );
   return (
     <AuthShell
       aside={{
@@ -23,7 +26,7 @@ export default function LoginPage() {
         ],
       }}
     >
-      <LoginForm />
+      <LoginForm googleEnabled={googleEnabled} />
     </AuthShell>
   );
 }

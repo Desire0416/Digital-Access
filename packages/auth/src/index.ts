@@ -66,14 +66,44 @@ export const authConfig: NextAuthConfig = {
   session: { strategy: "jwt", maxAge: 60 * 60 * 24 * 7 }, // 7 jours
   pages: { signIn: "/auth/login" },
   callbacks: {
+    // À la connexion Google : crée (ou lie par email) l'utilisateur dans notre base.
+    async signIn({ user, account }) {
+      if (account?.provider === "google") {
+        const email = user.email?.toLowerCase();
+        if (!email) return false;
+        await prisma.user.upsert({
+          where: { email },
+          update: {
+            emailVerified: new Date(),
+            isActive: true,
+            ...(user.name ? { name: user.name } : {}),
+            ...(user.image ? { avatar: user.image } : {}),
+          },
+          create: {
+            email,
+            name: user.name ?? email.split("@")[0],
+            avatar: user.image ?? null,
+            roles: ["CLIENT", "LEARNER"],
+            emailVerified: new Date(), // vérifié par Google
+            isActive: true,
+          },
+        });
+      }
+      return true;
+    },
     async jwt({ token, user }) {
       const t = token as unknown as Record<string, unknown>;
-      if (user) {
-        const u = user as unknown as {
-          id: string;
-          roles?: string[];
-          emailVerified?: Date | null;
-        };
+      // À la connexion (credentials ou Google), on résout l'utilisateur canonique par email.
+      if (user?.email) {
+        const dbUser = await prisma.user.findUnique({
+          where: { email: user.email.toLowerCase() },
+          select: { id: true, roles: true, emailVerified: true },
+        });
+        t.uid = dbUser?.id ?? (user as { id?: string }).id;
+        t.roles = dbUser?.roles ?? ["LEARNER"];
+        t.emailVerified = dbUser?.emailVerified ?? null;
+      } else if (user) {
+        const u = user as unknown as { id: string; roles?: string[]; emailVerified?: Date | null };
         t.uid = u.id;
         t.roles = u.roles ?? ["LEARNER"];
         t.emailVerified = u.emailVerified ?? null;

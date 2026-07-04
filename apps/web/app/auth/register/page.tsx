@@ -9,6 +9,9 @@ export const metadata: Metadata = {
 };
 
 export default function RegisterPage() {
+  const googleEnabled = Boolean(
+    process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET,
+  );
   return (
     <AuthShell
       aside={{
@@ -23,7 +26,7 @@ export default function RegisterPage() {
         ],
       }}
     >
-      <RegisterForm />
+      <RegisterForm googleEnabled={googleEnabled} />
     </AuthShell>
   );
 }

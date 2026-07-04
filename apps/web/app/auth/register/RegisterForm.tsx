@@ -3,6 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { z } from "zod";
 import { ArrowRight, Check, Eye, EyeOff, Lock, Mail, User, X } from "lucide-react";
@@ -41,7 +42,7 @@ const strengthMeta = [
   { label: "Solide", width: "100%", color: "bg-gradient-da" },
 ];
 
-export function RegisterForm() {
+export function RegisterForm({ googleEnabled = false }: { googleEnabled?: boolean }) {
   const router = useRouter();
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
@@ -97,7 +98,12 @@ export function RegisterForm() {
   }
 
   function handleGoogle() {
-    setFormError("L'inscription avec Google sera bientôt disponible.");
+    if (googleEnabled) {
+      setGooglePending(true);
+      void signIn("google", { callbackUrl: "/mon-espace" });
+    } else {
+      setFormError("L'inscription avec Google sera bientôt disponible.");
+    }
   }
 
   return (

@@ -3,6 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { Button, Field, Input, cn } from "@da/ui";
@@ -14,7 +15,7 @@ interface FieldErrors {
   password?: string;
 }
 
-export function LoginForm() {
+export function LoginForm({ googleEnabled = false }: { googleEnabled?: boolean }) {
   const router = useRouter();
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -54,7 +55,12 @@ export function LoginForm() {
   }
 
   function handleGoogle() {
-    setFormError("La connexion Google sera bientôt disponible.");
+    if (googleEnabled) {
+      setGooglePending(true);
+      void signIn("google", { callbackUrl: "/mon-espace" });
+    } else {
+      setFormError("La connexion Google sera bientôt disponible.");
+    }
   }
 
   return (
