@@ -962,6 +962,185 @@ async function main() {
     console.log(`  ↳ apprenant de démo inscrit (enrollment ${enrollment.id})`);
   }
 
+  /* ── Portail client (apps/web) : client de démo + projet complet ── */
+  const client = await prisma.user.upsert({
+    where: { email: "client@digitalaccess.ci" },
+    update: {},
+    create: {
+      name: "Aïcha Koné",
+      email: "client@digitalaccess.ci",
+      password: passwordHash,
+      roles: ["CLIENT", "LEARNER"],
+      emailVerified: new Date(),
+      isActive: true,
+      phone: "+225 07 11 22 33 44",
+      location: "Cocody, Abidjan",
+    },
+  });
+
+  const existingProject = await prisma.project.findUnique({
+    where: { slug: "boutique-elegance-ecommerce" },
+    select: { id: true },
+  });
+
+  if (!existingProject) {
+    const project = await prisma.project.create({
+      data: {
+        clientId: client.id,
+        title: "Boutique Élégance — Site e-commerce",
+        slug: "boutique-elegance-ecommerce",
+        type: "SITE_VITRINE",
+        description:
+          "Création d'une boutique en ligne de prêt-à-porter féminin : catalogue produits, panier, paiement Mobile Money et espace d'administration.",
+        budget: 850000,
+        status: "IN_PROGRESS",
+        startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+        endDate: new Date(Date.now() + 20 * 24 * 60 * 60 * 1000),
+        stages: {
+          create: [
+            {
+              name: "Devis & cadrage",
+              description: "Définition du besoin, du périmètre et du calendrier.",
+              status: "COMPLETED",
+              position: 1,
+              completedAt: new Date(Date.now() - 28 * 24 * 60 * 60 * 1000),
+              deliverables: [],
+            },
+            {
+              name: "Acompte reçu",
+              description: "Versement de l'acompte de 40 % pour lancer le projet.",
+              status: "COMPLETED",
+              position: 2,
+              completedAt: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000),
+              deliverables: [],
+            },
+            {
+              name: "Maquette & design",
+              description: "Conception des maquettes validées ensemble.",
+              status: "COMPLETED",
+              position: 3,
+              completedAt: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000),
+              deliverables: [],
+            },
+            {
+              name: "Intégration & développement",
+              description: "Développement du site, du catalogue et du paiement.",
+              status: "IN_PROGRESS",
+              position: 4,
+              deliverables: [],
+            },
+            {
+              name: "Corrections & recette",
+              description: "Vos retours et les ajustements finaux.",
+              status: "PENDING",
+              position: 5,
+              deliverables: [],
+            },
+            {
+              name: "Mise en ligne",
+              description: "Déploiement en production et formation.",
+              status: "PENDING",
+              position: 6,
+              deliverables: [],
+            },
+          ],
+        },
+        messages: {
+          create: [
+            {
+              userId: admin.id,
+              content:
+                "Bonjour Aïcha ! Les maquettes de la page d'accueil et de la fiche produit sont prêtes. Dites-nous ce que vous en pensez.",
+            },
+            {
+              userId: client.id,
+              content:
+                "Bonjour ! Elles sont superbes, j'adore les couleurs. J'aimerais juste un logo un peu plus grand dans l'en-tête.",
+            },
+            {
+              userId: admin.id,
+              content: "C'est noté, nous ajustons ça dès aujourd'hui. Bon week-end !",
+            },
+          ],
+        },
+      },
+      select: { id: true },
+    });
+
+    await prisma.invoice.create({
+      data: {
+        projectId: project.id,
+        clientId: client.id,
+        number: "DA-2026-0042",
+        items: [
+          { label: "Acompte — Site e-commerce Boutique Élégance (40 %)", quantity: 1, unitPrice: 340000 },
+        ],
+        amount: 340000,
+        tax: 0,
+        total: 340000,
+        status: "PAID",
+        dueDate: new Date(Date.now() - 24 * 24 * 60 * 60 * 1000),
+        paidAt: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000),
+      },
+    });
+    await prisma.invoice.create({
+      data: {
+        projectId: project.id,
+        clientId: client.id,
+        number: "DA-2026-0043",
+        items: [
+          { label: "Solde — Site e-commerce Boutique Élégance (60 %)", quantity: 1, unitPrice: 510000 },
+        ],
+        amount: 510000,
+        tax: 0,
+        total: 510000,
+        status: "SENT",
+        dueDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
+      },
+    });
+
+    await prisma.maintenanceContract.create({
+      data: {
+        projectId: project.id,
+        clientId: client.id,
+        plan: "STANDARD",
+        services: [
+          "Mises à jour de sécurité",
+          "Sauvegardes hebdomadaires",
+          "Support prioritaire par ticket",
+          "2 h de modifications / mois",
+        ],
+        startDate: new Date(),
+        endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+        autoRenew: true,
+        monthlyAmount: 25000,
+      },
+    });
+
+    await prisma.ticket.create({
+      data: {
+        clientId: client.id,
+        projectId: project.id,
+        title: "Ajouter le mode de paiement Wave",
+        description:
+          "Bonjour, serait-il possible d'ajouter Wave en plus d'Orange Money sur la page de paiement ? Merci !",
+        priority: "MEDIUM",
+        status: "IN_PROGRESS",
+        messages: {
+          create: [
+            {
+              userId: admin.id,
+              content:
+                "Bonjour Aïcha, tout à fait ! Nous intégrons Wave cette semaine, je vous tiens informée dès que c'est en ligne.",
+            },
+          ],
+        },
+      },
+    });
+
+    console.log(`  ↳ portail client de démo créé (projet ${project.id})`);
+  }
+
   /* ── Contenu du site vitrine (inchangé) ── */
   const testimonialCount = await prisma.testimonial.count();
   if (testimonialCount === 0) {

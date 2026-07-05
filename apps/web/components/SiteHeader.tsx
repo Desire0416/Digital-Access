@@ -7,7 +7,7 @@ import { useSession } from "next-auth/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { Logo, Avatar, buttonClasses, cn, useScrolled } from "@da/ui";
-import { mainNav } from "@/lib/site";
+import { mainNav, clientNav } from "@/lib/site";
 import { LogoutButton } from "./LogoutButton";
 
 export function SiteHeader() {
@@ -16,8 +16,10 @@ export function SiteHeader() {
   const [open, setOpen] = React.useState(false);
   const { data: session } = useSession();
   const user = session?.user as
-    | { name?: string | null; email?: string | null }
+    | { name?: string | null; email?: string | null; roles?: string[] }
     | undefined;
+  const isClient = Boolean(user?.roles?.includes("CLIENT"));
+  const nav = isClient ? clientNav : mainNav;
 
   React.useEffect(() => {
     setOpen(false);
@@ -42,7 +44,7 @@ export function SiteHeader() {
 
         {/* Nav desktop */}
         <nav className="hidden items-center gap-1 lg:flex">
-          {mainNav.map((item) => (
+          {nav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
@@ -123,7 +125,7 @@ export function SiteHeader() {
             className="overflow-hidden border-t border-navy/[0.06] bg-surface-primary lg:hidden"
           >
             <nav className="mx-auto flex max-w-7xl flex-col gap-1 px-5 py-4 sm:px-8">
-              {mainNav.map((item) => (
+              {nav.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}

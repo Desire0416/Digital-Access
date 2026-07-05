@@ -37,6 +37,15 @@ export const mainNav: NavItem[] = [
   { label: "Contact", href: "/contact" },
 ];
 
+/** Navigation de l'espace client (rôle CLIENT connecté). */
+export const clientNav: NavItem[] = [
+  { label: "Tableau de bord", href: "/mon-espace" },
+  { label: "Mes projets", href: "/mes-projets" },
+  { label: "Factures", href: "/factures" },
+  { label: "Maintenance", href: "/maintenance" },
+  { label: "Support", href: "/support" },
+];
+
 export const footerNav: { title: string; items: NavItem[] }[] = [
   {
     title: "Services",
