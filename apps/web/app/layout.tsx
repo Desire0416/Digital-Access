@@ -5,6 +5,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { PageTransition } from "@/components/PageTransition";
 import { WhatsAppFab } from "@/components/WhatsAppFab";
+import { ChromeGate } from "@/components/ChromeGate";
 import { Providers } from "@/components/Providers";
 import "./globals.css";
 
@@ -81,12 +82,16 @@ export default function RootLayout({
           Aller au contenu
         </a>
         <Providers>
-          <SiteHeader />
+          <ChromeGate>
+            <SiteHeader />
+          </ChromeGate>
           <main id="contenu">
             <PageTransition>{children}</PageTransition>
           </main>
-          <SiteFooter />
-          <WhatsAppFab />
+          <ChromeGate>
+            <SiteFooter />
+            <WhatsAppFab />
+          </ChromeGate>
         </Providers>
       </body>
     </html>

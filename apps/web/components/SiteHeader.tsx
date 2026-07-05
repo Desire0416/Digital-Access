@@ -19,6 +19,9 @@ export function SiteHeader() {
     | { name?: string | null; email?: string | null; roles?: string[] }
     | undefined;
   const isClient = Boolean(user?.roles?.includes("CLIENT"));
+  const isAdmin = Boolean(
+    user?.roles?.some((r) => r === "ADMIN" || r === "SUPER_ADMIN"),
+  );
   const nav = isClient ? clientNav : mainNav;
 
   React.useEffect(() => {
@@ -80,6 +83,14 @@ export function SiteHeader() {
         <div className="hidden items-center gap-2 lg:flex">
           {user ? (
             <>
+              {isAdmin && (
+                <Link
+                  href="/admin/dashboard"
+                  className={buttonClasses({ variant: "ghost", size: "sm" })}
+                >
+                  Administration
+                </Link>
+              )}
               <Link
                 href="/mon-espace"
                 className={cn(
@@ -168,6 +179,14 @@ export function SiteHeader() {
               <div className="mt-3 flex flex-col gap-2">
                 {user ? (
                   <>
+                    {isAdmin && (
+                      <Link
+                        href="/admin/dashboard"
+                        className={buttonClasses({ variant: "primary", size: "md" })}
+                      >
+                        Administration
+                      </Link>
+                    )}
                     <Link
                       href="/mon-espace"
                       className={cn(

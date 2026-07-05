@@ -1181,6 +1181,111 @@ async function main() {
     },
   });
 
+  /* ───────────────────── CRM — leads de démonstration (S10) ─────────────────
+     Pipeline commercial réparti sur tous les statuts. Idempotent : ne seede
+     que si aucun lead n'existe (les vrais leads viennent du devis/contact). */
+  if ((await prisma.lead.count()) === 0) {
+    await prisma.lead.createMany({
+      data: [
+        {
+          name: "Konan Yao", email: "konan.yao@lebaoule.ci", phone: "+225 07 11 22 33 44",
+          company: "Restaurant Le Baoulé", projectType: "SITE_VITRINE",
+          budget: "500 000 – 800 000 FCFA", timeline: "1 mois",
+          message: "Nous souhaitons un site vitrine avec menu en ligne et réservation.",
+          status: "NEW", source: "devis", assigneeId: admin.id,
+        },
+        {
+          name: "Dr. Aminata Touré", email: "contact@cliniquesanteplus.ci", phone: "+225 05 66 77 88 99",
+          company: "Clinique Santé Plus", projectType: "SITE_INSTITUTIONNEL",
+          budget: "1 500 000 – 2 500 000 FCFA", timeline: "2 à 3 mois",
+          message: "Site institutionnel avec prise de rendez-vous et espace patients.",
+          status: "NEW", source: "contact",
+        },
+        {
+          name: "Mariam Bamba", email: "mariam@waxandco.ci", phone: "+225 01 23 45 67 89",
+          company: "Boutique Wax & Co", projectType: "SITE_VITRINE",
+          budget: "800 000 – 1 200 000 FCFA", timeline: "6 semaines",
+          message: "Boutique en ligne de pagnes et prêt-à-porter avec paiement Mobile Money.",
+          status: "CONTACTED", source: "devis", assigneeId: admin.id,
+        },
+        {
+          name: "Kouassi Bernard", email: "b.kouassi@cabinet-kyc.ci", phone: "+225 07 98 76 54 32",
+          company: "Cabinet Comptable KYC", projectType: "SITE_INSTITUTIONNEL",
+          budget: "1 000 000 FCFA", timeline: "2 mois",
+          message: "Refonte du site et espace client pour dépôt de documents.",
+          status: "QUOTE_SENT", source: "référence", assigneeId: admin.id,
+        },
+        {
+          name: "Fatou Diallo", email: "direction@ecolenumerique.ci", phone: "+225 05 44 33 22 11",
+          company: "École Numérique Abidjan", projectType: "ELEARNING",
+          budget: "3 000 000 – 5 000 000 FCFA", timeline: "3 à 4 mois",
+          message: "Plateforme e-learning complète pour nos formations professionnelles.",
+          status: "NEGOTIATION", source: "devis", assigneeId: admin.id,
+        },
+        {
+          name: "Yann Gnamien", email: "yann@autoexpress.ci", phone: "+225 07 55 44 33 22",
+          company: "Garage Auto Express", projectType: "SITE_VITRINE",
+          budget: "600 000 FCFA", timeline: "1 mois",
+          message: "Site vitrine avec prise de rendez-vous pour l'atelier.",
+          status: "WON", source: "contact", assigneeId: admin.id,
+        },
+        {
+          name: "Ismaël Coulibaly", email: "ismael@zedfintech.ci", phone: "+225 01 88 77 66 55",
+          company: "Startup Zed FinTech", projectType: "OTHER",
+          budget: "Budget non défini", timeline: "ASAP",
+          message: "Application web complexe — finalement reporté faute de budget.",
+          status: "LOST", source: "devis",
+        },
+      ],
+    });
+    console.log("  ↳ leads CRM de démonstration créés");
+  }
+
+  /* Réalisations & articles supplémentaires (upsert idempotent). */
+  await prisma.portfolioProject.upsert({
+    where: { slug: "mtn-ci-refonte" },
+    update: {},
+    create: {
+      title: "MTN CI — Refonte du portail entreprise",
+      slug: "mtn-ci-refonte", client: "MTN Côte d'Ivoire", type: "Site institutionnel",
+      description: "Refonte complète du portail entreprise avec espace self-care.",
+      technologies: ["Next.js", "TypeScript", "Tailwind CSS"], featured: true,
+    },
+  });
+  await prisma.portfolioProject.upsert({
+    where: { slug: "ecole-numerique-lms" },
+    update: {},
+    create: {
+      title: "École Numérique — Plateforme LMS",
+      slug: "ecole-numerique-lms", client: "École Numérique Abidjan", type: "Plateforme e-learning",
+      description: "Plateforme de formation en ligne avec certificats et paiement Mobile Money.",
+      technologies: ["Next.js", "Prisma", "PostgreSQL", "CinetPay"],
+    },
+  });
+  await prisma.blogPost.upsert({
+    where: { slug: "mobile-money-ecommerce-ci" },
+    update: {},
+    create: {
+      title: "Intégrer le Mobile Money à votre e-commerce en Côte d'Ivoire",
+      slug: "mobile-money-ecommerce-ci",
+      excerpt: "Orange Money, MTN MoMo, Wave : comment accepter les paiements mobiles sur votre boutique.",
+      content: "# Le Mobile Money, roi du paiement en Côte d'Ivoire\n\nAvec plus de 80% de taux de pénétration…",
+      category: "E-commerce", status: "PUBLISHED", readMinutes: 6,
+      authorId: admin.id, publishedAt: new Date(),
+    },
+  });
+  await prisma.blogPost.upsert({
+    where: { slug: "seo-local-abidjan" },
+    update: {},
+    create: {
+      title: "SEO local : être trouvé par vos clients à Abidjan",
+      slug: "seo-local-abidjan",
+      excerpt: "Les bonnes pratiques pour apparaître dans les recherches locales et sur Google Maps.",
+      content: "# Le référencement local, un levier sous-estimé\n\nVos clients vous cherchent…",
+      category: "SEO", status: "DRAFT", readMinutes: 5, authorId: admin.id,
+    },
+  });
+
   console.log("✅ Seed terminé.");
 }
 
