@@ -258,14 +258,19 @@ export async function getUserEnrollment(
 export async function getPlayerData(
   userId: string | null,
   slug: string,
+  isAdmin = false,
 ): Promise<PlayerData | null> {
   const course = await prisma.course.findFirst({
-    where: { slug, status: "PUBLISHED", deletedAt: null },
+    // On ne filtre pas sur PUBLISHED : un instructeur/admin peut prévisualiser
+    // son propre brouillon. Le contrôle d'accès est fait juste après.
+    where: { slug, deletedAt: null },
     select: {
       id: true,
       title: true,
       slug: true,
       isFree: true,
+      status: true,
+      instructorId: true,
       instructor: { select: { name: true, avatar: true } },
       modules: {
         orderBy: { position: "asc" },
@@ -312,8 +317,13 @@ export async function getPlayerData(
   });
   if (!course) return null;
 
+  // Propriétaire du cours ou admin → accès complet (prévisualisation studio).
+  const isPrivileged = isAdmin || (userId !== null && course.instructorId === userId);
+  // Un cours non publié n'est visible que par un utilisateur privilégié.
+  if (course.status !== "PUBLISHED" && !isPrivileged) return null;
+
   const enrollment = userId ? await getUserEnrollment(userId, course.id) : null;
-  const hasAccess = Boolean(enrollment);
+  const hasAccess = Boolean(enrollment) || isPrivileged;
 
   const mapQuiz = (q: NonNullable<
     (typeof course.modules)[number]["chapters"][number]["quiz"]

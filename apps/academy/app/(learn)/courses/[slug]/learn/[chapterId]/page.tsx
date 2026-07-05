@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
-import { currentUser } from "@da/auth/guards";
+import { currentUser, hasRole } from "@da/auth/guards";
 import { getPlayerData } from "@/lib/queries";
 import { PlayerShell } from "@/components/PlayerShell";
 import { prisma } from "@da/db/client";
@@ -37,14 +37,15 @@ export default async function LearnPage({
     redirect(`/auth/login?callbackUrl=${encodeURIComponent(`/courses/${slug}/learn/${chapterId}`)}`);
   }
 
-  const data = await getPlayerData(user.id, slug);
+  const isAdmin = hasRole(user, "ADMIN", "SUPER_ADMIN");
+  const data = await getPlayerData(user.id, slug, isAdmin);
   if (!data) notFound();
 
   const chapter = data.flatChapters.find((c) => c.id === chapterId);
   if (!chapter) notFound();
 
-  // Non inscrit : seuls les chapitres en aperçu sont accessibles.
-  if (!data.enrollment && !chapter.isPreview) {
+  // Chapitre verrouillé (ni inscrit, ni aperçu, ni instructeur/admin) → fiche cours.
+  if (chapter.locked) {
     redirect(`/courses/${slug}`);
   }
 

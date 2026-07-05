@@ -451,6 +451,7 @@ model Course {
   instructor      User         @relation("InstructorCourses", fields: [instructorId], references: [id])
   categoryId      String
   category        Category     @relation(fields: [categoryId], references: [id])
+  reviewNote      String? // motif de refus / note de validation admin
   publishedAt     DateTime?
   deletedAt       DateTime?
   createdAt       DateTime     @default(now())

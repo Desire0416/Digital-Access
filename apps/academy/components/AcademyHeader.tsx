@@ -24,18 +24,25 @@ export function AcademyHeader() {
   const user = session?.user as
     | { name?: string | null; email?: string | null; roles?: string[] }
     | undefined;
-  const isAdmin = Boolean(
-    user?.roles?.some((r) => r === "ADMIN" || r === "SUPER_ADMIN"),
-  );
+  const roles = user?.roles ?? [];
+  const isAdmin = roles.some((r) => r === "ADMIN" || r === "SUPER_ADMIN");
+  const isInstructor = roles.includes("INSTRUCTOR") || isAdmin;
 
   React.useEffect(() => {
     setOpen(false);
   }, [pathname]);
 
   const nav = user
-    ? isAdmin
-      ? [...learnerLinks, { label: "Paiements", href: "/admin/payments" }]
-      : learnerLinks
+    ? [
+        ...learnerLinks,
+        ...(isInstructor ? [{ label: "Studio", href: "/studio" }] : []),
+        ...(isAdmin
+          ? [
+              { label: "Cours", href: "/admin/courses" },
+              { label: "Paiements", href: "/admin/payments" },
+            ]
+          : []),
+      ]
     : visitorNav;
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
