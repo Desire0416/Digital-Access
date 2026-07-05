@@ -37,7 +37,7 @@ export default async function StudioPage() {
   return (
     <section className="relative isolate overflow-hidden pb-24 pt-24">
       {/* Décor de fond signature DA */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute inset-0 bg-grid opacity-50" />
         <div className="absolute -left-24 top-4 h-80 w-80 rounded-full bg-accent/10 blur-[120px]" />
         <div className="absolute -right-24 top-0 h-80 w-80 rounded-full bg-brand-cyan/10 blur-[120px]" />

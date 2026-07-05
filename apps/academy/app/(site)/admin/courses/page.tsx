@@ -22,7 +22,7 @@ export default async function AdminCoursesPage() {
 
   return (
     <section className="relative isolate overflow-hidden pb-20 pt-24">
-      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute inset-0 bg-grid opacity-50" />
         <div className="absolute -right-24 top-0 h-80 w-80 rounded-full bg-brand-violet/10 blur-[110px]" />
         <div className="absolute -left-24 top-40 h-72 w-72 rounded-full bg-brand-cyan/10 blur-[110px]" />

@@ -135,7 +135,7 @@ export default async function CourseDetailPage({
     <>
       {/* ══════════════ HERO — fond sombre, halos, grille ══════════════ */}
       <section className="relative isolate overflow-hidden bg-surface-dark">
-        <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+        <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
           <div className="absolute inset-0 bg-grid opacity-[0.35]" />
           <div className="absolute -left-32 -top-24 h-96 w-96 rounded-full bg-accent/25 blur-[120px]" />
           <div className="absolute right-[-8%] top-[-10%] h-80 w-80 rounded-full bg-brand-cyan/20 blur-[110px]" />

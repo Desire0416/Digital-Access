@@ -48,7 +48,7 @@ export default async function CheckoutPage({
   return (
     <section className="relative isolate overflow-hidden pb-20 pt-24">
       {/* Décor */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute inset-0 bg-grid opacity-60" />
         <div className="absolute -left-24 top-0 h-96 w-96 rounded-full bg-brand-violet/12 blur-[120px]" />
         <div className="absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-brand-cyan/12 blur-[120px]" />

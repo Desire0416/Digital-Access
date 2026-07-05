@@ -70,7 +70,7 @@ export function CourseEditor({
   return (
     <div className="relative isolate min-h-screen pb-24">
       {/* Décor de fond DA */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute inset-0 bg-grid opacity-40" />
         <div className="absolute -right-24 top-0 h-80 w-80 rounded-full bg-brand-violet/10 blur-[120px]" />
         <div className="absolute left-[-8%] top-40 h-72 w-72 rounded-full bg-brand-cyan/10 blur-[120px]" />

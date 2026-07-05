@@ -21,7 +21,7 @@ export default async function VerifyEmailPage({
   return (
     <div className="relative flex min-h-[calc(100vh-4.5rem)] items-center justify-center overflow-hidden px-5 py-16 sm:px-8">
       {/* Décor de marque */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute inset-0 bg-grid opacity-60" />
         <div className="absolute -left-24 top-0 h-96 w-96 rounded-full bg-brand-violet/15 blur-[120px]" />
         <div className="absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-brand-cyan/15 blur-[120px]" />

@@ -6,7 +6,7 @@ export default function CatalogueLoading() {
     <>
       {/* En-tête */}
       <div className="relative overflow-hidden border-b border-navy/[0.06] bg-surface-primary">
-        <div aria-hidden className="pointer-events-none absolute inset-0">
+        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
           <div className="absolute inset-0 bg-grid opacity-60" />
         </div>
         <Container className="relative">

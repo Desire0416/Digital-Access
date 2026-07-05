@@ -25,7 +25,7 @@ export function AuthAside({
   return (
     <aside className="relative hidden overflow-hidden bg-gradient-da lg:flex lg:flex-col lg:justify-between lg:p-12 xl:p-16">
       {/* Décor : grille + blobs animés + monogrammes filigranés */}
-      <div aria-hidden className="pointer-events-none absolute inset-0">
+      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute inset-0 bg-grid opacity-20" />
         <motion.div
           className="absolute -left-24 top-[8%] h-80 w-80 rounded-full bg-white/15 blur-[90px]"
