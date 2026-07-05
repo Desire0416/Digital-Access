@@ -8,6 +8,8 @@ export const metadata: Metadata = {
     "Créez votre compte Digital Access gratuitement pour suivre vos projets, accéder à vos factures et échanger avec notre équipe.",
 };
 
+export const dynamic = "force-dynamic";
+
 export default function RegisterPage() {
   const googleEnabled = Boolean(
     process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET,

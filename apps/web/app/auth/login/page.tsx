@@ -8,6 +8,8 @@ export const metadata: Metadata = {
     "Connectez-vous à votre espace client Digital Access pour suivre vos projets, télécharger vos factures et gérer vos tickets de support.",
 };
 
+export const dynamic = "force-dynamic";
+
 export default function LoginPage() {
   const googleEnabled = Boolean(
     process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET,
