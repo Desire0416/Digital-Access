@@ -611,6 +611,8 @@ Focus: Turborepo setup, database schema, authentication with email verification,
 
 **Also delivered (Sprint 2–3 — site vitrine apps/web):** homepage (hero animé, stats, services, méthode, réalisations, Academy promo, témoignages), Services, Portfolio (+[slug]), Tarifs, Blog (+[slug]), À propos, Contact (form+action), Devis wizard, Academy landing, Légales (mentions/CGU/confidentialité), FAQ, Auth (login/register/verify-email/verify), 404/500/loading brandés, SEO (sitemap/robots/manifest). `next build` → 34 routes, exit 0.
 
+**Also delivered (Sprints 4–6 — apps/academy, port 3001):** thème DA partagé extrait dans `packages/ui/src/theme.css` (importé par les 2 apps) ; data layer réel (`lib/queries.ts` + `lib/actions.ts` : catalogue filtré, détail, player avec verrouillage preview, dashboard, enrollInCourse, markChapterComplete avec streak/XP, submitQuiz noté serveur) ; seed 4 cours FR complets (28 chapitres VIDEO/TEXT/QUIZ, avis, apprenant démo `apprenant@digitalaccess.ci`) ; player immersif (groupe `(learn)` sans chrome, sidebar sombre rétractable, embeds YouTube nocookie, markdown+GFM via @tailwindcss/typography, QuizRunner QCU/QCM feedback animé) ; pages (groupe `(site)`) : accueil, catalogue (recherche debounce + filtres URL), détail cours (accordéon programme, EnrollCTA, sticky card), dashboard (streak/XP/reprendre), auth Academy (callbackUrl), pricing, about. E2E vérifié contre Neon (inscription→vérif→login→enroll→chapitre→quiz 100%→progression/streak/XP→dashboard). `next build` academy → 13 routes, exit 0. Paiement réel = S7.
+
 ## Notes for Claude Code
 
 - When creating components, ALWAYS customize them visually. No default shadcn appearance.

@@ -3,5 +3,8 @@
 /* Thème Digital Access partagé (tokens, utilitaires, animations, base) */
 @import "../../../packages/ui/src/theme.css";
 
+/* Typographie riche pour le contenu des cours (chapitres TEXT en markdown) */
+@plugin "@tailwindcss/typography";
+
 /* Scanne les composants du design system partagé */
 @source "../../../packages/ui/src";

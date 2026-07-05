@@ -17,7 +17,8 @@
     "db:generate": "npm run db:generate -w @da/db",
     "db:push": "npm run db:push -w @da/db",
     "db:seed": "npm run db:seed -w @da/db",
-    "web": "npm run dev -w web"
+    "web": "npm run dev -w web",
+    "academy": "npm run dev -w academy"
   },
   "devDependencies": {
     "turbo": "^2.3.0",

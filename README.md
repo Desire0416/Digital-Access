@@ -37,14 +37,19 @@ Next.js 15 (App Router) · TypeScript strict · Turborepo · Tailwind CSS 4 · F
 ```
 digital-access/
 ├── apps/
-│   └── web/                 # Site DA (vitrine + client + admin)
-│       ├── app/(public)/    # Pages publiques (VISITOR)
-│       ├── app/auth/        # Connexion / inscription / vérification
-│       ├── components/      # Composants spécifiques à l'app
-│       └── lib/             # site.ts (config) · content.ts (contenu éditorial)
+│   ├── web/                 # Site DA (vitrine + client + admin) — port 3000
+│   │   ├── app/(public)/    # Pages publiques (VISITOR)
+│   │   ├── app/auth/        # Connexion / inscription / vérification
+│   │   └── lib/             # site.ts (config) · content.ts (contenu éditorial)
+│   └── academy/             # Access Academy (e-learning) — port 3001
+│       ├── app/(site)/      # Accueil, catalogue, détail, dashboard, auth
+│       ├── app/(learn)/     # Player de cours immersif (sans chrome)
+│       └── lib/             # types · queries (Prisma) · actions (inscription, progression, quiz)
 ├── packages/
-│   ├── ui/                  # @da/ui — design system (composants, animations, thème)
-│   ├── db/                  # @da/db — schéma Prisma unifié + données de démo
+│   ├── ui/                  # @da/ui — design system + thème Tailwind partagé (theme.css)
+│   ├── db/                  # @da/db — schéma Prisma unifié + seed (4 cours complets)
+│   ├── auth/                # @da/auth — Auth.js v5 (credentials + Google, JWT)
+│   ├── email/               # @da/email — Resend + templates brandés
 │   └── config/             # @da/config — tsconfig, validation env (Zod)
 ├── turbo.json
 └── package.json
@@ -59,11 +64,16 @@ npm install
 # 2. Configurer l'environnement
 cp .env.example .env        # renseignez les valeurs (facultatif en dev)
 
-# 3. Lancer apps/web en développement
-npm run web                 # → http://localhost:3000
+# 3. Lancer les apps en développement
+npm run web                 # site DA      → http://localhost:3000
+npm run academy             # Academy      → http://localhost:3001
 # ou tout le monorepo
 npm run dev
 ```
+
+Comptes de démonstration (après seed) : `admin@digitalaccess.ci`,
+`apprenant@digitalaccess.ci` (apprenant inscrit au cours gratuit),
+`koffi@digitalaccess.ci` (instructeur) — mot de passe : `DigitalAccess2026!`.
 
 > **Sans base de données ?** Le site public fonctionne d'emblée : les pages consomment
 > des **données de démonstration typées** (`@da/db` → `src/mock.ts`). Le client Prisma

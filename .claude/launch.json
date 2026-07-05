@@ -6,6 +6,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev", "-w", "web"],
       "port": 3000
+    },
+    {
+      "name": "academy",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "-w", "academy"],
+      "port": 3001
     }
   ]
 }
