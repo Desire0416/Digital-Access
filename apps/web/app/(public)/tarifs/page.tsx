@@ -138,7 +138,7 @@ export default function TarifsPage() {
                 Ce que comprend <GradientText>chaque pack</GradientText>
               </>
             }
-            subtitle="Un récapitulatif complet des livrables pour choisir en toute confiance. Faites défiler horizontalement sur mobile."
+            subtitle="Un récapitulatif complet des livrables pour choisir en toute confiance. Survolez une ligne ou une colonne pour comparer sans vous perdre."
           />
           <div className="mt-14">
             <ComparisonTable packs={comparisonPacks} rows={comparisonRows} />

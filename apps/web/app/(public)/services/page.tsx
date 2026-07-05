@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Check, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import {
   Section,
   Container,
@@ -10,14 +10,13 @@ import {
   Reveal,
   GradientText,
   IconBadge,
-  Badge,
   buttonClasses,
-  cn,
 } from "@da/ui";
 import { servicePacks, whyChoose, processSteps } from "@/lib/content";
 import { ServiceCard } from "@/components/ServiceCard";
 import { CTABanner } from "@/components/CTABanner";
 import { PageHero } from "@/components/PageHero";
+import { ComparisonMatrix } from "@/components/ComparisonMatrix";
 import { Icon } from "@/components/Icon";
 
 export const metadata: Metadata = {
@@ -149,91 +148,20 @@ export default function ServicesPage() {
             }
             subtitle="Une vue d'ensemble pour choisir en confiance. Rien n'est figé : tout se personnalise."
           />
-          <Reveal className="mt-12">
-            <div className="overflow-x-auto rounded-2xl border border-navy/[0.08] bg-surface-primary">
-              <table className="w-full min-w-[860px] border-collapse text-left">
-                <thead>
-                  <tr className="border-b border-navy/[0.08]">
-                    <th className="p-5 text-xs font-bold uppercase tracking-[0.14em] text-text-muted">
-                      Ce que comprend chaque pack
-                    </th>
-                    {servicePacks.map((pack) => (
-                      <th key={pack.id} className="p-5 align-bottom">
-                        <div className="flex items-center gap-2">
-                          <IconBadge
-                            tone={pack.featured ? "gradient" : "soft"}
-                            size="sm"
-                          >
-                            <Icon name={pack.icon} size={16} />
-                          </IconBadge>
-                          <span className="font-display text-sm font-bold text-navy">
-                            {pack.name}
-                          </span>
-                        </div>
-                        {pack.featured && (
-                          <Badge variant="gradient" className="mt-2">
-                            Le plus choisi
-                          </Badge>
-                        )}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {compareRows.map((row) => (
-                    <tr
-                      key={row.label}
-                      className="border-b border-navy/[0.06] last:border-0 even:bg-surface-secondary/60"
-                    >
-                      <th
-                        scope="row"
-                        className="p-5 text-sm font-semibold text-navy"
-                      >
-                        {row.label}
-                      </th>
-                      {row.values.map((value, i) => (
-                        <td
-                          key={i}
-                          className="p-5 text-sm text-text-secondary"
-                        >
-                          {typeof value === "boolean" ? (
-                            value ? (
-                              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-success/10 text-success">
-                                <Check size={14} strokeWidth={3} />
-                              </span>
-                            ) : (
-                              <span className="text-text-muted">—</span>
-                            )
-                          ) : (
-                            value
-                          )}
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                  <tr>
-                    <td className="p-5" />
-                    {servicePacks.map((pack) => (
-                      <td key={pack.id} className="p-5">
-                        <Link
-                          href="/devis"
-                          className={cn(
-                            buttonClasses({
-                              variant: pack.featured ? "primary" : "outline",
-                              size: "sm",
-                            }),
-                            "w-full",
-                          )}
-                        >
-                          {pack.cta}
-                        </Link>
-                      </td>
-                    ))}
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </Reveal>
+          <div className="mt-12">
+            <ComparisonMatrix
+              firstColLabel="Ce que comprend chaque pack"
+              columns={servicePacks.map((pack) => ({
+                id: pack.id,
+                name: pack.name,
+                icon: pack.icon,
+                featured: pack.featured,
+                badge: pack.featured ? "Le plus choisi" : undefined,
+                cta: { label: pack.cta, href: "/devis" },
+              }))}
+              rows={compareRows}
+            />
+          </div>
         </Container>
       </Section>
 

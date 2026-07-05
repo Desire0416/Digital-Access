@@ -25,6 +25,16 @@ export function SiteHeader() {
     setOpen(false);
   }, [pathname]);
 
+  // Verrouille le défilement de l'arrière-plan quand le menu mobile est ouvert.
+  React.useEffect(() => {
+    if (!open) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [open]);
+
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
@@ -32,12 +42,12 @@ export function SiteHeader() {
     <header
       className={cn(
         "sticky top-0 z-50 transition-all duration-300",
-        scrolled
+        scrolled || open
           ? "border-b border-navy/[0.06] bg-surface-primary/85 backdrop-blur-xl"
           : "bg-transparent",
       )}
     >
-      <div className="mx-auto flex h-18 max-w-7xl items-center justify-between px-5 py-3 sm:px-8 lg:px-10">
+      <div className="relative z-50 mx-auto flex h-18 max-w-7xl items-center justify-between px-5 py-3 sm:px-8 lg:px-10">
         <Link href="/" aria-label="Digital Access — accueil" className="shrink-0">
           <Logo height={46} />
         </Link>
@@ -114,17 +124,33 @@ export function SiteHeader() {
         </button>
       </div>
 
-      {/* Drawer mobile */}
+      {/* Menu mobile — superposition (ne pousse jamais le contenu vers le bas) */}
       <AnimatePresence>
         {open && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            className="overflow-hidden border-t border-navy/[0.06] bg-surface-primary lg:hidden"
-          >
-            <nav className="mx-auto flex max-w-7xl flex-col gap-1 px-5 py-4 sm:px-8">
+          <>
+            {/* Voile cliquable */}
+            <motion.button
+              key="menu-scrim"
+              type="button"
+              aria-label="Fermer le menu"
+              tabIndex={-1}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setOpen(false)}
+              className="absolute inset-x-0 top-full z-40 h-[100dvh] bg-navy/40 backdrop-blur-sm lg:hidden"
+            />
+            {/* Panneau du menu */}
+            <motion.div
+              key="menu-panel"
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+              className="absolute inset-x-0 top-full z-50 max-h-[calc(100dvh-4.5rem)] overflow-y-auto bg-surface-primary shadow-xl lg:hidden"
+            >
+              <nav className="mx-auto flex max-w-7xl flex-col gap-1 px-5 py-4 sm:px-8">
               {nav.map((item) => (
                 <Link
                   key={item.href}
@@ -171,8 +197,9 @@ export function SiteHeader() {
                   </>
                 )}
               </div>
-            </nav>
-          </motion.div>
+              </nav>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </header>
