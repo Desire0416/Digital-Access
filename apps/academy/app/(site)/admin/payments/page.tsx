@@ -60,7 +60,7 @@ export default async function AdminPaymentsPage() {
               </p>
             </div>
           ) : (
-            <div className="mt-4 grid gap-5">
+            <div className="mt-4 grid grid-cols-1 gap-5">
               {pending.map((p) => (
                 <PaymentCard key={p.id} payment={p} />
               ))}
@@ -74,7 +74,7 @@ export default async function AdminPaymentsPage() {
             <h2 className="font-display text-lg font-bold text-navy">
               Derniers paiements traités
             </h2>
-            <div className="mt-4 grid gap-4">
+            <div className="mt-4 grid grid-cols-1 gap-4">
               {processed.map((p) => (
                 <PaymentCard key={p.id} payment={p} readonly />
               ))}

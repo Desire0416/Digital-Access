@@ -65,7 +65,7 @@ export default async function AdminCoursesPage() {
               </p>
             </div>
           ) : (
-            <div className="mt-4 grid gap-5">
+            <div className="mt-4 grid grid-cols-1 gap-5">
               {review.map((course) => (
                 <CourseReviewCard key={course.id} course={course} />
               ))}
@@ -85,7 +85,7 @@ export default async function AdminCoursesPage() {
               Les cours actuellement en ligne au catalogue. Vous pouvez en
               dépublier un si nécessaire.
             </p>
-            <div className="mt-4 grid gap-3">
+            <div className="mt-4 grid grid-cols-1 gap-3">
               {published.map((course) => (
                 <PublishedCourseCard key={course.id} course={course} />
               ))}

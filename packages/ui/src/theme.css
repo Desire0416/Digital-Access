@@ -98,6 +98,9 @@
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    /* `clip` empêche le scroll horizontal parasite sans créer de conteneur de
+       défilement (les `sticky` restent fonctionnels, contrairement à `hidden`). */
+    overflow-x: clip;
   }
 
   body {
@@ -105,6 +108,11 @@
     background-color: var(--color-surface-primary);
     color: var(--color-navy);
     line-height: 1.6;
+    /* Filet de sécurité : les décors absolus (halos flous, filigranes) qui
+       débordent légèrement ne provoquent jamais de scroll horizontal sur mobile.
+       `clip` (et non `hidden`) n'ouvre pas de conteneur de défilement → les
+       en-têtes `sticky` continuent de fonctionner. */
+    overflow-x: clip;
   }
 
   h1,

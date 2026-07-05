@@ -115,7 +115,7 @@ export function TicketList({ tickets }: { tickets: TicketItem[] }) {
           </p>
         </div>
       ) : (
-        <ul className="grid gap-4">
+        <ul className="grid grid-cols-1 gap-4">
           {visible.map((t, i) => {
             const pm = priorityMeta[t.priority];
             const sm = statusMeta[t.status];

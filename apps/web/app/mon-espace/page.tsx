@@ -148,7 +148,7 @@ export default async function MonEspacePage() {
             </div>
 
             {hasProjects ? (
-              <div className="mt-4 grid gap-4">
+              <div className="mt-4 grid grid-cols-1 gap-4">
                 {data!.projects.slice(0, 3).map((p) => {
                   const st = statusLabels[p.status] ?? statusLabels.PENDING!;
                   return (

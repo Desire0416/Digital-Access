@@ -71,9 +71,9 @@ export default async function CheckoutPage({
           </p>
         </div>
 
-        <div className="mt-12 grid gap-8 lg:grid-cols-[1fr_380px] lg:items-start">
+        <div className="mt-12 grid gap-8 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start">
           {/* Colonne principale : paiement en attente OU formulaire */}
-          <div>
+          <div className="min-w-0">
             {data.pendingReference ? (
               <div className="rounded-2xl border border-warning/30 bg-warning/[0.06] p-8 text-center sm:p-10">
                 <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-warning/15 text-[#B45309]">
@@ -107,7 +107,7 @@ export default async function CheckoutPage({
           </div>
 
           {/* Récapitulatif de commande (sticky) */}
-          <aside className="lg:sticky lg:top-24">
+          <aside className="min-w-0 lg:sticky lg:top-24">
             <div className="overflow-hidden rounded-2xl border border-navy/[0.07] bg-surface-primary">
               <div className="relative flex aspect-[16/7] items-center justify-center bg-gradient-da">
                 <div className="absolute inset-0 bg-dots opacity-25" />

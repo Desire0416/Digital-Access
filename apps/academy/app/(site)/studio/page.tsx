@@ -136,7 +136,7 @@ export default async function StudioPage() {
           </div>
 
           {hasCourses ? (
-            <div className="mt-6 grid gap-5">
+            <div className="mt-6 grid grid-cols-1 gap-5">
               {courses.map((course) => (
                 <StudioCourseRow key={course.id} course={course} />
               ))}

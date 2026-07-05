@@ -197,52 +197,74 @@ export default async function InvoiceDetailPage({
 
             {/* Lignes de facturation */}
             <div className="px-8 py-8 sm:px-12">
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[480px] text-left text-sm">
-                  <thead>
-                    <tr className="border-b-2 border-navy/10 text-[11px] uppercase tracking-[0.12em] text-text-muted">
-                      <th className="pb-3 pr-4 font-bold">Désignation</th>
-                      <th className="pb-3 px-4 text-center font-bold">Qté</th>
-                      <th className="pb-3 px-4 text-right font-bold">
-                        Prix unitaire
-                      </th>
-                      <th className="pb-3 pl-4 text-right font-bold">Total</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {invoice.items.length > 0 ? (
-                      invoice.items.map((item, i) => (
-                        <tr
-                          key={i}
-                          className="border-b border-navy/[0.06] align-top"
-                        >
-                          <td className="py-3.5 pr-4 font-medium text-navy">
-                            {item.label}
-                          </td>
-                          <td className="py-3.5 px-4 text-center text-text-secondary">
-                            {item.quantity}
-                          </td>
-                          <td className="py-3.5 px-4 text-right text-text-secondary">
-                            {formatFCFA(item.unitPrice)}
-                          </td>
-                          <td className="py-3.5 pl-4 text-right font-semibold text-navy">
-                            {formatFCFA(item.unitPrice * item.quantity)}
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr className="border-b border-navy/[0.06]">
-                        <td
-                          className="py-4 text-text-muted"
-                          colSpan={4}
-                        >
-                          Aucune ligne détaillée.
+              {/* Tableau — tablette, desktop et impression */}
+              <table className="hidden w-full text-left text-sm sm:table print:table">
+                <thead>
+                  <tr className="border-b-2 border-navy/10 text-[11px] uppercase tracking-[0.12em] text-text-muted">
+                    <th className="pb-3 pr-4 font-bold">Désignation</th>
+                    <th className="pb-3 px-4 text-center font-bold">Qté</th>
+                    <th className="pb-3 px-4 text-right font-bold">
+                      Prix unitaire
+                    </th>
+                    <th className="pb-3 pl-4 text-right font-bold">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {invoice.items.length > 0 ? (
+                    invoice.items.map((item, i) => (
+                      <tr
+                        key={i}
+                        className="border-b border-navy/[0.06] align-top"
+                      >
+                        <td className="py-3.5 pr-4 font-medium text-navy">
+                          {item.label}
+                        </td>
+                        <td className="py-3.5 px-4 text-center text-text-secondary">
+                          {item.quantity}
+                        </td>
+                        <td className="py-3.5 px-4 text-right text-text-secondary">
+                          {formatFCFA(item.unitPrice)}
+                        </td>
+                        <td className="py-3.5 pl-4 text-right font-semibold text-navy">
+                          {formatFCFA(item.unitPrice * item.quantity)}
                         </td>
                       </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
+                    ))
+                  ) : (
+                    <tr className="border-b border-navy/[0.06]">
+                      <td className="py-4 text-text-muted" colSpan={4}>
+                        Aucune ligne détaillée.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+
+              {/* Cartes empilées — mobile (pas de défilement horizontal) */}
+              <ul className="grid grid-cols-1 gap-3 sm:hidden print:hidden">
+                {invoice.items.length > 0 ? (
+                  invoice.items.map((item, i) => (
+                    <li
+                      key={i}
+                      className="rounded-xl border border-navy/[0.08] bg-surface-secondary/40 p-4"
+                    >
+                      <p className="font-medium text-navy">{item.label}</p>
+                      <div className="mt-2.5 flex items-center justify-between border-t border-navy/[0.06] pt-2.5 text-sm">
+                        <span className="text-text-secondary">
+                          {item.quantity} × {formatFCFA(item.unitPrice)}
+                        </span>
+                        <span className="font-display font-bold text-navy">
+                          {formatFCFA(item.unitPrice * item.quantity)}
+                        </span>
+                      </div>
+                    </li>
+                  ))
+                ) : (
+                  <li className="rounded-xl border border-dashed border-navy/15 p-4 text-sm text-text-muted">
+                    Aucune ligne détaillée.
+                  </li>
+                )}
+              </ul>
 
               {/* Totaux */}
               <div className="mt-8 flex justify-end">

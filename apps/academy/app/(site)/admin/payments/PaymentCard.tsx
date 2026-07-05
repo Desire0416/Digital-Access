@@ -87,14 +87,14 @@ export function PaymentCard({
             <p className="text-xs text-text-secondary">{payment.learner.email}</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex min-w-0 items-center gap-2">
           <Badge variant={badge.variant}>{badge.label}</Badge>
-          <span className="font-mono text-xs text-text-muted">{payment.reference}</span>
+          <span className="truncate font-mono text-xs text-text-muted">{payment.reference}</span>
         </div>
       </div>
 
       {/* Détails */}
-      <div className="mt-4 grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-4 grid grid-cols-1 gap-x-6 gap-y-2 text-sm sm:grid-cols-2 lg:grid-cols-3">
         <p className="text-text-secondary">
           Cours : <span className="font-semibold text-navy">{payment.courseTitle}</span>
         </p>

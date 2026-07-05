@@ -194,7 +194,7 @@ export default async function FacturesPage() {
               </div>
 
               {/* Cartes — mobile */}
-              <div className="grid gap-4 md:hidden">
+              <div className="grid grid-cols-1 gap-4 md:hidden">
                 {invoices.map((inv) => {
                   const st = invoiceStatus[inv.status];
                   return (
