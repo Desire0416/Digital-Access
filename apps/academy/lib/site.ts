@@ -12,6 +12,41 @@ export const academyConfig = {
   },
 } as const;
 
+/**
+ * Numéros Mobile Money de Digital Access pour le paiement manuel.
+ * ⚠️ À remplacer par les vrais numéros marchands avant le lancement.
+ */
+export const paymentConfig = {
+  operators: [
+    {
+      id: "ORANGE",
+      name: "Orange Money",
+      number: "+225 07 00 00 00 00",
+      color: "#FF7900",
+      instructions: "Composez #144# puis « Transfert d'argent »",
+    },
+    {
+      id: "MTN",
+      name: "MTN MoMo",
+      number: "+225 05 00 00 00 00",
+      color: "#FFCC00",
+      instructions: "Composez *133# puis « Transfert d'argent »",
+    },
+    {
+      id: "WAVE",
+      name: "Wave",
+      number: "+225 07 00 00 00 01",
+      color: "#00C2F3",
+      instructions: "Depuis l'application Wave, « Envoyer de l'argent »",
+    },
+  ],
+  holderName: "DIGITAL ACCESS",
+  /** délai annoncé de validation manuelle */
+  reviewDelay: "sous 24 h ouvrées",
+} as const;
+
+export type OperatorId = (typeof paymentConfig.operators)[number]["id"];
+
 export interface NavItem {
   label: string;
   href: string;

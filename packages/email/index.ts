@@ -5,6 +5,9 @@ import {
   resetPasswordEmail,
   leadNotificationEmail,
   leadConfirmationEmail,
+  paymentSubmittedEmail,
+  paymentApprovedEmail,
+  paymentRejectedEmail,
 } from "./src/templates";
 
 export { sendEmail } from "./src/send";
@@ -24,6 +27,30 @@ export function sendWelcomeEmail(to: string, data: { name: string }) {
 
 export function sendResetPasswordEmail(to: string, data: { name: string; url: string }) {
   const { subject, html } = resetPasswordEmail(data);
+  return sendEmail({ to, subject, html });
+}
+
+export function sendPaymentSubmittedEmail(
+  to: string,
+  data: Parameters<typeof paymentSubmittedEmail>[0],
+) {
+  const { subject, html } = paymentSubmittedEmail(data);
+  return sendEmail({ to, subject, html });
+}
+
+export function sendPaymentApprovedEmail(
+  to: string,
+  data: Parameters<typeof paymentApprovedEmail>[0],
+) {
+  const { subject, html } = paymentApprovedEmail(data);
+  return sendEmail({ to, subject, html });
+}
+
+export function sendPaymentRejectedEmail(
+  to: string,
+  data: Parameters<typeof paymentRejectedEmail>[0],
+) {
+  const { subject, html } = paymentRejectedEmail(data);
   return sendEmail({ to, subject, html });
 }
 

@@ -35,6 +35,7 @@ import {
 } from "@da/ui";
 import { currentUser } from "@da/auth/guards";
 import { getCourseDetail, getCourses, getUserEnrollment } from "@/lib/queries";
+import { getPaymentStatusForCourse } from "@/lib/payment-queries";
 import { levelLabel } from "@/lib/site";
 import { CourseCard } from "@/components/CourseCard";
 import { EnrollCTA } from "./EnrollCTA";
@@ -93,6 +94,8 @@ export default async function CourseDetailPage({
 
   const user = await currentUser();
   const enrollment = user ? await getUserEnrollment(user.id, course.id) : null;
+  const paymentStatus =
+    user && !enrollment ? await getPaymentStatusForCourse(user.id, course.id) : null;
 
   /* Reprise de lecture : premier chapitre non complété, ordre pédagogique. */
   const orderedChapters = course.modules.flatMap((m) => m.chapters);
@@ -343,6 +346,7 @@ export default async function CourseDetailPage({
                         price={course.price}
                         enrolled={Boolean(enrollment)}
                         continueHref={continueHref}
+                        paymentPending={paymentStatus === "pending"}
                         title={course.title}
                       />
 

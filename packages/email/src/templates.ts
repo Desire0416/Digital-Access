@@ -126,6 +126,81 @@ export function leadNotificationEmail(opts: {
   };
 }
 
+export function paymentSubmittedEmail(opts: {
+  learnerName: string;
+  learnerEmail: string;
+  courseTitle: string;
+  amountLabel: string;
+  operator: string;
+  payerPhone: string;
+  transactionId: string;
+  reference: string;
+  adminUrl: string;
+}) {
+  const row = (k: string, v: string) =>
+    `<tr><td style="padding:6px 12px 6px 0;color:#9CA3AF;font-size:13px;">${k}</td><td style="padding:6px 0;font-size:14px;color:#374151;font-weight:600;">${v}</td></tr>`;
+  return {
+    subject: `💰 Paiement à valider — ${opts.courseTitle} (${opts.reference})`,
+    html: layout({
+      heading: "Nouveau paiement Mobile Money à vérifier",
+      body: `
+        ${p(`<b>${opts.learnerName}</b> (${opts.learnerEmail}) déclare avoir payé le cours <b>${opts.courseTitle}</b>.`)}
+        <table style="width:100%;border-collapse:collapse;margin:8px 0 18px;">
+          ${row("Référence", opts.reference)}
+          ${row("Montant attendu", opts.amountLabel)}
+          ${row("Opérateur", opts.operator)}
+          ${row("Numéro payeur", opts.payerPhone)}
+          ${row("ID de transaction", opts.transactionId)}
+        </table>
+        ${p("Vérifiez la réception du montant sur votre compte Mobile Money, puis approuvez ou rejetez la demande :")}
+        <div style="margin:22px 0;">${button(opts.adminUrl, "Ouvrir la validation des paiements")}</div>
+      `,
+      footerNote: "Notification interne — validation des paiements Academy",
+    }),
+  };
+}
+
+export function paymentApprovedEmail(opts: {
+  name: string;
+  courseTitle: string;
+  courseUrl: string;
+  amountLabel: string;
+  reference: string;
+}) {
+  return {
+    subject: `✅ Paiement confirmé — accès ouvert à « ${opts.courseTitle} »`,
+    html: layout({
+      heading: `C'est confirmé, ${opts.name} !`,
+      body: `
+        ${p(`Votre paiement de <b>${opts.amountLabel}</b> (réf. ${opts.reference}) a été vérifié et validé. Votre accès au cours <b>${opts.courseTitle}</b> est désormais ouvert — à vie.`)}
+        <div style="margin:24px 0;">${button(opts.courseUrl, "Commencer le cours")}</div>
+        ${p("Bonne formation ! N'oubliez pas : chaque chapitre terminé fait grandir votre série 🔥.")}
+      `,
+    }),
+  };
+}
+
+export function paymentRejectedEmail(opts: {
+  name: string;
+  courseTitle: string;
+  reference: string;
+  reason?: string;
+  checkoutUrl: string;
+}) {
+  return {
+    subject: `Paiement non validé — ${opts.courseTitle} (${opts.reference})`,
+    html: layout({
+      heading: `Bonjour ${opts.name},`,
+      body: `
+        ${p(`Nous n'avons pas pu valider votre paiement pour le cours <b>${opts.courseTitle}</b> (réf. ${opts.reference}).`)}
+        ${opts.reason ? p(`<b>Motif :</b> ${opts.reason.replace(/</g, "&lt;")}`) : ""}
+        ${p("Si vous pensez qu'il s'agit d'une erreur, vérifiez l'ID de transaction saisi et soumettez à nouveau votre preuve, ou contactez-nous sur WhatsApp — nous réglerons cela rapidement.")}
+        <div style="margin:22px 0;">${button(opts.checkoutUrl, "Soumettre une nouvelle preuve")}</div>
+      `,
+    }),
+  };
+}
+
 export function leadConfirmationEmail(opts: { name: string; reference: string }) {
   return {
     subject: "Nous avons bien reçu votre demande — Digital Access",

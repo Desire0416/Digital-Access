@@ -33,6 +33,8 @@ export interface EnrollCTAProps {
   continueHref?: string;
   /** Titre du cours — personnalise le message WhatsApp pré-rempli. */
   title?: string;
+  /** true si l'utilisateur a un paiement Mobile Money en cours de vérification. */
+  paymentPending?: boolean;
 }
 
 /**
@@ -48,6 +50,7 @@ export function EnrollCTA({
   enrolled,
   continueHref,
   title,
+  paymentPending = false,
 }: EnrollCTAProps) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -68,6 +71,54 @@ export function EnrollCTA({
         <PlayCircle size={19} aria-hidden />
         Continuer le cours
       </Link>
+    );
+  }
+
+  /* ── Paiement en cours de vérification ─────────────────────────────────── */
+  if (paymentPending) {
+    return (
+      <div className="rounded-xl border border-warning/30 bg-warning/[0.07] p-4">
+        <p className="text-sm font-bold text-navy">
+          ⏳ Paiement en cours de vérification
+        </p>
+        <p className="mt-1 text-xs leading-relaxed text-text-secondary">
+          Notre équipe vérifie votre preuve Mobile Money. Votre accès s'ouvrira
+          automatiquement — vous serez notifié par email.
+        </p>
+        <Link
+          href={`/checkout/${slug}`}
+          className={buttonClasses({
+            variant: "outline",
+            size: "sm",
+            className: "mt-3 w-full",
+          })}
+        >
+          Voir le statut
+        </Link>
+      </div>
+    );
+  }
+
+  /* ── Cours payant : direction le checkout Mobile Money ─────────────────── */
+  if (!isFree && price > 0) {
+    return (
+      <div>
+        <Link
+          href={`/checkout/${slug}`}
+          className={buttonClasses({
+            variant: "primary",
+            size: "lg",
+            className: "w-full",
+          })}
+        >
+          <Smartphone size={18} aria-hidden />
+          Acheter · {formatFCFA(price)}
+        </Link>
+        <p className="mt-2.5 text-center text-xs text-text-muted">
+          Orange Money · MTN MoMo · Wave — accès ouvert après vérification de
+          votre paiement.
+        </p>
+      </div>
     );
   }
 

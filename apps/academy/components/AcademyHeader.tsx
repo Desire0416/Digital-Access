@@ -22,14 +22,21 @@ export function AcademyHeader() {
   const [open, setOpen] = React.useState(false);
   const { data: session } = useSession();
   const user = session?.user as
-    | { name?: string | null; email?: string | null }
+    | { name?: string | null; email?: string | null; roles?: string[] }
     | undefined;
+  const isAdmin = Boolean(
+    user?.roles?.some((r) => r === "ADMIN" || r === "SUPER_ADMIN"),
+  );
 
   React.useEffect(() => {
     setOpen(false);
   }, [pathname]);
 
-  const nav = user ? learnerLinks : visitorNav;
+  const nav = user
+    ? isAdmin
+      ? [...learnerLinks, { label: "Paiements", href: "/admin/payments" }]
+      : learnerLinks
+    : visitorNav;
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
