@@ -197,7 +197,7 @@ export function CatalogueFilters({ categories, total }: CatalogueFiltersProps) {
 
   /* ── Sections du panneau (tri, catégories, niveau, prix) ── */
   const sections = (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Trier */}
       <div>
         <GroupLabel>Trier par</GroupLabel>
@@ -309,9 +309,11 @@ export function CatalogueFilters({ categories, total }: CatalogueFiltersProps) {
 
   return (
     <>
-      {/* ═══════════════ Desktop : barre latérale sticky ═══════════════ */}
-      <aside className="hidden lg:block">
-        <div className="sticky top-24 max-h-[calc(100dvh-7rem)] space-y-5 overflow-y-auto overflow-x-hidden rounded-2xl border border-navy/[0.07] bg-surface-primary p-5">
+      {/* ═══════════════ Desktop : barre latérale sticky ═══════════════
+          `sticky` porté par l'ASIDE (élément de grille, hauteur = contenu) →
+          il reste fixe pendant le défilement des cours, sans barre interne. */}
+      <aside className="hidden lg:block lg:sticky lg:top-24 lg:self-start">
+        <div className="space-y-5 rounded-2xl border border-navy/[0.07] bg-surface-primary p-5">
           <div className="flex items-center gap-2 text-navy">
             <SlidersHorizontal size={17} className="text-brand-blue-royal" aria-hidden />
             <h2 className="font-display text-base font-bold">Filtrer</h2>
@@ -436,7 +438,7 @@ function CategoryRow({
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        "group flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue-vif/50",
+        "group flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue-vif/50",
         active
           ? "bg-gradient-da text-white shadow-brand"
           : "text-text-secondary hover:bg-navy/[0.04] hover:text-navy",

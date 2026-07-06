@@ -137,7 +137,10 @@ export default async function CataloguePage({
           <div className="lg:grid lg:grid-cols-[288px_minmax(0,1fr)] lg:items-start lg:gap-10">
             {/* Filtres : barre latérale sticky (desktop) + tiroir (mobile) */}
             <Suspense fallback={null}>
-              <CatalogueFilters categories={categories} total={count} />
+              <CatalogueFilters
+                categories={categories.filter((c) => c.courseCount > 0)}
+                total={count}
+              />
             </Suspense>
 
             {/* Colonne des résultats */}
