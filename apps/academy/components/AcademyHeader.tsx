@@ -10,10 +10,12 @@ import { Avatar, buttonClasses, cn, useScrolled } from "@da/ui";
 import { visitorNav } from "@/lib/site";
 import { AcademyLogo } from "./AcademyLogo";
 import { LogoutButton } from "./LogoutButton";
+import { NotificationBell } from "./NotificationBell";
 
 const learnerLinks = [
   { label: "Catalogue", href: "/courses" },
   { label: "Mes cours", href: "/dashboard" },
+  { label: "Certificats", href: "/certificates" },
 ];
 
 export function AcademyHeader() {
@@ -94,6 +96,7 @@ export function AcademyHeader() {
         <div className="hidden items-center gap-2 lg:flex">
           {user ? (
             <>
+              <NotificationBell />
               <Link
                 href="/dashboard"
                 className={cn(buttonClasses({ variant: "ghost", size: "sm" }), "gap-2")}
@@ -127,16 +130,19 @@ export function AcademyHeader() {
           )}
         </div>
 
-        {/* Toggle mobile */}
-        <button
-          type="button"
-          onClick={() => setOpen((v) => !v)}
-          className="inline-flex h-11 w-11 items-center justify-center rounded-lg text-navy transition-colors hover:bg-navy/5 lg:hidden"
-          aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
-          aria-expanded={open}
-        >
-          {open ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        {/* Actions mobile : cloche + toggle */}
+        <div className="flex items-center gap-1 lg:hidden">
+          {user && <NotificationBell />}
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            className="inline-flex h-11 w-11 items-center justify-center rounded-lg text-navy transition-colors hover:bg-navy/5"
+            aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
+            aria-expanded={open}
+          >
+            {open ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
       </div>
 
       {/* Menu mobile — superposition (ne pousse jamais le contenu vers le bas) */}

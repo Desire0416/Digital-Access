@@ -194,6 +194,7 @@ model User {
   xp            Int        @default(0)
   lastActiveAt  DateTime?
   deletedAt     DateTime? // soft delete (rétention 30j)
+  notificationPrefs Json?  // { email: {COURSE_ENROLLED: bool, ...}, inApp: {...} } — null = tout activé
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
 

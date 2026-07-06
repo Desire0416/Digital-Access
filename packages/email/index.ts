@@ -8,6 +8,7 @@ import {
   paymentSubmittedEmail,
   paymentApprovedEmail,
   paymentRejectedEmail,
+  certificateEmail,
 } from "./src/templates";
 
 export { sendEmail } from "./src/send";
@@ -51,6 +52,14 @@ export function sendPaymentRejectedEmail(
   data: Parameters<typeof paymentRejectedEmail>[0],
 ) {
   const { subject, html } = paymentRejectedEmail(data);
+  return sendEmail({ to, subject, html });
+}
+
+export function sendCertificateEmail(
+  to: string,
+  data: Parameters<typeof certificateEmail>[0],
+) {
+  const { subject, html } = certificateEmail(data);
   return sendEmail({ to, subject, html });
 }
 

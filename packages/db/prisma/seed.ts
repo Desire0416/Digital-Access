@@ -846,6 +846,8 @@ async function main() {
   }
 
   /* ── Cours (recréés à neuf pour un contenu à jour) ── */
+  // Les certificats référencent les cours (FK Restrict) — à purger avant.
+  await prisma.certificate.deleteMany({});
   await prisma.course.deleteMany({});
   console.log("  ↳ anciens cours purgés, création du contenu…");
 
@@ -960,6 +962,59 @@ async function main() {
       select: { id: true },
     });
     console.log(`  ↳ apprenant de démo inscrit (enrollment ${enrollment.id})`);
+
+    /* ── Certificat + notifications de démo (S13) ── */
+    await prisma.certificate.create({
+      data: {
+        userId: demoLearner.id,
+        courseId: marketingCourse.id,
+        code: "DA-MKTG-2026",
+      },
+    });
+    // Notifications : on repart propre pour l'apprenant de démo (idempotent).
+    await prisma.notification.deleteMany({ where: { userId: demoLearner.id } });
+    await prisma.notification.createMany({
+      data: [
+        {
+          userId: demoLearner.id,
+          type: "CERTIFICATE_ISSUED",
+          title: "Certificat obtenu 🎓",
+          message:
+            "Félicitations ! Vous avez décroché le certificat du cours « Marketing digital : réussir sur les réseaux sociaux ».",
+          link: "/certificates",
+          read: false,
+        },
+        {
+          userId: demoLearner.id,
+          type: "FORUM_REPLY",
+          title: "Nouvelle réponse à votre sujet",
+          message: "Marc Apo a répondu à votre sujet dans le forum du cours.",
+          link: "/courses/marketing-reseaux-sociaux/forum",
+          read: false,
+        },
+        {
+          userId: demoLearner.id,
+          type: "COURSE_ENROLLED",
+          title: "Inscription confirmée 🎉",
+          message:
+            "Vous êtes inscrit au cours « Marketing digital : réussir sur les réseaux sociaux ». Bon apprentissage !",
+          link: "/courses/marketing-reseaux-sociaux",
+          read: true,
+          createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+        },
+        {
+          userId: demoLearner.id,
+          type: "SYSTEM",
+          title: "Bienvenue sur Access Academy",
+          message:
+            "Explorez le catalogue et commencez votre première formation dès aujourd'hui.",
+          link: "/courses",
+          read: true,
+          createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+        },
+      ],
+    });
+    console.log("  ↳ certificat + notifications de démo seedés");
   }
 
   /* ── Portail client (apps/web) : client de démo + projet complet ── */

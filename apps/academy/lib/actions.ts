@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@da/db/client";
 import { currentUser } from "@da/auth/guards";
+import { onCourseCompleted } from "./certificates";
+import { createNotification } from "./notifications";
 
 /* ────────────────────────────── Helpers ────────────────────────────────────── */
 
@@ -75,7 +77,11 @@ async function enrollmentForChapter(userId: string, chapterId: string) {
     select: { id: true },
   });
   return enrollment
-    ? { enrollmentId: enrollment.id, courseSlug: chapter.module.course.slug }
+    ? {
+        enrollmentId: enrollment.id,
+        courseId: chapter.module.courseId,
+        courseSlug: chapter.module.course.slug,
+      }
     : null;
 }
 
@@ -109,6 +115,7 @@ export async function enrollInCourse(courseSlug: string): Promise<EnrollResult> 
       select: {
         id: true,
         slug: true,
+        title: true,
         isFree: true,
         price: true,
         modules: {
@@ -144,6 +151,14 @@ export async function enrollInCourse(courseSlug: string): Promise<EnrollResult> 
         where: { id: course.id },
         data: { enrollmentCount: { increment: 1 } },
       });
+      await createNotification({
+        userId: user.id,
+        type: "COURSE_ENROLLED",
+        title: "Inscription confirmée 🎉",
+        message: `Vous êtes inscrit au cours « ${course.title} ». Bon apprentissage !`,
+        link: `/courses/${course.slug}`,
+        data: { courseSlug: course.slug, courseTitle: course.title },
+      });
     }
 
     const firstChapterId = course.modules[0]?.chapters[0]?.id;
@@ -163,7 +178,13 @@ export async function enrollInCourse(courseSlug: string): Promise<EnrollResult> 
 /* ───────────────────────── Complétion d'un chapitre ────────────────────────── */
 
 export type CompleteResult =
-  | { ok: true; courseProgress: number; xpGained: number; streak: number }
+  | {
+      ok: true;
+      courseProgress: number;
+      xpGained: number;
+      streak: number;
+      certificateCode?: string;
+    }
   | { ok: false; error: string };
 
 export async function markChapterComplete(chapterId: string): Promise<CompleteResult> {
@@ -208,13 +229,26 @@ export async function markChapterComplete(chapterId: string): Promise<CompleteRe
     const xpGained = alreadyDone ? 0 : 10;
     if (!alreadyDone) await awardActivity(user.id, xpGained);
 
+    // Cours terminé → émission (idempotente) du certificat.
+    let certificateCode: string | undefined;
+    if (courseProgress >= 100) {
+      const issued = await onCourseCompleted(user.id, ctx.courseId);
+      if (issued) certificateCode = issued.code;
+    }
+
     const refreshed = await prisma.user.findUnique({
       where: { id: user.id },
       select: { streak: true },
     });
 
     revalidateCourse(ctx.courseSlug);
-    return { ok: true, courseProgress, xpGained, streak: refreshed?.streak ?? 0 };
+    return {
+      ok: true,
+      courseProgress,
+      xpGained,
+      streak: refreshed?.streak ?? 0,
+      certificateCode,
+    };
   } catch (err) {
     console.error("[academy] markChapterComplete:", err);
     return { ok: false, error: "Une erreur est survenue. Réessayez." };
@@ -238,6 +272,7 @@ export type QuizSubmitResult =
       total: number;
       courseProgress: number;
       xpGained: number;
+      certificateCode?: string;
     }
   | { ok: false; error: string };
 
@@ -322,8 +357,24 @@ export async function submitQuiz(input: {
     const xpGained = passed && !wasCompleted ? 25 : 0;
     if (xpGained > 0) await awardActivity(user.id, xpGained);
 
+    // Cours terminé (le quiz était le dernier chapitre) → certificat.
+    let certificateCode: string | undefined;
+    if (courseProgress >= 100) {
+      const issued = await onCourseCompleted(user.id, ctx.courseId);
+      if (issued) certificateCode = issued.code;
+    }
+
     revalidateCourse(ctx.courseSlug);
-    return { ok: true, score, passed, correctCount, total, courseProgress, xpGained };
+    return {
+      ok: true,
+      score,
+      passed,
+      correctCount,
+      total,
+      courseProgress,
+      xpGained,
+      certificateCode,
+    };
   } catch (err) {
     console.error("[academy] submitQuiz:", err);
     return { ok: false, error: "Une erreur est survenue. Réessayez." };

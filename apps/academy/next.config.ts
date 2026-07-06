@@ -7,6 +7,8 @@ loadEnv({ path: "../../.env" });
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   transpilePackages: ["@da/ui", "@da/db", "@da/config", "@da/auth", "@da/email"],
+  // @react-pdf/renderer (+ fontkit) doit tourner en module Node natif, jamais bundlé.
+  serverExternalPackages: ["@react-pdf/renderer"],
   images: {
     formats: ["image/avif", "image/webp"],
     remotePatterns: [

@@ -5,6 +5,7 @@ import { z } from "zod";
 import { prisma } from "@da/db/client";
 import { currentUser } from "@da/auth/guards";
 import { getCommunityAccess } from "./community-queries";
+import { createNotification } from "./notifications";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Server Actions — Communauté Academy.
@@ -74,7 +75,7 @@ export async function createForumReply(
     // Le topic doit appartenir au cours.
     const topic = await prisma.forumTopic.findFirst({
       where: { id: topicId, courseId: access.courseId },
-      select: { id: true },
+      select: { id: true, userId: true, title: true },
     });
     if (!topic) return { ok: false, error: "Sujet introuvable." };
     await prisma.$transaction([
@@ -88,6 +89,17 @@ export async function createForumReply(
       }),
       prisma.forumTopic.update({ where: { id: topicId }, data: { updatedAt: new Date() } }),
     ]);
+    // Notifier l'auteur du sujet (sauf s'il se répond à lui-même).
+    if (topic.userId !== user!.id) {
+      await createNotification({
+        userId: topic.userId,
+        type: "FORUM_REPLY",
+        title: "Nouvelle réponse à votre sujet",
+        message: `${user!.name ?? "Un membre"} a répondu à « ${topic.title} ».`,
+        link: `/courses/${slug}/forum/${topicId}`,
+        data: { slug, topicId },
+      });
+    }
     revalidatePath(`/courses/${slug}/forum/${topicId}`);
     revalidatePath(`/courses/${slug}/forum`);
     return { ok: true };
