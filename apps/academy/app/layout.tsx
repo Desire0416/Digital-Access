@@ -5,6 +5,9 @@ import { Providers } from "@/components/Providers";
 import { JsonLd } from "@/components/JsonLd";
 import "./globals.css";
 
+// Rendu dynamique de toutes les pages (aucune génération statique / ISR).
+export const dynamic = "force-dynamic";
+
 /* ─────────────── Données structurées SEO (Schema.org) ─────────────── */
 const academySchema = {
   "@context": "https://schema.org",

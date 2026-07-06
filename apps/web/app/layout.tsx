@@ -11,6 +11,9 @@ import { JsonLd } from "@/components/JsonLd";
 import { auth } from "@da/auth";
 import "./globals.css";
 
+// Rendu dynamique de toutes les pages (aucune génération statique / ISR).
+export const dynamic = "force-dynamic";
+
 /* ─────────────── Données structurées SEO (Schema.org) ─────────────── */
 const organizationSchema = {
   "@context": "https://schema.org",

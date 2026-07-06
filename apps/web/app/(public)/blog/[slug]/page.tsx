@@ -22,10 +22,6 @@ import { ArticleHero } from "./ArticleHero";
 import { ShareButtons } from "./ShareButtons";
 import { buildArticleBody, contentToParagraphs } from "./articleBody";
 
-export function generateStaticParams() {
-  return blogPosts.map((post) => ({ slug: post.slug }));
-}
-
 export async function generateMetadata({
   params,
 }: {

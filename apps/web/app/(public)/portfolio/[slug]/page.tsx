@@ -41,10 +41,6 @@ const highlights = [
   },
 ] as const;
 
-export function generateStaticParams() {
-  return portfolio.map((item) => ({ slug: item.slug }));
-}
-
 export async function generateMetadata({
   params,
 }: {

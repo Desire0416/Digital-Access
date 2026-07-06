@@ -2,6 +2,8 @@ import type { MetadataRoute } from "next";
 import { prisma } from "@da/db/client";
 import { academyConfig } from "@/lib/site";
 
+export const dynamic = "force-dynamic";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = academyConfig.url;
   const now = new Date();
