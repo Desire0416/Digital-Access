@@ -134,51 +134,57 @@ export default async function CataloguePage({
       {/* ── Filtres + grille de cours ──────────────────────────────────────── */}
       <Section tone="muted" spacing="sm" className="min-h-[55vh]">
         <Container>
-          <Suspense fallback={null}>
-            <CatalogueFilters categories={categories} total={count} />
-          </Suspense>
+          <div className="lg:grid lg:grid-cols-[288px_minmax(0,1fr)] lg:items-start lg:gap-10">
+            {/* Filtres : barre latérale sticky (desktop) + tiroir (mobile) */}
+            <Suspense fallback={null}>
+              <CatalogueFilters categories={categories} total={count} />
+            </Suspense>
 
-          {count > 0 ? (
-            <StaggerGroup className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {courses.map((course, i) => (
-                <StaggerItem key={course.id} className="h-full">
-                  <CourseCard course={course} index={i} />
-                </StaggerItem>
-              ))}
-            </StaggerGroup>
-          ) : (
-            /* État vide brandé — jamais une page blanche */
-            <Reveal className="mt-10">
-              <div className="mx-auto max-w-lg rounded-2xl border border-dashed border-navy/15 bg-surface-primary px-8 py-14 text-center">
-                <div className="relative mx-auto grid h-20 w-20 place-items-center rounded-2xl bg-surface-secondary">
-                  <div
-                    aria-hidden
-                    className="absolute inset-0 rounded-2xl bg-gradient-da opacity-[0.08]"
-                  />
-                  <Monogram size={44} />
-                </div>
-                <h2 className="mt-6 font-display text-xl font-bold text-navy">
-                  Aucune formation ne correspond
-                </h2>
-                <p className="mt-2 text-sm leading-relaxed text-text-secondary">
-                  Essayez d&apos;élargir votre recherche ou de retirer certains
-                  filtres — de nouvelles formations arrivent régulièrement sur
-                  Access Academy.
-                </p>
-                <Link
-                  href="/courses"
-                  className={buttonClasses({
-                    variant: "primary",
-                    size: "md",
-                    className: "mt-6",
-                  })}
-                >
-                  <RotateCcw size={16} aria-hidden />
-                  Réinitialiser les filtres
-                </Link>
-              </div>
-            </Reveal>
-          )}
+            {/* Colonne des résultats */}
+            <div className="min-w-0">
+              {count > 0 ? (
+                <StaggerGroup className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                  {courses.map((course, i) => (
+                    <StaggerItem key={course.id} className="h-full">
+                      <CourseCard course={course} index={i} />
+                    </StaggerItem>
+                  ))}
+                </StaggerGroup>
+              ) : (
+                /* État vide brandé — jamais une page blanche */
+                <Reveal>
+                  <div className="mx-auto max-w-lg rounded-2xl border border-dashed border-navy/15 bg-surface-primary px-8 py-14 text-center">
+                    <div className="relative mx-auto grid h-20 w-20 place-items-center rounded-2xl bg-surface-secondary">
+                      <div
+                        aria-hidden
+                        className="absolute inset-0 rounded-2xl bg-gradient-da opacity-[0.08]"
+                      />
+                      <Monogram size={44} />
+                    </div>
+                    <h2 className="mt-6 font-display text-xl font-bold text-navy">
+                      Aucune formation ne correspond
+                    </h2>
+                    <p className="mt-2 text-sm leading-relaxed text-text-secondary">
+                      Essayez d&apos;élargir votre recherche ou de retirer certains
+                      filtres — de nouvelles formations arrivent régulièrement sur
+                      Access Academy.
+                    </p>
+                    <Link
+                      href="/courses"
+                      className={buttonClasses({
+                        variant: "primary",
+                        size: "md",
+                        className: "mt-6",
+                      })}
+                    >
+                      <RotateCcw size={16} aria-hidden />
+                      Réinitialiser les filtres
+                    </Link>
+                  </div>
+                </Reveal>
+              )}
+            </div>
+          </div>
         </Container>
       </Section>
     </>
