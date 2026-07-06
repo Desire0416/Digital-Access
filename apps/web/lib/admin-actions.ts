@@ -710,3 +710,44 @@ export async function toggleUserActive(input: { id: string; isActive: boolean })
     return { ok: false, error: "Impossible de modifier le compte." };
   }
 }
+
+/**
+ * Suppression d'un compte — soft delete (deletedAt, rétention 30 j). Garde-fous :
+ * pas soi-même, seul un super-administrateur peut supprimer un admin, jamais le
+ * dernier super-administrateur. Le compte disparaît des listes et ne peut plus
+ * se connecter (authorize filtre deletedAt ; Google refuse un compte supprimé).
+ */
+export async function deleteUser(input: { id: string }): Promise<Result> {
+  const admin = await requireAdmin();
+  const parsed = z.object({ id: z.string().min(1) }).safeParse(input);
+  if (!parsed.success) return { ok: false, error: "Identifiant invalide." };
+  if (parsed.data.id === admin.id) {
+    return { ok: false, error: "Vous ne pouvez pas supprimer votre propre compte." };
+  }
+  const target = await prisma.user.findUnique({
+    where: { id: parsed.data.id },
+    select: { id: true, roles: true, deletedAt: true },
+  });
+  if (!target || target.deletedAt) return { ok: false, error: "Utilisateur introuvable." };
+
+  const targetIsAdmin = target.roles.includes("ADMIN") || target.roles.includes("SUPER_ADMIN");
+  if (targetIsAdmin && !admin.roles.includes("SUPER_ADMIN")) {
+    return { ok: false, error: "Seul un super-administrateur peut supprimer un compte administrateur." };
+  }
+  if (target.roles.includes("SUPER_ADMIN")) {
+    const supers = await prisma.user.count({
+      where: { roles: { has: "SUPER_ADMIN" }, deletedAt: null },
+    });
+    if (supers <= 1) return { ok: false, error: "Impossible de supprimer le dernier super-administrateur." };
+  }
+  try {
+    await prisma.user.update({
+      where: { id: parsed.data.id },
+      data: { deletedAt: new Date(), isActive: false },
+    });
+    revalidatePath("/admin/utilisateurs");
+    return { ok: true };
+  } catch {
+    return { ok: false, error: "Impossible de supprimer le compte." };
+  }
+}

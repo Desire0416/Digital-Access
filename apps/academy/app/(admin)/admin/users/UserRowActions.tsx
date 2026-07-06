@@ -10,11 +10,12 @@ import {
   MoreHorizontal,
   Power,
   ShieldCheck,
+  Trash2,
   UserCog,
   X,
 } from "lucide-react";
 import { Button, cn } from "@da/ui";
-import { updateUserRoles, toggleUserActive } from "@/lib/admin-actions";
+import { updateUserRoles, toggleUserActive, deleteUser } from "@/lib/admin-actions";
 import { startImpersonation } from "@/lib/impersonation";
 import { USER_ROLE } from "@/components/admin/ui";
 
@@ -24,12 +25,13 @@ import { USER_ROLE } from "@/components/admin/ui";
    · Se connecter en tant que (impersonation admin — confirmation, jamais soi-même)
    · Modifier les rôles (modale multi-sélection → updateUserRoles)
    · Activer / Désactiver le compte (toggleUserActive — confirmation)
+   · Supprimer le compte (deleteUser — soft-delete, confirmation destructive)
    Chaque garde-fou renvoyé par le serveur est affiché en clair (feedback inline).
    ══════════════════════════════════════════════════════════════════════════ */
 
 const ROLE_ORDER = ["LEARNER", "CLIENT", "INSTRUCTOR", "ADMIN", "SUPER_ADMIN"] as const;
 
-type DialogKind = "roles" | "impersonate" | "toggle" | null;
+type DialogKind = "roles" | "impersonate" | "toggle" | "delete" | null;
 
 export function UserRowActions({
   userId,
@@ -77,6 +79,15 @@ export function UserRowActions({
             name={name}
             userId={userId}
             isActive={isActive}
+            onClose={() => setDialog(null)}
+          />
+        )}
+        {dialog === "delete" && (
+          <DeleteAccountDialog
+            key="delete"
+            name={name}
+            email={email}
+            userId={userId}
             onClose={() => setDialog(null)}
           />
         )}
@@ -162,6 +173,18 @@ function ActionsMenu({
     },
     { kind: "roles", icon: <UserCog size={16} />, label: "Modifier les rôles" },
     { kind: "toggle", icon: <Power size={16} />, label: "Activer / Désactiver" },
+    // La suppression n'est jamais proposée sur sa propre ligne (le serveur
+    // bloque aussi, mais on évite d'afficher une action forcément refusée).
+    ...(isSelf
+      ? []
+      : [
+          {
+            kind: "delete" as const,
+            icon: <Trash2 size={16} />,
+            label: "Supprimer le compte",
+            danger: true,
+          },
+        ]),
   ];
 
   return (
@@ -216,10 +239,23 @@ function ActionsMenu({
                       "flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-sm font-medium transition-colors",
                       it.disabled
                         ? "cursor-not-allowed text-text-muted"
-                        : "text-navy hover:bg-navy/[0.04]",
+                        : it.danger
+                          ? "text-error hover:bg-error/[0.06]"
+                          : "text-navy hover:bg-navy/[0.04]",
                     )}
                   >
-                    <span className="shrink-0 text-brand-blue-royal">{it.icon}</span>
+                    <span
+                      className={cn(
+                        "shrink-0",
+                        it.disabled
+                          ? ""
+                          : it.danger
+                            ? "text-error"
+                            : "text-brand-blue-royal",
+                      )}
+                    >
+                      {it.icon}
+                    </span>
                     <span className="min-w-0 flex-1 truncate">{it.label}</span>
                     {it.hint && (
                       <span className="shrink-0 text-xs text-text-muted">{it.hint}</span>
@@ -472,6 +508,89 @@ function ToggleActiveDialog({
             : next
               ? "Réactiver le compte"
               : "Suspendre le compte"}
+        </motion.button>
+      </div>
+    </ModalShell>
+  );
+}
+
+/* ═══════════════════════ Dialogue de suppression de compte ══════════════════ */
+
+function DeleteAccountDialog({
+  name,
+  email,
+  userId,
+  onClose,
+}: {
+  name: string;
+  email: string;
+  userId: string;
+  onClose: () => void;
+}) {
+  const router = useRouter();
+  const [pending, startTransition] = React.useTransition();
+  const [error, setError] = React.useState<string | null>(null);
+
+  function handleConfirm() {
+    if (pending) return;
+    setError(null);
+    startTransition(async () => {
+      const res = await deleteUser(userId);
+      if (!res.ok) {
+        // Garde-fous serveur : « pas soi-même », « seul un Super Admin… »,
+        // « dernier Super Admin ». On garde la modale ouverte et on affiche
+        // le message tel quel.
+        setError(res.error);
+      } else {
+        onClose();
+        router.refresh();
+      }
+    });
+  }
+
+  return (
+    <ModalShell
+      title="Supprimer le compte"
+      subtitle={name}
+      icon={<Trash2 size={18} />}
+      tone="error"
+      onClose={onClose}
+    >
+      <p className="text-sm text-text-secondary">
+        Vous êtes sur le point de supprimer le compte de{" "}
+        <span className="font-semibold text-navy">{name}</span>.
+        <span className="block truncate text-xs text-text-muted">{email}</span>
+      </p>
+      <div className="rounded-xl border border-error/20 bg-error/[0.05] px-4 py-3 text-xs text-text-secondary">
+        Le compte sera désactivé et retiré de la liste. Cette suppression est un
+        archivage : le compte reste{" "}
+        <span className="font-semibold text-navy">récupérable pendant 30 jours</span>{" "}
+        avant sa purge définitive.
+      </div>
+
+      {error && (
+        <p
+          role="alert"
+          className="rounded-lg bg-error/10 px-3 py-2.5 text-sm font-medium text-error"
+        >
+          {error}
+        </p>
+      )}
+
+      <div className="mt-1 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+        <Button type="button" variant="ghost" onClick={onClose} disabled={pending}>
+          Annuler
+        </Button>
+        <motion.button
+          type="button"
+          onClick={handleConfirm}
+          disabled={pending}
+          whileHover={pending ? undefined : { scale: 1.02 }}
+          whileTap={pending ? undefined : { scale: 0.97 }}
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-error px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-shadow hover:bg-error/90 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <Trash2 size={16} strokeWidth={2.5} />
+          {pending ? "Suppression…" : "Supprimer le compte"}
         </motion.button>
       </div>
     </ModalShell>

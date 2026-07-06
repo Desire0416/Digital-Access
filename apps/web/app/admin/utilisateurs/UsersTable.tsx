@@ -19,11 +19,13 @@ import {
   BadgeCheck,
   CircleSlash,
   Loader2,
+  Trash2,
+  AlertTriangle,
 } from "lucide-react";
 import { cn, formatDate, Avatar } from "@da/ui";
 import { EmptyState, StatusPill, type Tone } from "@/components/admin/ui";
 import { Select, type SelectOption } from "@/components/Select";
-import { updateUserRoles, toggleUserActive } from "@/lib/admin-actions";
+import { updateUserRoles, toggleUserActive, deleteUser } from "@/lib/admin-actions";
 import type { getAdminUsers } from "@/lib/admin-queries";
 
 /* Type dérivé de la query — évite de dupliquer la forme. */
@@ -105,13 +107,21 @@ const item = {
 
 /* ═══════════════════════════════ Racine ════════════════════════════════ */
 
-export function UsersTable({ users }: { users: AdminUser[] }) {
+export function UsersTable({
+  users,
+  currentUserId,
+}: {
+  users: AdminUser[];
+  currentUserId?: string | null;
+}) {
   const [query, setQuery] = React.useState("");
   // Filtres par rôle et par statut de compte (valeur "ALL" = pas de filtre).
   const [roleFilter, setRoleFilter] = React.useState<string>("ALL");
   const [statusFilter, setStatusFilter] = React.useState<StatusFilter>("ALL");
   // Utilisateur en cours d'édition des rôles (modal).
   const [editing, setEditing] = React.useState<AdminUser | null>(null);
+  // Utilisateur en cours de suppression (modal de confirmation).
+  const [deleting, setDeleting] = React.useState<AdminUser | null>(null);
   // Erreur d'action éphémère (ex. rôle SUPER_ADMIN refusé, activation).
   const [error, setError] = React.useState<string | null>(null);
 
@@ -280,6 +290,8 @@ export function UsersTable({ users }: { users: AdminUser[] }) {
                 <UserCard
                   user={u}
                   onEdit={() => setEditing(u)}
+                  onDelete={() => setDeleting(u)}
+                  canDelete={u.id !== currentUserId}
                   setError={setError}
                 />
               </motion.li>
@@ -311,6 +323,8 @@ export function UsersTable({ users }: { users: AdminUser[] }) {
                       key={u.id}
                       user={u}
                       onEdit={() => setEditing(u)}
+                      onDelete={() => setDeleting(u)}
+                      canDelete={u.id !== currentUserId}
                       setError={setError}
                     />
                   ))}
@@ -328,6 +342,16 @@ export function UsersTable({ users }: { users: AdminUser[] }) {
             user={editing}
             onClose={() => setEditing(null)}
             setError={setError}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Modal de confirmation de suppression */}
+      <AnimatePresence>
+        {deleting && (
+          <DeleteConfirm
+            user={deleting}
+            onClose={() => setDeleting(null)}
           />
         )}
       </AnimatePresence>
@@ -409,10 +433,14 @@ function AccountStatus({ user }: { user: AdminUser }) {
 function UserRow({
   user,
   onEdit,
+  onDelete,
+  canDelete = true,
   setError,
 }: {
   user: AdminUser;
   onEdit: () => void;
+  onDelete: () => void;
+  canDelete?: boolean;
   setError: (e: string | null) => void;
 }) {
   return (
@@ -488,6 +516,18 @@ function UserRow({
             <SlidersHorizontal className="h-3.5 w-3.5" />
             Rôles
           </button>
+          {canDelete && (
+            <button
+              type="button"
+              onClick={onDelete}
+              aria-label={`Supprimer le compte de ${user.name}`}
+              title="Supprimer le compte"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-error/20 bg-surface-primary px-2.5 py-1.5 text-xs font-semibold text-error transition-colors hover:border-error/40 hover:bg-error/[0.07]"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              <span className="hidden xl:inline">Supprimer</span>
+            </button>
+          )}
         </span>
       </td>
     </motion.tr>
@@ -499,10 +539,14 @@ function UserRow({
 function UserCard({
   user,
   onEdit,
+  onDelete,
+  canDelete = true,
   setError,
 }: {
   user: AdminUser;
   onEdit: () => void;
+  onDelete: () => void;
+  canDelete?: boolean;
   setError: (e: string | null) => void;
 }) {
   return (
@@ -578,6 +622,18 @@ function UserCard({
           Modifier les rôles
         </button>
         <ActiveToggle user={user} setError={setError} />
+        {canDelete && (
+          <button
+            type="button"
+            onClick={onDelete}
+            aria-label={`Supprimer le compte de ${user.name}`}
+            title="Supprimer le compte"
+            className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg border border-error/20 bg-surface-primary px-2.5 py-2 text-xs font-semibold text-error transition-colors hover:border-error/40 hover:bg-error/[0.07]"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+            <span className="sr-only">Supprimer</span>
+          </button>
+        )}
       </div>
     </motion.div>
   );
@@ -849,6 +905,182 @@ function RoleEditor({
               <>
                 <Check className="h-4 w-4" />
                 Enregistrer
+              </>
+            )}
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+/* ─────────────────── Modal de confirmation de suppression ───────────────── */
+
+function DeleteConfirm({
+  user,
+  onClose,
+}: {
+  user: AdminUser;
+  onClose: () => void;
+}) {
+  const router = useRouter();
+  const [pending, startTransition] = React.useTransition();
+  // Erreur renvoyée par l'action serveur (garde-fous : soi-même, admin,
+  // dernier super-administrateur). La modale reste ouverte pour l'afficher.
+  const [localError, setLocalError] = React.useState<string | null>(null);
+
+  // Verrou du défilement d'arrière-plan + fermeture au clavier (Échap).
+  React.useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && !pending) onClose();
+    };
+    document.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [onClose, pending]);
+
+  const confirm = () => {
+    setLocalError(null);
+    startTransition(async () => {
+      const res = await deleteUser({ id: user.id });
+      if (res.ok) {
+        // Le compte disparaît de la liste (query filtrée côté serveur).
+        router.refresh();
+        onClose();
+      } else {
+        // Garde-fou déclenché — on garde la modale ouverte et on informe.
+        setLocalError(res.error);
+      }
+    });
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-end justify-center bg-navy/50 p-0 backdrop-blur-sm sm:items-center sm:p-4"
+      onClick={() => {
+        if (!pending) onClose();
+      }}
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Supprimer le compte de ${user.name}`}
+    >
+      <motion.div
+        initial={{ opacity: 0, y: 24, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 24, scale: 0.98 }}
+        transition={{ type: "spring", stiffness: 320, damping: 30 }}
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-md overflow-hidden rounded-t-2xl bg-surface-primary shadow-xl sm:rounded-2xl"
+      >
+        {/* En-tête destructif */}
+        <div className="relative bg-error px-5 py-4 text-white">
+          <div className="flex items-center gap-3">
+            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white/15">
+              <AlertTriangle className="h-6 w-6" />
+            </span>
+            <div className="min-w-0">
+              <h2 className="truncate font-display text-base font-bold">
+                Supprimer le compte
+              </h2>
+              <p className="truncate text-xs text-white/85">
+                Cette action est réversible pendant 30 jours.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => !pending && onClose()}
+            aria-label="Fermer"
+            className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-lg text-white/80 transition-colors hover:bg-white/15 hover:text-white"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        {/* Corps : rappel de l'utilisateur ciblé + avertissement */}
+        <div className="px-5 py-4">
+          <p className="text-sm text-text-secondary">
+            Vous êtes sur le point de supprimer ce compte. Il sera{" "}
+            <strong className="font-semibold text-navy">
+              désactivé et retiré des listes
+            </strong>
+            , mais reste{" "}
+            <strong className="font-semibold text-navy">
+              récupérable pendant 30 jours
+            </strong>{" "}
+            (suppression douce).
+          </p>
+
+          {/* Carte de l'utilisateur ciblé */}
+          <div className="mt-4 flex items-center gap-3 rounded-xl border border-navy/[0.08] bg-surface-secondary/50 p-3">
+            <Avatar
+              name={user.name}
+              src={user.avatar ?? undefined}
+              className="h-10 w-10 shrink-0 text-xs"
+            />
+            <div className="min-w-0">
+              <p className="truncate font-display text-sm font-bold text-navy">
+                {user.name}
+              </p>
+              <p className="mt-0.5 flex items-center gap-1 truncate text-xs text-text-secondary">
+                <Mail className="h-3 w-3 shrink-0" />
+                <span className="truncate">{user.email}</span>
+              </p>
+            </div>
+          </div>
+
+          {/* Erreur d'action (garde-fous serveur) */}
+          <AnimatePresence>
+            {localError && (
+              <motion.p
+                role="alert"
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                className="mt-3 flex items-start gap-2 rounded-lg border border-error/20 bg-error/5 px-3 py-2 text-xs font-medium text-error"
+              >
+                <ShieldAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                {localError}
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Pied : actions */}
+        <div className="flex items-center justify-end gap-3 border-t border-navy/[0.07] bg-surface-secondary/40 px-5 py-4">
+          <button
+            type="button"
+            onClick={() => !pending && onClose()}
+            disabled={pending}
+            className="rounded-lg px-4 py-2 text-sm font-semibold text-text-secondary transition-colors hover:bg-navy/[0.05] hover:text-navy disabled:opacity-50"
+          >
+            Annuler
+          </button>
+          <button
+            type="button"
+            onClick={confirm}
+            disabled={pending}
+            className={cn(
+              "inline-flex items-center gap-2 rounded-lg bg-error px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all",
+              "hover:bg-error/90 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none",
+            )}
+          >
+            {pending ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Suppression…
+              </>
+            ) : (
+              <>
+                <Trash2 className="h-4 w-4" />
+                Supprimer le compte
               </>
             )}
           </button>

@@ -258,12 +258,13 @@ export async function getAdminUsers(search?: string): Promise<AdminUser[]> {
   const users = await prisma.user.findMany({
     where: q
       ? {
+          deletedAt: null,
           OR: [
             { name: { contains: q, mode: "insensitive" } },
             { email: { contains: q, mode: "insensitive" } },
           ],
         }
-      : undefined,
+      : { deletedAt: null },
     orderBy: { createdAt: "desc" },
     take: 100,
     select: {

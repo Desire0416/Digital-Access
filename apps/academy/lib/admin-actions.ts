@@ -167,6 +167,42 @@ export async function toggleUserActive(userId: string, active: boolean): Promise
   return { ok: true };
 }
 
+/**
+ * Suppression d'un compte — soft delete (deletedAt, rétention 30 j). Garde-fous :
+ * pas soi-même, seul un SUPER_ADMIN peut supprimer un admin, jamais le dernier
+ * Super Admin. Le compte disparaît des listes et ne peut plus se connecter
+ * (authorize filtre deletedAt ; Google refuse un compte supprimé).
+ */
+export async function deleteUser(userId: string): Promise<ActionResult> {
+  const actor = await requireAdmin();
+  if (userId === actor.id) {
+    return { ok: false, error: "Vous ne pouvez pas supprimer votre propre compte." };
+  }
+  const target = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true, roles: true, deletedAt: true },
+  });
+  if (!target || target.deletedAt) return { ok: false, error: "Utilisateur introuvable." };
+
+  const targetIsAdmin = target.roles.includes("ADMIN") || target.roles.includes("SUPER_ADMIN");
+  if (targetIsAdmin && !hasRole(actor, "SUPER_ADMIN")) {
+    return { ok: false, error: "Seul un Super Admin peut supprimer un compte administrateur." };
+  }
+  if (target.roles.includes("SUPER_ADMIN")) {
+    const supers = await prisma.user.count({
+      where: { roles: { has: "SUPER_ADMIN" }, deletedAt: null },
+    });
+    if (supers <= 1) return { ok: false, error: "Impossible de supprimer le dernier Super Admin." };
+  }
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: { deletedAt: new Date(), isActive: false },
+  });
+  revalidatePath("/admin/users");
+  return { ok: true };
+}
+
 /* ══════════════════════════════ Abonnements ═════════════════════════════ */
 
 export async function setSubscriptionStatus(

@@ -71,6 +71,12 @@ export const authConfig: NextAuthConfig = {
       if (account?.provider === "google") {
         const email = user.email?.toLowerCase();
         if (!email) return false;
+        // Un compte supprimé (soft-delete) ne peut pas être réactivé via Google.
+        const existing = await prisma.user.findUnique({
+          where: { email },
+          select: { deletedAt: true },
+        });
+        if (existing?.deletedAt) return false;
         await prisma.user.upsert({
           where: { email },
           update: {
