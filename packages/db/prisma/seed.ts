@@ -1377,6 +1377,144 @@ async function main() {
     }
   }
 
+  /* ─────────────── Admin Academy — paiements / abonnements / promos (S12) ───
+     Idempotent par partie. Peuple le tableau de bord et les listes admin. */
+  const DAY = 86_400_000;
+  const nowMs = Date.now();
+
+  // Paiements confirmés répartis sur les 5 derniers mois (revenus du dashboard).
+  if ((await prisma.payment.count({ where: { status: "COMPLETED" } })) === 0) {
+    const paidCourses = await prisma.course.findMany({
+      where: { status: "PUBLISHED", price: { gt: 0 } },
+      select: { id: true, price: true },
+      take: 4,
+    });
+    const buyers = await prisma.user.findMany({
+      where: {
+        email: {
+          in: [
+            "apprenant@digitalaccess.ci",
+            "koffi@digitalaccess.ci",
+            "awa@digitalaccess.ci",
+            "grace@digitalaccess.ci",
+          ],
+        },
+      },
+      select: { id: true },
+    });
+    if (paidCourses.length > 0 && buyers.length > 0) {
+      const rows = [];
+      for (let m = 0; m < 6; m++) {
+        const course = paidCourses[m % paidCourses.length]!;
+        const buyer = buyers[m % buyers.length]!;
+        rows.push({
+          userId: buyer.id,
+          type: "COURSE" as const,
+          amount: course.price,
+          provider: "MANUAL" as const,
+          status: (m === 5 ? "REFUNDED" : "COMPLETED") as "COMPLETED" | "REFUNDED",
+          courseId: course.id,
+          transactionId: `SEED-PAY-${m}-${course.id.slice(-5)}`,
+          createdAt: new Date(nowMs - (m * 30 + 6) * DAY),
+        });
+      }
+      await prisma.payment.createMany({ data: rows });
+      console.log("  ↳ paiements de démonstration seedés");
+    }
+  }
+
+  // Abonnements (statuts variés).
+  if ((await prisma.subscription.count()) === 0) {
+    const emails = [
+      "apprenant@digitalaccess.ci",
+      "koffi@digitalaccess.ci",
+      "awa@digitalaccess.ci",
+    ];
+    const users = await prisma.user.findMany({
+      where: { email: { in: emails } },
+      select: { id: true, email: true },
+    });
+    const byEmail = (e: string) => users.find((u) => u.email === e)?.id;
+    const subs: {
+      userId: string;
+      plan: "MONTHLY" | "YEARLY";
+      status: "ACTIVE" | "CANCELLED" | "EXPIRED" | "PAST_DUE";
+      startDate: Date;
+      endDate: Date;
+      autoRenew: boolean;
+    }[] = [];
+    const learnerId = byEmail("apprenant@digitalaccess.ci");
+    const koffiId = byEmail("koffi@digitalaccess.ci");
+    const awaId = byEmail("awa@digitalaccess.ci");
+    if (learnerId)
+      subs.push({
+        userId: learnerId,
+        plan: "YEARLY",
+        status: "ACTIVE",
+        startDate: new Date(nowMs - 60 * DAY),
+        endDate: new Date(nowMs + 305 * DAY),
+        autoRenew: true,
+      });
+    if (koffiId)
+      subs.push({
+        userId: koffiId,
+        plan: "MONTHLY",
+        status: "ACTIVE",
+        startDate: new Date(nowMs - 12 * DAY),
+        endDate: new Date(nowMs + 18 * DAY),
+        autoRenew: true,
+      });
+    if (awaId)
+      subs.push({
+        userId: awaId,
+        plan: "MONTHLY",
+        status: "CANCELLED",
+        startDate: new Date(nowMs - 45 * DAY),
+        endDate: new Date(nowMs - 15 * DAY),
+        autoRenew: false,
+      });
+    if (subs.length > 0) {
+      await prisma.subscription.createMany({ data: subs });
+      console.log("  ↳ abonnements de démonstration seedés");
+    }
+  }
+
+  // Codes promo (types, limites et états variés).
+  if ((await prisma.promoCode.count()) === 0) {
+    await prisma.promoCode.createMany({
+      data: [
+        { code: "BIENVENUE10", discountType: "PERCENTAGE", discountValue: 10, active: true },
+        {
+          code: "ACCESS2026",
+          discountType: "PERCENTAGE",
+          discountValue: 25,
+          maxUses: 100,
+          currentUses: 12,
+          active: true,
+          expiresAt: new Date("2026-12-31"),
+        },
+        {
+          code: "RENTREE5000",
+          discountType: "FIXED",
+          discountValue: 5000,
+          maxUses: 50,
+          currentUses: 3,
+          active: true,
+        },
+        {
+          code: "EARLYBIRD",
+          discountType: "PERCENTAGE",
+          discountValue: 30,
+          maxUses: 20,
+          currentUses: 20,
+          active: false,
+          expiresAt: new Date("2026-03-01"),
+        },
+      ],
+    });
+    console.log("  ↳ codes promo de démonstration seedés");
+  }
+
   console.log("✅ Seed terminé.");
 }
 

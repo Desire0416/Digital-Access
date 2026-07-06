@@ -46,12 +46,7 @@ export function AcademyHeader() {
     ? [
         ...learnerLinks,
         ...(isInstructor ? [{ label: "Studio", href: "/studio" }] : []),
-        ...(isAdmin
-          ? [
-              { label: "Cours", href: "/admin/courses" },
-              { label: "Paiements", href: "/admin/payments" },
-            ]
-          : []),
+        ...(isAdmin ? [{ label: "Admin", href: "/admin/dashboard" }] : []),
       ]
     : visitorNav;
   const isActive = (href: string) =>
