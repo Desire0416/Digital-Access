@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import {
   Award,
@@ -326,19 +327,32 @@ export default async function CourseDetailPage({
               <div className="relative z-10 -mt-20 lg:sticky lg:top-24 lg:-mt-64">
                 <Reveal y={18} delay={0.1}>
                   <div className="overflow-hidden rounded-2xl bg-surface-primary shadow-brand-lg ring-1 ring-navy/[0.08]">
-                    {/* Aperçu vidéo factice */}
-                    <div className="relative aspect-video overflow-hidden bg-gradient-to-br from-brand-violet via-brand-blue-vif to-brand-cyan">
-                      <div className="absolute inset-0 bg-dots opacity-25" />
-                      <Monogram
-                        variant="white"
-                        size={110}
-                        className="absolute -bottom-6 -right-4 opacity-15"
-                      />
-                      <div className="absolute inset-0 grid place-items-center">
-                        <span className="grid h-16 w-16 place-items-center rounded-full bg-white/15 backdrop-blur-sm transition-transform duration-300 hover:scale-110">
-                          <PlayCircle size={38} className="text-white" aria-hidden />
-                        </span>
-                      </div>
+                    {/* Couverture du cours (image téléversée ou visuel signature) */}
+                    <div className="relative aspect-video overflow-hidden">
+                      {course.coverImage ? (
+                        <Image
+                          src={course.coverImage}
+                          alt=""
+                          fill
+                          sizes="(max-width: 1024px) 100vw, 420px"
+                          className="object-cover"
+                          priority
+                        />
+                      ) : (
+                        <div className="absolute inset-0 bg-gradient-to-br from-brand-violet via-brand-blue-vif to-brand-cyan">
+                          <div className="absolute inset-0 bg-dots opacity-25" />
+                          <Monogram
+                            variant="white"
+                            size={110}
+                            className="absolute -bottom-6 -right-4 opacity-15"
+                          />
+                          <div className="absolute inset-0 grid place-items-center">
+                            <span className="grid h-16 w-16 place-items-center rounded-full bg-white/15 backdrop-blur-sm transition-transform duration-300 hover:scale-110">
+                              <PlayCircle size={38} className="text-white" aria-hidden />
+                            </span>
+                          </div>
+                        </div>
+                      )}
                       <Badge className="absolute left-3 top-3 bg-white/90 text-navy backdrop-blur">
                         Aperçu de la formation
                       </Badge>

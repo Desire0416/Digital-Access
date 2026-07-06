@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { Clock, Users, PlayCircle, BookOpen, CheckCircle2 } from "lucide-react";
 import {
@@ -50,21 +51,33 @@ export function CourseCard({
         className="flex h-full flex-col overflow-hidden rounded-xl border border-navy/[0.07] bg-surface-primary transition-shadow group-hover:shadow-brand-lg"
       >
         {/* Couverture */}
-        <div
-          className={`relative aspect-video overflow-hidden bg-gradient-to-br ${covers[index % covers.length]}`}
-        >
-          <div className="absolute inset-0 bg-dots opacity-25" />
-          <Monogram
-            variant="white"
-            size={96}
-            className="absolute -bottom-4 -right-2 opacity-15"
-          />
-          <div className="absolute inset-0 grid place-items-center">
-            <PlayCircle
-              size={52}
-              className="text-white/90 transition-transform duration-300 group-hover:scale-110"
+        <div className="relative aspect-video overflow-hidden">
+          {course.coverImage ? (
+            <Image
+              src={course.coverImage}
+              alt=""
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
             />
-          </div>
+          ) : (
+            <div
+              className={`absolute inset-0 bg-gradient-to-br ${covers[index % covers.length]}`}
+            >
+              <div className="absolute inset-0 bg-dots opacity-25" />
+              <Monogram
+                variant="white"
+                size={96}
+                className="absolute -bottom-4 -right-2 opacity-15"
+              />
+              <div className="absolute inset-0 grid place-items-center">
+                <PlayCircle
+                  size={52}
+                  className="text-white/90 transition-transform duration-300 group-hover:scale-110"
+                />
+              </div>
+            </div>
+          )}
           <Badge className="absolute left-3 top-3 bg-white/90 text-navy backdrop-blur">
             {course.category.name}
           </Badge>
