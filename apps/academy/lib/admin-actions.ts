@@ -47,7 +47,8 @@ async function uniqueCategorySlug(base: string, excludeId?: string): Promise<str
 const categorySchema = z.object({
   name: z.string().trim().min(2, "Nom trop court").max(60),
   description: z.string().trim().max(240).optional().or(z.literal("")),
-  icon: z.string().trim().max(40).optional().or(z.literal("")),
+  // `icon` peut être un emoji/texte court OU une URL Vercel Blob (longue).
+  icon: z.string().trim().max(600).optional().or(z.literal("")),
   color: z
     .string()
     .trim()

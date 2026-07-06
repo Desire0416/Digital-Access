@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
+import { auth } from "@da/auth";
 import { academyConfig } from "@/lib/site";
 import { Providers } from "@/components/Providers";
 import { JsonLd } from "@/components/JsonLd";
@@ -82,11 +83,13 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await auth();
+
   return (
     <html
       lang="fr"
@@ -100,7 +103,7 @@ export default function RootLayout({
         >
           Aller au contenu
         </a>
-        <Providers>{children}</Providers>
+        <Providers session={session}>{children}</Providers>
       </body>
     </html>
   );

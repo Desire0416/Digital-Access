@@ -23,7 +23,8 @@ export function LoginForm({
   callbackUrl?: string;
 }) {
   const router = useRouter();
-  const destination = callbackUrl ?? "/dashboard";
+  // Sans callbackUrl explicite, on passe par l'aiguilleur de rôle.
+  const destination = callbackUrl ?? "/apres-connexion";
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [remember, setRemember] = React.useState(true);

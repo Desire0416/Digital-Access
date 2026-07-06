@@ -29,6 +29,8 @@ export function AcademyHeader() {
   const roles = user?.roles ?? [];
   const isAdmin = roles.some((r) => r === "ADMIN" || r === "SUPER_ADMIN");
   const isInstructor = roles.includes("INSTRUCTOR") || isAdmin;
+  // Destination « maison » adaptée au rôle (comme sur l'app web).
+  const homeHref = isAdmin ? "/admin/dashboard" : isInstructor ? "/studio" : "/dashboard";
 
   React.useEffect(() => {
     setOpen(false);
@@ -98,7 +100,7 @@ export function AcademyHeader() {
             <>
               <NotificationBell />
               <Link
-                href="/dashboard"
+                href={homeHref}
                 className={cn(buttonClasses({ variant: "ghost", size: "sm" }), "gap-2")}
               >
                 <Avatar
@@ -190,7 +192,7 @@ export function AcademyHeader() {
                 {user ? (
                   <>
                     <Link
-                      href="/dashboard"
+                      href={homeHref}
                       className={cn(buttonClasses({ variant: "outline", size: "md" }), "gap-2")}
                     >
                       <LayoutDashboard size={17} />

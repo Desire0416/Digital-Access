@@ -9,7 +9,6 @@ import {
   X,
   Target,
   ListChecks,
-  ImageIcon,
   Save,
 } from "lucide-react";
 import {
@@ -21,6 +20,7 @@ import {
   cn,
   formatFCFA,
 } from "@da/ui";
+import { ImageUpload } from "@/components/ImageUpload";
 import { updateCourseInfo } from "@/lib/studio-actions";
 import type { StudioCourseEdit } from "@/lib/studio-types";
 import type { CategoryItem } from "@/lib/types";
@@ -46,7 +46,9 @@ export function InfoForm({ course, categories, onSaved }: Props) {
   const [language, setLanguage] = React.useState(course.language || "fr");
   const [isFree, setIsFree] = React.useState(course.isFree);
   const [price, setPrice] = React.useState<string>(String(course.price || ""));
-  const [coverImage, setCoverImage] = React.useState(course.coverImage ?? "");
+  const [coverImage, setCoverImage] = React.useState<string | null>(
+    course.coverImage ?? null,
+  );
   const [objectives, setObjectives] = React.useState<string[]>(
     course.objectives.length ? course.objectives : [""],
   );
@@ -79,7 +81,7 @@ export function InfoForm({ course, categories, onSaved }: Props) {
         language: language.trim() || "fr",
         isFree,
         price: priceNum,
-        coverImage: coverImage.trim() || null,
+        coverImage: coverImage?.trim() || null,
         objectives: cleanList(objectives),
         prerequisites: cleanList(prerequisites),
       });
@@ -97,7 +99,7 @@ export function InfoForm({ course, categories, onSaved }: Props) {
         language: language.trim() || "fr",
         isFree,
         price: priceNum,
-        coverImage: coverImage.trim() || null,
+        coverImage: coverImage?.trim() || null,
         objectives: cleanList(objectives),
         prerequisites: cleanList(prerequisites),
       });
@@ -282,35 +284,36 @@ export function InfoForm({ course, categories, onSaved }: Props) {
       {/* ── Bloc : illustration ───────────────────────────────────────────── */}
       <section className="rounded-2xl border border-navy/[0.07] bg-surface-primary p-6 sm:p-7">
         <MiniHeading>Image de couverture</MiniHeading>
-        <div className="mt-6 grid gap-6 sm:grid-cols-[1fr_auto] sm:items-start">
-          <Field
-            label="URL de l'image"
-            htmlFor="cover"
-            hint="Lien vers une image (16:9 recommandé). Facultatif."
-          >
-            <Input
-              id="cover"
-              value={coverImage}
-              onChange={(e) => setCoverImage(e.target.value)}
-              placeholder="https://…/couverture.jpg"
-              maxLength={500}
-            />
-          </Field>
-          <div className="w-full sm:w-52">
-            <div className="aspect-video overflow-hidden rounded-xl border border-navy/10 bg-surface-secondary">
-              {coverImage.trim() ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={coverImage}
-                  alt="Aperçu de la couverture"
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <div className="grid h-full place-items-center text-text-muted">
-                  <ImageIcon size={26} aria-hidden />
-                </div>
-              )}
-            </div>
+        <p className="mt-3 max-w-prose text-sm text-text-secondary">
+          Cette image représente votre cours dans le catalogue et sur sa page.
+          Format 16:9, cadrée sur l'essentiel. Facultatif mais fortement
+          recommandé.
+        </p>
+        <div className="mt-6 grid gap-6 lg:grid-cols-2 lg:items-start">
+          <ImageUpload
+            variant="dropzone"
+            folder="courses"
+            aspect="16 / 9"
+            value={coverImage}
+            onChange={setCoverImage}
+            hint="PNG, JPG ou WebP — 5 Mo max · 1280×720 idéal"
+          />
+          <div className="rounded-xl border border-navy/[0.06] bg-surface-secondary/60 p-4 text-sm text-text-secondary">
+            <p className="font-semibold text-navy">Conseils pour une belle couverture</p>
+            <ul className="mt-2 space-y-1.5">
+              <li className="flex gap-2">
+                <span aria-hidden className="mt-2 h-1 w-1 flex-none rounded-full bg-gradient-da" />
+                Une image nette, sans texte superposé (le titre s'affiche déjà par-dessus).
+              </li>
+              <li className="flex gap-2">
+                <span aria-hidden className="mt-2 h-1 w-1 flex-none rounded-full bg-gradient-da" />
+                Des couleurs contrastées qui ressortent sur mobile.
+              </li>
+              <li className="flex gap-2">
+                <span aria-hidden className="mt-2 h-1 w-1 flex-none rounded-full bg-gradient-da" />
+                Glissez-déposez le fichier ou cliquez pour parcourir.
+              </li>
+            </ul>
           </div>
         </div>
       </section>

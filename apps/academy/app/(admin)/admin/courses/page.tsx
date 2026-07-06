@@ -1,72 +1,143 @@
 import type { Metadata } from "next";
-import { CircleCheck, Hourglass, LibraryBig } from "lucide-react";
-import { Badge } from "@da/ui";
-import { getAdminCourses } from "@/lib/studio-queries";
-import { AdminPageHeader } from "@/components/admin/ui";
-import { CourseReviewCard, PublishedCourseCard } from "./CourseReviewCard";
+import Link from "next/link";
+import { CircleCheck, Hourglass, LibraryBig, PencilRuler } from "lucide-react";
+import { getCategories } from "@/lib/queries";
+import { AdminPageHeader, StatCard } from "@/components/admin/ui";
+import { getAdminManagedCourses, type AdminManagedCourse } from "./queries";
+import { CoursesManager } from "./CoursesManager";
+import { CreateCourseDialog } from "./CreateCourseDialog";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Validation des cours",
+  title: "Cours",
   robots: { index: false, follow: false },
 };
 
-export default async function AdminCoursesPage() {
-  const { review, published } = await getAdminCourses();
+/** Applique les filtres searchParams à la liste complète (côté serveur). */
+function applyFilters(
+  courses: AdminManagedCourse[],
+  f: { q: string; status: string; category: string; level: string },
+): AdminManagedCourse[] {
+  const q = f.q.trim().toLowerCase();
+  return courses.filter((c) => {
+    if (f.status && c.status !== f.status) return false;
+    if (f.category && c.categorySlug !== f.category) return false;
+    if (f.level && c.level !== f.level) return false;
+    if (q) {
+      const hay = `${c.title} ${c.instructor.name}`.toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+/* Enveloppe une StatCard dans un lien de filtre (?status=… ou reset). */
+function KpiLink({
+  href,
+  active,
+  children,
+}: {
+  href: string;
+  active: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <Link
+      href={href}
+      scroll={false}
+      className={
+        active
+          ? "block rounded-2xl outline-none ring-2 ring-brand-blue-vif/50 transition"
+          : "block rounded-2xl outline-none ring-2 ring-transparent transition hover:ring-brand-blue-vif/25 focus-visible:ring-brand-blue-vif/50"
+      }
+    >
+      {children}
+    </Link>
+  );
+}
+
+export default async function AdminCoursesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    q?: string;
+    status?: string;
+    category?: string;
+    level?: string;
+  }>;
+}) {
+  const sp = await searchParams;
+  const filters = {
+    q: sp.q ?? "",
+    status: sp.status ?? "",
+    category: sp.category ?? "",
+    level: sp.level ?? "",
+  };
+
+  const [{ courses, counts }, categories] = await Promise.all([
+    getAdminManagedCourses(),
+    getCategories(),
+  ]);
+
+  const filtered = applyFilters(courses, filters);
+  const categoryOptions = categories.map((c) => ({ slug: c.slug, name: c.name }));
 
   return (
     <div>
       <AdminPageHeader
-        title="Validation des cours"
-        description="Vérifiez chaque cours soumis par un instructeur avant sa mise en ligne. L'approbation publie immédiatement le cours au catalogue et notifie son auteur ; le renvoi le repasse en brouillon avec votre motif."
-      />
+        title="Cours"
+        description="Gérez l'intégralité du catalogue Academy : créez un cours, éditez-le, validez les soumissions des instructeurs, publiez ou dépubliez, dupliquez ou supprimez. Les cours en attente de validation sont mis en avant."
+      >
+        <CreateCourseDialog categories={categories} />
+      </AdminPageHeader>
 
-      {/* En attente de validation */}
-      <div>
-        <h2 className="flex items-center gap-2.5 font-display text-lg font-bold text-navy">
-          <Hourglass size={18} className="text-warning" />
-          En attente de validation
-          <Badge variant={review.length > 0 ? "warning" : "default"}>{review.length}</Badge>
-        </h2>
-
-        {review.length === 0 ? (
-          <div className="mt-4 rounded-2xl border border-dashed border-navy/15 bg-surface-primary/60 p-10 text-center">
-            <CircleCheck size={32} className="mx-auto text-success" />
-            <p className="mt-3 font-medium text-navy">Aucun cours en attente de validation</p>
-            <p className="mt-1 text-sm text-text-secondary">
-              Les cours soumis par les instructeurs apparaîtront ici — vous serez également
-              notifié dès qu&apos;un nouveau cours est prêt à être relu.
-            </p>
-          </div>
-        ) : (
-          <div className="mt-4 grid grid-cols-1 gap-5">
-            {review.map((course) => (
-              <CourseReviewCard key={course.id} course={course} />
-            ))}
-          </div>
-        )}
+      {/* ── KPI cliquables (filtre via l'URL) ────────────────────────────── */}
+      <div className="mb-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+        <KpiLink href="/admin/courses" active={!filters.status}>
+          <StatCard
+            icon={<LibraryBig size={18} />}
+            label="Cours au total"
+            value={counts.total}
+            tone="violet"
+            hint="Voir tout"
+          />
+        </KpiLink>
+        <KpiLink href="/admin/courses?status=PUBLISHED" active={filters.status === "PUBLISHED"}>
+          <StatCard
+            icon={<CircleCheck size={18} />}
+            label="Publiés"
+            value={counts.published}
+            tone="green"
+            hint="Filtrer"
+          />
+        </KpiLink>
+        <KpiLink href="/admin/courses?status=REVIEW" active={filters.status === "REVIEW"}>
+          <StatCard
+            icon={<Hourglass size={18} />}
+            label="En validation"
+            value={counts.review}
+            tone="amber"
+            hint="Filtrer"
+          />
+        </KpiLink>
+        <KpiLink href="/admin/courses?status=DRAFT" active={filters.status === "DRAFT"}>
+          <StatCard
+            icon={<PencilRuler size={18} />}
+            label="Brouillons"
+            value={counts.draft}
+            tone="slate"
+            hint="Filtrer"
+          />
+        </KpiLink>
       </div>
 
-      {/* Cours publiés — historique */}
-      {published.length > 0 && (
-        <div className="mt-12">
-          <h2 className="flex items-center gap-2.5 font-display text-lg font-bold text-navy">
-            <LibraryBig size={18} className="text-brand-blue-royal" />
-            Cours publiés
-            <Badge variant="success">{published.length}</Badge>
-          </h2>
-          <p className="mt-1 text-sm text-text-secondary">
-            Les cours actuellement en ligne au catalogue. Vous pouvez en dépublier un si
-            nécessaire.
-          </p>
-          <div className="mt-4 grid grid-cols-1 gap-3">
-            {published.map((course) => (
-              <PublishedCourseCard key={course.id} course={course} />
-            ))}
-          </div>
-        </div>
-      )}
+      {/* ── Recherche + filtres + grille ─────────────────────────────────── */}
+      <CoursesManager
+        courses={filtered}
+        categories={categoryOptions}
+        filters={filters}
+      />
     </div>
   );
 }
