@@ -18,7 +18,7 @@ export default async function ProfilPage() {
 
   return (
     <Section spacing="md" className="min-h-[80vh] pt-28">
-      <Container size="sm">
+      <Container size="lg">
         {/* En-tête brandé */}
         <div className="flex items-center gap-4">
           <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-gradient-da text-white shadow-brand">
