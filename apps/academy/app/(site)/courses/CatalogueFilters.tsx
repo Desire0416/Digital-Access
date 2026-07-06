@@ -5,7 +5,6 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowUpDown,
-  Check,
   ChevronDown,
   RotateCcw,
   Search,
@@ -32,7 +31,7 @@ const SORTS = [
   { value: "rating", label: "Mieux notés" },
 ] as const;
 
-/* ─────────────────────────── Petit segment (pill) ──────────────────────────── */
+/* ─────────────────────── Segment compact (niveau / prix) ────────────────────── */
 
 function Segment({
   active,
@@ -62,9 +61,9 @@ function Segment({
 
 function GroupLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="mb-2.5 text-[11px] font-bold uppercase tracking-[0.14em] text-text-muted">
+    <span className="shrink-0 text-[11px] font-bold uppercase tracking-[0.14em] text-text-muted">
       {children}
-    </p>
+    </span>
   );
 }
 
@@ -78,8 +77,8 @@ export interface CatalogueFiltersProps {
 
 /**
  * Filtres du catalogue — l'URL est la source de vérité (partageable, back/forward OK).
- * Desktop : panneau latéral gauche STICKY (ne bouge pas au défilement).
- * Mobile : barre de recherche + bouton « Filtres » ouvrant un tiroir dédié.
+ * Desktop : barre de filtres horizontale EN HAUT (recherche, tri, catégories,
+ * niveau, prix). Mobile : recherche + bouton « Filtres » ouvrant un tiroir dédié.
  */
 export function CatalogueFilters({ categories, total }: CatalogueFiltersProps) {
   const router = useRouter();
@@ -178,7 +177,7 @@ export function CatalogueFilters({ categories, total }: CatalogueFiltersProps) {
         enterKeyHint="search"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        placeholder="Rechercher une formation…"
+        placeholder="Rechercher une formation, un sujet, un outil…"
         aria-label="Rechercher une formation"
         className="h-11 pl-10 pr-10"
       />
@@ -195,50 +194,118 @@ export function CatalogueFilters({ categories, total }: CatalogueFiltersProps) {
     </div>
   );
 
-  /* ── Sections du panneau (tri, catégories, niveau, prix) ── */
-  const sections = (
-    <div className="space-y-5">
-      {/* Trier */}
-      <div>
-        <GroupLabel>Trier par</GroupLabel>
-        <div className="relative">
-          <ArrowUpDown
-            size={15}
-            aria-hidden
-            className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted"
-          />
-          <select
-            value={SORTS.some((s) => s.value === sort) ? sort : "popular"}
-            onChange={(e) =>
-              apply({ sort: e.target.value === "popular" ? null : e.target.value })
-            }
-            aria-label="Trier les formations"
-            className="h-11 w-full cursor-pointer appearance-none rounded-xl border border-navy/15 bg-surface-primary pl-10 pr-9 text-sm font-medium text-navy transition-colors focus:border-brand-blue-vif focus:outline-none focus:ring-2 focus:ring-brand-blue-vif/25"
-          >
-            {SORTS.map((s) => (
-              <option key={s.value} value={s.value}>
-                {s.label}
-              </option>
-            ))}
-          </select>
-          <ChevronDown
-            size={16}
-            aria-hidden
-            className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-text-muted"
-          />
-        </div>
-      </div>
+  /* ── Sélecteur de tri (réutilisé) ── */
+  const sortControl = (
+    <div className="relative">
+      <ArrowUpDown
+        size={15}
+        aria-hidden
+        className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted"
+      />
+      <select
+        value={SORTS.some((s) => s.value === sort) ? sort : "popular"}
+        onChange={(e) => apply({ sort: e.target.value === "popular" ? null : e.target.value })}
+        aria-label="Trier les formations"
+        className="h-11 w-full cursor-pointer appearance-none rounded-xl border border-navy/15 bg-surface-primary pl-10 pr-9 text-sm font-medium text-navy transition-colors focus:border-brand-blue-vif focus:outline-none focus:ring-2 focus:ring-brand-blue-vif/25"
+      >
+        {SORTS.map((s) => (
+          <option key={s.value} value={s.value}>
+            {s.label}
+          </option>
+        ))}
+      </select>
+      <ChevronDown
+        size={16}
+        aria-hidden
+        className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-text-muted"
+      />
+    </div>
+  );
 
-      {/* Catégories — liste verticale */}
+  const resetChip = (
+    <button
+      type="button"
+      onClick={reset}
+      className="inline-flex shrink-0 items-center gap-2 rounded-full border border-navy/10 px-3.5 py-1.5 text-xs font-semibold text-navy transition-colors hover:border-brand-blue-vif/50 hover:text-brand-blue-royal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue-vif/50"
+    >
+      <RotateCcw size={13} aria-hidden />
+      Réinitialiser
+      <span className="grid h-5 min-w-5 place-items-center rounded-full bg-gradient-da px-1 text-[11px] font-bold text-white">
+        {activeCount}
+      </span>
+    </button>
+  );
+
+  const resultCount = (
+    <p className="text-sm font-medium text-text-secondary" aria-live="polite">
+      {isPending ? (
+        <span className="inline-flex items-center gap-2">
+          <span className="relative flex h-2 w-2" aria-hidden>
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-blue-vif opacity-60" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-gradient-da" />
+          </span>
+          Recherche…
+        </span>
+      ) : total === 0 ? (
+        "Aucun résultat"
+      ) : (
+        `${total} formation${total > 1 ? "s" : ""}`
+      )}
+    </p>
+  );
+
+  /* ── Niveau + prix (réutilisés) ── */
+  const levelGroup = (
+    <div className="flex flex-wrap items-center gap-2.5">
+      <GroupLabel>Niveau</GroupLabel>
+      <div className="flex flex-wrap gap-2">
+        <Segment active={!level} onClick={() => apply({ level: null })}>
+          Tous
+        </Segment>
+        {LEVELS.map((l) => (
+          <Segment key={l} active={level === l} onClick={() => apply({ level: level === l ? null : l })}>
+            {levelLabel(l)}
+          </Segment>
+        ))}
+      </div>
+    </div>
+  );
+
+  const priceGroup = (
+    <div className="flex flex-wrap items-center gap-2.5">
+      <GroupLabel>Prix</GroupLabel>
+      <div className="flex flex-wrap gap-2">
+        <Segment active={!price} onClick={() => apply({ price: null })}>
+          Tous
+        </Segment>
+        {PRICES.map((p) => (
+          <Segment
+            key={p.value}
+            active={price === p.value}
+            onClick={() => apply({ price: price === p.value ? null : p.value })}
+          >
+            {p.label}
+          </Segment>
+        ))}
+      </div>
+    </div>
+  );
+
+  /* ── Sections verticales (tiroir mobile uniquement) ── */
+  const mobileSections = (
+    <div className="space-y-5">
       <div>
-        <GroupLabel>Catégories</GroupLabel>
+        <p className="mb-2.5 text-[11px] font-bold uppercase tracking-[0.14em] text-text-muted">
+          Trier par
+        </p>
+        {sortControl}
+      </div>
+      <div>
+        <p className="mb-2.5 text-[11px] font-bold uppercase tracking-[0.14em] text-text-muted">
+          Catégories
+        </p>
         <div className="space-y-1">
-          <CategoryRow
-            active={!category}
-            label="Toutes les formations"
-            count={total}
-            onClick={() => apply({ category: null })}
-          />
+          <CategoryRow active={!category} label="Toutes les formations" count={total} onClick={() => apply({ category: null })} />
           {categories.map((c) => (
             <CategoryRow
               key={c.id}
@@ -251,29 +318,21 @@ export function CatalogueFilters({ categories, total }: CatalogueFiltersProps) {
           ))}
         </div>
       </div>
-
-      {/* Niveau */}
       <div>
-        <GroupLabel>Niveau</GroupLabel>
+        <p className="mb-2.5 text-[11px] font-bold uppercase tracking-[0.14em] text-text-muted">Niveau</p>
         <div className="flex flex-wrap gap-2">
           <Segment active={!level} onClick={() => apply({ level: null })}>
             Tous
           </Segment>
           {LEVELS.map((l) => (
-            <Segment
-              key={l}
-              active={level === l}
-              onClick={() => apply({ level: level === l ? null : l })}
-            >
+            <Segment key={l} active={level === l} onClick={() => apply({ level: level === l ? null : l })}>
               {levelLabel(l)}
             </Segment>
           ))}
         </div>
       </div>
-
-      {/* Prix */}
       <div>
-        <GroupLabel>Prix</GroupLabel>
+        <p className="mb-2.5 text-[11px] font-bold uppercase tracking-[0.14em] text-text-muted">Prix</p>
         <div className="flex flex-wrap gap-2">
           <Segment active={!price} onClick={() => apply({ price: null })}>
             Tous
@@ -292,40 +351,41 @@ export function CatalogueFilters({ categories, total }: CatalogueFiltersProps) {
     </div>
   );
 
-  const resetButton =
-    activeCount > 0 ? (
-      <button
-        type="button"
-        onClick={reset}
-        className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-navy/10 px-4 py-2.5 text-sm font-semibold text-navy transition-colors hover:border-brand-blue-vif/50 hover:text-brand-blue-royal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue-vif/50"
-      >
-        <RotateCcw size={15} aria-hidden />
-        Réinitialiser les filtres
-        <span className="grid h-5 min-w-5 place-items-center rounded-full bg-gradient-da px-1 text-[11px] font-bold text-white">
-          {activeCount}
-        </span>
-      </button>
-    ) : null;
-
   return (
     <>
-      {/* ═══════════════ Desktop : barre latérale sticky ═══════════════
-          `sticky` porté par l'ASIDE (élément de grille, hauteur = contenu) →
-          il reste fixe pendant le défilement des cours, sans barre interne. */}
-      <aside className="hidden lg:block lg:sticky lg:top-24 lg:self-start">
-        <div className="space-y-5 rounded-2xl border border-navy/[0.07] bg-surface-primary p-5">
-          <div className="flex items-center gap-2 text-navy">
-            <SlidersHorizontal size={17} className="text-brand-blue-royal" aria-hidden />
-            <h2 className="font-display text-base font-bold">Filtrer</h2>
-            <span className="ml-auto text-xs font-medium text-text-muted" aria-live="polite">
-              {isPending ? "…" : `${total} résultat${total > 1 ? "s" : ""}`}
-            </span>
-          </div>
-          {searchField}
-          {sections}
-          {resetButton}
+      {/* ═══════════════ Desktop : barre horizontale EN HAUT ═══════════════ */}
+      <div className="mb-8 hidden rounded-2xl border border-navy/[0.07] bg-surface-primary p-5 lg:block">
+        {/* Recherche + tri */}
+        <div className="flex items-center gap-3">
+          <div className="flex-1">{searchField}</div>
+          <div className="w-56 shrink-0">{sortControl}</div>
         </div>
-      </aside>
+
+        {/* Catégories (chips, retour à la ligne) */}
+        <div className="mt-4 flex flex-wrap gap-2">
+          <CategoryChip active={!category} label="Toutes" count={total} onClick={() => apply({ category: null })} />
+          {categories.map((c) => (
+            <CategoryChip
+              key={c.id}
+              active={category === c.slug}
+              label={c.name}
+              count={c.courseCount}
+              icon={c.icon ?? "sparkles"}
+              onClick={() => apply({ category: category === c.slug ? null : c.slug })}
+            />
+          ))}
+        </div>
+
+        {/* Niveau + prix + compteur + reset */}
+        <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-navy/[0.06] pt-4">
+          {levelGroup}
+          {priceGroup}
+          <div className="ml-auto flex items-center gap-4">
+            {resultCount}
+            {activeCount > 0 && resetChip}
+          </div>
+        </div>
+      </div>
 
       {/* ═══════════════ Mobile : recherche + bouton Filtres ═══════════════ */}
       <div className="mb-6 flex items-center gap-3 lg:hidden">
@@ -386,7 +446,7 @@ export function CatalogueFilters({ categories, total }: CatalogueFiltersProps) {
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto px-5 py-5">{sections}</div>
+              <div className="flex-1 overflow-y-auto px-5 py-5">{mobileSections}</div>
 
               <div className="flex items-center gap-3 border-t border-navy/[0.08] px-5 py-4">
                 {activeCount > 0 && (
@@ -404,9 +464,7 @@ export function CatalogueFilters({ categories, total }: CatalogueFiltersProps) {
                   onClick={() => setDrawerOpen(false)}
                   className="flex-1 rounded-xl bg-gradient-da px-4 py-2.5 text-center text-sm font-bold text-white shadow-brand"
                 >
-                  {total === 0
-                    ? "Aucun résultat"
-                    : `Voir ${total} formation${total > 1 ? "s" : ""}`}
+                  {total === 0 ? "Aucun résultat" : `Voir ${total} formation${total > 1 ? "s" : ""}`}
                 </button>
               </div>
             </motion.aside>
@@ -417,7 +475,48 @@ export function CatalogueFilters({ categories, total }: CatalogueFiltersProps) {
   );
 }
 
-/* ─────────────────────────── Ligne de catégorie ─────────────────────────────── */
+/* ─────────────────────── Chip catégorie (desktop, horizontal) ───────────────── */
+
+function CategoryChip({
+  active,
+  label,
+  count,
+  icon,
+  onClick,
+}: {
+  active: boolean;
+  label: string;
+  count: number;
+  icon?: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue-vif/50",
+        active
+          ? "border-transparent bg-gradient-da text-white shadow-brand"
+          : "border-navy/10 bg-surface-primary text-text-secondary hover:border-brand-blue-vif/50 hover:text-brand-blue-royal",
+      )}
+    >
+      {icon && <Icon name={icon} size={14} />}
+      {label}
+      <span
+        className={cn(
+          "rounded-full px-1.5 py-px text-[10px] font-bold leading-4",
+          active ? "bg-white/25 text-white" : "bg-navy/[0.06] text-text-muted",
+        )}
+      >
+        {count}
+      </span>
+    </button>
+  );
+}
+
+/* ─────────────────────── Ligne catégorie (tiroir mobile) ────────────────────── */
 
 function CategoryRow({
   active,
@@ -450,11 +549,7 @@ function CategoryRow({
           active ? "bg-white/20 text-white" : "bg-navy/[0.05] text-brand-blue-royal group-hover:bg-navy/[0.08]",
         )}
       >
-        {icon ? (
-          <Icon name={icon} size={15} />
-        ) : (
-          <Check size={15} className={cn(active ? "opacity-100" : "opacity-0")} />
-        )}
+        {icon ? <Icon name={icon} size={15} /> : null}
       </span>
       <span className="min-w-0 flex-1 truncate">{label}</span>
       <span
