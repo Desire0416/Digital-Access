@@ -100,7 +100,7 @@ export function RegisterForm({ googleEnabled = false }: { googleEnabled?: boolea
   function handleGoogle() {
     if (googleEnabled) {
       setGooglePending(true);
-      void signIn("google", { callbackUrl: "/mon-espace" });
+      void signIn("google", { callbackUrl: "/apres-connexion" });
     } else {
       setFormError("L'inscription avec Google sera bientôt disponible.");
     }

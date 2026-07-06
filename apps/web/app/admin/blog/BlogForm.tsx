@@ -13,7 +13,6 @@ import {
   X,
   Tag,
   Clock,
-  ImageIcon,
   Eye,
   PenLine,
 } from "lucide-react";
@@ -27,6 +26,7 @@ import {
 } from "@da/ui";
 import { createBlogPost, updateBlogPost } from "@/lib/admin-actions";
 import { StatusPill, BLOG_STATUS, type Tone } from "@/components/admin/ui";
+import { ImageUpload } from "@/components/ImageUpload";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Formulaire d'article de blog — création & édition.
@@ -412,23 +412,14 @@ export function BlogForm({
               />
             </Field>
 
-            <Field
-              label="Image de couverture"
-              htmlFor="blog-cover"
-              hint="URL d’une image (WebP/JPG). Optionnel."
-            >
-              <div className="relative">
-                <Input
-                  id="blog-cover"
-                  type="url"
-                  value={coverImage}
-                  onChange={(e) => setCoverImage(e.target.value)}
-                  placeholder="https://…"
-                  disabled={pending}
-                  className="pl-10"
-                />
-                <ImageIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
-              </div>
+            <Field label="Image de couverture" htmlFor="blog-cover">
+              <ImageUpload
+                value={coverImage || null}
+                onChange={(url) => setCoverImage(url ?? "")}
+                folder="blog"
+                aspect="16 / 7"
+                hint="PNG, JPG ou WebP — 5 Mo max"
+              />
             </Field>
 
             <Field

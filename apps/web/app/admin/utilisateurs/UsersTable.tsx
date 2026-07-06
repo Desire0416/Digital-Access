@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { cn, formatDate, Avatar } from "@da/ui";
 import { EmptyState, StatusPill, type Tone } from "@/components/admin/ui";
+import { Select, type SelectOption } from "@/components/Select";
 import { updateUserRoles, toggleUserActive } from "@/lib/admin-actions";
 import type { getAdminUsers } from "@/lib/admin-queries";
 
@@ -56,6 +57,37 @@ const ROLE_WEIGHT: Record<string, number> = {
   LEARNER: 4,
 };
 
+/* Mappe un ton de statut vers un hex pour la pastille des Select. */
+const TONE_HEX: Record<Tone, string> = {
+  violet: "#5b3fa8",
+  blue: "#2b5cc6",
+  cyan: "#00bcd4",
+  green: "#059669",
+  amber: "#f59e0b",
+  red: "#dc2626",
+  slate: "#9ca3af",
+};
+
+/* Options du filtre par rôle (portail Select). */
+const ROLE_FILTER_OPTIONS: SelectOption[] = [
+  { value: "ALL", label: "Tous les rôles" },
+  ...ALL_ROLES.map((r) => ({
+    value: r,
+    label: ROLE_META[r].label,
+    dotColor: TONE_HEX[ROLE_META[r].tone],
+  })),
+];
+
+/* Options du filtre par statut de compte (portail Select). */
+type StatusFilter = "ALL" | "VERIFIED" | "UNVERIFIED" | "ACTIVE" | "SUSPENDED";
+const STATUS_FILTER_OPTIONS: SelectOption[] = [
+  { value: "ALL", label: "Tous les statuts" },
+  { value: "VERIFIED", label: "Vérifié", dotColor: TONE_HEX.green },
+  { value: "UNVERIFIED", label: "Non vérifié", dotColor: TONE_HEX.slate },
+  { value: "ACTIVE", label: "Actif", dotColor: TONE_HEX.green },
+  { value: "SUSPENDED", label: "Suspendu", dotColor: TONE_HEX.red },
+];
+
 function sortRoles(roles: string[]): string[] {
   return [...roles].sort(
     (a, b) => (ROLE_WEIGHT[a] ?? 9) - (ROLE_WEIGHT[b] ?? 9),
@@ -75,6 +107,9 @@ const item = {
 
 export function UsersTable({ users }: { users: AdminUser[] }) {
   const [query, setQuery] = React.useState("");
+  // Filtres par rôle et par statut de compte (valeur "ALL" = pas de filtre).
+  const [roleFilter, setRoleFilter] = React.useState<string>("ALL");
+  const [statusFilter, setStatusFilter] = React.useState<StatusFilter>("ALL");
   // Utilisateur en cours d'édition des rôles (modal).
   const [editing, setEditing] = React.useState<AdminUser | null>(null);
   // Erreur d'action éphémère (ex. rôle SUPER_ADMIN refusé, activation).
@@ -82,13 +117,48 @@ export function UsersTable({ users }: { users: AdminUser[] }) {
 
   const filtered = React.useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return users;
-    return users.filter(
-      (u) =>
-        u.name.toLowerCase().includes(q) ||
-        u.email.toLowerCase().includes(q),
-    );
-  }, [users, query]);
+    return users.filter((u) => {
+      // Recherche texte : nom OU e-mail.
+      if (
+        q &&
+        !u.name.toLowerCase().includes(q) &&
+        !u.email.toLowerCase().includes(q)
+      ) {
+        return false;
+      }
+      // Filtre par rôle.
+      if (roleFilter !== "ALL" && !u.roles.includes(roleFilter)) {
+        return false;
+      }
+      // Filtre par statut (vérifié / non vérifié / actif / suspendu).
+      switch (statusFilter) {
+        case "VERIFIED":
+          if (!u.emailVerified) return false;
+          break;
+        case "UNVERIFIED":
+          if (u.emailVerified) return false;
+          break;
+        case "ACTIVE":
+          if (!u.isActive) return false;
+          break;
+        case "SUSPENDED":
+          if (u.isActive) return false;
+          break;
+        default:
+          break;
+      }
+      return true;
+    });
+  }, [users, query, roleFilter, statusFilter]);
+
+  const hasActiveFilter =
+    query.trim() !== "" || roleFilter !== "ALL" || statusFilter !== "ALL";
+
+  const resetFilters = () => {
+    setQuery("");
+    setRoleFilter("ALL");
+    setStatusFilter("ALL");
+  };
 
   if (users.length === 0) {
     return (
@@ -125,36 +195,81 @@ export function UsersTable({ users }: { users: AdminUser[] }) {
         )}
       </AnimatePresence>
 
-      {/* Recherche */}
-      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="relative w-full sm:max-w-xs">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
-          <input
-            type="search"
-            aria-label="Rechercher un utilisateur"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Rechercher par nom ou e-mail…"
-            className="w-full rounded-xl border border-navy/[0.09] bg-surface-primary py-2.5 pl-9 pr-3 text-sm text-navy shadow-sm outline-none transition-colors placeholder:text-text-muted focus:border-brand-violet/40 focus:ring-2 focus:ring-brand-violet/20"
-          />
+      {/* Barre de filtres — recherche + rôle + statut (combinés en ET) */}
+      <div className="mb-6 rounded-2xl border border-navy/[0.07] bg-surface-primary p-3 sm:p-4">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+          {/* Recherche texte */}
+          <div className="relative w-full lg:max-w-xs">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
+            <input
+              type="search"
+              aria-label="Rechercher un utilisateur"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Rechercher par nom ou e-mail…"
+              className="w-full rounded-xl border border-navy/[0.09] bg-surface-primary py-2.5 pl-9 pr-3 text-sm text-navy outline-none transition-colors placeholder:text-text-muted focus:border-brand-violet/40 focus:ring-2 focus:ring-brand-violet/20"
+            />
+          </div>
+
+          {/* Filtres déroulants (portail) */}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:flex lg:items-center">
+            <Select
+              value={roleFilter}
+              onChange={setRoleFilter}
+              options={ROLE_FILTER_OPTIONS}
+              ariaLabel="Filtrer par rôle"
+              className="w-full sm:w-auto"
+              buttonClassName="lg:min-w-[11rem]"
+            />
+            <Select
+              value={statusFilter}
+              onChange={(v) => setStatusFilter(v as StatusFilter)}
+              options={STATUS_FILTER_OPTIONS}
+              ariaLabel="Filtrer par statut"
+              className="w-full sm:w-auto"
+              buttonClassName="lg:min-w-[11rem]"
+            />
+          </div>
+
+          {/* Compteur + réinitialisation */}
+          <div className="flex items-center justify-between gap-3 lg:ml-auto">
+            <p className="text-xs font-semibold text-text-muted">
+              {filtered.length} utilisateur{filtered.length > 1 ? "s" : ""}
+              <span className="hidden text-text-muted/70 sm:inline">
+                {" "}
+                / {users.length}
+              </span>
+            </p>
+            <AnimatePresence>
+              {hasActiveFilter && (
+                <motion.button
+                  type="button"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  onClick={resetFilters}
+                  className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-navy/[0.09] px-2.5 py-1.5 text-xs font-semibold text-text-secondary transition-colors hover:border-brand-violet/30 hover:bg-brand-violet/[0.06] hover:text-brand-violet"
+                >
+                  <X className="h-3.5 w-3.5" />
+                  Réinitialiser
+                </motion.button>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
-        <p className="text-xs font-medium text-text-muted">
-          {filtered.length} / {users.length} compte
-          {users.length > 1 ? "s" : ""}
-        </p>
       </div>
 
       {filtered.length === 0 ? (
         <EmptyState
           icon={<Search className="h-6 w-6" />}
           title="Aucun résultat"
-          description="Aucun utilisateur ne correspond à votre recherche. Ajustez les termes."
+          description="Aucun utilisateur ne correspond à vos critères. Ajustez la recherche ou les filtres."
         />
       ) : (
         <>
           {/* ─── Mobile / tablette : cartes empilées (sous lg) ─── */}
           <motion.ul
-            key={`cards-${query}`}
+            key={`cards-${query}-${roleFilter}-${statusFilter}`}
             variants={container}
             initial="hidden"
             animate="show"
@@ -186,7 +301,7 @@ export function UsersTable({ users }: { users: AdminUser[] }) {
                   </tr>
                 </thead>
                 <motion.tbody
-                  key={`rows-${query}`}
+                  key={`rows-${query}-${roleFilter}-${statusFilter}`}
                   variants={container}
                   initial="hidden"
                   animate="show"

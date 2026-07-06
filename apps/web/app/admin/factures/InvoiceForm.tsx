@@ -16,6 +16,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { cn, buttonClasses, formatFCFA, Field, Input } from "@da/ui";
+import { Select, type SelectOption } from "@/components/Select";
 import { createInvoice, updateInvoice } from "@/lib/admin-actions";
 import type { AdminInvoiceDetail } from "@/lib/admin-queries";
 
@@ -132,6 +133,16 @@ export function InvoiceForm({
     }
   };
 
+  // Options du composant Select (portail) — client & projet associé.
+  const clientOptions: SelectOption[] = React.useMemo(
+    () => clients.map((c) => ({ value: c.id, label: `${c.name} — ${c.email}` })),
+    [clients],
+  );
+  const projectSelectOptions: SelectOption[] = React.useMemo(
+    () => projectsForClient.map((p) => ({ value: p.id, label: p.title })),
+    [projectsForClient],
+  );
+
   /* ── Calculs en direct ── */
   const amount = lines.reduce((s, l) => s + toInt(l.quantity) * toInt(l.unitPrice), 0);
   const rate = Math.min(100, Math.max(0, toInt(taxRate)));
@@ -197,11 +208,6 @@ export function InvoiceForm({
     });
   };
 
-  const selectClasses = cn(
-    "h-11 w-full appearance-none rounded-lg border border-navy/15 bg-surface-primary px-4 pr-10 text-sm font-medium text-navy",
-    "transition-all focus:border-brand-blue-vif focus:outline-none focus:ring-2 focus:ring-brand-blue-vif/25 disabled:opacity-60",
-  );
-
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
       {/* ─────────────── Colonne principale : destinataire + lignes ─────────────── */}
@@ -222,23 +228,15 @@ export function InvoiceForm({
                   {invoice!.client.name}
                 </div>
               ) : (
-                <div className="relative">
-                  <select
-                    id="inv-client"
-                    value={clientId}
-                    disabled={pending}
-                    onChange={(e) => onClientChange(e.target.value)}
-                    className={selectClasses}
-                  >
-                    <option value="">Sélectionner un client…</option>
-                    {clients.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.name} — {c.email}
-                      </option>
-                    ))}
-                  </select>
-                  <Chevron />
-                </div>
+                <Select
+                  value={clientId || null}
+                  onChange={onClientChange}
+                  options={clientOptions}
+                  placeholder="Sélectionner un client…"
+                  ariaLabel="Client"
+                  disabled={pending}
+                  buttonClassName="h-11"
+                />
               )}
             </Field>
 
@@ -253,29 +251,21 @@ export function InvoiceForm({
                   {invoice!.project ? invoice!.project.title : "Aucun projet lié"}
                 </div>
               ) : (
-                <div className="relative">
-                  <select
-                    id="inv-project"
-                    value={projectId}
-                    disabled={pending || !clientId || projectsForClient.length === 0}
-                    onChange={(e) => setProjectId(e.target.value)}
-                    className={selectClasses}
-                  >
-                    <option value="">
-                      {!clientId
-                        ? "Choisissez d'abord un client"
-                        : projectsForClient.length === 0
-                          ? "Aucun projet pour ce client"
-                          : "Aucun projet"}
-                    </option>
-                    {projectsForClient.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.title}
-                      </option>
-                    ))}
-                  </select>
-                  <Chevron />
-                </div>
+                <Select
+                  value={projectId || null}
+                  onChange={setProjectId}
+                  options={projectSelectOptions}
+                  placeholder={
+                    !clientId
+                      ? "Choisissez d'abord un client"
+                      : projectsForClient.length === 0
+                        ? "Aucun projet pour ce client"
+                        : "Aucun projet"
+                  }
+                  ariaLabel="Projet associé"
+                  disabled={pending || !clientId || projectsForClient.length === 0}
+                  buttonClassName="h-11"
+                />
               )}
             </Field>
           </div>
@@ -537,25 +527,5 @@ export function InvoiceForm({
         </section>
       </aside>
     </div>
-  );
-}
-
-/* Chevron décoratif pour les <select> personnalisés. */
-function Chevron() {
-  return (
-    <svg
-      className="pointer-events-none absolute right-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted"
-      viewBox="0 0 20 20"
-      fill="none"
-      aria-hidden
-    >
-      <path
-        d="M6 8l4 4 4-4"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
   );
 }

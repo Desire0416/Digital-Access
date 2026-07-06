@@ -7,19 +7,16 @@ import {
   MessagesSquare,
   Send,
   Loader2,
-  ChevronDown,
-  Check,
   ShieldCheck,
   Flag,
   Inbox,
 } from "lucide-react";
 import { cn, formatDate } from "@da/ui";
+import { Select, type SelectOption } from "@/components/Select";
 import {
-  StatusPill,
   TICKET_PRIORITY,
   TICKET_STATUS,
   toneColor,
-  type Tone,
 } from "@/components/admin/ui";
 import {
   replyToTicket,
@@ -246,11 +243,13 @@ function StatusPanel({
 }) {
   const router = useRouter();
   const [pending, startTransition] = React.useTransition();
-  const [open, setOpen] = React.useState(false);
-  const meta = TICKET_STATUS[ticket.status]!;
+
+  const options: SelectOption[] = STATUS_ORDER.map((s) => {
+    const meta = TICKET_STATUS[s]!;
+    return { value: s, label: meta.label, dotColor: toneColor(meta.tone) };
+  });
 
   const change = (status: string) => {
-    setOpen(false);
     if (status === ticket.status) return;
     setError(null);
     startTransition(async () => {
@@ -262,18 +261,13 @@ function StatusPanel({
 
   return (
     <Panel icon={<ShieldCheck className="h-4 w-4" />} title="Statut">
-      <Dropdown
-        pending={pending}
-        open={open}
-        setOpen={setOpen}
-        currentTone={meta.tone}
-        currentLabel={meta.label}
-        options={STATUS_ORDER.map((s) => ({
-          value: s,
-          ...TICKET_STATUS[s]!,
-        }))}
-        current={ticket.status}
-        onSelect={change}
+      <Select
+        value={ticket.status}
+        onChange={change}
+        options={options}
+        disabled={pending}
+        ariaLabel="Statut du ticket"
+        buttonClassName="rounded-xl border-navy/[0.09] bg-surface-secondary/50 px-4 py-3 font-semibold"
       />
       <p className="mt-3 text-xs leading-relaxed text-text-muted">
         Le client voit ce statut dans son espace support. Marquez « Résolu » une
@@ -294,11 +288,13 @@ function PriorityPanel({
 }) {
   const router = useRouter();
   const [pending, startTransition] = React.useTransition();
-  const [open, setOpen] = React.useState(false);
-  const meta = TICKET_PRIORITY[ticket.priority]!;
+
+  const options: SelectOption[] = PRIORITY_ORDER.map((p) => {
+    const meta = TICKET_PRIORITY[p]!;
+    return { value: p, label: meta.label, dotColor: toneColor(meta.tone) };
+  });
 
   const change = (priority: string) => {
-    setOpen(false);
     if (priority === ticket.priority) return;
     setError(null);
     startTransition(async () => {
@@ -310,118 +306,19 @@ function PriorityPanel({
 
   return (
     <Panel icon={<Flag className="h-4 w-4" />} title="Priorité">
-      <Dropdown
-        pending={pending}
-        open={open}
-        setOpen={setOpen}
-        currentTone={meta.tone}
-        currentLabel={meta.label}
-        options={PRIORITY_ORDER.map((p) => ({
-          value: p,
-          ...TICKET_PRIORITY[p]!,
-        }))}
-        current={ticket.priority}
-        onSelect={change}
+      <Select
+        value={ticket.priority}
+        onChange={change}
+        options={options}
+        disabled={pending}
+        ariaLabel="Priorité du ticket"
+        buttonClassName="rounded-xl border-navy/[0.09] bg-surface-secondary/50 px-4 py-3 font-semibold"
       />
       <p className="mt-3 text-xs leading-relaxed text-text-muted">
         Ajustez la priorité pour ordonner la file de traitement. Les tickets
         urgents remontent en tête de liste.
       </p>
     </Panel>
-  );
-}
-
-/* ═══════════════════════════ Sélecteur générique ══════════════════════════ */
-
-function Dropdown({
-  pending,
-  open,
-  setOpen,
-  currentTone,
-  currentLabel,
-  options,
-  current,
-  onSelect,
-}: {
-  pending: boolean;
-  open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  currentTone: Tone;
-  currentLabel: string;
-  options: { value: string; label: string; tone: Tone }[];
-  current: string;
-  onSelect: (value: string) => void;
-}) {
-  return (
-    <div className="relative">
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        disabled={pending}
-        aria-expanded={open}
-        className="flex w-full items-center justify-between gap-2 rounded-xl border border-navy/[0.09] bg-surface-secondary/50 px-4 py-3 text-left transition-colors hover:border-navy/20 disabled:opacity-60"
-      >
-        <span className="flex items-center gap-2">
-          {pending ? (
-            <Loader2 className="h-4 w-4 animate-spin text-brand-violet" />
-          ) : (
-            <span
-              className="h-2.5 w-2.5 rounded-full"
-              style={{ background: toneColor(currentTone) }}
-            />
-          )}
-          <span className="font-semibold text-navy">{currentLabel}</span>
-        </span>
-        <ChevronDown
-          className={cn(
-            "h-4 w-4 text-text-muted transition-transform",
-            open && "rotate-180",
-          )}
-        />
-      </button>
-
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, y: -6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }}
-            transition={{ duration: 0.15 }}
-            className="absolute z-20 mt-2 w-full overflow-hidden rounded-xl border border-navy/[0.09] bg-surface-primary shadow-xl"
-          >
-            <ul className="p-1.5">
-              {options.map((o) => {
-                const active = o.value === current;
-                return (
-                  <li key={o.value}>
-                    <button
-                      type="button"
-                      onClick={() => onSelect(o.value)}
-                      disabled={active}
-                      className={cn(
-                        "flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors",
-                        active
-                          ? "cursor-default bg-navy/[0.04] font-semibold text-navy"
-                          : "text-text-secondary hover:bg-navy/[0.04] hover:text-navy",
-                      )}
-                    >
-                      <span className="flex items-center gap-2">
-                        <span
-                          className="h-2 w-2 rounded-full"
-                          style={{ background: toneColor(o.tone) }}
-                        />
-                        {o.label}
-                      </span>
-                      {active && <Check className="h-4 w-4 text-success" />}
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
   );
 }
 

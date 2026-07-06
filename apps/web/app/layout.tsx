@@ -8,6 +8,7 @@ import { WhatsAppFab } from "@/components/WhatsAppFab";
 import { ChromeGate } from "@/components/ChromeGate";
 import { Providers } from "@/components/Providers";
 import { JsonLd } from "@/components/JsonLd";
+import { auth } from "@da/auth";
 import "./globals.css";
 
 /* ─────────────── Données structurées SEO (Schema.org) ─────────────── */
@@ -95,11 +96,12 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await auth();
   return (
     <html
       lang="fr"
@@ -114,7 +116,7 @@ export default function RootLayout({
         >
           Aller au contenu
         </a>
-        <Providers>
+        <Providers session={session}>
           <ChromeGate>
             <SiteHeader />
           </ChromeGate>

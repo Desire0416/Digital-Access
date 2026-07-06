@@ -45,7 +45,7 @@ export function LoginForm({ googleEnabled = false }: { googleEnabled?: boolean }
     startTransition(async () => {
       const result = await loginUser({ email, password, remember });
       if (result.ok) {
-        router.push("/mon-espace");
+        router.push("/apres-connexion");
         router.refresh();
       } else {
         setErrors(result.fieldErrors ?? {});
@@ -57,7 +57,7 @@ export function LoginForm({ googleEnabled = false }: { googleEnabled?: boolean }
   function handleGoogle() {
     if (googleEnabled) {
       setGooglePending(true);
-      void signIn("google", { callbackUrl: "/mon-espace" });
+      void signIn("google", { callbackUrl: "/apres-connexion" });
     } else {
       setFormError("La connexion Google sera bientôt disponible.");
     }

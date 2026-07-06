@@ -7,8 +7,9 @@ import {
   FolderKanban,
   CalendarDays,
   CheckCircle2,
+  Printer,
 } from "lucide-react";
-import { formatFCFA, formatDate } from "@da/ui";
+import { buttonClasses, formatFCFA, formatDate } from "@da/ui";
 import {
   AdminPageHeader,
   StatusPill,
@@ -44,13 +45,22 @@ export default async function EditInvoicePage({
 
   return (
     <div>
-      <Link
-        href="/admin/factures"
-        className="mb-6 inline-flex items-center gap-1.5 text-sm font-semibold text-text-secondary transition-colors hover:text-navy"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Retour aux factures
-      </Link>
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <Link
+          href="/admin/factures"
+          className="inline-flex items-center gap-1.5 text-sm font-semibold text-text-secondary transition-colors hover:text-navy"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Retour aux factures
+        </Link>
+        <Link
+          href={`/admin/factures/${invoice.id}`}
+          className={buttonClasses({ variant: "outline", size: "sm" })}
+        >
+          <Printer className="h-4 w-4" />
+          Voir / Imprimer PDF
+        </Link>
+      </div>
 
       {/* En-tête facture */}
       <header className="relative overflow-hidden rounded-2xl border border-navy/[0.07] bg-surface-primary p-6 sm:p-7">

@@ -14,8 +14,19 @@ import {
   Settings2,
 } from "lucide-react";
 import { cn } from "@da/ui";
+import { Select, type SelectOption } from "@/components/Select";
+import { INVOICE_STATUS, toneColor } from "@/components/admin/ui";
 import { updateInvoiceStatus, deleteInvoice } from "@/lib/admin-actions";
 import type { InvoiceStatus } from "@/lib/admin-queries";
+
+/** Options du sélecteur de statut (portail) — pastille colorée par tonalité. */
+const STATUS_OPTIONS: SelectOption[] = (
+  ["DRAFT", "SENT", "PAID", "OVERDUE", "CANCELLED"] as InvoiceStatus[]
+).map((s) => ({
+  value: s,
+  label: INVOICE_STATUS[s]!.label,
+  dotColor: toneColor(INVOICE_STATUS[s]!.tone),
+}));
 
 /* ══════════════════════════════════════════════════════════════════════════
    Contrôles de cycle de vie d'une facture : Envoyer / Marquer payée / Annuler,
@@ -84,6 +95,17 @@ export function InvoiceControls({
     });
   };
 
+  // Changement de statut libre via le Select (portail).
+  const changeStatus = (next: string) => {
+    if (next === status) return;
+    setError(null);
+    startTransition(async () => {
+      const res = await updateInvoiceStatus({ id, status: next });
+      if (res.ok) router.refresh();
+      else setError(res.error);
+    });
+  };
+
   const remove = () => {
     setError(null);
     setDeleting(true);
@@ -147,6 +169,25 @@ export function InvoiceControls({
               </motion.button>
             ))
           )}
+        </div>
+      </div>
+
+      {/* Changement de statut libre (portail) */}
+      <div className="mt-5 flex flex-col gap-2 border-t border-navy/[0.06] pt-5 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+        <div className="min-w-0">
+          <p className="text-sm font-semibold text-navy">Statut de la facture</p>
+          <p className="mt-0.5 text-xs text-text-secondary">
+            Forcez n’importe quel statut si besoin.
+          </p>
+        </div>
+        <div className="w-full sm:w-56">
+          <Select
+            value={status}
+            onChange={changeStatus}
+            options={STATUS_OPTIONS}
+            ariaLabel="Statut de la facture"
+            disabled={pending}
+          />
         </div>
       </div>
 

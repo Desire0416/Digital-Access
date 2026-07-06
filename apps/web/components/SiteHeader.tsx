@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, UserRound } from "lucide-react";
 import { Logo, Avatar, buttonClasses, cn, useScrolled } from "@da/ui";
 import { mainNav, clientNav } from "@/lib/site";
 import { LogoutButton } from "./LogoutButton";
@@ -103,6 +103,13 @@ export function SiteHeader() {
                   {user.name ?? "Mon espace"}
                 </span>
               </Link>
+              <Link
+                href="/profil"
+                className={cn(buttonClasses({ variant: "ghost", size: "sm" }), "gap-2")}
+              >
+                <UserRound size={16} />
+                Profil
+              </Link>
               <LogoutButton />
             </>
           ) : (
@@ -196,6 +203,16 @@ export function SiteHeader() {
                     >
                       <Avatar name={user.name ?? user.email ?? "Vous"} className="h-6 w-6 text-[0.6rem]" />
                       Mon espace
+                    </Link>
+                    <Link
+                      href="/profil"
+                      className={cn(
+                        buttonClasses({ variant: "outline", size: "md" }),
+                        "gap-2",
+                      )}
+                    >
+                      <UserRound size={17} />
+                      Profil
                     </Link>
                     <LogoutButton variant="ghost" size="md" className="justify-center" />
                   </>

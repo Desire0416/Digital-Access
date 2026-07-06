@@ -34,6 +34,7 @@ import {
   deletePortfolioItem,
 } from "@/lib/admin-actions";
 import { PROJECT_TYPE } from "@/components/admin/ui";
+import { ImageUpload } from "@/components/ImageUpload";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Formulaire de réalisation portfolio — création & édition.
@@ -490,23 +491,14 @@ export function PortfolioForm({
           </h2>
 
           <div className="mt-4">
-            <Field
-              label="Image de couverture"
-              htmlFor="pf-cover"
-              hint="URL d’une image (WebP/JPG). Optionnel."
-            >
-              <div className="relative">
-                <Input
-                  id="pf-cover"
-                  type="url"
-                  value={coverImage}
-                  onChange={(e) => setCoverImage(e.target.value)}
-                  placeholder="https://…"
-                  disabled={busy}
-                  className="pl-10"
-                />
-                <ImageIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
-              </div>
+            <Field label="Image de couverture" htmlFor="pf-cover">
+              <ImageUpload
+                value={coverImage || null}
+                onChange={(url) => setCoverImage(url ?? "")}
+                folder="portfolio"
+                aspect="16 / 7"
+                hint="PNG, JPG ou WebP — 5 Mo max"
+              />
             </Field>
           </div>
         </section>
