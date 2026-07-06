@@ -5,40 +5,100 @@
 
 const BRAND = {
   gradient: "linear-gradient(120deg,#7B34F8 0%,#4340E8 34%,#2072E8 66%,#12C7E8 100%)",
+  solid: "#4340E8", // repli couleur unie (Outlook n'affiche pas les dégradés)
+  link: "#2072E8",
   navy: "#1A1A2E",
+  ink: "#374151",
   muted: "#6B7280",
+  faint: "#9CA3AF",
+  hair: "#ECEDF3",
   bg: "#F4F5FA",
+  tagline: "Le numérique accessible, utile et stratégique",
 };
 
-function layout(opts: { heading: string; body: string; footerNote?: string }): string {
+/** Coordonnées officielles Digital Access (source de vérité des emails). */
+const CONTACT = {
+  site: "https://digitalaccess.ci",
+  siteLabel: "digitalaccess.ci",
+  academy: "https://academy.digitalaccess.ci",
+  email: "contact@digitalaccess.ci",
+  whatsappUrl: "https://wa.me/2250564452692",
+  phoneLabel: "+225 05 64 45 26 92",
+  address: "Cocody, Abidjan — Côte d'Ivoire",
+};
+
+/** Monogramme DA en dégradé (repli couleur unie), rendu fiable en HTML mail. */
+function logoLockup(): string {
+  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+    <td style="vertical-align:middle;">
+      <div style="width:46px;height:46px;border-radius:13px;background-color:${BRAND.solid};background-image:${BRAND.gradient};text-align:center;">
+        <span style="display:inline-block;line-height:46px;color:#ffffff;font-weight:800;font-size:19px;letter-spacing:.03em;">DA</span>
+      </div>
+    </td>
+    <td style="vertical-align:middle;padding-left:13px;">
+      <div style="font-size:16px;font-weight:800;letter-spacing:.15em;color:${BRAND.navy};line-height:1;">DIGITAL ACCESS</div>
+      <div style="font-size:11px;color:${BRAND.muted};letter-spacing:.03em;margin-top:5px;line-height:1.2;">${BRAND.tagline}</div>
+    </td>
+  </tr></table>`;
+}
+
+/** Pied de page : coordonnées complètes + mentions. */
+function footer(footerNote?: string): string {
+  const sep = `<span style="color:${BRAND.faint};padding:0 8px;">·</span>`;
+  const a = (href: string, label: string) =>
+    `<a href="${href}" style="color:${BRAND.link};text-decoration:none;white-space:nowrap;">${label}</a>`;
+  return `
+    <div style="max-width:560px;margin:22px auto 0;padding:0 8px;text-align:center;">
+      <div style="font-size:13px;font-weight:700;color:${BRAND.navy};letter-spacing:.02em;">Digital Access</div>
+      <div style="font-size:12px;color:${BRAND.muted};margin-top:3px;">${BRAND.tagline}</div>
+      <div style="font-size:12.5px;color:${BRAND.ink};line-height:2;margin-top:12px;">
+        ${a(CONTACT.site, CONTACT.siteLabel)}${sep}${a("mailto:" + CONTACT.email, CONTACT.email)}${sep}${a(CONTACT.whatsappUrl, "WhatsApp " + CONTACT.phoneLabel)}
+      </div>
+      <div style="font-size:12px;color:${BRAND.faint};margin-top:4px;">${CONTACT.address}</div>
+      ${footerNote ? `<div style="font-size:11px;color:${BRAND.faint};margin-top:10px;">${footerNote}</div>` : ""}
+      <div style="font-size:11px;color:${BRAND.faint};margin-top:14px;">© ${new Date().getFullYear()} Digital Access. Tous droits réservés.</div>
+    </div>`;
+}
+
+function layout(opts: {
+  heading: string;
+  body: string;
+  footerNote?: string;
+  preheader?: string;
+}): string {
   return `<!doctype html>
 <html lang="fr">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:${BRAND.bg};font-family:'Segoe UI',Helvetica,Arial,sans-serif;color:${BRAND.navy};">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+</head>
+<body style="margin:0;padding:0;background:${BRAND.bg};font-family:'Segoe UI',Helvetica,Arial,sans-serif;color:${BRAND.navy};-webkit-font-smoothing:antialiased;">
+  ${opts.preheader ? `<div style="display:none;max-height:0;overflow:hidden;opacity:0;">${opts.preheader}</div>` : ""}
   <div style="max-width:560px;margin:0 auto;padding:32px 16px;">
-    <div style="background:#ffffff;border-radius:18px;overflow:hidden;box-shadow:0 10px 40px -18px rgba(43,58,140,.35);">
-      <div style="height:6px;background:${BRAND.gradient};"></div>
-      <div style="padding:14px 32px 0;">
-        <span style="font-size:20px;font-weight:800;letter-spacing:.12em;color:${BRAND.navy};">DIGITAL</span>
-        <span style="font-size:20px;font-weight:800;letter-spacing:.12em;background:${BRAND.gradient};-webkit-background-clip:text;background-clip:text;color:#2072E8;"> ACCESS</span>
+    <div style="background:#ffffff;border-radius:18px;overflow:hidden;box-shadow:0 12px 44px -20px rgba(43,58,140,.4);border:1px solid ${BRAND.hair};">
+      <div style="height:5px;background-color:${BRAND.solid};background-image:${BRAND.gradient};"></div>
+      <div style="padding:26px 32px 4px;">
+        ${logoLockup()}
       </div>
-      <div style="padding:8px 32px 36px;">
-        <h1 style="font-size:22px;font-weight:800;letter-spacing:-.01em;margin:18px 0 10px;">${opts.heading}</h1>
+      <div style="padding:6px 32px 34px;">
+        <h1 style="font-size:22px;font-weight:800;letter-spacing:-.01em;line-height:1.3;margin:18px 0 12px;color:${BRAND.navy};">${opts.heading}</h1>
         ${opts.body}
       </div>
     </div>
-    <p style="text-align:center;color:${BRAND.muted};font-size:12px;line-height:1.6;margin:22px 8px 0;">
-      Digital Access · Le numérique accessible, utile et stratégique<br>
-      Cocody, Abidjan — Côte d'Ivoire · contact@digitalaccess.ci
-      ${opts.footerNote ? `<br><span style="color:#9CA3AF;">${opts.footerNote}</span>` : ""}
-    </p>
+    ${footer(opts.footerNote)}
   </div>
 </body>
 </html>`;
 }
 
+/** Bouton « bulletproof » (table) — dégradé + repli uni pour Outlook. */
 function button(href: string, label: string): string {
-  return `<a href="${href}" style="display:inline-block;background:${BRAND.gradient};color:#ffffff;text-decoration:none;font-weight:600;font-size:15px;padding:14px 28px;border-radius:10px;">${label}</a>`;
+  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;">
+    <tr><td align="center" style="border-radius:11px;background-color:${BRAND.solid};background-image:${BRAND.gradient};">
+      <a href="${href}" style="display:inline-block;padding:15px 32px;font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;border-radius:11px;letter-spacing:.01em;">${label}</a>
+    </td></tr>
+  </table>`;
 }
 
 const p = (text: string) =>
@@ -48,12 +108,19 @@ export function verificationEmail(opts: { name: string; url: string }) {
   return {
     subject: "Confirmez votre compte Access Academy",
     html: layout({
-      heading: `Bonjour ${opts.name},`,
+      preheader: "Il ne reste qu'une étape : confirmez votre adresse pour activer votre compte.",
+      heading: `Bienvenue, ${opts.name} 👋`,
       body: `
-        ${p("Bienvenue chez Digital Access ! Il ne reste qu'une étape : confirmez votre adresse email pour activer votre compte.")}
-        <div style="margin:26px 0;">${button(opts.url, "Confirmer mon compte")}</div>
-        ${p(`Ou copiez ce lien dans votre navigateur :<br><a href="${opts.url}" style="color:#2072E8;word-break:break-all;">${opts.url}</a>`)}
-        ${p("<span style='color:#9CA3AF;font-size:13px;'>Ce lien expire dans 24 heures. Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.</span>")}
+        ${p("Merci d'avoir créé votre compte <b>Access Academy</b> ! Il ne reste plus qu'une étape : confirmez votre adresse email pour activer votre compte et accéder à toutes vos formations.")}
+        <div style="margin:28px 0;">${button(opts.url, "Confirmer mon compte")}</div>
+        <div style="background:#F7F8FC;border:1px solid ${BRAND.hair};border-radius:12px;padding:14px 16px;margin:4px 0 20px;">
+          <p style="margin:0 0 6px;font-size:12px;color:${BRAND.faint};text-transform:uppercase;letter-spacing:.08em;font-weight:700;">Le bouton ne fonctionne pas ?</p>
+          <a href="${opts.url}" style="color:${BRAND.link};font-size:13px;word-break:break-all;text-decoration:none;">${opts.url}</a>
+        </div>
+        ${p(`<span style="color:${BRAND.faint};font-size:13px;">🔒 Ce lien est valable <b>24 heures</b>. Si vous n'êtes pas à l'origine de cette inscription, vous pouvez ignorer cet email en toute sécurité.</span>`)}
+        <div style="border-top:1px solid ${BRAND.hair};margin:22px 0 0;padding-top:18px;">
+          ${p(`<span style="font-size:13.5px;color:${BRAND.ink};">Une question ? Écrivez-nous à <a href="mailto:${CONTACT.email}" style="color:${BRAND.link};text-decoration:none;">${CONTACT.email}</a> ou sur <a href="${CONTACT.whatsappUrl}" style="color:${BRAND.link};text-decoration:none;">WhatsApp</a> — nous sommes là pour vous aider.</span>`)}
+        </div>
       `,
     }),
   };
