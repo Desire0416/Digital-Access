@@ -9,6 +9,7 @@ import {
   Wifi,
   X,
 } from "lucide-react";
+import * as Ably from "ably";
 import { Avatar, cn } from "@da/ui";
 import { sendChatMessage } from "@/lib/community-actions";
 import type {
@@ -18,19 +19,14 @@ import type {
 } from "@/lib/community-queries";
 
 /* ══════════════════════════════════════════════════════════════════════════
-   Chat de cours — temps réel par polling (aucune lib externe).
-   • Sondage GET /api/courses/{slug}/chat?after={ISO} toutes les ~4s.
-   • Fusion dédoublonnée par id ; présence rafraîchie à chaque tick.
-   • Pause quand l'onglet est masqué (visibilitychange).
-   • Ajout optimiste à l'envoi (l'id renvoyé évite le doublon au tick suivant).
+   Chat de cours — temps réel via Ably.
+   • Souscription au canal chat:{courseId} (jeton scellé au cours via
+     /api/ably/token) : messages instantanés, présence live.
+   • Fusion dédoublonnée par id ; ajout optimiste à l'envoi (l'écho serveur
+     porte le même id → pas de doublon).
+   • Dégrade proprement si Ably est indisponible : les messages initiaux
+     restent affichés et l'envoi (persisté en base) fonctionne toujours.
    ══════════════════════════════════════════════════════════════════════════ */
-
-const POLL_INTERVAL_MS = 4000;
-
-interface ApiResponse {
-  messages: ChatMessageItem[];
-  presence: PresenceUser[];
-}
 
 /* ─────────────────────────── Helper @mentions ──────────────────────────── */
 
@@ -126,42 +122,65 @@ export function ChatRoom({
     });
   }, []);
 
-  /* ── Polling ~4s, en pause si onglet masqué, silencieux sur échec ───── */
+  /* ── Temps réel via Ably : messages instantanés + présence live ─────── */
   React.useEffect(() => {
-    if (!access.canView) return;
-    let cancelled = false;
+    const me = access.currentUser;
+    if (!access.canView || !me) return;
 
-    async function poll() {
-      if (typeof document !== "undefined" && document.hidden) return;
-      try {
-        const after = lastIsoRef.current;
-        const url =
-          `/api/courses/${encodeURIComponent(slug)}/chat` +
-          (after ? `?after=${encodeURIComponent(after)}` : "");
-        const res = await fetch(url, { cache: "no-store" });
-        if (!res.ok || cancelled) return;
-        const data = (await res.json()) as ApiResponse;
-        if (cancelled) return;
-        mergeMessages(data.messages ?? []);
-        setPresence(data.presence ?? []);
-      } catch {
-        // Échec réseau : on réessaie simplement au prochain tick.
-      }
+    let client: Ably.Realtime;
+    try {
+      client = new Ably.Realtime({
+        authUrl: `/api/ably/token?slug=${encodeURIComponent(slug)}`,
+        clientId: me.id,
+      });
+    } catch {
+      return; // Ably indisponible : on reste sur les messages initiaux.
     }
 
-    const id = setInterval(poll, POLL_INTERVAL_MS);
-    // Reprend immédiatement au retour de visibilité.
-    const onVisible = () => {
-      if (!document.hidden) void poll();
+    const channel = client.channels.get(`chat:${access.courseId}`);
+
+    const onMessage = (msg: Ably.Message) => {
+      const data = msg.data as ChatMessageItem | undefined;
+      if (data && typeof data.id === "string") mergeMessages([data]);
     };
-    document.addEventListener("visibilitychange", onVisible);
+    void channel.subscribe("message", onMessage);
+
+    const syncPresence = async () => {
+      try {
+        const members = await channel.presence.get();
+        const byId = new Map<string, PresenceUser>();
+        for (const m of members) {
+          if (!m.clientId) continue;
+          const d = (m.data ?? {}) as Partial<PresenceUser>;
+          byId.set(m.clientId, {
+            id: m.clientId,
+            name: d.name ?? "Membre",
+            avatar: d.avatar ?? null,
+            isInstructor: Boolean(d.isInstructor),
+          });
+        }
+        setPresence(Array.from(byId.values()));
+      } catch {
+        /* présence indisponible — on garde l'état courant */
+      }
+    };
+
+    void channel.presence.subscribe(
+      ["enter", "leave", "update", "present"],
+      () => void syncPresence(),
+    );
+    channel.presence
+      .enter({ name: me.name, avatar: me.avatar, isInstructor: access.isPrivileged })
+      .then(() => syncPresence())
+      .catch(() => {});
 
     return () => {
-      cancelled = true;
-      clearInterval(id);
-      document.removeEventListener("visibilitychange", onVisible);
+      channel.presence.leave().catch(() => {});
+      channel.unsubscribe();
+      channel.presence.unsubscribe();
+      client.close();
     };
-  }, [access.canView, slug, mergeMessages]);
+  }, [access, slug, mergeMessages]);
 
   /* ── Envoi d'un message (ajout optimiste avec l'id renvoyé) ─────────── */
   const send = React.useCallback(() => {

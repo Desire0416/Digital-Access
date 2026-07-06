@@ -5,7 +5,9 @@ import { z } from "zod";
 import { prisma } from "@da/db/client";
 import { currentUser } from "@da/auth/guards";
 import { getCommunityAccess } from "./community-queries";
+import type { ChatMessageItem } from "./community-queries";
 import { createNotification } from "./notifications";
+import { publishChatMessage } from "./ably";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Server Actions — Communauté Academy.
@@ -315,10 +317,28 @@ export async function sendChatMessage(
     const [msg] = await prisma.$transaction([
       prisma.chatMessage.create({
         data: { chatRoomId: room.id, userId: user!.id, content: parsed.data.content.trim() },
-        select: { id: true },
+        select: { id: true, createdAt: true },
       }),
       prisma.user.update({ where: { id: user!.id }, data: { lastActiveAt: new Date() } }),
     ]);
+
+    // Diffusion temps réel (Ably). Best-effort : la persistance fait foi.
+    const me = access.currentUser;
+    if (me) {
+      const payload: ChatMessageItem = {
+        id: msg.id,
+        content: parsed.data.content.trim(),
+        createdAt: msg.createdAt.toISOString(),
+        author: {
+          id: me.id,
+          name: me.name,
+          avatar: me.avatar,
+          isInstructor: access.isPrivileged,
+        },
+      };
+      await publishChatMessage(access.courseId, payload);
+    }
+
     return { ok: true, id: msg.id };
   } catch {
     return { ok: false, error: "Envoi impossible." };
