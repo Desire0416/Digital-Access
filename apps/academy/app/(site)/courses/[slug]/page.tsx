@@ -12,6 +12,8 @@ import {
   Globe,
   Infinity as InfinityIcon,
   Layers,
+  MessageCircle,
+  MessagesSquare,
   PlayCircle,
   ShieldCheck,
   Smartphone,
@@ -29,6 +31,8 @@ import {
   StaggerGroup,
   StaggerItem,
   StarRating,
+  buttonClasses,
+  cn,
   formatDate,
   formatDuration,
   formatFCFA,
@@ -349,6 +353,36 @@ export default async function CourseDetailPage({
                         paymentPending={paymentStatus === "pending"}
                         title={course.title}
                       />
+
+                      {enrollment && (
+                        <div className="mt-5 border-t border-navy/[0.07] pt-5">
+                          <p className="mb-3 text-sm font-bold text-navy">
+                            Communauté du cours
+                          </p>
+                          <div className="grid grid-cols-2 gap-2.5">
+                            <Link
+                              href={`/courses/${slug}/forum`}
+                              className={cn(
+                                buttonClasses({ variant: "outline", size: "sm" }),
+                                "h-auto flex-col gap-1.5 py-3",
+                              )}
+                            >
+                              <MessagesSquare size={18} className="text-brand-blue-royal" />
+                              Forum
+                            </Link>
+                            <Link
+                              href={`/courses/${slug}/chat`}
+                              className={cn(
+                                buttonClasses({ variant: "outline", size: "sm" }),
+                                "h-auto flex-col gap-1.5 py-3",
+                              )}
+                            >
+                              <MessageCircle size={18} className="text-brand-blue-royal" />
+                              Discussion
+                            </Link>
+                          </div>
+                        </div>
+                      )}
 
                       {/* Ce cours inclut */}
                       <div className="mt-6 border-t border-navy/[0.07] pt-5">

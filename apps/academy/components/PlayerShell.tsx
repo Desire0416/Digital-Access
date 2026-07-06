@@ -49,9 +49,16 @@ export interface PlayerShellProps {
   data: PlayerData;
   chapterId: string;
   userStreak: number;
+  /** Discussion du chapitre (rendue par la page, cf. ChapterComments). */
+  commentsSlot?: React.ReactNode;
 }
 
-export function PlayerShell({ data, chapterId, userStreak }: PlayerShellProps) {
+export function PlayerShell({
+  data,
+  chapterId,
+  userStreak,
+  commentsSlot,
+}: PlayerShellProps) {
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = React.useState(true);
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -404,6 +411,13 @@ export function PlayerShell({ data, chapterId, userStreak }: PlayerShellProps) {
                     </div>
                   )}
                 </div>
+
+                {/* Discussion du chapitre */}
+                {commentsSlot && (
+                  <div className="mt-10 border-t border-navy/[0.08] pt-8">
+                    {commentsSlot}
+                  </div>
+                )}
 
                 {/* Navigation précédent / suivant */}
                 <div className="mt-10 flex items-center justify-between gap-3 border-t border-navy/[0.08] pt-6">

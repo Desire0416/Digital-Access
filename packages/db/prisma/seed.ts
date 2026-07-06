@@ -1286,6 +1286,97 @@ async function main() {
     },
   });
 
+  /* ─────────────────── Communauté — forum / commentaires / chat (S11) ───────
+     Démonstration sur le cours marketing (gratuit). Idempotent par partie. */
+  {
+    const mkt = await prisma.course.findUnique({
+      where: { slug: "marketing-reseaux-sociaux" },
+      select: {
+        id: true,
+        instructorId: true,
+        modules: {
+          orderBy: { position: "asc" },
+          take: 1,
+          select: { chapters: { orderBy: { position: "asc" }, take: 1, select: { id: true } } },
+        },
+      },
+    });
+    const learner = await prisma.user.findUnique({
+      where: { email: "apprenant@digitalaccess.ci" },
+      select: { id: true },
+    });
+    const firstChapterId = mkt?.modules[0]?.chapters[0]?.id;
+
+    if (mkt && learner && firstChapterId) {
+      if ((await prisma.forumTopic.count({ where: { courseId: mkt.id } })) === 0) {
+        const t1 = await prisma.forumTopic.create({
+          data: {
+            courseId: mkt.id, userId: learner.id,
+            title: "Quel réseau privilégier pour une petite boutique à Abidjan ?",
+            content:
+              "Je débute avec ma boutique de vêtements. Vaut-il mieux commencer par Instagram, TikTok ou Facebook pour toucher une clientèle locale ?",
+            category: "Stratégie", tags: ["instagram", "débutant"], upvotes: 4,
+          },
+        });
+        await prisma.forumReply.create({
+          data: {
+            topicId: t1.id, userId: mkt.instructorId, isSolution: true, upvotes: 6,
+            content:
+              "Excellente question ! Pour une boutique locale, **WhatsApp Business + Instagram** est le combo le plus efficace en Côte d'Ivoire. Publie régulièrement en story et épingle tes meilleurs produits.",
+          },
+        });
+        await prisma.forumTopic.update({ where: { id: t1.id }, data: { solved: true } });
+
+        const t2 = await prisma.forumTopic.create({
+          data: {
+            courseId: mkt.id, userId: learner.id,
+            title: "À quelle fréquence poster sans lasser mon audience ?",
+            content: "J'ai peur de trop publier. Quelle cadence conseillez-vous pour rester visible sans spammer ?",
+            category: "Contenu", tags: ["régularité"], upvotes: 2,
+          },
+        });
+        await prisma.forumReply.create({
+          data: {
+            topicId: t2.id, userId: mkt.instructorId, upvotes: 3,
+            content: "3 à 5 posts par semaine + des stories quotidiennes est un bon rythme de départ. La régularité compte plus que la quantité.",
+          },
+        });
+      }
+
+      if ((await prisma.comment.count({ where: { chapterId: firstChapterId } })) === 0) {
+        const c1 = await prisma.comment.create({
+          data: {
+            chapterId: firstChapterId, userId: mkt.instructorId, pinned: true,
+            content: "Bienvenue dans ce premier chapitre ! Posez vos questions ici, j'y réponds chaque semaine.",
+          },
+        });
+        await prisma.comment.create({
+          data: {
+            chapterId: firstChapterId, userId: learner.id, parentId: c1.id,
+            content: "Merci, très clair ! J'ai hâte de mettre ça en pratique.",
+          },
+        });
+      }
+
+      const room = await prisma.chatRoom.upsert({
+        where: { courseId: mkt.id },
+        update: {},
+        create: { courseId: mkt.id },
+        select: { id: true },
+      });
+      if ((await prisma.chatMessage.count({ where: { chatRoomId: room.id } })) === 0) {
+        await prisma.chatMessage.createMany({
+          data: [
+            { chatRoomId: room.id, userId: mkt.instructorId, content: "Bonjour à tous ! Bienvenue dans l'espace de discussion du cours." },
+            { chatRoomId: room.id, userId: learner.id, content: "Bonjour ! Ravie de rejoindre le groupe." },
+            { chatRoomId: room.id, userId: mkt.instructorId, content: "N'hésitez pas à partager vos comptes pour des retours entre apprenants." },
+          ],
+        });
+      }
+      console.log("  ↳ communauté (forum / commentaires / chat) seedée / vérifiée");
+    }
+  }
+
   console.log("✅ Seed terminé.");
 }
 
