@@ -6,7 +6,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Hourglass, LibraryBig, Search, SlidersHorizontal, X } from "lucide-react";
 import { EmptyState } from "@/components/admin/ui";
 import { Select, type SelectOption } from "@/components/Select";
-import type { AdminManagedCourse } from "./queries";
+import type { AdminManagedCourse, InstructorOption } from "./queries";
 import { CourseAdminCard } from "./CourseAdminCard";
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -43,10 +43,12 @@ const item = {
 export function CoursesManager({
   courses,
   categories,
+  instructors,
   filters,
 }: {
   courses: AdminManagedCourse[];
   categories: { slug: string; name: string }[];
+  instructors: InstructorOption[];
   filters: { q: string; status: string; category: string; level: string };
 }) {
   const router = useRouter();
@@ -225,7 +227,7 @@ export function CoursesManager({
               >
                 {reviewQueue.map((c) => (
                   <motion.div key={c.id} variants={item}>
-                    <CourseAdminCard course={c} highlight />
+                    <CourseAdminCard course={c} instructors={instructors} highlight />
                   </motion.div>
                 ))}
               </motion.div>
@@ -251,7 +253,11 @@ export function CoursesManager({
               >
                 {(splitQueue ? rest : courses).map((c) => (
                   <motion.div key={c.id} variants={item}>
-                    <CourseAdminCard course={c} highlight={c.status === "REVIEW"} />
+                    <CourseAdminCard
+                      course={c}
+                      instructors={instructors}
+                      highlight={c.status === "REVIEW"}
+                    />
                   </motion.div>
                 ))}
               </motion.div>

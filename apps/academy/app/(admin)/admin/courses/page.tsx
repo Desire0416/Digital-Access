@@ -3,7 +3,7 @@ import Link from "next/link";
 import { CircleCheck, Hourglass, LibraryBig, PencilRuler } from "lucide-react";
 import { getCategories } from "@/lib/queries";
 import { AdminPageHeader, StatCard } from "@/components/admin/ui";
-import { getAdminManagedCourses, type AdminManagedCourse } from "./queries";
+import { getAdminManagedCourses, getInstructors, type AdminManagedCourse } from "./queries";
 import { CoursesManager } from "./CoursesManager";
 import { CreateCourseDialog } from "./CreateCourseDialog";
 
@@ -75,9 +75,10 @@ export default async function AdminCoursesPage({
     level: sp.level ?? "",
   };
 
-  const [{ courses, counts }, categories] = await Promise.all([
+  const [{ courses, counts }, categories, instructors] = await Promise.all([
     getAdminManagedCourses(),
     getCategories(),
+    getInstructors(),
   ]);
 
   const filtered = applyFilters(courses, filters);
@@ -136,6 +137,7 @@ export default async function AdminCoursesPage({
       <CoursesManager
         courses={filtered}
         categories={categoryOptions}
+        instructors={instructors}
         filters={filters}
       />
     </div>

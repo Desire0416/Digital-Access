@@ -25,8 +25,18 @@ export interface AdminManagedCourse {
   enrollmentCount: number;
   chapterCount: number;
   reviewNote: string | null;
+  instructorId: string;
   instructor: { name: string; email: string; avatar: string | null };
   updatedAt: string; // ISO
+}
+
+/** Instructeur assignable (rôle INSTRUCTOR, compte actif). */
+export interface InstructorOption {
+  id: string;
+  name: string;
+  email: string;
+  avatar: string | null;
+  courseCount: number;
 }
 
 export interface AdminCoursesData {
@@ -62,6 +72,7 @@ export async function getAdminManagedCourses(): Promise<AdminCoursesData> {
       enrollmentCount: true,
       reviewNote: true,
       updatedAt: true,
+      instructorId: true,
       category: { select: { name: true, slug: true } },
       instructor: { select: { name: true, email: true, avatar: true } },
       modules: { select: { _count: { select: { chapters: true } } } },
@@ -84,6 +95,7 @@ export async function getAdminManagedCourses(): Promise<AdminCoursesData> {
     enrollmentCount: c.enrollmentCount,
     chapterCount: c.modules.reduce((n, m) => n + m._count.chapters, 0),
     reviewNote: c.reviewNote,
+    instructorId: c.instructorId,
     instructor: c.instructor,
     updatedAt: c.updatedAt.toISOString(),
   }));
@@ -97,4 +109,26 @@ export async function getAdminManagedCourses(): Promise<AdminCoursesData> {
       draft: courses.filter((c) => c.status === "DRAFT").length,
     },
   };
+}
+
+/** Liste des instructeurs assignables (rôle INSTRUCTOR, non supprimés). */
+export async function getInstructors(): Promise<InstructorOption[]> {
+  const rows = await prisma.user.findMany({
+    where: { roles: { has: "INSTRUCTOR" }, deletedAt: null },
+    orderBy: { name: "asc" },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      avatar: true,
+      _count: { select: { coursesCreated: true } },
+    },
+  });
+  return rows.map((u) => ({
+    id: u.id,
+    name: u.name,
+    email: u.email,
+    avatar: u.avatar,
+    courseCount: u._count.coursesCreated,
+  }));
 }

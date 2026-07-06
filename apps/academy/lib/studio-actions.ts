@@ -664,6 +664,44 @@ export async function unpublishCourse(courseId: string): Promise<Result> {
   }
 }
 
+/* ─────────────────── Attribution d'un cours à un instructeur (admin) ────────── */
+
+/**
+ * Réattribue un cours à un instructeur inscrit (rôle INSTRUCTOR). Réservé aux
+ * administrateurs. Met à jour l'auteur affiché publiquement + revalide les pages.
+ */
+export async function assignCourseInstructor(
+  courseId: string,
+  instructorId: string,
+): Promise<Result> {
+  const session = await requireAdmin();
+  if (!session) return DENIED;
+  if (!courseId || !instructorId) return { ok: false, error: "Paramètres manquants." };
+
+  const instructor = await prisma.user.findUnique({
+    where: { id: instructorId },
+    select: { roles: true, deletedAt: true },
+  });
+  if (!instructor || instructor.deletedAt || !instructor.roles.includes("INSTRUCTOR")) {
+    return { ok: false, error: "Instructeur invalide (rôle Instructeur requis)." };
+  }
+  const course = await prisma.course.findUnique({
+    where: { id: courseId },
+    select: { slug: true },
+  });
+  if (!course) return { ok: false, error: "Cours introuvable." };
+
+  try {
+    await prisma.course.update({ where: { id: courseId }, data: { instructorId } });
+    revalidatePath("/admin/courses");
+    revalidateCourse(courseId, course.slug);
+    return { ok: true };
+  } catch (err) {
+    console.error("[studio] assignCourseInstructor:", err);
+    return { ok: false, error: "Une erreur est survenue." };
+  }
+}
+
 /* ─────────────────────────── Duplication (AC99) ────────────────────────────── */
 
 export async function duplicateCourse(courseId: string): Promise<Result<{ courseId: string }>> {

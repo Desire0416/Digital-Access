@@ -14,17 +14,20 @@ import {
   MoreVertical,
   Pencil,
   Trash2,
+  UserCog,
   X,
 } from "lucide-react";
-import { Button, Textarea, cn } from "@da/ui";
+import { Avatar, Button, Textarea, cn } from "@da/ui";
 import {
   approveCourse,
+  assignCourseInstructor,
   deleteCourse,
   duplicateCourse,
   rejectCourse,
   unpublishCourse,
 } from "@/lib/studio-actions";
-import type { AdminManagedCourse } from "./queries";
+import { Select, type SelectOption } from "@/components/Select";
+import type { AdminManagedCourse, InstructorOption } from "./queries";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Menu d'actions concret d'un cours (dropdown rendu en PORTAIL → jamais clippé).
@@ -44,9 +47,11 @@ type MenuAction = {
 
 export function CourseActionsMenu({
   course,
+  instructors,
   onError,
 }: {
   course: AdminManagedCourse;
+  instructors: InstructorOption[];
   onError: (msg: string | null) => void;
 }) {
   const router = useRouter();
@@ -56,8 +61,8 @@ export function CourseActionsMenu({
   const [mounted, setMounted] = React.useState(false);
   const [pending, startTransition] = React.useTransition();
 
-  // Confirmations (rendues en overlay plein écran).
-  const [confirm, setConfirm] = React.useState<null | "reject" | "delete">(null);
+  // Confirmations / modales (rendues en overlay plein écran).
+  const [confirm, setConfirm] = React.useState<null | "reject" | "delete" | "assign">(null);
 
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const menuRef = React.useRef<HTMLDivElement>(null);
@@ -126,6 +131,15 @@ export function CourseActionsMenu({
       icon: <ExternalLink size={15} />,
       href: `/courses/${course.slug}`,
       external: true,
+    },
+    {
+      key: "assign",
+      label: "Attribuer à un instructeur",
+      icon: <UserCog size={15} />,
+      onClick: () => {
+        setOpen(false);
+        setConfirm("assign");
+      },
     },
     ...(isDraftOrReview
       ? [
@@ -302,6 +316,17 @@ export function CourseActionsMenu({
                 }}
               />
             )}
+            {confirm === "assign" && (
+              <AssignDialog
+                course={course}
+                instructors={instructors}
+                onClose={() => setConfirm(null)}
+                onAssigned={() => {
+                  setConfirm(null);
+                  router.refresh();
+                }}
+              />
+            )}
           </AnimatePresence>,
           document.body,
         )}
@@ -360,6 +385,131 @@ function RejectDialog({
           className="bg-error hover:bg-error/90"
         >
           <X size={15} /> Confirmer le renvoi
+        </Button>
+      </div>
+    </Overlay>
+  );
+}
+
+/* ──────────────── Attribution du cours à un instructeur ─────────────────────── */
+
+function AssignDialog({
+  course,
+  instructors,
+  onClose,
+  onAssigned,
+}: {
+  course: AdminManagedCourse;
+  instructors: InstructorOption[];
+  onClose: () => void;
+  onAssigned: () => void;
+}) {
+  const [selectedId, setSelectedId] = React.useState(course.instructorId);
+  const [error, setError] = React.useState<string | null>(null);
+  const [pending, startTransition] = React.useTransition();
+
+  const noInstructors = instructors.length === 0;
+  const unchanged = selectedId === course.instructorId;
+
+  const options = React.useMemo<SelectOption[]>(
+    () =>
+      instructors.map((instr) => ({
+        value: instr.id,
+        label: `${instr.name} — ${instr.email}`,
+      })),
+    [instructors],
+  );
+
+  function submit() {
+    if (noInstructors || unchanged) return;
+    setError(null);
+    startTransition(async () => {
+      const res = await assignCourseInstructor(course.id, selectedId);
+      if (res.ok) {
+        onAssigned();
+      } else {
+        setError(res.error);
+      }
+    });
+  }
+
+  return (
+    <Overlay onClose={onClose} label={`Attribuer « ${course.title} » à un instructeur`}>
+      <div className="flex items-start gap-3">
+        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-brand-blue-royal/10 text-brand-blue-royal">
+          <UserCog size={19} />
+        </span>
+        <div>
+          <h2 className="font-display text-lg font-bold text-navy">
+            Attribuer à un instructeur
+          </h2>
+          <p className="mt-0.5 text-sm text-text-secondary">
+            Choisissez l&apos;instructeur responsable de «&nbsp;{course.title}&nbsp;». Il
+            deviendra l&apos;auteur affiché publiquement.
+          </p>
+        </div>
+      </div>
+
+      {/* Instructeur actuel */}
+      <div className="mt-5 flex items-center gap-3 rounded-xl border border-navy/[0.08] bg-surface-secondary px-3.5 py-3">
+        <Avatar
+          name={course.instructor.name}
+          src={course.instructor.avatar ?? undefined}
+          className="h-9 w-9 shrink-0"
+        />
+        <div className="min-w-0">
+          <p className="text-[0.7rem] font-semibold uppercase tracking-wide text-text-muted">
+            Instructeur actuel
+          </p>
+          <p className="truncate text-sm font-semibold text-navy">
+            {course.instructor.name}
+          </p>
+          <p className="truncate text-xs text-text-secondary">{course.instructor.email}</p>
+        </div>
+      </div>
+
+      {noInstructors ? (
+        <p className="mt-4 rounded-xl bg-warning/[0.08] px-3.5 py-3 text-sm text-[#B45309]">
+          Aucun instructeur inscrit.{" "}
+          <Link
+            href="/admin/users"
+            className="font-semibold text-brand-blue-royal underline-offset-2 hover:underline"
+          >
+            Gérer les utilisateurs
+          </Link>
+        </p>
+      ) : (
+        <div className="mt-4">
+          <label className="mb-2 block text-sm font-semibold text-navy">
+            Nouvel instructeur
+          </label>
+          <Select
+            value={selectedId}
+            onChange={setSelectedId}
+            options={options}
+            placeholder="Choisir un instructeur…"
+            ariaLabel="Choisir un nouvel instructeur"
+          />
+        </div>
+      )}
+
+      {error && (
+        <p role="alert" className="mt-3 text-sm font-medium text-error">
+          {error}
+        </p>
+      )}
+
+      <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+        <Button type="button" variant="ghost" onClick={onClose} disabled={pending}>
+          Annuler
+        </Button>
+        <Button
+          type="button"
+          onClick={submit}
+          loading={pending}
+          disabled={noInstructors || unchanged}
+        >
+          <UserCog size={15} /> Attribuer
         </Button>
       </div>
     </Overlay>

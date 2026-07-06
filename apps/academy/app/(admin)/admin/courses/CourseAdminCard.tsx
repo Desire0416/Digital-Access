@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { BookOpen, ImageIcon, Signal, Star, Tag, Users } from "lucide-react";
 import { Avatar, formatPrice, formatDate, cn } from "@da/ui";
 import { StatusPill, COURSE_STATUS, COURSE_LEVEL } from "@/components/admin/ui";
-import type { AdminManagedCourse } from "./queries";
+import type { AdminManagedCourse, InstructorOption } from "./queries";
 import { CourseActionsMenu } from "./CourseActionsMenu";
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -16,9 +16,11 @@ import { CourseActionsMenu } from "./CourseActionsMenu";
 
 export function CourseAdminCard({
   course,
+  instructors,
   highlight = false,
 }: {
   course: AdminManagedCourse;
+  instructors: InstructorOption[];
   highlight?: boolean;
 }) {
   const [error, setError] = React.useState<string | null>(null);
@@ -74,7 +76,7 @@ export function CourseAdminCard({
           <h3 className="min-w-0 flex-1 font-display text-base font-bold leading-snug text-navy">
             {course.title}
           </h3>
-          <CourseActionsMenu course={course} onError={setError} />
+          <CourseActionsMenu course={course} instructors={instructors} onError={setError} />
         </div>
 
         {/* Instructeur */}
