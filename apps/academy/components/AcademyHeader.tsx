@@ -18,14 +18,16 @@ const learnerLinks = [
   { label: "Certificats", href: "/certificates" },
 ];
 
-export function AcademyHeader() {
+type HeaderUser = { name?: string | null; email?: string | null; roles?: string[] };
+
+export function AcademyHeader({ initialUser }: { initialUser?: HeaderUser | null }) {
   const pathname = usePathname();
   const scrolled = useScrolled(10);
   const [open, setOpen] = React.useState(false);
   const { data: session } = useSession();
-  const user = session?.user as
-    | { name?: string | null; email?: string | null; roles?: string[] }
-    | undefined;
+  // La session serveur (initialUser, résolue par requête) fait foi ; useSession
+  // ne sert qu'aux mises à jour réactives (connexion/déconnexion sans rechargement).
+  const user = (session?.user as HeaderUser | undefined) ?? initialUser ?? undefined;
   const roles = user?.roles ?? [];
   const isAdmin = roles.some((r) => r === "ADMIN" || r === "SUPER_ADMIN");
   const isInstructor = roles.includes("INSTRUCTOR") || isAdmin;

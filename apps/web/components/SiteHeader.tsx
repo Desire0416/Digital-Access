@@ -10,14 +10,16 @@ import { Logo, Avatar, buttonClasses, cn, useScrolled } from "@da/ui";
 import { mainNav, clientNav } from "@/lib/site";
 import { LogoutButton } from "./LogoutButton";
 
-export function SiteHeader() {
+type HeaderUser = { name?: string | null; email?: string | null; roles?: string[] };
+
+export function SiteHeader({ initialUser }: { initialUser?: HeaderUser | null }) {
   const pathname = usePathname();
   const scrolled = useScrolled(10);
   const [open, setOpen] = React.useState(false);
   const { data: session } = useSession();
-  const user = session?.user as
-    | { name?: string | null; email?: string | null; roles?: string[] }
-    | undefined;
+  // Session serveur (initialUser, résolue par requête) prioritaire ; useSession
+  // n'assure que les mises à jour réactives sans rechargement.
+  const user = (session?.user as HeaderUser | undefined) ?? initialUser ?? undefined;
   const isClient = Boolean(user?.roles?.includes("CLIENT"));
   const isAdmin = Boolean(
     user?.roles?.some((r) => r === "ADMIN" || r === "SUPER_ADMIN"),

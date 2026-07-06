@@ -105,6 +105,12 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const session = await auth();
+  const su = session?.user as
+    | { name?: string | null; email?: string | null; roles?: string[] }
+    | undefined;
+  const initialUser = su
+    ? { name: su.name ?? null, email: su.email ?? null, roles: su.roles ?? [] }
+    : null;
   return (
     <html
       lang="fr"
@@ -121,7 +127,7 @@ export default async function RootLayout({
         </a>
         <Providers session={session}>
           <ChromeGate>
-            <SiteHeader />
+            <SiteHeader initialUser={initialUser} />
           </ChromeGate>
           <main id="contenu">
             <PageTransition>{children}</PageTransition>

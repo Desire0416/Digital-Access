@@ -8,7 +8,7 @@ export const academyConfig = {
   locale: "fr_CI",
   contact: {
     email: "contact@digitalaccess.ci",
-    whatsapp: "2250700000000",
+    whatsapp: "2250564452692",
   },
 } as const;
 
@@ -21,21 +21,21 @@ export const paymentConfig = {
     {
       id: "ORANGE",
       name: "Orange Money",
-      number: "+225 07 00 00 00 00",
+      number: "+225 07 57 90 88 84",
       color: "#FF7900",
       instructions: "Composez #144# puis « Transfert d'argent »",
     },
     {
       id: "MTN",
       name: "MTN MoMo",
-      number: "+225 05 00 00 00 00",
+      number: "+225 05 64 45 26 92",
       color: "#FFCC00",
       instructions: "Composez *133# puis « Transfert d'argent »",
     },
     {
       id: "WAVE",
       name: "Wave",
-      number: "+225 07 00 00 00 01",
+      number: "+225 07 57 90 88 84",
       color: "#00C2F3",
       instructions: "Depuis l'application Wave, « Envoyer de l'argent »",
     },
