@@ -145,19 +145,27 @@ function SidebarContent({
         </Link>
       </div>
 
-      {/* Utilisateur */}
+      {/* Utilisateur — cliquable vers le profil */}
       <div className="border-t border-white/10 p-3">
-        <div className={cn("flex items-center rounded-xl", collapsed ? "justify-center px-0 py-1" : "gap-3 px-2 py-2")}>
+        <Link
+          href="/profil"
+          onClick={onNavigate}
+          title="Voir et modifier mon profil"
+          className={cn(
+            "flex items-center rounded-xl transition-colors hover:bg-white/[0.06]",
+            collapsed ? "justify-center px-0 py-2" : "gap-3 px-2 py-2",
+          )}
+        >
           <Avatar name={user.name} className="h-9 w-9 shrink-0 text-xs" />
           {!collapsed && (
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-semibold text-white">{user.name}</p>
               <p className="truncate text-xs text-white/50">
-                {user.isSuperAdmin ? "Super Admin" : "Administrateur"}
+                {user.isSuperAdmin ? "Super Admin" : "Administrateur"} · Profil
               </p>
             </div>
           )}
-        </div>
+        </Link>
         {!collapsed && (
           <LogoutButton
             variant="ghost"

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Menu, X, UserRound } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Logo, Avatar, buttonClasses, cn, useScrolled } from "@da/ui";
 import { mainNav, clientNav } from "@/lib/site";
 import { LogoutButton } from "./LogoutButton";
@@ -83,32 +83,18 @@ export function SiteHeader() {
         <div className="hidden items-center gap-2 lg:flex">
           {user ? (
             <>
-              {isAdmin && (
-                <Link
-                  href="/admin/dashboard"
-                  className={buttonClasses({ variant: "ghost", size: "sm" })}
-                >
-                  Administration
-                </Link>
-              )}
               <Link
-                href="/mon-espace"
+                href={isAdmin ? "/admin/dashboard" : "/mon-espace"}
+                title="Accéder à mon tableau de bord"
                 className={cn(
                   buttonClasses({ variant: "ghost", size: "sm" }),
                   "gap-2",
                 )}
               >
                 <Avatar name={user.name ?? user.email ?? "Vous"} className="h-7 w-7 text-xs" />
-                <span className="max-w-[9rem] truncate">
+                <span className="max-w-[10rem] truncate">
                   {user.name ?? "Mon espace"}
                 </span>
-              </Link>
-              <Link
-                href="/profil"
-                className={cn(buttonClasses({ variant: "ghost", size: "sm" }), "gap-2")}
-              >
-                <UserRound size={16} />
-                Profil
               </Link>
               <LogoutButton />
             </>
@@ -186,33 +172,15 @@ export function SiteHeader() {
               <div className="mt-3 flex flex-col gap-2">
                 {user ? (
                   <>
-                    {isAdmin && (
-                      <Link
-                        href="/admin/dashboard"
-                        className={buttonClasses({ variant: "primary", size: "md" })}
-                      >
-                        Administration
-                      </Link>
-                    )}
                     <Link
-                      href="/mon-espace"
+                      href={isAdmin ? "/admin/dashboard" : "/mon-espace"}
                       className={cn(
-                        buttonClasses({ variant: "outline", size: "md" }),
+                        buttonClasses({ variant: "primary", size: "md" }),
                         "gap-2",
                       )}
                     >
                       <Avatar name={user.name ?? user.email ?? "Vous"} className="h-6 w-6 text-[0.6rem]" />
-                      Mon espace
-                    </Link>
-                    <Link
-                      href="/profil"
-                      className={cn(
-                        buttonClasses({ variant: "outline", size: "md" }),
-                        "gap-2",
-                      )}
-                    >
-                      <UserRound size={17} />
-                      Profil
+                      {user.name ?? "Mon tableau de bord"}
                     </Link>
                     <LogoutButton variant="ghost" size="md" className="justify-center" />
                   </>

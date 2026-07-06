@@ -78,7 +78,12 @@ export default async function MonEspacePage() {
               </p>
             </div>
           </div>
-          <LogoutButton variant="outline" size="md" />
+          <div className="flex flex-wrap items-center gap-2">
+            <Link href="/profil" className={buttonClasses({ variant: "ghost", size: "md" })}>
+              Mon profil
+            </Link>
+            <LogoutButton variant="outline" size="md" />
+          </div>
         </div>
 
         {/* Bannière de vérification */}
