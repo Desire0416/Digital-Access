@@ -3,7 +3,38 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@da/db/client";
+import { sendInvoiceEmail } from "@da/email";
 import { requireAdmin } from "./admin-queries";
+
+const FCFA = (n: number) =>
+  new Intl.NumberFormat("fr-CI", { style: "currency", currency: "XOF", maximumFractionDigits: 0 }).format(n);
+
+/** Envoi best-effort de la facture brandée au client. Ne bloque jamais l'action. */
+async function notifyInvoiceSent(invoiceId: string): Promise<void> {
+  try {
+    const inv = await prisma.invoice.findUnique({
+      where: { id: invoiceId },
+      select: {
+        number: true,
+        total: true,
+        dueDate: true,
+        client: { select: { name: true, email: true } },
+      },
+    });
+    if (!inv?.client?.email) return;
+    await sendInvoiceEmail(inv.client.email, {
+      name: inv.client.name || "cher client",
+      number: inv.number,
+      totalLabel: FCFA(inv.total),
+      dueDateLabel: inv.dueDate
+        ? new Intl.DateTimeFormat("fr-FR", { day: "2-digit", month: "long", year: "numeric" }).format(inv.dueDate)
+        : undefined,
+      invoiceId,
+    });
+  } catch (e) {
+    console.error("[invoice] notifyInvoiceSent:", e);
+  }
+}
 
 /* ══════════════════════════════════════════════════════════════════════════
    Server Actions — CRM Admin Digital Access (mutations).
@@ -347,6 +378,7 @@ export async function createInvoice(input: {
         dueDate: dueDate ? new Date(dueDate) : null,
       },
     });
+    if (status === "SENT") await notifyInvoiceSent(invoice.id);
     revalidatePath("/admin/factures");
     revalidatePath("/admin/dashboard");
     revalidatePath("/factures");
@@ -401,6 +433,7 @@ export async function updateInvoiceStatus(input: { id: string; status: string })
         paidAt: parsed.data.status === "PAID" ? new Date() : null,
       },
     });
+    if (parsed.data.status === "SENT") await notifyInvoiceSent(parsed.data.id);
     revalidatePath("/admin/factures");
     revalidatePath(`/admin/factures/${parsed.data.id}`);
     revalidatePath("/admin/dashboard");

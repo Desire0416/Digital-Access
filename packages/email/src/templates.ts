@@ -278,6 +278,7 @@ export function certificateEmail(opts: {
   return {
     subject: `🏆 Félicitations ${opts.name} — votre certificat est prêt`,
     html: layout({
+      preheader: `Votre certificat de réussite pour « ${opts.courseTitle} » est disponible.`,
       heading: `Bravo ${opts.name}, c'est validé ! 🎓`,
       body: `
         ${p(`Vous avez complété avec succès la formation <b>${opts.courseTitle}</b>. Votre certificat de réussite Access Academy est officiellement délivré.`)}
@@ -288,6 +289,45 @@ export function certificateEmail(opts: {
         ${p("Téléchargez-le en PDF, partagez-le sur LinkedIn, ou laissez un employeur vérifier son authenticité en ligne à tout moment.")}
         <div style="margin:24px 0;">${button(opts.certificatesUrl, "Voir mon certificat")}</div>
         ${p(`<span style='color:#9CA3AF;font-size:13px;'>Vérification publique : <a href="${opts.verifyUrl}" style="color:#2072E8;word-break:break-all;">${opts.verifyUrl}</a></span>`)}
+      `,
+    }),
+  };
+}
+
+export function invoiceEmail(opts: {
+  name: string;
+  number: string;
+  totalLabel: string;
+  dueDateLabel?: string;
+  invoiceUrl: string;
+}) {
+  const rows: [string, string][] = [
+    ["Facture n°", opts.number],
+    ["Montant total", opts.totalLabel],
+    ...(opts.dueDateLabel ? ([["Échéance", opts.dueDateLabel]] as [string, string][]) : []),
+  ];
+  return {
+    subject: `Votre facture ${opts.number} — Digital Access`,
+    html: layout({
+      preheader: `Votre facture ${opts.number} d'un montant de ${opts.totalLabel} est disponible.`,
+      heading: "Votre facture est disponible",
+      body: `
+        ${p(`Bonjour ${opts.name}, voici votre facture <b>${opts.number}</b>. Vous pouvez la consulter et la télécharger en PDF à tout moment depuis votre espace client Digital Access.`)}
+        <div style="background:#F7F8FC;border:1px solid ${BRAND.hair};border-radius:12px;padding:6px 18px;margin:6px 0 22px;">
+          <table style="width:100%;border-collapse:collapse;">
+            ${rows
+              .map(
+                ([k, v], i) =>
+                  `<tr>
+                    <td style="padding:11px 0;color:${BRAND.muted};font-size:13px;${i > 0 ? `border-top:1px solid ${BRAND.hair};` : ""}">${k}</td>
+                    <td style="padding:11px 0;text-align:right;font-size:14px;font-weight:700;color:${BRAND.navy};${i > 0 ? `border-top:1px solid ${BRAND.hair};` : ""}">${v}</td>
+                  </tr>`,
+              )
+              .join("")}
+          </table>
+        </div>
+        <div style="margin:24px 0;">${button(opts.invoiceUrl, "Voir et télécharger ma facture")}</div>
+        ${p(`<span style="color:${BRAND.muted};font-size:13.5px;">Le règlement s'effectue par Mobile Money (Orange, MTN, Wave) ou selon les modalités convenues ensemble. Une question sur cette facture ? Répondez à cet email ou écrivez-nous à <a href="mailto:${CONTACT.email}" style="color:${BRAND.link};text-decoration:none;">${CONTACT.email}</a>.</span>`)}
       `,
     }),
   };

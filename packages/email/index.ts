@@ -9,12 +9,14 @@ import {
   paymentApprovedEmail,
   paymentRejectedEmail,
   certificateEmail,
+  invoiceEmail,
 } from "./src/templates";
 
 export { sendEmail } from "./src/send";
 export type { SendResult } from "./src/send";
 
 const ACADEMY_URL = () => process.env.NEXT_PUBLIC_ACADEMY_URL || "https://academy.digitalaccess.ci";
+const WEB_URL = () => process.env.NEXT_PUBLIC_WEB_URL || "https://digitalaccess.ci";
 
 export function sendVerificationEmail(to: string, data: { name: string; url: string }) {
   const { subject, html } = verificationEmail(data);
@@ -60,6 +62,15 @@ export function sendCertificateEmail(
   data: Parameters<typeof certificateEmail>[0],
 ) {
   const { subject, html } = certificateEmail(data);
+  return sendEmail({ to, subject, html });
+}
+
+export function sendInvoiceEmail(
+  to: string,
+  data: { name: string; number: string; totalLabel: string; dueDateLabel?: string; invoiceId: string },
+) {
+  const { invoiceId, ...rest } = data;
+  const { subject, html } = invoiceEmail({ ...rest, invoiceUrl: `${WEB_URL()}/factures/${invoiceId}` });
   return sendEmail({ to, subject, html });
 }
 
