@@ -1,6 +1,7 @@
 "use server";
 
 import { randomUUID } from "node:crypto";
+import { headers } from "next/headers";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { prisma } from "@da/db/client";
@@ -15,7 +16,24 @@ export type ActionResult =
   | { ok: true; message?: string }
   | { ok: false; error: string; fieldErrors?: Record<string, string> };
 
-const ACADEMY_URL = process.env.NEXT_PUBLIC_ACADEMY_URL || "http://localhost:3001";
+/**
+ * Base URL réelle de la requête (host du domaine réellement visité). Garantit que
+ * les liens email pointent vers academy.digitalaccess.ci — et non vers l'URL
+ * *.vercel.app — quel que soit NEXT_PUBLIC_ACADEMY_URL. Repli : env puis localhost.
+ */
+async function academyBaseUrl(): Promise<string> {
+  try {
+    const h = await headers();
+    const host = h.get("x-forwarded-host") ?? h.get("host");
+    if (host) {
+      const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
+      return `${proto}://${host}`;
+    }
+  } catch {
+    /* hors contexte requête */
+  }
+  return process.env.NEXT_PUBLIC_ACADEMY_URL || "http://localhost:3001";
+}
 
 function fieldErrorsFrom(error: z.ZodError): Record<string, string> {
   const out: Record<string, string> = {};
@@ -73,7 +91,7 @@ export async function registerUser(input: RegisterInput): Promise<ActionResult> 
       },
     });
 
-    const url = `${ACADEMY_URL}/auth/verify?token=${token}`;
+    const url = `${await academyBaseUrl()}/auth/verify?token=${token}`;
     console.log("[academy/auth] Lien de vérification:", url);
     await sendVerificationEmail(user.email, { name: user.name, url });
 
@@ -114,7 +132,7 @@ export async function resendVerification(email: string): Promise<ActionResult> {
     await prisma.verificationToken.create({
       data: { token, type: "EMAIL_VERIFICATION", userId: user.id, expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000) },
     });
-    const url = `${ACADEMY_URL}/auth/verify?token=${token}`;
+    const url = `${await academyBaseUrl()}/auth/verify?token=${token}`;
     console.log("[academy/auth] Lien de vérification (renvoi):", url);
     await sendVerificationEmail(user.email, { name: user.name, url });
 
@@ -201,7 +219,7 @@ export async function requestPasswordReset(email: string): Promise<ActionResult>
       await prisma.verificationToken.create({
         data: { token, type: "PASSWORD_RESET", userId: user.id, expiresAt: new Date(Date.now() + 60 * 60 * 1000) },
       });
-      const url = `${ACADEMY_URL}/auth/reset-password?token=${token}`;
+      const url = `${await academyBaseUrl()}/auth/reset-password?token=${token}`;
       console.log("[academy/auth] Lien de réinitialisation:", url);
       await sendResetPasswordEmail(user.email, { name: user.name, url });
     }
