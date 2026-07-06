@@ -63,6 +63,8 @@ export interface QuizRunnerProps {
   /** meilleur score précédent (depuis Progress), null si jamais tenté */
   previousScore?: number | null;
   alreadyPassed?: boolean;
+  /** Appelé quand ce quiz clôt le cours (100%) — remonte le code du certificat. */
+  onCourseCompleted?: (code: string) => void;
 }
 
 /**
@@ -74,6 +76,7 @@ export function QuizRunner({
   chapterId,
   previousScore,
   alreadyPassed,
+  onCourseCompleted,
 }: QuizRunnerProps) {
   const router = useRouter();
   const [phase, setPhase] = React.useState<Phase>("answering");
@@ -131,6 +134,7 @@ export function QuizRunner({
     }
     setResult(res);
     setPhase("result");
+    if (res.certificateCode) onCourseCompleted?.(res.certificateCode);
     router.refresh();
   }
 

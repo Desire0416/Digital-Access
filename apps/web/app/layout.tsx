@@ -7,7 +7,38 @@ import { PageTransition } from "@/components/PageTransition";
 import { WhatsAppFab } from "@/components/WhatsAppFab";
 import { ChromeGate } from "@/components/ChromeGate";
 import { Providers } from "@/components/Providers";
+import { JsonLd } from "@/components/JsonLd";
 import "./globals.css";
+
+/* ─────────────── Données structurées SEO (Schema.org) ─────────────── */
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": `${siteConfig.url}/#organization`,
+  name: siteConfig.name,
+  alternateName: "Digital Access CI",
+  url: siteConfig.url,
+  logo: `${siteConfig.url}/icon.svg`,
+  description: siteConfig.description,
+  email: siteConfig.contact.email,
+  telephone: siteConfig.contact.phone,
+  sameAs: Object.values(siteConfig.socials),
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Abidjan",
+    addressCountry: "CI",
+  },
+  areaServed: { "@type": "Country", name: "Côte d'Ivoire" },
+};
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": `${siteConfig.url}/#website`,
+  name: siteConfig.name,
+  url: siteConfig.url,
+  inLanguage: "fr-CI",
+  publisher: { "@id": `${siteConfig.url}/#organization` },
+};
 
 const inter = Inter({
   subsets: ["latin"],
@@ -75,6 +106,8 @@ export default function RootLayout({
       className={`${inter.variable} ${jakarta.variable} ${jetbrains.variable}`}
     >
       <body className="min-h-screen bg-surface-primary antialiased">
+        <JsonLd data={organizationSchema} />
+        <JsonLd data={websiteSchema} />
         <a
           href="#contenu"
           className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-navy focus:px-4 focus:py-2 focus:text-white"

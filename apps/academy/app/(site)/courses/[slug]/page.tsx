@@ -40,7 +40,8 @@ import {
 import { currentUser } from "@da/auth/guards";
 import { getCourseDetail, getCourses, getUserEnrollment } from "@/lib/queries";
 import { getPaymentStatusForCourse } from "@/lib/payment-queries";
-import { levelLabel } from "@/lib/site";
+import { levelLabel, academyConfig } from "@/lib/site";
+import { JsonLd } from "@/components/JsonLd";
 import { CourseCard } from "@/components/CourseCard";
 import { EnrollCTA } from "./EnrollCTA";
 import { ProgramAccordion } from "./ProgramAccordion";
@@ -135,8 +136,64 @@ export default async function CourseDetailPage({
     { icon: FileDown, label: "Ressources téléchargeables" },
   ];
 
+  /* ─────────────── Données structurées SEO (Course + fil d'Ariane) ─────────────── */
+  const courseUrl = `${academyConfig.url}/courses/${slug}`;
+  const courseSchema: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    name: course.title,
+    description: course.description || course.subtitle,
+    url: courseUrl,
+    inLanguage: course.language?.toLowerCase().startsWith("fr") ? "fr-CI" : course.language,
+    educationalLevel: levelLabel(course.level),
+    provider: {
+      "@type": "EducationalOrganization",
+      name: academyConfig.name,
+      url: academyConfig.url,
+      sameAs: academyConfig.url,
+    },
+    ...(course.instructor
+      ? { instructor: { "@type": "Person", name: course.instructor } }
+      : {}),
+    ...(course.ratingCount > 0
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: course.rating,
+            ratingCount: course.ratingCount,
+            bestRating: 5,
+            worstRating: 1,
+          },
+        }
+      : {}),
+    offers: {
+      "@type": "Offer",
+      category: course.isFree ? "Free" : "Paid",
+      price: course.isFree ? 0 : course.price,
+      priceCurrency: "XOF",
+      availability: "https://schema.org/InStock",
+      url: courseUrl,
+    },
+    hasCourseInstance: {
+      "@type": "CourseInstance",
+      courseMode: "online",
+      courseWorkload: `PT${Math.max(1, course.durationMinutes)}M`,
+    },
+  };
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Accueil", item: academyConfig.url },
+      { "@type": "ListItem", position: 2, name: "Catalogue", item: `${academyConfig.url}/courses` },
+      { "@type": "ListItem", position: 3, name: course.title, item: courseUrl },
+    ],
+  };
+
   return (
     <>
+      <JsonLd data={courseSchema} />
+      <JsonLd data={breadcrumbSchema} />
       {/* ══════════════ HERO — fond sombre, halos, grille ══════════════ */}
       <section className="relative isolate overflow-hidden bg-surface-dark">
         <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">

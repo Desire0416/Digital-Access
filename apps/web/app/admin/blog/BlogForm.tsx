@@ -268,7 +268,7 @@ export function BlogForm({
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={coverImage}
-                alt=""
+                alt="Aperçu de l'image de couverture de l'article"
                 className="mb-4 aspect-[16/7] w-full rounded-xl border border-navy/[0.06] object-cover"
               />
             ) : null}

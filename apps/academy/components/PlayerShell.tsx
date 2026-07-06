@@ -28,6 +28,7 @@ import type { PlayerChapter, PlayerData } from "@/lib/types";
 import { Markdown } from "./Markdown";
 import { VideoEmbed } from "./VideoEmbed";
 import { QuizRunner } from "./QuizRunner";
+import { CertificateCelebration } from "./CertificateCelebration";
 
 const typeIcon: Record<PlayerChapter["type"], React.ElementType> = {
   VIDEO: PlayCircle,
@@ -64,6 +65,7 @@ export function PlayerShell({
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [pendingComplete, setPendingComplete] = React.useState(false);
   const [xpFlash, setXpFlash] = React.useState<number | null>(null);
+  const [certCode, setCertCode] = React.useState<string | null>(null);
   // Optimiste : complétions locales en plus de celles du serveur.
   const [localDone, setLocalDone] = React.useState<Set<string>>(new Set());
 
@@ -99,6 +101,7 @@ export function PlayerShell({
         setXpFlash(res.xpGained);
         setTimeout(() => setXpFlash(null), 2400);
       }
+      if (res.certificateCode) setCertCode(res.certificateCode);
       router.refresh();
     }
   }
@@ -349,6 +352,7 @@ export function PlayerShell({
                       chapterId={chapter.id}
                       previousScore={data.enrollment?.quizScores[chapter.id] ?? null}
                       alreadyPassed={isDone}
+                      onCourseCompleted={setCertCode}
                     />
                   ) : (
                     chapter.content && <Markdown>{chapter.content}</Markdown>
@@ -418,6 +422,13 @@ export function PlayerShell({
                     {commentsSlot}
                   </div>
                 )}
+
+                {/* Célébration à la complétion du cours (100%) */}
+                <CertificateCelebration
+                  code={certCode}
+                  courseTitle={data.course.title}
+                  onClose={() => setCertCode(null)}
+                />
 
                 {/* Navigation précédent / suivant */}
                 <div className="mt-10 flex items-center justify-between gap-3 border-t border-navy/[0.08] pt-6">

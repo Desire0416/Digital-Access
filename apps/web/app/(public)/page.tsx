@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import {
@@ -21,6 +22,13 @@ import { TestimonialCard } from "@/components/TestimonialCard";
 import { CTABanner } from "@/components/CTABanner";
 import { AcademyPromo } from "@/components/AcademyPromo";
 import { Icon } from "@/components/Icon";
+
+export const metadata: Metadata = {
+  title: "Agence web & e-learning en Côte d'Ivoire",
+  description:
+    "Digital Access conçoit sites vitrines, e-commerce, plateformes e-learning et applications sur-mesure à Abidjan. Paiement Mobile Money, design soigné et accompagnement local.",
+  alternates: { canonical: "/" },
+};
 
 export default function HomePage() {
   const homeServices = servicePacks.slice(0, 3);

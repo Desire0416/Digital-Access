@@ -110,7 +110,7 @@ export function StudioCourseRow({ course }: { course: StudioCourseListItem }) {
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={course.coverImage}
-              alt=""
+              alt={`Miniature du cours ${course.title}`}
               className="h-full w-full object-cover"
             />
           ) : (

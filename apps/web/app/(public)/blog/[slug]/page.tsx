@@ -14,6 +14,8 @@ import {
   Monogram,
 } from "@da/ui";
 import { blogPosts } from "@da/db";
+import { siteConfig } from "@/lib/site";
+import { JsonLd } from "@/components/JsonLd";
 import { CTABanner } from "@/components/CTABanner";
 import { BlogCard } from "@/components/BlogCard";
 import { ArticleHero } from "./ArticleHero";
@@ -81,8 +83,30 @@ export default async function BlogPostPage({
   );
   const related = [...sameCategory, ...others].slice(0, 3);
 
+  const articleUrl = `${siteConfig.url}/blog/${post.slug}`;
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.excerpt,
+    datePublished: post.publishedAt,
+    dateModified: post.publishedAt,
+    author: { "@type": "Person", name: post.author.name },
+    publisher: {
+      "@type": "Organization",
+      name: siteConfig.name,
+      logo: { "@type": "ImageObject", url: `${siteConfig.url}/icon.svg` },
+    },
+    keywords: post.tags.join(", "),
+    articleSection: post.category,
+    inLanguage: "fr-CI",
+    url: articleUrl,
+    mainEntityOfPage: { "@type": "WebPage", "@id": articleUrl },
+  };
+
   return (
     <>
+      <JsonLd data={articleSchema} />
       <ArticleHero post={post} index={index} />
 
       {/* Corps de l'article + partage */}

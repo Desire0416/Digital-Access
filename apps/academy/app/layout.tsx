@@ -2,7 +2,27 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import { academyConfig } from "@/lib/site";
 import { Providers } from "@/components/Providers";
+import { JsonLd } from "@/components/JsonLd";
 import "./globals.css";
+
+/* ─────────────── Données structurées SEO (Schema.org) ─────────────── */
+const academySchema = {
+  "@context": "https://schema.org",
+  "@type": "EducationalOrganization",
+  "@id": `${academyConfig.url}/#organization`,
+  name: academyConfig.name,
+  url: academyConfig.url,
+  logo: `${academyConfig.url}/icon.svg`,
+  description: academyConfig.description,
+  email: academyConfig.contact.email,
+  inLanguage: "fr-CI",
+  parentOrganization: {
+    "@type": "Organization",
+    name: "Digital Access",
+    url: "https://digitalaccess.ci",
+  },
+  areaServed: { "@type": "Country", name: "Côte d'Ivoire" },
+};
 
 const inter = Inter({
   subsets: ["latin"],
@@ -70,6 +90,7 @@ export default function RootLayout({
       className={`${inter.variable} ${jakarta.variable} ${jetbrains.variable}`}
     >
       <body className="min-h-screen bg-surface-primary antialiased">
+        <JsonLd data={academySchema} />
         <a
           href="#contenu"
           className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-navy focus:px-4 focus:py-2 focus:text-white"

@@ -316,7 +316,7 @@ export function PortfolioForm({
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={coverImage}
-                  alt=""
+                  alt="Aperçu de l'image de couverture du projet"
                   className="aspect-[16/9] w-full border-b border-navy/[0.06] object-cover"
                 />
               ) : (

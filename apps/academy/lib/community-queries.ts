@@ -122,9 +122,13 @@ export async function getForumTopics(
   });
 
   // Marque l'auteur comme instructeur si c'est le prof du cours.
-  const instructorId = (
-    await prisma.course.findUnique({ where: { id: access.courseId }, select: { instructorId: true } })
-  )?.instructorId;
+  const instructorId =
+    (
+      await prisma.course.findUnique({
+        where: { id: access.courseId },
+        select: { instructorId: true },
+      })
+    )?.instructorId ?? null;
 
   return {
     access,
