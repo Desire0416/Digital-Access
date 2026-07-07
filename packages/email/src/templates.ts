@@ -14,6 +14,9 @@ const BRAND = {
   hair: "#ECEDF3",
   bg: "#F4F5FA",
   tagline: "Le numérique accessible, utile et stratégique",
+  // Logo officiel (PNG hébergé) — servi depuis le domaine canonique, rendu fiable en mail.
+  logoUrl: "https://digitalaccess.ci/brand/da-logo-color.png",
+  logoWhiteUrl: "https://digitalaccess.ci/brand/da-logo-white.png",
 };
 
 /** Coordonnées officielles Digital Access (source de vérité des emails). */
@@ -27,19 +30,11 @@ const CONTACT = {
   address: "Cocody, Abidjan — Côte d'Ivoire",
 };
 
-/** Monogramme DA en dégradé (repli couleur unie), rendu fiable en HTML mail. */
+/** Logo officiel Digital Access (image PNG hébergée), centré. */
 function logoLockup(): string {
-  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
-    <td style="vertical-align:middle;">
-      <div style="width:46px;height:46px;border-radius:13px;background-color:${BRAND.solid};background-image:${BRAND.gradient};text-align:center;">
-        <span style="display:inline-block;line-height:46px;color:#ffffff;font-weight:800;font-size:19px;letter-spacing:.03em;">DA</span>
-      </div>
-    </td>
-    <td style="vertical-align:middle;padding-left:13px;">
-      <div style="font-size:16px;font-weight:800;letter-spacing:.15em;color:${BRAND.navy};line-height:1;">DIGITAL ACCESS</div>
-      <div style="font-size:11px;color:${BRAND.muted};letter-spacing:.03em;margin-top:5px;line-height:1.2;">${BRAND.tagline}</div>
-    </td>
-  </tr></table>`;
+  return `<div style="text-align:center;">
+    <img src="${BRAND.logoUrl}" alt="Digital Access" width="94" height="78" style="width:94px;height:78px;display:inline-block;border:0;outline:none;text-decoration:none;" />
+  </div>`;
 }
 
 /** Pied de page : coordonnées complètes + mentions. */

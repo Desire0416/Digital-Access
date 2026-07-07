@@ -9,27 +9,31 @@ import {
   Svg,
   Rect,
   Path,
+  Circle,
   Defs,
   LinearGradient,
   Stop,
+  G,
 } from "@react-pdf/renderer";
+import { CERT_LOGO_COLOR } from "./certificate-logo";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Certificat de réussite Access Academy — @react-pdf/renderer.
-   A4 paysage, police intégrée (Helvetica), dégradé signature via SVG, QR de
-   vérification. Aucune police externe (robuste en serverless).
+   A4 paysage. Logo officiel Digital Access embarqué (data URI). Typographie
+   sérif de cérémonie (Times, intégrée → aucune police externe, robuste en
+   serverless). Cadre double filet or, sceau médaillon, filigrane, QR.
    ══════════════════════════════════════════════════════════════════════════ */
 
 const C = {
   violet: "#5B3FA8",
   blueRoyal: "#2B5CC6",
   cyan: "#00BCD4",
-  navy: "#1A1A2E",
+  navy: "#14142A",
   muted: "#6B7280",
   faint: "#9CA3AF",
-  gold: "#B8862F",
+  gold: "#B0852B",
+  goldLight: "#D8B45A",
   paper: "#FFFFFF",
-  soft: "#F7F7FB",
   line: "#E7E7EF",
 };
 
@@ -46,122 +50,126 @@ export interface CertificateData {
 const s = StyleSheet.create({
   page: {
     backgroundColor: C.paper,
-    paddingVertical: 30,
-    paddingHorizontal: 34,
-    fontFamily: "Helvetica",
+    padding: 20,
+    fontFamily: "Times-Roman",
     color: C.navy,
     position: "relative",
   },
-  frame: {
+  outer: {
     flexGrow: 1,
-    borderWidth: 1.5,
-    borderColor: C.line,
-    borderRadius: 6,
-    paddingTop: 34,
-    paddingBottom: 26,
-    paddingHorizontal: 44,
+    borderWidth: 2,
+    borderColor: C.gold,
+    borderRadius: 4,
     position: "relative",
   },
-  // barre dégradée haute (posée en absolu via SVG)
-  topBar: { position: "absolute", top: 0, left: 0, right: 0 },
-  header: {
-    flexDirection: "row",
+  inner: {
+    flexGrow: 1,
+    margin: 5,
+    borderWidth: 0.8,
+    borderColor: C.line,
+    borderRadius: 2,
+    paddingTop: 30,
+    paddingBottom: 22,
+    paddingHorizontal: 52,
     alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 6,
+    position: "relative",
   },
-  brandText: { marginLeft: 12 },
-  brandName: {
-    fontFamily: "Helvetica-Bold",
-    fontSize: 15,
-    letterSpacing: 3,
-    color: C.navy,
-  },
-  brandSub: {
-    fontSize: 7.5,
-    letterSpacing: 2.4,
-    color: C.violet,
-    marginTop: 2,
-    fontFamily: "Helvetica-Bold",
-  },
+  topBar: { position: "absolute", top: 0, left: 0, right: 0 },
+  logo: { width: 104, height: 86, marginBottom: 4 },
   eyebrow: {
-    textAlign: "center",
-    marginTop: 20,
-    fontSize: 11,
+    fontFamily: "Helvetica-Bold",
+    fontSize: 10.5,
     letterSpacing: 6,
     color: C.gold,
-    fontFamily: "Helvetica-Bold",
-  },
-  title: {
-    textAlign: "center",
-    marginTop: 6,
-    fontSize: 30,
-    letterSpacing: 1,
-    color: C.navy,
-    fontFamily: "Helvetica-Bold",
+    marginTop: 4,
   },
   lead: {
-    textAlign: "center",
-    marginTop: 20,
-    fontSize: 11,
+    fontFamily: "Times-Italic",
+    fontSize: 12,
     color: C.muted,
+    marginTop: 22,
   },
   name: {
-    textAlign: "center",
-    marginTop: 8,
-    fontSize: 34,
-    color: C.violet,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: "Times-Bold",
+    fontSize: 40,
+    color: C.navy,
+    marginTop: 6,
+    letterSpacing: 0.5,
   },
-  nameRule: { alignItems: "center", marginTop: 6 },
+  ruleWrap: { marginTop: 8, marginBottom: 4 },
   courseIntro: {
-    textAlign: "center",
-    marginTop: 18,
-    fontSize: 11,
+    fontFamily: "Times-Roman",
+    fontSize: 12,
     color: C.muted,
+    marginTop: 20,
   },
   course: {
-    textAlign: "center",
-    marginTop: 6,
-    fontSize: 16,
+    fontFamily: "Times-Bold",
+    fontSize: 18,
     color: C.navy,
-    fontFamily: "Helvetica-Bold",
+    marginTop: 7,
+    textAlign: "center",
+    maxWidth: 520,
+    lineHeight: 1.25,
   },
   footer: {
     position: "absolute",
-    left: 44,
-    right: 44,
-    bottom: 26,
+    left: 52,
+    right: 52,
+    bottom: 24,
     flexDirection: "row",
     alignItems: "flex-end",
     justifyContent: "space-between",
   },
-  fCol: { width: 190 },
+  fCol: { width: 200 },
   fLabel: {
+    fontFamily: "Helvetica-Bold",
     fontSize: 7.5,
     letterSpacing: 1.5,
     color: C.faint,
-    fontFamily: "Helvetica-Bold",
     marginBottom: 3,
   },
-  fValue: { fontSize: 10.5, color: C.navy, fontFamily: "Helvetica-Bold" },
+  fValue: { fontFamily: "Times-Bold", fontSize: 11.5, color: C.navy },
   sigLine: {
-    marginTop: 20,
+    marginTop: 22,
     borderTopWidth: 1,
     borderTopColor: C.navy,
     paddingTop: 4,
-    width: 160,
+    width: 168,
   },
-  sigName: { fontSize: 10, color: C.navy, fontFamily: "Helvetica-Bold" },
-  sigRole: { fontSize: 7.5, color: C.muted, marginTop: 1 },
-  qrWrap: { alignItems: "center", width: 120 },
-  qr: { width: 72, height: 72 },
-  qrCode: { fontSize: 8, color: C.navy, fontFamily: "Helvetica-Bold", marginTop: 4 },
-  qrHint: { fontSize: 6.5, color: C.faint, marginTop: 2, textAlign: "center" },
+  sigName: { fontFamily: "Times-Bold", fontSize: 11, color: C.navy },
+  sigRole: { fontFamily: "Helvetica", fontSize: 7.5, color: C.muted, marginTop: 2 },
+  sealWrap: { alignItems: "center", width: 130 },
+  sealCaption: {
+    fontFamily: "Helvetica-Bold",
+    fontSize: 6.5,
+    letterSpacing: 1.5,
+    color: C.gold,
+    marginTop: 5,
+  },
+  qrWrap: { alignItems: "center", width: 200 },
+  qr: { width: 68, height: 68 },
+  qrCode: { fontFamily: "Helvetica-Bold", fontSize: 9, color: C.navy, marginTop: 4, letterSpacing: 1 },
+  qrHint: { fontFamily: "Helvetica", fontSize: 6.5, color: C.faint, marginTop: 2, textAlign: "center" },
 });
 
-/** Monogramme DA stylisé (dégradé) — rendu SVG natif react-pdf. */
-function Seal({ size = 46 }: { size?: number }) {
+/** Grand filigrane en dégradé très pâle (monogramme stylisé) derrière le contenu. */
+function Watermark() {
+  return (
+    <View style={{ position: "absolute", top: 96, left: 0, right: 0, alignItems: "center" }}>
+      <Svg width={260} height={260} viewBox="0 0 100 100" style={{ opacity: 0.05 }}>
+        <Path
+          d="M30 22 L30 78 L52 78 C70 78 80 66 80 50 C80 34 70 22 52 22 Z M42 34 L52 34 C62 34 68 41 68 50 C68 59 62 66 52 66 L42 66 Z"
+          fill={C.blueRoyal}
+        />
+        <Path d="M50 74 L64 40 L78 74 L70 74 L64 58 L58 74 Z" fill={C.violet} />
+      </Svg>
+    </View>
+  );
+}
+
+/** Sceau médaillon or + dégradé, étoile centrale. */
+function Seal({ size = 78 }: { size?: number }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 100 100">
       <Defs>
@@ -171,15 +179,37 @@ function Seal({ size = 46 }: { size?: number }) {
           <Stop offset="1" stopColor={C.cyan} />
         </LinearGradient>
       </Defs>
-      <Rect x="2" y="2" width="96" height="96" rx="26" fill="url(#sealGrad)" />
-      {/* "D" ouvert */}
+      {/* anneau or extérieur */}
+      <Circle cx="50" cy="50" r="47" fill="none" stroke={C.gold} strokeWidth="1.5" />
+      <Circle cx="50" cy="50" r="43" fill="none" stroke={C.goldLight} strokeWidth="0.7" />
+      {/* disque dégradé */}
+      <Circle cx="50" cy="50" r="37" fill="url(#sealGrad)" />
+      <Circle cx="50" cy="50" r="37" fill="none" stroke="#FFFFFF" strokeWidth="1" opacity={0.45} />
+      {/* étoile 5 branches */}
       <Path
-        d="M30 26 L30 74 L50 74 C66 74 74 64 74 50 C74 36 66 26 50 26 Z M42 38 L50 38 C58 38 62 43 62 50 C62 57 58 62 50 62 L42 62 Z"
+        d="M50 27 L56.2 42.8 L73 44 L60 54.8 L64.3 71 L50 61.5 L35.7 71 L40 54.8 L27 44 L43.8 42.8 Z"
         fill="#FFFFFF"
       />
-      {/* pic "A" */}
-      <Path d="M52 70 L62 44 L72 70 L66 70 L62 58 L58 70 Z" fill="#FFFFFF" opacity={0.92} />
     </Svg>
+  );
+}
+
+/** Ornement d'angle (petit chevron dégradé). */
+function Corner({ style, flip }: { style: object; flip?: boolean }) {
+  return (
+    <View style={{ position: "absolute", ...style }}>
+      <Svg width={26} height={26} viewBox="0 0 26 26">
+        <Defs>
+          <LinearGradient id="cornerGrad" x1="0" y1="0" x2="1" y2="1">
+            <Stop offset="0" stopColor={C.violet} />
+            <Stop offset="1" stopColor={C.cyan} />
+          </LinearGradient>
+        </Defs>
+        <G transform={flip ? "scale(-1,1) translate(-26,0)" : undefined}>
+          <Path d="M2 2 L14 2 M2 2 L2 14" stroke="url(#cornerGrad)" strokeWidth="2" fill="none" />
+        </G>
+      </Svg>
+    </View>
   );
 }
 
@@ -187,13 +217,13 @@ export function CertificateDocument(data: CertificateData) {
   return (
     <Document
       title={`Certificat — ${data.courseTitle}`}
-      author="Access Academy"
+      author="Access Academy — Digital Access"
       subject={`Certificat de réussite de ${data.name}`}
     >
       <Page size="A4" orientation="landscape" style={s.page}>
         {/* Barre dégradée supérieure */}
         <View style={s.topBar}>
-          <Svg width={842} height={30} viewBox="0 0 842 30">
+          <Svg width={842} height={10} viewBox="0 0 842 10">
             <Defs>
               <LinearGradient id="topGrad" x1="0" y1="0" x2="1" y2="0">
                 <Stop offset="0" stopColor={C.violet} />
@@ -201,62 +231,66 @@ export function CertificateDocument(data: CertificateData) {
                 <Stop offset="1" stopColor={C.cyan} />
               </LinearGradient>
             </Defs>
-            <Rect x="0" y="0" width="842" height="8" fill="url(#topGrad)" />
+            <Rect x="0" y="0" width="842" height="10" fill="url(#topGrad)" />
           </Svg>
         </View>
 
-        <View style={s.frame}>
-          {/* En-tête marque */}
-          <View style={s.header}>
-            <Seal />
-            <View style={s.brandText}>
-              <Text style={s.brandName}>ACCESS ACADEMY</Text>
-              <Text style={s.brandSub}>UN PRODUIT DIGITAL ACCESS</Text>
+        <View style={s.outer}>
+          <View style={s.inner}>
+            <Watermark />
+
+            {/* Ornements d'angle */}
+            <Corner style={{ top: 10, left: 10 }} />
+            <Corner style={{ top: 10, right: 10 }} flip />
+
+            {/* Logo officiel */}
+            <Image src={CERT_LOGO_COLOR} style={s.logo} />
+
+            <Text style={s.eyebrow}>CERTIFICAT DE RÉUSSITE</Text>
+
+            <Text style={s.lead}>Ce certificat est fièrement décerné à</Text>
+            <Text style={s.name}>{data.name}</Text>
+            <View style={s.ruleWrap}>
+              <Svg width={260} height={5} viewBox="0 0 260 5">
+                <Defs>
+                  <LinearGradient id="ruleGrad" x1="0" y1="0" x2="1" y2="0">
+                    <Stop offset="0" stopColor={C.violet} />
+                    <Stop offset="0.5" stopColor={C.blueRoyal} />
+                    <Stop offset="1" stopColor={C.cyan} />
+                  </LinearGradient>
+                </Defs>
+                <Rect x="0" y="1.5" width="260" height="2.4" rx="1.2" fill="url(#ruleGrad)" />
+                <Circle cx="6" cy="2.7" r="2.4" fill={C.violet} />
+                <Circle cx="254" cy="2.7" r="2.4" fill={C.cyan} />
+              </Svg>
             </View>
-          </View>
 
-          <Text style={s.eyebrow}>CERTIFICAT DE RÉUSSITE</Text>
-          <Text style={s.title}>Formation certifiée</Text>
+            <Text style={s.courseIntro}>pour avoir complété avec succès la formation</Text>
+            <Text style={s.course}>{data.courseTitle}</Text>
 
-          <Text style={s.lead}>Ce certificat atteste que</Text>
-          <Text style={s.name}>{data.name}</Text>
-          <View style={s.nameRule}>
-            <Svg width={220} height={4} viewBox="0 0 220 4">
-              <Defs>
-                <LinearGradient id="ruleGrad" x1="0" y1="0" x2="1" y2="0">
-                  <Stop offset="0" stopColor={C.violet} />
-                  <Stop offset="1" stopColor={C.cyan} />
-                </LinearGradient>
-              </Defs>
-              <Rect x="0" y="0" width="220" height="4" rx="2" fill="url(#ruleGrad)" />
-            </Svg>
-          </View>
-
-          <Text style={s.courseIntro}>a complété avec succès la formation</Text>
-          <Text style={s.course}>{data.courseTitle}</Text>
-
-          {/* Pied : date / signature — sceau — QR */}
-          <View style={s.footer}>
-            <View style={s.fCol}>
-              <Text style={s.fLabel}>DÉLIVRÉ LE</Text>
-              <Text style={s.fValue}>{data.dateStr}</Text>
-              <View style={s.sigLine}>
-                <Text style={s.sigName}>{data.instructor ?? "Access Academy"}</Text>
-                <Text style={s.sigRole}>Formateur — Access Academy</Text>
+            {/* Pied : date / signature — sceau — QR */}
+            <View style={s.footer}>
+              <View style={s.fCol}>
+                <Text style={s.fLabel}>DÉLIVRÉ LE</Text>
+                <Text style={s.fValue}>{data.dateStr}</Text>
+                <View style={s.sigLine}>
+                  <Text style={s.sigName}>{data.instructor ?? "Access Academy"}</Text>
+                  <Text style={s.sigRole}>Formateur · Access Academy</Text>
+                </View>
               </View>
-            </View>
 
-            <View style={{ alignItems: "center", width: 120 }}>
-              <Seal size={40} />
-              <Text style={{ fontSize: 7, color: C.faint, marginTop: 4, letterSpacing: 1 }}>
-                SCEAU OFFICIEL
-              </Text>
-            </View>
+              <View style={s.sealWrap}>
+                <Seal />
+                <Text style={s.sealCaption}>SCEAU OFFICIEL</Text>
+              </View>
 
-            <View style={s.qrWrap}>
-              {data.qrDataUrl ? <Image src={data.qrDataUrl} style={s.qr} /> : null}
-              <Text style={s.qrCode}>{data.code}</Text>
-              <Text style={s.qrHint}>Vérifiez sur{"\n"}academy.digitalaccess.ci/verify</Text>
+              <View style={s.qrWrap}>
+                {data.qrDataUrl ? <Image src={data.qrDataUrl} style={s.qr} /> : null}
+                <Text style={s.qrCode}>{data.code}</Text>
+                <Text style={s.qrHint}>
+                  Vérifiez l&apos;authenticité sur{"\n"}academy.digitalaccess.ci/verify
+                </Text>
+              </View>
             </View>
           </View>
         </View>
