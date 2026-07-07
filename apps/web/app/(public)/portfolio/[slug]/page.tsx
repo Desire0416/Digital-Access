@@ -110,7 +110,7 @@ export default async function PortfolioDetailPage({
                 <span className="font-semibold text-navy">{item.client}</span> de la
                 définition du besoin jusqu'à la mise en ligne, en soignant autant
                 l'expérience utilisateur que la robustesse technique. Le résultat :
-                un {item.type.toLowerCase()} fiable, élégant et pensé pour durer.
+                une réalisation fiable, élégante et pensée pour durer.
               </p>
             </Reveal>
 

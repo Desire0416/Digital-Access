@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import { Badge, Monogram } from "@da/ui";
@@ -29,14 +30,34 @@ export function PortfolioCard({
         className="overflow-hidden rounded-xl border border-navy/[0.07] bg-surface-primary"
       >
         <div
-          className={`relative aspect-[16/10] overflow-hidden bg-gradient-to-br ${covers[index % covers.length]}`}
+          className={`relative aspect-[16/10] overflow-hidden ${
+            item.coverImage
+              ? "bg-navy"
+              : `bg-gradient-to-br ${covers[index % covers.length]}`
+          }`}
         >
-          <div className="absolute inset-0 bg-grid opacity-20" />
-          <Monogram
-            variant="white"
-            size={120}
-            className="absolute -bottom-6 -right-4 opacity-15 transition-transform duration-500 group-hover:scale-110"
-          />
+          {item.coverImage ? (
+            <>
+              <Image
+                src={item.coverImage}
+                alt={`Aperçu du site ${item.client}`}
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                className="object-cover object-top transition-transform duration-[600ms] ease-out group-hover:scale-[1.04]"
+              />
+              {/* Voile dégradé pour la lisibilité du texte en bas */}
+              <div className="absolute inset-0 bg-gradient-to-t from-navy/90 via-navy/25 to-navy/5" />
+            </>
+          ) : (
+            <>
+              <div className="absolute inset-0 bg-grid opacity-20" />
+              <Monogram
+                variant="white"
+                size={120}
+                className="absolute -bottom-6 -right-4 opacity-15 transition-transform duration-500 group-hover:scale-110"
+              />
+            </>
+          )}
           <div className="absolute left-4 top-4">
             <Badge className="bg-white/90 text-navy backdrop-blur">
               {item.category}

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowUpRight, Building2, CalendarDays, LayoutGrid } from "lucide-react";
 import { Badge, Container, Monogram } from "@da/ui";
@@ -48,19 +49,44 @@ export function DetailHero({
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className={`relative mt-6 overflow-hidden rounded-3xl bg-gradient-to-br ${covers[index % covers.length]} px-7 py-12 sm:px-12 sm:py-16`}
+          className={`relative mt-6 overflow-hidden rounded-3xl px-7 py-12 sm:px-12 sm:py-16 ${
+            item.coverImage
+              ? "bg-navy"
+              : `bg-gradient-to-br ${covers[index % covers.length]}`
+          }`}
         >
-          <div aria-hidden className="absolute inset-0 bg-grid opacity-20" />
-          <Monogram
-            variant="white"
-            size={280}
-            className="pointer-events-none absolute -bottom-16 -right-10 opacity-[0.12]"
-          />
-          <Monogram
-            variant="white"
-            size={160}
-            className="pointer-events-none absolute -left-8 -top-10 opacity-[0.08]"
-          />
+          {item.coverImage ? (
+            <>
+              <Image
+                src={item.coverImage}
+                alt={`Aperçu du site ${item.client}`}
+                fill
+                sizes="100vw"
+                priority
+                className="object-cover object-top"
+              />
+              {/* Voile navy diagonal pour garder le titre lisible */}
+              <div
+                aria-hidden
+                className="absolute inset-0 bg-gradient-to-tr from-navy/95 via-navy/[0.82] to-navy/50"
+              />
+              <div aria-hidden className="absolute inset-0 bg-grid opacity-[0.08]" />
+            </>
+          ) : (
+            <>
+              <div aria-hidden className="absolute inset-0 bg-grid opacity-20" />
+              <Monogram
+                variant="white"
+                size={280}
+                className="pointer-events-none absolute -bottom-16 -right-10 opacity-[0.12]"
+              />
+              <Monogram
+                variant="white"
+                size={160}
+                className="pointer-events-none absolute -left-8 -top-10 opacity-[0.08]"
+              />
+            </>
+          )}
 
           <div className="relative max-w-3xl">
             <Badge className="bg-white/90 text-navy backdrop-blur">
