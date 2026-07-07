@@ -1,12 +1,14 @@
 import type { MetadataRoute } from "next";
 import { siteConfig } from "@/lib/site";
-import { portfolio, blogPosts } from "@da/db";
+import { blogPosts } from "@da/db";
+import { getPublicPortfolio } from "@/lib/public-portfolio";
 
 export const dynamic = "force-dynamic";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = siteConfig.url;
   const now = new Date();
+  const portfolio = await getPublicPortfolio();
 
   const staticRoutes = [
     "",

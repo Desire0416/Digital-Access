@@ -499,7 +499,7 @@ export async function getAdminBlogPost(id: string): Promise<BlogPostDetail | nul
 
 export interface PortfolioRow {
   id: string; title: string; slug: string; client: string; type: string;
-  featured: boolean; technologies: string[]; createdAt: string;
+  category: string; featured: boolean; technologies: string[]; createdAt: string;
 }
 
 export async function getAdminPortfolio(): Promise<PortfolioRow[]> {
@@ -508,7 +508,7 @@ export async function getAdminPortfolio(): Promise<PortfolioRow[]> {
     orderBy: { createdAt: "desc" },
     select: {
       id: true, title: true, slug: true, client: true, type: true,
-      featured: true, technologies: true, createdAt: true,
+      category: true, featured: true, technologies: true, createdAt: true,
     },
   });
   return items.map((p) => ({ ...p, createdAt: iso(p.createdAt)! }));
@@ -516,7 +516,8 @@ export async function getAdminPortfolio(): Promise<PortfolioRow[]> {
 
 export interface PortfolioDetail {
   id: string; title: string; slug: string; description: string; client: string;
-  type: string; url: string | null; coverImage: string | null; images: string[];
+  type: string; category: string; year: number; url: string | null;
+  coverImage: string | null; images: string[];
   technologies: string[]; featured: boolean; testimonial: string | null;
 }
 
@@ -526,7 +527,8 @@ export async function getAdminPortfolioItem(id: string): Promise<PortfolioDetail
   if (!p) return null;
   return {
     id: p.id, title: p.title, slug: p.slug, description: p.description, client: p.client,
-    type: p.type, url: p.url, coverImage: p.coverImage, images: p.images,
+    type: p.type, category: p.category, year: p.year, url: p.url,
+    coverImage: p.coverImage, images: p.images,
     technologies: p.technologies, featured: p.featured, testimonial: p.testimonial,
   };
 }

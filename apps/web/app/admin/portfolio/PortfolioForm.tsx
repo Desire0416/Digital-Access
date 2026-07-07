@@ -56,6 +56,8 @@ export type PortfolioFormItem = {
   description: string;
   client: string;
   type: string;
+  category: string;
+  year: number;
   url: string | null;
   coverImage: string | null;
   images: string[];
@@ -63,6 +65,18 @@ export type PortfolioFormItem = {
   featured: boolean;
   testimonial: string | null;
 };
+
+/** Catégories de filtre du portfolio public (barre de filtres /portfolio). */
+const CATEGORY_OPTIONS = [
+  "Institutionnel",
+  "E-learning",
+  "Réservation & Services",
+  "ONG & Associatif",
+  "Vitrine",
+  "E-commerce",
+  "Refonte",
+  "Autre",
+];
 
 export function PortfolioForm({
   mode = "create",
@@ -83,6 +97,10 @@ export function PortfolioForm({
   const [client, setClient] = React.useState(item?.client ?? "");
   const [type, setType] = React.useState<ProjectType>(
     (item?.type as ProjectType) ?? "SITE_VITRINE",
+  );
+  const [category, setCategory] = React.useState(item?.category ?? "Institutionnel");
+  const [year, setYear] = React.useState<number>(
+    item?.year ?? new Date().getFullYear(),
   );
   const [url, setUrl] = React.useState(item?.url ?? "");
   const [coverImage, setCoverImage] = React.useState(item?.coverImage ?? "");
@@ -155,6 +173,8 @@ export function PortfolioForm({
       description: description.trim(),
       client: client.trim(),
       type,
+      category: category.trim() || "Autre",
+      year,
       url: url.trim() || undefined,
       coverImage: coverImage.trim() || undefined,
       technologies: pendingTechs,
@@ -263,6 +283,49 @@ export function PortfolioForm({
                   </select>
                   <Chevron />
                 </div>
+              </Field>
+            </div>
+
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+              <Field
+                label="Catégorie"
+                htmlFor="pf-category"
+                hint="Regroupe la réalisation dans les filtres du portfolio public."
+              >
+                <div className="relative">
+                  <select
+                    id="pf-category"
+                    value={category}
+                    disabled={busy}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className={selectClasses}
+                  >
+                    {!CATEGORY_OPTIONS.includes(category) && (
+                      <option value={category}>{category}</option>
+                    )}
+                    {CATEGORY_OPTIONS.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </select>
+                  <Chevron />
+                </div>
+              </Field>
+
+              <Field label="Année de réalisation" htmlFor="pf-year">
+                <Input
+                  id="pf-year"
+                  type="number"
+                  inputMode="numeric"
+                  min={2000}
+                  max={2100}
+                  value={year}
+                  onChange={(e) =>
+                    setYear(Number(e.target.value) || new Date().getFullYear())
+                  }
+                  disabled={busy}
+                />
               </Field>
             </div>
 

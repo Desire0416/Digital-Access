@@ -602,8 +602,20 @@ const portfolioSchema = z.object({
   description: z.string().min(10),
   client: z.string().min(1).max(120),
   type: z.string().min(1).max(80),
+  category: z.string().min(1).max(60),
+  year: z.coerce.number().int().min(2000).max(2100),
   url: z.string().url().optional().or(z.literal("")).nullable(),
-  coverImage: z.string().url().optional().or(z.literal("")).nullable(),
+  // Couverture : URL absolue (upload Blob) OU chemin racine (ex. « /oijd.png »
+  // pour les réalisations seedées), ou vide.
+  coverImage: z
+    .string()
+    .max(500)
+    .refine(
+      (v) => v === "" || v.startsWith("/") || /^https?:\/\//i.test(v),
+      "Image de couverture invalide.",
+    )
+    .optional()
+    .nullable(),
   technologies: z.array(z.string().max(40)).max(20).optional(),
   featured: z.boolean().optional(),
   testimonial: z.string().max(1000).optional().nullable(),
@@ -621,6 +633,7 @@ export async function createPortfolioItem(
     const item = await prisma.portfolioProject.create({
       data: {
         title: d.title, slug, description: d.description, client: d.client, type: d.type,
+        category: d.category, year: d.year,
         url: d.url || null, coverImage: d.coverImage || null,
         technologies: d.technologies ?? [], featured: d.featured ?? false,
         testimonial: d.testimonial || null,
@@ -646,6 +659,7 @@ export async function updatePortfolioItem(
       where: { id: d.id },
       data: {
         title: d.title, description: d.description, client: d.client, type: d.type,
+        category: d.category, year: d.year,
         url: d.url || null, coverImage: d.coverImage || null,
         technologies: d.technologies ?? [], featured: d.featured ?? false,
         testimonial: d.testimonial || null,

@@ -12,7 +12,8 @@ import {
   GradientText,
   buttonClasses,
 } from "@da/ui";
-import { stats, testimonials, portfolio } from "@da/db";
+import { stats, testimonials } from "@da/db";
+import { getPublicPortfolio } from "@/lib/public-portfolio";
 import { servicePacks, whyChoose, processSteps } from "@/lib/content";
 import { HeroHome } from "@/components/HeroHome";
 import { StatsBand } from "@/components/StatsBand";
@@ -30,9 +31,11 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
-export default function HomePage() {
+export default async function HomePage() {
   const homeServices = servicePacks.slice(0, 3);
-  const featuredWork = portfolio.filter((p) => p.featured).slice(0, 3);
+  const featuredWork = (await getPublicPortfolio())
+    .filter((p) => p.featured)
+    .slice(0, 3);
   const featuredTestimonials = testimonials.filter((t) => t.featured).slice(0, 3);
 
   return (

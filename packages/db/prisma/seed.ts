@@ -1,5 +1,6 @@
 import { PrismaClient, type ChapterType, type CourseLevel } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { portfolio as realPortfolio } from "../src/mock";
 
 const prisma = new PrismaClient();
 
@@ -1207,19 +1208,39 @@ async function main() {
     });
   }
 
-  await prisma.portfolioProject.upsert({
-    where: { slug: "boutique-elegance" },
-    update: {},
-    create: {
-      title: "Boutique Élégance — E-commerce mode",
-      slug: "boutique-elegance",
-      description: "Refonte complète et boutique en ligne.",
-      client: "Boutique Élégance Abidjan",
-      type: "Site E-commerce",
-      technologies: ["Next.js", "Tailwind CSS", "CinetPay"],
-      featured: true,
+  /* ─────────────────── Réalisations réelles ───────────────────
+     8 projets réellement livrés, source unique : le mock `portfolio`
+     (packages/db/src/mock.ts). Idempotent : on retire d'abord les anciennes
+     réalisations fictives, puis on upsert (create + update) chaque projet par
+     slug pour garder la base alignée sur les données canoniques. Les
+     réalisations ajoutées via le CRM admin ne sont pas touchées. */
+  await prisma.portfolioProject.deleteMany({
+    where: {
+      slug: { in: ["boutique-elegance", "mtn-ci-refonte", "ecole-numerique-lms"] },
     },
   });
+  for (const p of realPortfolio) {
+    const data = {
+      title: p.title,
+      slug: p.slug,
+      description: p.description,
+      client: p.client,
+      type: p.type,
+      category: p.category,
+      year: p.year,
+      url: p.url ?? null,
+      coverImage: p.coverImage ?? null,
+      images: p.images,
+      technologies: p.technologies,
+      featured: p.featured,
+    };
+    await prisma.portfolioProject.upsert({
+      where: { slug: p.slug },
+      update: data,
+      create: data,
+    });
+  }
+  console.log(`  ↳ ${realPortfolio.length} réalisations réelles synchronisées`);
 
   await prisma.blogPost.upsert({
     where: { slug: "pourquoi-site-web-2026" },
@@ -1296,27 +1317,7 @@ async function main() {
     console.log("  ↳ leads CRM de démonstration créés");
   }
 
-  /* Réalisations & articles supplémentaires (upsert idempotent). */
-  await prisma.portfolioProject.upsert({
-    where: { slug: "mtn-ci-refonte" },
-    update: {},
-    create: {
-      title: "MTN CI — Refonte du portail entreprise",
-      slug: "mtn-ci-refonte", client: "MTN Côte d'Ivoire", type: "Site institutionnel",
-      description: "Refonte complète du portail entreprise avec espace self-care.",
-      technologies: ["Next.js", "TypeScript", "Tailwind CSS"], featured: true,
-    },
-  });
-  await prisma.portfolioProject.upsert({
-    where: { slug: "ecole-numerique-lms" },
-    update: {},
-    create: {
-      title: "École Numérique — Plateforme LMS",
-      slug: "ecole-numerique-lms", client: "École Numérique Abidjan", type: "Plateforme e-learning",
-      description: "Plateforme de formation en ligne avec certificats et paiement Mobile Money.",
-      technologies: ["Next.js", "Prisma", "PostgreSQL", "CinetPay"],
-    },
-  });
+  /* Articles supplémentaires (upsert idempotent). */
   await prisma.blogPost.upsert({
     where: { slug: "mobile-money-ecommerce-ci" },
     update: {},

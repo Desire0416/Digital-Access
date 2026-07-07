@@ -66,6 +66,7 @@ function PortfolioCard({
     slug: string;
     client: string;
     type: string;
+    category: string;
     featured: boolean;
     technologies: string[];
     createdAt: string;
@@ -107,6 +108,9 @@ function PortfolioCard({
         <span className="font-medium text-navy/80">{item.client}</span>
         <span className="text-navy/20">•</span>
         <span>{PROJECT_TYPE[item.type] ?? item.type}</span>
+        <span className="rounded-full bg-navy/[0.05] px-2 py-0.5 text-[11px] font-semibold text-text-secondary">
+          {item.category}
+        </span>
       </div>
 
       {techShown.length > 0 && (

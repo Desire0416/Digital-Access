@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Section, Container, GradientText } from "@da/ui";
-import { portfolio } from "@da/db";
+import { getPublicPortfolio } from "@/lib/public-portfolio";
 import { PageHero } from "@/components/PageHero";
 import { CTABanner } from "@/components/CTABanner";
 import { PortfolioGallery } from "./PortfolioGallery";
@@ -11,7 +11,8 @@ export const metadata: Metadata = {
     "Découvrez les sites vitrines, e-commerce, plateformes institutionnelles et e-learning conçus par Digital Access pour des entreprises et institutions en Côte d'Ivoire.",
 };
 
-export default function PortfolioPage() {
+export default async function PortfolioPage() {
+  const portfolio = await getPublicPortfolio();
   return (
     <>
       <PageHero

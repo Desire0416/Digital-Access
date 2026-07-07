@@ -12,7 +12,8 @@ import {
   StaggerGroup,
   StaggerItem,
 } from "@da/ui";
-import { portfolio, testimonials } from "@da/db";
+import { testimonials } from "@da/db";
+import { getPublicPortfolio } from "@/lib/public-portfolio";
 import { CTABanner } from "@/components/CTABanner";
 import { PortfolioCard } from "@/components/PortfolioCard";
 import { TestimonialCard } from "@/components/TestimonialCard";
@@ -47,7 +48,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const item = portfolio.find((p) => p.slug === slug);
+  const item = (await getPublicPortfolio()).find((p) => p.slug === slug);
 
   if (!item) {
     return {
@@ -73,8 +74,9 @@ export default async function PortfolioDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const index = portfolio.findIndex((p) => p.slug === slug);
-  const item = index >= 0 ? portfolio[index] : undefined;
+  const all = await getPublicPortfolio();
+  const index = all.findIndex((p) => p.slug === slug);
+  const item = index >= 0 ? all[index] : undefined;
 
   if (!item) {
     notFound();
@@ -84,7 +86,7 @@ export default async function PortfolioDetailPage({
     ? testimonials.find((t) => t.id === item.testimonial)
     : undefined;
 
-  const relatedProjects = portfolio
+  const relatedProjects = all
     .filter((p) => p.slug !== item.slug && p.category === item.category)
     .slice(0, 3);
 

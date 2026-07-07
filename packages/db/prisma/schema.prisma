@@ -780,6 +780,8 @@ model PortfolioProject {
   description  String
   client       String
   type         String
+  category     String   @default("Autre")
+  year         Int      @default(2025)
   url          String?
   coverImage   String?
   images       String[] @default([])
