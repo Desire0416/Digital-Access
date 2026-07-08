@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Section, Container, GradientText, SectionHeading, StaggerGroup, StaggerItem } from "@da/ui";
-import { getCareerPaths } from "@/lib/queries";
+import { getCareerPaths, getSchools } from "@/lib/queries";
 import { CareerPathCardView } from "@/components/cards";
+import { CatalogueFilters } from "@/components/CatalogueFilters";
 
 export const dynamic = "force-dynamic";
 
@@ -12,8 +13,15 @@ export const metadata: Metadata = {
   alternates: { canonical: "/career-paths" },
 };
 
-export default async function CareerPathsPage() {
-  const paths = await getCareerPaths();
+type SearchParams = Promise<{ school?: string; level?: string; q?: string }>;
+
+export default async function CareerPathsPage({ searchParams }: { searchParams: SearchParams }) {
+  const { school, level, q } = await searchParams;
+  const [paths, schools] = await Promise.all([
+    getCareerPaths({ schoolSlug: school, level, search: q }),
+    getSchools(),
+  ]);
+  const filtering = Boolean(school || level || q);
 
   return (
     <Section>
@@ -23,14 +31,31 @@ export default async function CareerPathsPage() {
           title={<>Formez-vous à un <GradientText>métier recherché</GradientText></>}
           subtitle="Chaque parcours vous mène d'une ambition à un portfolio et un certificat vérifiable, par la pratique et les projets."
         />
+
+        <div className="mt-12">
+          <CatalogueFilters schools={schools} basePath="/career-paths" />
+        </div>
+
+        <p className="mt-6 text-sm text-text-muted">
+          {paths.length} parcours
+          {filtering ? " correspondant à votre recherche" : " disponibles"}
+        </p>
+
         {paths.length > 0 ? (
-          <StaggerGroup className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <StaggerGroup className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {paths.map((p) => (
               <StaggerItem key={p.id}><CareerPathCardView path={p} /></StaggerItem>
             ))}
           </StaggerGroup>
         ) : (
-          <p className="mt-12 text-center text-text-muted">Les parcours métiers seront bientôt disponibles.</p>
+          <div className="mt-10 rounded-2xl border border-navy/10 bg-surface-secondary/60 px-6 py-14 text-center">
+            <p className="font-display text-lg font-semibold text-navy">Aucun parcours ne correspond</p>
+            <p className="mt-2 text-sm text-text-muted">
+              {filtering
+                ? "Essayez d'élargir votre recherche ou de réinitialiser les filtres."
+                : "Les parcours métiers seront bientôt disponibles."}
+            </p>
+          </div>
         )}
       </Container>
     </Section>

@@ -178,13 +178,48 @@ export async function getSchool(slug: string): Promise<SchoolDetail | null> {
   }
 }
 
-/** Parcours métiers publiés, filtre optionnel par école. */
-export async function getCareerPaths(schoolSlug?: string): Promise<CareerPathCard[]> {
+export interface CatalogueFilters {
+  schoolSlug?: string;
+  level?: string;
+  search?: string;
+}
+
+const VALID_LEVELS = new Set(["BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"]);
+
+function catalogueWhere(f: CatalogueFilters) {
+  const search = f.search?.trim();
+  const level = f.level && VALID_LEVELS.has(f.level) ? f.level : undefined;
+  return {
+    status: "PUBLISHED" as const,
+    ...(f.schoolSlug ? { school: { slug: f.schoolSlug } } : {}),
+    ...(level ? { level: level as never } : {}),
+    ...(search
+      ? {
+          OR: [
+            { title: { contains: search, mode: "insensitive" as const } },
+            { shortDescription: { contains: search, mode: "insensitive" as const } },
+          ],
+        }
+      : {}),
+  };
+}
+
+/** Parcours métiers publiés, filtres optionnels (école, niveau, recherche). */
+export async function getCareerPaths(filters: CatalogueFilters = {}): Promise<CareerPathCard[]> {
   try {
+    const search = filters.search?.trim();
     const rows = await prisma.careerPath.findMany({
       where: {
-        status: "PUBLISHED",
-        ...(schoolSlug ? { school: { slug: schoolSlug } } : {}),
+        ...catalogueWhere(filters),
+        ...(search
+          ? {
+              OR: [
+                { title: { contains: search, mode: "insensitive" as const } },
+                { shortDescription: { contains: search, mode: "insensitive" as const } },
+                { targetJob: { contains: search, mode: "insensitive" as const } },
+              ],
+            }
+          : {}),
       },
       orderBy: [{ featured: "desc" }, { createdAt: "asc" }],
       select: pathCardSelect,
@@ -263,14 +298,11 @@ export async function getCareerPath(slug: string): Promise<CareerPathDetail | nu
   }
 }
 
-/** Formations courtes publiées. */
-export async function getShortCourses(schoolSlug?: string): Promise<ShortCourseCard[]> {
+/** Formations courtes publiées, filtres optionnels (école, niveau, recherche). */
+export async function getShortCourses(filters: CatalogueFilters = {}): Promise<ShortCourseCard[]> {
   try {
     const rows = await prisma.shortCourse.findMany({
-      where: {
-        status: "PUBLISHED",
-        ...(schoolSlug ? { school: { slug: schoolSlug } } : {}),
-      },
+      where: catalogueWhere(filters),
       orderBy: [{ featured: "desc" }, { createdAt: "asc" }],
       select: shortCardSelect,
     });

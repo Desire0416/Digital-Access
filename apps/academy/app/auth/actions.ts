@@ -77,7 +77,15 @@ export async function registerUser(input: RegisterInput): Promise<ActionResult> 
 
     const hashed = await bcrypt.hash(password, 12);
     const user = await prisma.user.create({
-      data: { name, email, password: hashed, roles: ["LEARNER"] },
+      // Tout inscrit démarre apprenant, avec son profil apprenant (passeport de
+      // compétences, portfolio, employabilité) créé d'emblée.
+      data: {
+        name,
+        email,
+        password: hashed,
+        roles: ["LEARNER"],
+        learnerProfile: { create: {} },
+      },
       select: { id: true, name: true, email: true },
     });
 
