@@ -6,13 +6,13 @@ import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   LayoutDashboard,
+  GraduationCap,
+  Route,
   BookOpen,
-  Tags,
   UsersRound,
-  Wallet,
-  Repeat,
+  ClipboardCheck,
+  Award,
   Ticket,
-  Settings,
   ExternalLink,
   Menu,
   X,
@@ -28,17 +28,18 @@ interface NavItem {
   label: string;
   href: string;
   icon: LucideIcon;
+  exact?: boolean;
 }
 
 const NAV: NavItem[] = [
-  { label: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
-  { label: "Cours", href: "/admin/courses", icon: BookOpen },
-  { label: "Catégories", href: "/admin/categories", icon: Tags },
-  { label: "Utilisateurs", href: "/admin/users", icon: UsersRound },
-  { label: "Paiements", href: "/admin/payments", icon: Wallet },
-  { label: "Abonnements", href: "/admin/subscriptions", icon: Repeat },
-  { label: "Codes promo", href: "/admin/promo-codes", icon: Ticket },
-  { label: "Paramètres", href: "/admin/settings", icon: Settings },
+  { label: "Dashboard", href: "/admin", icon: LayoutDashboard, exact: true },
+  { label: "Écoles", href: "/admin/ecoles", icon: GraduationCap },
+  { label: "Parcours", href: "/admin/parcours", icon: Route },
+  { label: "Formations", href: "/admin/formations", icon: BookOpen },
+  { label: "Utilisateurs", href: "/admin/utilisateurs", icon: UsersRound },
+  { label: "Soumissions", href: "/admin/soumissions", icon: ClipboardCheck },
+  { label: "Certificats", href: "/admin/certificats", icon: Award },
+  { label: "Coupons", href: "/admin/coupons", icon: Ticket },
 ];
 
 const STORAGE_KEY = "academy-admin-sidebar-collapsed";
@@ -224,7 +225,8 @@ export function AdminShell({
   }, []);
 
   const isActive = React.useCallback(
-    (href: string) => pathname === href || pathname.startsWith(href + "/"),
+    (href: string) =>
+      href === "/admin" ? pathname === "/admin" : pathname === href || pathname.startsWith(href + "/"),
     [pathname],
   );
 
@@ -257,7 +259,7 @@ export function AdminShell({
       <div className="flex min-w-0 flex-1 flex-col">
         {/* Barre supérieure — mobile */}
         <header className="flex h-16 shrink-0 items-center justify-between border-b border-navy/[0.06] bg-surface-primary px-4 lg:hidden">
-          <Link href="/admin/dashboard" className="flex items-center gap-2">
+          <Link href="/admin" className="flex items-center gap-2">
             <Monogram size={30} />
             <span className="font-display text-sm font-extrabold text-navy">
               {current?.label ?? "Admin"}

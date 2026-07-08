@@ -46,11 +46,13 @@ export function primaryRole(roles: string[]): Role {
 export function landingForUser(user: { roles: string[] } | null): string {
   if (!user) return "/auth/login";
   switch (primaryRole(user.roles)) {
-    // Branchements futurs (phases suivantes) :
-    // case "SUPER_ADMIN":
-    // case "ADMIN":
-    // case "ACADEMIC_MANAGER":  return "/admin";
-    // case "COMPANY":           return "/companies/espace";
+    // Branchements futurs :
+    // case "COMPANY":  return "/companies/espace";
+    case "SUPER_ADMIN":
+    case "ADMIN":
+    case "ACADEMIC_MANAGER":
+      // Back-office de pilotage.
+      return "/admin";
     case "REVIEWER":
     case "INSTRUCTOR":
       // Relecteurs & formateurs : espace de relecture des projets.
@@ -58,8 +60,6 @@ export function landingForUser(user: { roles: string[] } | null): string {
     case "LEARNER":
       return "/dashboard";
     default:
-      // Rôles internes (admin…) : leur back-office arrive en Phase 5 ;
-      // en attendant, l'espace apprenant leur sert de point d'entrée.
       return "/dashboard";
   }
 }

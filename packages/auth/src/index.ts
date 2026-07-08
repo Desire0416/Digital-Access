@@ -29,12 +29,17 @@ const providers: NextAuthConfig["providers"] = [
           avatar: true,
           roles: true,
           emailVerified: true,
+          isActive: true,
         },
       });
       if (!user || !user.password) return null;
 
       const valid = await bcrypt.compare(password, user.password);
       if (!valid) return null;
+
+      // Compte désactivé par un administrateur (vérifié puis suspendu) : connexion refusée.
+      // (Un compte non encore vérifié — emailVerified null — reste autorisé à se connecter.)
+      if (user.emailVerified && !user.isActive) return null;
 
       return {
         id: user.id,

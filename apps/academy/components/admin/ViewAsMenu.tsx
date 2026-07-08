@@ -2,14 +2,14 @@
 
 import * as React from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Eye, GraduationCap, Presentation, Briefcase, ChevronDown, Loader2 } from "lucide-react";
+import { Eye, GraduationCap, Presentation, ClipboardCheck, ChevronDown, Loader2 } from "lucide-react";
 import { cn } from "@da/ui";
 import { viewAsRole } from "@/lib/impersonation";
 
 const PREVIEW_ROLES = [
   { role: "LEARNER", label: "Apprenant", icon: GraduationCap },
-  { role: "INSTRUCTOR", label: "Instructeur", icon: Presentation },
-  { role: "CLIENT", label: "Client", icon: Briefcase },
+  { role: "INSTRUCTOR", label: "Formateur", icon: Presentation },
+  { role: "REVIEWER", label: "Relecteur", icon: ClipboardCheck },
 ] as const;
 
 /**
