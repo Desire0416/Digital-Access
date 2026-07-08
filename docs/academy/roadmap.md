@@ -7,7 +7,7 @@ Reconstruction par phases (les Lots du CDC maître regroupés). Le web n'est jam
 | **0 — Socle : shell & docs** | 1 | Nettoyage ancienne UI · shell institutionnel (header/nav/footer) · homepage data-driven · `/schools`(+détail), `/career-paths`(+détail), `/short-courses`(+détail), `/certifications`, `/companies` · docs | ✅ Fait |
 | **1 — Modèle de données** | 2 | Schéma Prisma (24 modèles) · migration Neon (destructive côté academy, web préservé) · seed complet · types + helpers | ✅ Fait |
 | **2 — Public + Auth** | 3-4 | Filtres/recherche catalogue (école/niveau/recherche, URL-driven) · inscription→LearnerProfile · 9 rôles + gardes de route + aiguilleur post-connexion | ✅ Fait |
-| **3 — Espace apprenant** | 5 | `/dashboard` (learning, projects, portfolio, badges, certificates, skills-passport, opportunities) · player leçon + quiz | À faire |
+| **3 — Espace apprenant** | 5 | `/dashboard` (vue d'ensemble, mes-cours, passeport, badges, certificats, portfolio, opportunités) · player leçon immersif `(learn)` + quiz noté serveur · modèle `LessonProgress` · contenu+quiz enrichis (6 parcours) | ✅ Fait |
 | **4 — Projets & Certification** | 6-7 | Moteur projets (dépôt/grille/feedback/validation) · badges par preuve · certificats vérifiables (react-pdf + QR) · `/verify/[n]` · passeport de compétences | À faire |
 | **5 — Administration** | 8 | Back-office CRUD complet (écoles→paiements→coupons→reports) | À faire |
 | **6 — Entreprises** | 9 | Espace entreprise (comptes vérifiés, offres/missions, recherche talents, candidatures, B2B) | À faire |

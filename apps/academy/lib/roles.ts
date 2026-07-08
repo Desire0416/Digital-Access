@@ -46,15 +46,18 @@ export function primaryRole(roles: string[]): Role {
 export function landingForUser(user: { roles: string[] } | null): string {
   if (!user) return "/auth/login";
   switch (primaryRole(user.roles)) {
-    // Branchements futurs :
+    // Branchements futurs (phases suivantes) :
     // case "SUPER_ADMIN":
     // case "ADMIN":
     // case "ACADEMIC_MANAGER":  return "/admin";
     // case "INSTRUCTOR":        return "/studio";
     // case "REVIEWER":          return "/reviews";
     // case "COMPANY":           return "/companies/espace";
-    // case "LEARNER":           return "/dashboard";
+    case "LEARNER":
+      return "/dashboard";
     default:
-      return "/profil";
+      // Rôles internes (admin/formateur…) : leurs espaces arrivent plus tard ;
+      // en attendant, l'espace apprenant leur sert de point d'entrée.
+      return "/dashboard";
   }
 }

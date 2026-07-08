@@ -132,63 +132,106 @@ async function main() {
       outcomes: (p.outcomes as string[]) ?? [], tools: (p.tools as string[]) ?? [],
       certificateTitle: (p.certificateTitle as string) ?? null, featured: true, status: "PUBLISHED" as const,
     };
+    let pathId: string;
+    let refreshCurriculum: boolean;
     if (existing) {
       await prisma.careerPath.update({ where: { id: existing.id }, data: scalars });
-      continue;
+      pathId = existing.id;
+      // Le curriculum n'est reconstruit QUE si aucun apprenant n'a de progression
+      // sur ce parcours — sinon deleteMany effacerait LessonProgress/QuizAttempt par
+      // cascade (données réelles). Forçable en dev via SEED_REFRESH_CURRICULUM=1.
+      const learnerProgress = await prisma.lessonProgress.count({
+        where: { lesson: { module: { careerPathId: existing.id } } },
+      });
+      refreshCurriculum = process.env.SEED_REFRESH_CURRICULUM === "1" || learnerProgress === 0;
+      if (refreshCurriculum) await prisma.module.deleteMany({ where: { careerPathId: existing.id } });
+    } else {
+      const created = await prisma.careerPath.create({
+        data: { ...scalars, slug: p.slug as string, schoolId },
+      });
+      pathId = created.id;
+      refreshCurriculum = true;
     }
-    const created = await prisma.careerPath.create({
-      data: { ...scalars, slug: p.slug as string, schoolId },
-    });
-    // Compétences (join)
+    // Compétences (join) — idempotent
     for (const name of (p.skillNames as string[]) ?? []) {
       const skillId = skillIdByName[norm(name)];
       if (skillId) {
         await prisma.careerPathSkill.upsert({
-          where: { careerPathId_skillId: { careerPathId: created.id, skillId } },
-          update: {}, create: { careerPathId: created.id, skillId },
+          where: { careerPathId_skillId: { careerPathId: pathId, skillId } },
+          update: {}, create: { careerPathId: pathId, skillId },
         });
       }
     }
-    // Modules + leçons
-    let mOrder = 0;
-    for (const m of (p.modules as AnyRec[]) ?? []) {
-      const mod = await prisma.module.create({
-        data: {
-          careerPathId: created.id, title: m.title as string, description: (m.description as string) ?? null,
-          order: mOrder++, objectives: (m.objectives as string[]) ?? [], status: "PUBLISHED",
-        },
-      });
-      let lOrder = 0;
-      for (const l of (m.lessons as AnyRec[]) ?? []) {
-        await prisma.lesson.create({
+    // Modules + leçons (+ quiz éventuel), (re)créés uniquement si le curriculum doit être rafraîchi
+    if (refreshCurriculum) {
+      let mOrder = 0;
+      for (const m of (p.modules as AnyRec[]) ?? []) {
+        const mod = await prisma.module.create({
           data: {
-            moduleId: mod.id, title: l.title as string, slug: `${created.id.slice(0, 6)}-${mOrder}-${lOrder}`,
-            content: (l.summary as string) ?? null, lessonType: (l.lessonType as string) as never,
-            estimatedDuration: (l.estimatedDuration as number) ?? null, order: lOrder++,
-            isPreview: lOrder === 1, status: "PUBLISHED",
+            careerPathId: pathId, title: m.title as string, description: (m.description as string) ?? null,
+            order: mOrder++, objectives: (m.objectives as string[]) ?? [], status: "PUBLISHED",
+          },
+        });
+        let lOrder = 0;
+        for (const l of (m.lessons as AnyRec[]) ?? []) {
+          const lesson = await prisma.lesson.create({
+            data: {
+              moduleId: mod.id, title: l.title as string, slug: `${pathId.slice(0, 6)}-${mOrder}-${lOrder}`,
+              content: (l.content as string) ?? (l.summary as string) ?? null,
+              videoUrl: (l.videoUrl as string) ?? null,
+              lessonType: (l.lessonType as string) as never,
+              estimatedDuration: (l.estimatedDuration as number) ?? null, order: lOrder++,
+              // Un seul aperçu gratuit par parcours : la 1re leçon du 1er module.
+              isPreview: mOrder === 1 && lOrder === 1, status: "PUBLISHED",
+            },
+          });
+          // Quiz rattaché à la leçon (si fourni par le contenu généré)
+          const quiz = l.quiz as AnyRec | undefined;
+          if (quiz && Array.isArray(quiz.questions) && quiz.questions.length) {
+            const createdQuiz = await prisma.quiz.create({
+              data: {
+                lessonId: lesson.id, title: (quiz.title as string) ?? `Quiz — ${l.title as string}`,
+                passingScore: (quiz.passingScore as number) ?? 70, status: "PUBLISHED",
+              },
+            });
+            let qOrder = 0;
+            for (const q of quiz.questions as AnyRec[]) {
+              await prisma.quizQuestion.create({
+                data: {
+                  quizId: createdQuiz.id, question: q.question as string,
+                  type: (q.type as string) as never,
+                  options: (q.options as never) ?? undefined,
+                  correctAnswer: (q.correctAnswer as never) ?? 0,
+                  explanation: (q.explanation as string) ?? null,
+                  points: (q.points as number) ?? 1, order: qOrder++,
+                },
+              });
+            }
+          }
+        }
+      }
+    }
+    // Projets + grilles — uniquement à la création initiale (évite les doublons au re-seed)
+    if (!existing) {
+      for (const pr of (p.projects as AnyRec[]) ?? []) {
+        const criteria = ((pr.rubricCriteria as AnyRec[]) ?? []).map((c) => ({ label: c.label, points: c.points }));
+        const rubric = await prisma.rubric.create({
+          data: { title: `Grille — ${pr.title as string}`, totalPoints: 100, passingScore: 70, criteria },
+        });
+        await prisma.professionalProject.create({
+          data: {
+            schoolId, careerPathId: pathId, title: pr.title as string,
+            slug: `${p.slug as string}-${norm(pr.title as string).replace(/[^a-z0-9]+/g, "-").slice(0, 40)}`,
+            projectType: (pr.projectType as string) as never, level: (pr.level as string) as never,
+            context: (pr.context as string) ?? null, problem: (pr.problem as string) ?? null,
+            mission: (pr.mission as string) ?? null, objectives: (pr.objectives as string[]) ?? [],
+            deliverables: (pr.deliverables as string[]) ?? [], constraints: (pr.constraints as string[]) ?? [],
+            estimatedDuration: (pr.estimatedHours as number) ?? null, rubricId: rubric.id,
+            requiresSubmission: true, requiresDefense: (pr.projectType as string) === "FINAL_PROJECT",
+            isPortfolioEligible: true, status: "PUBLISHED",
           },
         });
       }
-    }
-    // Projets + grilles
-    for (const pr of (p.projects as AnyRec[]) ?? []) {
-      const criteria = ((pr.rubricCriteria as AnyRec[]) ?? []).map((c) => ({ label: c.label, points: c.points }));
-      const rubric = await prisma.rubric.create({
-        data: { title: `Grille — ${pr.title as string}`, totalPoints: 100, passingScore: 70, criteria },
-      });
-      await prisma.professionalProject.create({
-        data: {
-          schoolId, careerPathId: created.id, title: pr.title as string,
-          slug: `${p.slug as string}-${norm(pr.title as string).replace(/[^a-z0-9]+/g, "-").slice(0, 40)}`,
-          projectType: (pr.projectType as string) as never, level: (pr.level as string) as never,
-          context: (pr.context as string) ?? null, problem: (pr.problem as string) ?? null,
-          mission: (pr.mission as string) ?? null, objectives: (pr.objectives as string[]) ?? [],
-          deliverables: (pr.deliverables as string[]) ?? [], constraints: (pr.constraints as string[]) ?? [],
-          estimatedDuration: (pr.estimatedHours as number) ?? null, rubricId: rubric.id,
-          requiresSubmission: true, requiresDefense: (pr.projectType as string) === "FINAL_PROJECT",
-          isPortfolioEligible: true, status: "PUBLISHED",
-        },
-      });
     }
   }
 
@@ -289,6 +332,36 @@ async function main() {
       update: {}, create: { learnerId: demoLearner, badgeId: firstBadge.id, status: "ACTIVE" },
     });
   }
+
+  // Progression réelle de l'apprenant démo (LessonProgress) alignée sur le % d'inscription,
+  // + une vidéo de démonstration sur la 1re leçon (placeholder — à remplacer par la vraie vidéo).
+  const seedProgress = async (pathSlug: string, ratio: number, enrollmentId: string) => {
+    const path = await prisma.careerPath.findUnique({ where: { slug: pathSlug }, select: { id: true } });
+    if (!path) return;
+    const modules = await prisma.module.findMany({
+      where: { careerPathId: path.id },
+      orderBy: { order: "asc" },
+      select: { lessons: { orderBy: { order: "asc" }, select: { id: true } } },
+    });
+    const ids = modules.flatMap((m) => m.lessons.map((l) => l.id));
+    if (!ids.length) return;
+    if (ids[0]) {
+      await prisma.lesson.update({ where: { id: ids[0] }, data: { videoUrl: "https://www.youtube.com/watch?v=qz0aGYrrlhU" } });
+    }
+    const n = Math.round(ids.length * ratio);
+    for (const lessonId of ids.slice(0, n)) {
+      await prisma.lessonProgress.upsert({
+        where: { learnerId_lessonId: { learnerId: demoLearner, lessonId } },
+        update: {}, create: { learnerId: demoLearner, lessonId, enrollmentId },
+      });
+    }
+    await prisma.enrollment.update({
+      where: { id: enrollmentId },
+      data: { progress: Math.round((n / ids.length) * 100) },
+    });
+  };
+  await seedProgress("developpeur-web-front-end", 0.45, `seed-enr-front-${demoLearner}`);
+  await seedProgress("assistant-ia-professionnel", 1, `seed-enr-ia-${demoLearner}`);
 
   /* ─────────────────── Web : témoignages, blog, leads ────────────────── */
   if ((await prisma.testimonial.count()) === 0) {

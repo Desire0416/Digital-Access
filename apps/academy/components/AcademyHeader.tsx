@@ -22,8 +22,8 @@ export function AcademyHeader({ initialUser }: { initialUser?: HeaderUser | null
   // La session serveur (initialUser, résolue par requête) fait foi ; useSession
   // ne sert qu'aux mises à jour réactives (connexion/déconnexion sans rechargement).
   const user = (session?.user as HeaderUser | undefined) ?? initialUser ?? undefined;
-  // Destination « mon espace » (le dashboard apprenant arrive en Phase 3).
-  const homeHref = "/profil";
+  // Destination « mon espace » : le tableau de bord apprenant.
+  const homeHref = "/dashboard";
 
   React.useEffect(() => {
     setOpen(false);

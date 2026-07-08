@@ -357,6 +357,7 @@ model User {
   // Pôle Academy (refonte)
   learnerProfile      LearnerProfile?
   enrollments         Enrollment[]
+  lessonProgress      LessonProgress[]
   learnerBadges       LearnerBadge[]
   certificates        Certificate[]
   portfolioItems      PortfolioItem[]
@@ -720,7 +721,8 @@ model Lesson {
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
 
-  quizzes Quiz[]
+  quizzes     Quiz[]
+  completions LessonProgress[]
 
   @@index([moduleId])
 }
@@ -982,11 +984,31 @@ model Enrollment {
   enrolledAt    DateTime         @default(now())
   completedAt   DateTime?
 
-  payment Payment?
+  payment           Payment?
+  lessonCompletions LessonProgress[]
 
+  @@unique([learnerId, careerPathId])
+  @@unique([learnerId, shortCourseId])
   @@index([learnerId])
   @@index([careerPathId])
   @@index([shortCourseId])
+}
+
+/// Complétion d'une leçon par un apprenant (permet reprise, coche par leçon,
+/// et calcul fiable du pourcentage d'avancement d'une inscription).
+model LessonProgress {
+  id           String      @id @default(cuid())
+  learnerId    String
+  learner      User        @relation(fields: [learnerId], references: [id], onDelete: Cascade)
+  lessonId     String
+  lesson       Lesson      @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  enrollmentId String?
+  enrollment   Enrollment? @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  completedAt  DateTime    @default(now())
+
+  @@unique([learnerId, lessonId])
+  @@index([learnerId])
+  @@index([enrollmentId])
 }
 
 model Company {
