@@ -1,148 +1,88 @@
 /**
- * Types de domaine d'Access Academy — contrat entre la couche de données
- * (lib/queries.ts, lib/actions.ts) et les pages/composants.
+ * Types de vue de Digital Access Academy (refonte 2026).
+ * Contrat entre la couche de données (lib/queries.ts) et les pages/composants.
+ * Aligné sur le schéma Prisma (packages/db) sans le coupler.
  */
 
-export type CourseLevel = "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
-export type ChapterType = "VIDEO" | "TEXT" | "QUIZ" | "EXERCISE" | "ASSIGNMENT";
+export type Level = "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | "EXPERT";
 
-export interface CategoryItem {
+export const LEVEL_LABEL: Record<Level, string> = {
+  BEGINNER: "Débutant",
+  INTERMEDIATE: "Intermédiaire",
+  ADVANCED: "Avancé",
+  EXPERT: "Expert",
+};
+
+export interface SchoolCard {
   id: string;
   name: string;
   slug: string;
+  shortDescription: string;
   icon: string | null;
   color: string | null;
-  courseCount: number;
+  careerPathCount: number;
+  shortCourseCount: number;
 }
 
-export interface CourseCardData {
+export interface SchoolDetail extends SchoolCard {
+  longDescription: string | null;
+  careerPaths: CareerPathCard[];
+  shortCourses: ShortCourseCard[];
+}
+
+export interface CareerPathCard {
   id: string;
   title: string;
   slug: string;
-  subtitle: string | null;
+  shortDescription: string;
+  targetJob: string;
+  level: Level;
+  duration: string | null;
+  price: number;
   coverImage: string | null;
-  price: number; // FCFA
-  isFree: boolean;
-  level: CourseLevel;
-  rating: number;
-  ratingCount: number;
-  enrollmentCount: number;
-  durationMinutes: number;
-  chapterCount: number;
-  category: { name: string; slug: string; color: string | null; icon: string | null };
-  instructor: { name: string; avatar: string | null };
+  featured: boolean;
+  schoolName: string;
+  schoolSlug: string;
+  moduleCount: number;
+  projectCount: number;
 }
 
-export interface ChapterMeta {
-  id: string;
-  title: string;
-  type: ChapterType;
-  position: number;
-  isPreview: boolean;
-  videoDuration: number; // secondes
-}
-
-export interface ModuleWithChapters {
-  id: string;
-  title: string;
-  position: number;
-  chapters: ChapterMeta[];
-}
-
-export interface ReviewItem {
-  id: string;
-  rating: number;
-  comment: string | null;
-  createdAt: string; // ISO
-  user: { name: string; avatar: string | null };
-}
-
-export interface CourseDetailData extends CourseCardData {
-  description: string;
-  objectives: string[];
+export interface CareerPathDetail extends CareerPathCard {
+  longDescription: string | null;
+  estimatedHours: number | null;
   prerequisites: string[];
-  language: string;
-  publishedAt: string | null; // ISO
-  instructorBio: string | null;
-  modules: ModuleWithChapters[];
-  reviews: ReviewItem[];
-}
-
-export interface EnrollmentInfo {
-  id: string;
-  progress: number; // 0–100
-  completedAt: string | null;
-  completedChapterIds: string[];
-  quizScores: Record<string, number>; // chapterId → meilleur score
-}
-
-export interface QuizQuestionData {
-  id: string;
-  question: string;
-  options: string[];
-  /** Indices des bonnes réponses — utilisés pour le feedback immédiat ;
-   *  la notation OFFICIELLE reste côté serveur (submitQuiz). */
-  correctAnswers: number[];
-  explanation: string | null;
-  position: number;
-  multiple: boolean; // QCM (plusieurs réponses) vs QCU
-}
-
-export interface QuizData {
-  id: string;
-  passingScore: number; // %
-  maxAttempts: number | null;
-  timeLimit: number | null; // secondes
-  questions: QuizQuestionData[];
-}
-
-export interface PlayerChapter extends ChapterMeta {
-  /** null si non inscrit et chapitre non-preview (contenu verrouillé) */
-  content: string | null;
-  videoUrl: string | null;
-  resources: { label: string; url: string }[];
-  quiz: QuizData | null;
-  locked: boolean;
-}
-
-export interface PlayerModule {
-  id: string;
-  title: string;
-  position: number;
-  chapters: PlayerChapter[];
-}
-
-export interface PlayerData {
-  course: {
+  objectives: string[];
+  outcomes: string[];
+  tools: string[];
+  certificateTitle: string | null;
+  skills: { name: string; slug: string; category: string }[];
+  modules: {
     id: string;
     title: string;
-    slug: string;
-    isFree: boolean;
-    instructor: { name: string; avatar: string | null };
-  };
-  modules: PlayerModule[];
-  /** Chapitres aplatis dans l'ordre pédagogique (module.position, chapter.position) */
-  flatChapters: PlayerChapter[];
-  enrollment: EnrollmentInfo | null;
+    description: string | null;
+    lessons: { id: string; title: string; lessonType: string; estimatedDuration: number | null }[];
+  }[];
+  projects: { id: string; title: string; slug: string; projectType: string; level: Level }[];
 }
 
-export interface DashboardEnrollment {
-  course: CourseCardData;
-  progress: number;
-  completedAt: string | null;
-  enrolledAt: string;
-  /** Prochain chapitre non complété (reprise de lecture) */
-  nextChapterId: string | null;
-  completedChapters: number;
+export interface ShortCourseCard {
+  id: string;
+  title: string;
+  slug: string;
+  shortDescription: string;
+  level: Level;
+  duration: string | null;
+  price: number;
+  courseType: string | null;
+  coverImage: string | null;
+  schoolName: string;
+  schoolSlug: string;
 }
 
-export interface DashboardData {
-  user: { name: string; email: string; streak: number; xp: number };
-  enrollments: DashboardEnrollment[];
-  stats: {
-    inProgress: number;
-    completed: number;
-    chaptersCompleted: number;
-    minutesLearned: number;
-  };
+export interface AcademyStats {
+  schools: number;
+  careerPaths: number;
+  shortCourses: number;
+  projects: number;
+  badges: number;
 }

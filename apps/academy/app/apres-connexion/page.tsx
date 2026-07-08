@@ -1,16 +1,15 @@
 import { redirect } from "next/navigation";
-import { currentUser, hasRole } from "@da/auth/guards";
+import { currentUser } from "@da/auth/guards";
 
 export const dynamic = "force-dynamic";
 
 /**
- * Aiguillage post-connexion : dirige chaque utilisateur vers son espace selon
- * son rôle. Utilisé après la connexion email/mot de passe et Google OAuth.
+ * Aiguillage post-connexion. Les espaces par rôle (dashboard apprenant, studio
+ * formateur, back-office admin) arrivent aux phases suivantes de la refonte ;
+ * en attendant, chacun est dirigé vers son profil.
  */
 export default async function ApresConnexion() {
   const user = await currentUser();
   if (!user) redirect("/auth/login");
-  if (hasRole(user, "ADMIN", "SUPER_ADMIN")) redirect("/admin/dashboard");
-  if (hasRole(user, "INSTRUCTOR")) redirect("/studio");
-  redirect("/dashboard");
+  redirect("/profil");
 }

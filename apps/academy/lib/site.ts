@@ -1,8 +1,8 @@
 export const academyConfig = {
-  name: "Access Academy",
-  tagline: "Formations en ligne certifiantes & qualifiantes",
+  name: "Digital Access Academy",
+  tagline: "Apprenez un métier. Réalisez des projets. Construisez votre avenir.",
   description:
-    "Access Academy est la plateforme e-learning de Digital Access : formations en ligne au développement web, au design, au marketing digital et à la bureautique — avec certificats vérifiables et paiement Mobile Money.",
+    "Digital Access Academy forme aux compétences pratiques du numérique, de l'IA, du marketing, du design, de la data et de l'entrepreneuriat à travers des parcours métiers, des projets concrets, des badges et des certificats vérifiables.",
   url: "https://academy.digitalaccess.ci",
   webUrl: "https://digitalaccess.ci",
   locale: "fr_CI",
@@ -54,35 +54,27 @@ export interface NavItem {
 
 /** Navigation publique (VISITOR). */
 export const visitorNav: NavItem[] = [
-  { label: "Accueil", href: "/" },
-  { label: "Catalogue", href: "/courses" },
-  { label: "Tarifs", href: "/pricing" },
-  { label: "À propos", href: "/about" },
-];
-
-/** Navigation apprenant (LEARNER connecté). */
-export const learnerNav: NavItem[] = [
-  { label: "Catalogue", href: "/courses" },
-  { label: "Mes cours", href: "/dashboard" },
-  { label: "Dashboard", href: "/dashboard" },
+  { label: "Écoles", href: "/schools" },
+  { label: "Parcours métiers", href: "/career-paths" },
+  { label: "Formations courtes", href: "/short-courses" },
+  { label: "Certifications", href: "/certifications" },
+  { label: "Entreprises", href: "/companies" },
 ];
 
 export const footerNav: { title: string; items: NavItem[] }[] = [
   {
-    title: "Formations",
+    title: "Se former",
     items: [
-      { label: "Catalogue complet", href: "/courses" },
-      { label: "Développement Web", href: "/courses?category=developpement-web" },
-      { label: "Design & UX/UI", href: "/courses?category=design-ux-ui" },
-      { label: "Marketing Digital", href: "/courses?category=marketing-digital" },
-      { label: "Bureautique", href: "/courses?category=bureautique" },
+      { label: "Les écoles", href: "/schools" },
+      { label: "Parcours métiers", href: "/career-paths" },
+      { label: "Formations courtes", href: "/short-courses" },
+      { label: "Certifications & badges", href: "/certifications" },
     ],
   },
   {
     title: "Academy",
     items: [
-      { label: "Tarifs", href: "/pricing" },
-      { label: "À propos", href: "/about" },
+      { label: "Espace entreprises", href: "/companies" },
       { label: "Créer un compte", href: "/auth/register" },
       { label: "Se connecter", href: "/auth/login" },
     ],
@@ -101,6 +93,7 @@ const levelLabels: Record<string, string> = {
   BEGINNER: "Débutant",
   INTERMEDIATE: "Intermédiaire",
   ADVANCED: "Avancé",
+  EXPERT: "Expert",
 };
 
 export function levelLabel(level: string): string {

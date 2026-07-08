@@ -15,6 +15,13 @@ import {
   Target,
   Zap,
   BookOpen,
+  BarChart3,
+  Shield,
+  FolderKanban,
+  PenTool,
+  Database,
+  LineChart,
+  Briefcase,
   type LucideIcon,
 } from "lucide-react";
 
@@ -35,6 +42,14 @@ const map: Record<string, LucideIcon> = {
   target: Target,
   zap: Zap,
   "book-open": BookOpen,
+  "bar-chart-3": BarChart3,
+  "bar-chart": BarChart3,
+  "line-chart": LineChart,
+  shield: Shield,
+  "folder-kanban": FolderKanban,
+  "pen-tool": PenTool,
+  database: Database,
+  briefcase: Briefcase,
 };
 
 export interface IconProps {

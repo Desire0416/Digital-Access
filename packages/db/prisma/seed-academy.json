@@ -1,0 +1,3280 @@
+{
+  "schools": [
+    {
+      "slug": "ia",
+      "name": "École d'Intelligence Artificielle",
+      "shortDescription": "Maîtrisez l'IA générative et les outils intelligents pour automatiser, créer et décupler votre valeur sur le marché du travail.",
+      "longDescription": "L'École d'Intelligence Artificielle de Digital Access Academy forme une nouvelle génération de professionnels capables d'exploiter la puissance de l'IA au quotidien. Sans prérequis lourds en mathématiques, vous apprenez d'abord à dialoguer efficacement avec les IA génératives (ChatGPT, Claude, Gemini, Midjourney), puis à construire de véritables solutions : assistants automatisés, chatbots, générateurs de contenu et intégrations d'API. Chaque module se conclut par un projet livrable que vous ajoutez à votre portfolio : un agent qui traite vos emails, un pipeline de génération de visuels marketing, ou un outil interne pour une PME ivoirienne. Pour les plus avancés, nous ouvrons les fondamentaux du Machine Learning et du déploiement de modèles. L'objectif est clair : faire de vous la personne indispensable qui sait mettre l'IA au service d'une entreprise, d'un client ou de votre propre projet, dans un contexte africain où cette compétence est encore rare et très recherchée.",
+      "icon": "brain",
+      "color": "#7C3AED",
+      "objectives": [
+        "Rédiger des prompts précis et obtenir des résultats fiables des IA génératives",
+        "Automatiser des tâches métier répétitives grâce à l'IA et au no-code",
+        "Créer des assistants et chatbots connectés à des API d'IA",
+        "Comprendre les fondamentaux du Machine Learning et leurs cas d'usage",
+        "Construire un portfolio de projets IA concrets et démontrables"
+      ],
+      "publics": [
+        "Jeunes diplômés souhaitant se différencier sur le marché de l'emploi",
+        "Professionnels en reconversion vers les métiers du numérique",
+        "Entrepreneurs voulant intégrer l'IA dans leur activité",
+        "Créateurs de contenu et marketeurs cherchant à gagner en productivité"
+      ],
+      "debouches": [
+        "Prompt Engineer / Spécialiste IA générative",
+        "Consultant en automatisation IA",
+        "Chef de projet IA en entreprise",
+        "Freelance IA (contenu, chatbots, automatisation)"
+      ]
+    },
+    {
+      "slug": "dev",
+      "name": "École de Développement Logiciel",
+      "shortDescription": "Devenez développeur web et logiciel : du premier site à l'application complète, en construisant de vrais projets déployés en ligne.",
+      "longDescription": "L'École de Développement Logiciel transforme des débutants motivés en développeurs opérationnels, recrutables et autonomes. Le parcours suit une progression rigoureuse : bases du web (HTML, CSS, intégration responsive), programmation avec JavaScript moderne, frameworks front-end (React, Next.js), puis back-end avec les API REST et les bases de données. Notre pédagogie « Apprendre en faisant » vous met immédiatement le clavier entre les mains : dès la première semaine, vous codez, vous cassez, vous réparez et vous déployez. Chaque niveau produit une application réelle et mise en ligne — landing page, tableau de bord, boutique, application de gestion — que vous documentez sur GitHub et présentez en entretien. Vous apprenez aussi les pratiques professionnelles attendues par les employeurs : Git, revue de code, débogage, collaboration en équipe. À la sortie, vous ne possédez pas seulement des connaissances théoriques : vous détenez un portfolio de projets fonctionnels qui prouvent votre capacité à livrer, atout décisif face aux recruteurs en Côte d'Ivoire et à l'international en télétravail.",
+      "icon": "code",
+      "color": "#2B5CC6",
+      "objectives": [
+        "Maîtriser HTML, CSS et JavaScript pour créer des interfaces modernes",
+        "Développer des applications avec React et Next.js",
+        "Concevoir des API REST et manipuler des bases de données",
+        "Utiliser Git et les workflows professionnels de développement",
+        "Déployer des projets en ligne et documenter un portfolio GitHub"
+      ],
+      "publics": [
+        "Débutants complets souhaitant apprendre à coder",
+        "Étudiants en informatique voulant une formation orientée pratique",
+        "Professionnels en reconversion vers le développement",
+        "Entrepreneurs voulant prototyper leurs propres produits"
+      ],
+      "debouches": [
+        "Développeur web front-end / back-end / full-stack",
+        "Intégrateur web",
+        "Développeur freelance en télétravail",
+        "Développeur d'applications pour startups et PME"
+      ]
+    },
+    {
+      "slug": "marketing",
+      "name": "École de Marketing Digital",
+      "shortDescription": "Attirez, convertissez et fidélisez des clients en ligne : réseaux sociaux, publicité, SEO et copywriting orientés résultats.",
+      "longDescription": "L'École de Marketing Digital forme les professionnels capables de faire grandir n'importe quelle marque sur internet. Loin des théories déconnectées, la formation part des besoins réels des entreprises africaines : gérer des communautés engagées, lancer des campagnes publicitaires rentables sur Meta et Google, se positionner en tête des recherches Google, et écrire des messages qui vendent. Vous travaillez sur des cas concrets et gérez de véritables budgets pédagogiques pour des marques fictives ou partenaires. Chaque compétence débouche sur un livrable de portfolio : un calendrier éditorial complet, une campagne publicitaire optimisée avec ses résultats chiffrés, un audit SEO, une page de vente convertissante. Nous mettons l'accent sur la mesure de la performance (ROI, taux de conversion, coût par acquisition) car c'est ce que les employeurs et clients exigent. Que vous visiez un poste en agence, en entreprise, ou le lancement de votre activité de freelance, vous sortez avec les compétences les plus demandées du marché numérique ivoirien.",
+      "icon": "megaphone",
+      "color": "#F59E0B",
+      "objectives": [
+        "Animer et développer des communautés sur les réseaux sociaux",
+        "Créer et optimiser des campagnes publicitaires Meta et Google Ads",
+        "Élaborer une stratégie de contenu et améliorer le référencement SEO",
+        "Rédiger des messages persuasifs qui convertissent (copywriting)",
+        "Mesurer et piloter la performance des actions marketing (ROI, KPI)"
+      ],
+      "publics": [
+        "Jeunes diplômés visant les métiers du marketing et de la communication",
+        "Community managers souhaitant monter en compétences",
+        "Entrepreneurs et commerçants voulant vendre en ligne",
+        "Freelances cherchant à proposer des services marketing"
+      ],
+      "debouches": [
+        "Community Manager / Social Media Manager",
+        "Traffic Manager / Media Buyer",
+        "Consultant SEO et content strategist",
+        "Freelance en marketing digital"
+      ]
+    },
+    {
+      "slug": "design",
+      "name": "École de Design Numérique",
+      "shortDescription": "Concevez des interfaces et identités visuelles remarquables : UI/UX avec Figma, branding et motion design, du concept au produit.",
+      "longDescription": "L'École de Design Numérique révèle et professionnalise votre sens créatif pour en faire un métier recherché. Le parcours couvre toute la chaîne du design digital : maîtrise de Figma pour concevoir des interfaces (UI), méthodologie UX pour créer des produits que les utilisateurs adorent, construction d'identités visuelles et de chartes graphiques cohérentes, puis motion design pour donner vie à vos créations. Notre approche est résolument pratique : vous ne suivez pas des tutoriels isolés, vous menez de vrais projets de bout en bout — refonte d'une application, identité complète d'une marque, prototype interactif cliquable, animation d'interface. Vous apprenez aussi à défendre vos choix de design, à collaborer avec des développeurs et à présenter votre travail comme un professionnel. Chaque projet enrichit un portfolio soigné, votre meilleur argument face aux recruteurs et clients. À la fin, vous possédez à la fois le goût, la méthode et les outils pour concevoir des expériences numériques à fort impact, une compétence rare et bien rémunérée sur le continent.",
+      "icon": "palette",
+      "color": "#00BCD4",
+      "objectives": [
+        "Concevoir des interfaces modernes et responsives avec Figma",
+        "Appliquer une démarche UX centrée sur l'utilisateur",
+        "Créer des identités visuelles et chartes graphiques cohérentes",
+        "Réaliser des animations et du motion design pour le web",
+        "Construire un portfolio de design professionnel et présentable"
+      ],
+      "publics": [
+        "Créatifs souhaitant se professionnaliser dans le design digital",
+        "Graphistes voulant élargir vers l'UI/UX",
+        "Étudiants en communication visuelle et arts numériques",
+        "Freelances et entrepreneurs voulant soigner leur image de marque"
+      ],
+      "debouches": [
+        "UI/UX Designer",
+        "Product Designer",
+        "Directeur artistique / Designer graphique",
+        "Designer freelance (interfaces, branding, motion)"
+      ]
+    },
+    {
+      "slug": "data",
+      "name": "École de Données & Analyse",
+      "shortDescription": "Transformez les données en décisions : Excel avancé, SQL, visualisation et analyse Python pour des métiers très recherchés.",
+      "longDescription": "L'École de Données & Analyse forme des professionnels capables de faire parler les chiffres pour éclairer les décisions des entreprises. Dans une économie où chaque organisation collecte des données sans savoir les exploiter, l'analyste est devenu un profil stratégique. Le parcours démarre par la maîtrise avancée d'Excel et Google Sheets, puis progresse vers la visualisation professionnelle (Power BI), l'interrogation de bases de données avec SQL, et enfin l'analyse et l'automatisation avec Python. La pédagogie repose sur des jeux de données réels et des problématiques concrètes : tableau de bord de ventes, analyse de performance commerciale, segmentation de clientèle, reporting automatisé. Chaque compétence produit un livrable démontrable — un dashboard interactif, une requête d'analyse, un rapport d'insights — qui alimente votre portfolio. Vous apprenez surtout à raconter une histoire avec les données et à formuler des recommandations actionnables, ce qui distingue l'analyste utile du simple technicien. À la sortie, vous accédez à l'un des domaines les plus porteurs et les mieux rémunérés du numérique en Afrique francophone.",
+      "icon": "bar-chart-3",
+      "color": "#1E8FE1",
+      "objectives": [
+        "Maîtriser Excel et Google Sheets pour l'analyse avancée",
+        "Créer des tableaux de bord percutants avec Power BI",
+        "Interroger des bases de données avec le langage SQL",
+        "Analyser et automatiser le traitement de données avec Python",
+        "Transformer des données en insights et recommandations concrètes"
+      ],
+      "publics": [
+        "Jeunes diplômés visant les métiers de la data",
+        "Professionnels (gestion, finance, commerce) voulant exploiter leurs données",
+        "Personnes en reconversion vers l'analyse de données",
+        "Entrepreneurs souhaitant piloter leur activité par les chiffres"
+      ],
+      "debouches": [
+        "Data Analyst",
+        "Business Intelligence Analyst",
+        "Analyste reporting / Contrôleur de gestion outillé",
+        "Consultant data freelance"
+      ]
+    },
+    {
+      "slug": "productivite",
+      "name": "École de Productivité Numérique",
+      "shortDescription": "Travaillez plus vite et mieux : outils bureautiques, gestion de projet et automatisation no-code pour gagner un temps précieux.",
+      "longDescription": "L'École de Productivité Numérique donne à chacun les outils pour devenir plus efficace, organisé et irremplaçable au travail. Souvent sous-estimées, ces compétences transversales font pourtant la différence dans un CV et au quotidien professionnel. Vous apprenez à exploiter pleinement les suites bureautiques et collaboratives (Word, Excel, Google Workspace, Microsoft 365), à piloter des projets avec des outils modernes comme Notion et Trello, puis à automatiser vos tâches répétitives sans écrire une ligne de code grâce aux plateformes no-code (Zapier, Make, Airtable). L'approche est immédiatement applicable : dès chaque module, vous mettez en place des systèmes que vous réutilisez pour vos études, votre emploi ou votre entreprise — un espace de travail Notion complet, un tableau de bord de gestion, un automatisme qui relie vos outils entre eux. Ces compétences renforcent aussi tous les autres parcours de l'académie. En sortant, vous ne perdez plus de temps sur des tâches manuelles : vous travaillez comme un professionnel outillé, capable d'organiser une équipe et de fluidifier n'importe quel processus.",
+      "icon": "folder-kanban",
+      "color": "#059669",
+      "objectives": [
+        "Exploiter pleinement les suites bureautiques et collaboratives",
+        "Organiser et piloter des projets avec Notion et Trello",
+        "Automatiser des tâches répétitives sans coder (no-code)",
+        "Structurer son travail et gérer son temps efficacement",
+        "Mettre en place des systèmes réutilisables et fiables"
+      ],
+      "publics": [
+        "Étudiants et jeunes actifs voulant gagner en efficacité",
+        "Assistants, gestionnaires et personnel administratif",
+        "Entrepreneurs et petites équipes cherchant à s'organiser",
+        "Toute personne souhaitant renforcer ses compétences numériques de base"
+      ],
+      "debouches": [
+        "Assistant administratif / de direction outillé",
+        "Office Manager / Coordinateur de projet",
+        "Consultant en organisation et automatisation no-code",
+        "Renfort transversal pour tout métier du numérique"
+      ]
+    },
+    {
+      "slug": "cybersecurite",
+      "name": "École de Cybersécurité",
+      "shortDescription": "Protégez les données et les systèmes : hygiène numérique, sécurité des réseaux et hacking éthique, un domaine en forte pénurie de talents.",
+      "longDescription": "L'École de Cybersécurité forme les gardiens du numérique, des profils dont la demande explose alors que les cyberattaques se multiplient en Afrique. Le parcours part des fondamentaux accessibles à tous — hygiène numérique, protection des comptes, sensibilisation aux menaces (phishing, ransomware, ingénierie sociale) — puis monte vers des compétences techniques avancées : sécurisation des réseaux, configuration défensive, et tests d'intrusion (ethical hacking) menés dans des environnements de laboratoire contrôlés et légaux. Notre pédagogie pratique vous place en situation réelle : vous identifiez des vulnérabilités, vous simulez des attaques pour mieux vous défendre, vous rédigez des rapports de sécurité professionnels. Chaque compétence produit un livrable — audit de sécurité, rapport de test d'intrusion, plan de protection — qui atteste concrètement de votre niveau. Nous insistons sur l'éthique et le cadre légal, piliers du métier. À la sortie, vous accédez à l'un des secteurs les plus valorisés et les plus déficitaires en talents du continent, avec des opportunités en entreprise, en administration et en freelance à l'échelle internationale.",
+      "icon": "shield",
+      "color": "#DC2626",
+      "objectives": [
+        "Adopter et diffuser les bonnes pratiques d'hygiène numérique",
+        "Identifier et contrer les principales menaces informatiques",
+        "Sécuriser des réseaux et des systèmes d'information",
+        "Réaliser des tests d'intrusion éthiques en environnement contrôlé",
+        "Rédiger des rapports de sécurité et des plans de protection"
+      ],
+      "publics": [
+        "Passionnés d'informatique voulant se spécialiser en sécurité",
+        "Techniciens et administrateurs systèmes/réseaux",
+        "Professionnels en reconversion vers la cybersécurité",
+        "Responsables souhaitant sécuriser leur entreprise"
+      ],
+      "debouches": [
+        "Analyste en cybersécurité (SOC)",
+        "Pentester / Testeur d'intrusion",
+        "Administrateur sécurité réseaux et systèmes",
+        "Consultant en cybersécurité freelance"
+      ]
+    },
+    {
+      "slug": "entrepreneuriat",
+      "name": "École d'Entrepreneuriat Digital",
+      "shortDescription": "Lancez et développez votre activité en ligne : idéation, business model, freelancing et acquisition de clients à l'ère du numérique.",
+      "longDescription": "L'École d'Entrepreneuriat Digital accompagne celles et ceux qui veulent créer leur propre activité et vivre du numérique. Que votre objectif soit de devenir freelance, de lancer une startup ou de monétiser une compétence, ce parcours vous donne la méthode entrepreneuriale du concept à la traction commerciale. Vous apprenez à trouver et valider une idée face à un vrai marché, à construire un business model solide et un plan d'affaires crédible, à bâtir votre marque personnelle pour attirer des clients, puis à maîtriser les leviers de croissance et d'acquisition digitale (tunnel de vente, réseaux, publicité, prospection). Notre approche est concrète et ancrée dans la réalité africaine : vous travaillez sur VOTRE projet réel tout au long du parcours, avec des livrables directement exploitables — étude de marché, business plan, profil freelance optimisé, première stratégie d'acquisition. Nous abordons aussi les aspects pratiques du freelancing rentable : trouver des clients internationaux, fixer ses tarifs, se faire payer. À la sortie, vous ne repartez pas avec une idée en tête mais avec un projet en marche et les compétences pour le faire décoller.",
+      "icon": "rocket",
+      "color": "#5B3FA8",
+      "objectives": [
+        "Générer et valider une idée d'entreprise face à un marché réel",
+        "Construire un business model et un plan d'affaires solides",
+        "Développer une marque personnelle et une activité de freelance",
+        "Maîtriser les leviers de croissance et d'acquisition de clients",
+        "Lancer concrètement un projet et obtenir ses premiers revenus"
+      ],
+      "publics": [
+        "Porteurs de projet et futurs créateurs d'entreprise",
+        "Freelances souhaitant structurer et développer leur activité",
+        "Étudiants et diplômés attirés par l'entrepreneuriat",
+        "Professionnels voulant monétiser une compétence en ligne"
+      ],
+      "debouches": [
+        "Entrepreneur / Fondateur de startup",
+        "Freelance digital indépendant",
+        "Consultant / Solopreneur",
+        "Growth marketer / Responsable acquisition"
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "name": "Prompt Engineering",
+      "slug": "prompt-engineering",
+      "category": "TECHNICAL",
+      "schoolSlug": "ia",
+      "level": "INTERMEDIATE",
+      "description": "Concevoir des prompts structurés et itératifs pour obtenir des résultats fiables et précis des IA génératives."
+    },
+    {
+      "name": "Automatisation avec l'IA générative",
+      "slug": "automatisation-ia-generative",
+      "category": "METHODOLOGICAL",
+      "schoolSlug": "ia",
+      "level": "INTERMEDIATE",
+      "description": "Automatiser des tâches métier (emails, contenus, reporting) en combinant IA générative et outils no-code."
+    },
+    {
+      "name": "Fondamentaux du Machine Learning",
+      "slug": "fondamentaux-machine-learning",
+      "category": "TECHNICAL",
+      "schoolSlug": "ia",
+      "level": "ADVANCED",
+      "description": "Comprendre les concepts clés de l'apprentissage automatique et leurs cas d'usage professionnels concrets."
+    },
+    {
+      "name": "Intégration d'API d'IA",
+      "slug": "integration-api-ia",
+      "category": "TECHNICAL",
+      "schoolSlug": "ia",
+      "level": "ADVANCED",
+      "description": "Connecter des modèles d'IA à des applications via leurs API pour créer assistants et chatbots intelligents."
+    },
+    {
+      "name": "HTML/CSS & Intégration web",
+      "slug": "html-css-integration-web",
+      "category": "TECHNICAL",
+      "schoolSlug": "dev",
+      "level": "BEGINNER",
+      "description": "Créer des pages web modernes et responsives en maîtrisant la structure HTML et la mise en forme CSS."
+    },
+    {
+      "name": "JavaScript moderne",
+      "slug": "javascript-moderne",
+      "category": "TECHNICAL",
+      "schoolSlug": "dev",
+      "level": "INTERMEDIATE",
+      "description": "Programmer des interfaces interactives avec JavaScript ES6+ et manipuler dynamiquement le DOM."
+    },
+    {
+      "name": "Développement React & Next.js",
+      "slug": "developpement-react-nextjs",
+      "category": "TECHNICAL",
+      "schoolSlug": "dev",
+      "level": "ADVANCED",
+      "description": "Construire des applications web performantes et déployées avec React et le framework Next.js."
+    },
+    {
+      "name": "API REST & bases de données",
+      "slug": "api-rest-bases-de-donnees",
+      "category": "TECHNICAL",
+      "schoolSlug": "dev",
+      "level": "ADVANCED",
+      "description": "Concevoir des back-ends robustes avec des API REST et la gestion de bases de données relationnelles."
+    },
+    {
+      "name": "Community Management",
+      "slug": "community-management",
+      "category": "PROFESSIONAL",
+      "schoolSlug": "marketing",
+      "level": "BEGINNER",
+      "description": "Animer, fédérer et développer des communautés engagées sur les réseaux sociaux."
+    },
+    {
+      "name": "Publicité Meta & Google Ads",
+      "slug": "publicite-meta-google-ads",
+      "category": "TECHNICAL",
+      "schoolSlug": "marketing",
+      "level": "INTERMEDIATE",
+      "description": "Créer, optimiser et piloter des campagnes publicitaires rentables sur Meta et Google Ads."
+    },
+    {
+      "name": "Stratégie de contenu & SEO",
+      "slug": "strategie-contenu-seo",
+      "category": "METHODOLOGICAL",
+      "schoolSlug": "marketing",
+      "level": "INTERMEDIATE",
+      "description": "Élaborer une stratégie de contenu et optimiser le référencement pour attirer un trafic qualifié."
+    },
+    {
+      "name": "Copywriting & storytelling",
+      "slug": "copywriting-storytelling",
+      "category": "PROFESSIONAL",
+      "schoolSlug": "marketing",
+      "level": "INTERMEDIATE",
+      "description": "Rédiger des messages persuasifs et raconter des histoires de marque qui convertissent."
+    },
+    {
+      "name": "UI Design avec Figma",
+      "slug": "ui-design-figma",
+      "category": "TECHNICAL",
+      "schoolSlug": "design",
+      "level": "BEGINNER",
+      "description": "Concevoir des interfaces modernes, cohérentes et responsives avec l'outil professionnel Figma."
+    },
+    {
+      "name": "UX Design & recherche utilisateur",
+      "slug": "ux-design-recherche-utilisateur",
+      "category": "METHODOLOGICAL",
+      "schoolSlug": "design",
+      "level": "INTERMEDIATE",
+      "description": "Appliquer une démarche centrée utilisateur : recherche, wireframes, prototypage et tests."
+    },
+    {
+      "name": "Identité visuelle & branding",
+      "slug": "identite-visuelle-branding",
+      "category": "PROFESSIONAL",
+      "schoolSlug": "design",
+      "level": "INTERMEDIATE",
+      "description": "Créer des identités de marque et des chartes graphiques fortes, cohérentes et mémorables."
+    },
+    {
+      "name": "Motion design & animation",
+      "slug": "motion-design-animation",
+      "category": "TECHNICAL",
+      "schoolSlug": "design",
+      "level": "ADVANCED",
+      "description": "Donner vie aux interfaces et contenus grâce à l'animation et aux principes du motion design."
+    },
+    {
+      "name": "Excel & Google Sheets avancés",
+      "slug": "excel-google-sheets-avances",
+      "category": "TECHNICAL",
+      "schoolSlug": "data",
+      "level": "BEGINNER",
+      "description": "Maîtriser les formules, tableaux croisés et fonctions avancées pour analyser efficacement les données."
+    },
+    {
+      "name": "Visualisation de données avec Power BI",
+      "slug": "visualisation-donnees-power-bi",
+      "category": "TECHNICAL",
+      "schoolSlug": "data",
+      "level": "INTERMEDIATE",
+      "description": "Créer des tableaux de bord interactifs et percutants pour communiquer des insights avec Power BI."
+    },
+    {
+      "name": "SQL pour l'analyse",
+      "slug": "sql-pour-analyse",
+      "category": "TECHNICAL",
+      "schoolSlug": "data",
+      "level": "INTERMEDIATE",
+      "description": "Interroger, filtrer et croiser des bases de données relationnelles avec le langage SQL."
+    },
+    {
+      "name": "Analyse de données avec Python",
+      "slug": "analyse-donnees-python",
+      "category": "TECHNICAL",
+      "schoolSlug": "data",
+      "level": "ADVANCED",
+      "description": "Traiter, analyser et automatiser l'exploitation de données avec Python, Pandas et ses bibliothèques."
+    },
+    {
+      "name": "Suite bureautique & collaboration",
+      "slug": "suite-bureautique-collaboration",
+      "category": "TRANSVERSAL",
+      "schoolSlug": "productivite",
+      "level": "BEGINNER",
+      "description": "Exploiter pleinement Word, Excel et les suites collaboratives Google Workspace et Microsoft 365."
+    },
+    {
+      "name": "Gestion de projet avec Notion & Trello",
+      "slug": "gestion-projet-notion-trello",
+      "category": "METHODOLOGICAL",
+      "schoolSlug": "productivite",
+      "level": "BEGINNER",
+      "description": "Organiser, planifier et suivre des projets avec des outils modernes comme Notion et Trello."
+    },
+    {
+      "name": "Automatisation No-Code",
+      "slug": "automatisation-no-code",
+      "category": "METHODOLOGICAL",
+      "schoolSlug": "productivite",
+      "level": "INTERMEDIATE",
+      "description": "Automatiser des workflows entre applications sans coder grâce à Zapier, Make et Airtable."
+    },
+    {
+      "name": "Hygiène numérique & sécurité des comptes",
+      "slug": "hygiene-numerique-securite-comptes",
+      "category": "TRANSVERSAL",
+      "schoolSlug": "cybersecurite",
+      "level": "BEGINNER",
+      "description": "Adopter les bons réflexes pour protéger ses comptes, données et appareils face aux menaces courantes."
+    },
+    {
+      "name": "Sécurité des réseaux",
+      "slug": "securite-des-reseaux",
+      "category": "TECHNICAL",
+      "schoolSlug": "cybersecurite",
+      "level": "INTERMEDIATE",
+      "description": "Comprendre et sécuriser les réseaux informatiques contre les intrusions et les attaques."
+    },
+    {
+      "name": "Tests d'intrusion (Ethical Hacking)",
+      "slug": "tests-intrusion-ethical-hacking",
+      "category": "TECHNICAL",
+      "schoolSlug": "cybersecurite",
+      "level": "ADVANCED",
+      "description": "Identifier et exploiter des vulnérabilités en environnement contrôlé pour mieux défendre les systèmes."
+    },
+    {
+      "name": "Idéation & validation de marché",
+      "slug": "ideation-validation-marche",
+      "category": "ENTREPRENEURIAL",
+      "schoolSlug": "entrepreneuriat",
+      "level": "BEGINNER",
+      "description": "Générer, tester et valider une idée d'entreprise face aux besoins réels d'un marché."
+    },
+    {
+      "name": "Business model & plan d'affaires",
+      "slug": "business-model-plan-affaires",
+      "category": "ENTREPRENEURIAL",
+      "schoolSlug": "entrepreneuriat",
+      "level": "INTERMEDIATE",
+      "description": "Construire un modèle économique viable et un plan d'affaires crédible pour lancer son projet."
+    },
+    {
+      "name": "Freelancing & personal branding",
+      "slug": "freelancing-personal-branding",
+      "category": "ENTREPRENEURIAL",
+      "schoolSlug": "entrepreneuriat",
+      "level": "INTERMEDIATE",
+      "description": "Bâtir une marque personnelle forte et trouver des clients pour vivre du freelancing."
+    },
+    {
+      "name": "Growth & acquisition digitale",
+      "slug": "growth-acquisition-digitale",
+      "category": "ENTREPRENEURIAL",
+      "schoolSlug": "entrepreneuriat",
+      "level": "ADVANCED",
+      "description": "Maîtriser les leviers de croissance et d'acquisition pour développer une activité en ligne."
+    }
+  ],
+  "shortCourses": [
+    {
+      "slug": "introduction-intelligence-artificielle",
+      "schoolSlug": "ia",
+      "title": "Introduction à l'Intelligence Artificielle",
+      "shortDescription": "Comprenez enfin ce qu'est l'IA, à quoi elle sert vraiment et comment elle transforme déjà les métiers en Côte d'Ivoire et en Afrique.",
+      "longDescription": "L'intelligence artificielle n'est plus de la science-fiction : elle rédige, traduit, recommande, analyse et automatise des tâches dans presque tous les secteurs. Cette formation d'initiation, 100 % accessible et sans une seule ligne de code, vous donne les clés pour comprendre de quoi on parle réellement. Vous découvrirez les grandes familles d'IA (IA générative, apprentissage automatique, vision, traitement du langage), à travers des exemples concrets tirés du quotidien africain : agriculture, banque mobile, santé, commerce, administration. Vous apprendrez à distinguer le mythe de la réalité, à repérer les usages qui créent de la valeur et ceux qui relèvent du marketing, et surtout à identifier les opportunités que l'IA ouvre pour votre métier ou votre projet. Une porte d'entrée idéale, gratuite, avant de passer à la pratique avec les ateliers de l'École d'IA de Digital Access Academy.",
+      "level": "BEGINNER",
+      "duration": "2h30",
+      "price": 0,
+      "courseType": "initiation",
+      "objectives": [
+        "Définir ce qu'est l'intelligence artificielle et ses principales familles avec vos propres mots",
+        "Reconnaître au moins dix usages concrets de l'IA dans la vie quotidienne et professionnelle en Afrique",
+        "Distinguer les promesses réalistes de l'IA de ses limites et de ses risques",
+        "Identifier trois opportunités d'utiliser l'IA dans votre métier, vos études ou votre projet",
+        "Vous orienter vers les prochaines formations pratiques adaptées à votre objectif"
+      ],
+      "prerequisites": [
+        "Aucun prérequis technique",
+        "Savoir naviguer sur un ordinateur ou un smartphone",
+        "Une connexion internet"
+      ]
+    },
+    {
+      "slug": "bien-utiliser-chatgpt",
+      "schoolSlug": "ia",
+      "title": "Bien utiliser ChatGPT au quotidien",
+      "shortDescription": "Passez de « ça répond n'importe quoi » à des résultats précis et utiles : apprenez l'art du prompt pour gagner des heures chaque semaine.",
+      "longDescription": "ChatGPT est devenu un assistant capable de rédiger, résumer, traduire, corriger, brainstormer et coder. Encore faut-il savoir lui parler. Dans cet atelier pratique, vous ne regardez pas : vous faites. À partir de cas réels (rédiger un email professionnel, préparer un post pour les réseaux, résumer un document, générer des idées de business, réviser un cours), vous apprenez la méthode du prompt efficace : donner un rôle, un contexte, un format et des contraintes. Vous découvrirez comment itérer sur une réponse, corriger l'IA, éviter les fausses informations (hallucinations) et protéger vos données confidentielles. Vous repartirez avec une bibliothèque personnelle de prompts prêts à l'emploi pour votre travail ou vos études. Un atelier concret, orienté productivité, qui rentabilise son prix dès la première semaine d'utilisation.",
+      "level": "BEGINNER",
+      "duration": "3h",
+      "price": 15000,
+      "courseType": "atelier",
+      "objectives": [
+        "Structurer un prompt efficace avec la méthode rôle-contexte-format-contraintes",
+        "Utiliser ChatGPT pour rédiger, résumer, traduire et corriger des documents professionnels",
+        "Itérer et corriger les réponses de l'IA pour obtenir exactement le résultat voulu",
+        "Repérer et éviter les erreurs et fausses informations générées par l'IA",
+        "Constituer votre propre bibliothèque de prompts réutilisables pour votre métier"
+      ],
+      "prerequisites": [
+        "Savoir utiliser un navigateur web",
+        "Disposer d'un compte ChatGPT gratuit (création guidée en début d'atelier)",
+        "Idéalement avoir suivi « Introduction à l'Intelligence Artificielle »"
+      ]
+    },
+    {
+      "slug": "creer-cv-professionnel",
+      "schoolSlug": "productivite",
+      "title": "Créer un CV professionnel qui décroche des entretiens",
+      "shortDescription": "Concevez un CV clair, moderne et convaincant, adapté au marché ivoirien et africain, prêt à être envoyé aux recruteurs.",
+      "longDescription": "Un bon CV ne raconte pas votre vie : il vend votre valeur en quelques secondes de lecture. Cet atelier vous guide pas à pas dans la création d'un CV professionnel, du contenu à la mise en page. Vous apprendrez à structurer vos expériences avec la logique action-résultat, à formuler des accroches percutantes, à mettre en avant vos compétences même sans grande expérience, et à adapter votre CV à chaque offre. Côté outil, vous réaliserez votre CV avec un modèle moderne (Canva ou Google Docs) que vous garderez et pourrez modifier à volonté. Nous aborderons aussi les pièges courants des candidats africains (fautes, surcharge, photo, longueur) et la lettre de motivation qui accompagne l'envoi. À la fin, vous disposez d'un CV finalisé, exportable en PDF, prêt à postuler. Une brique clé de l'employabilité, cœur de la mission de Digital Access Academy.",
+      "level": "BEGINNER",
+      "duration": "2h",
+      "price": 10000,
+      "courseType": "atelier",
+      "objectives": [
+        "Structurer un CV lisible et professionnel adapté au marché de l'emploi africain",
+        "Rédiger des expériences percutantes selon la logique action-résultat",
+        "Valoriser vos compétences et réalisations même avec peu d'expérience",
+        "Réaliser et exporter votre CV en PDF à partir d'un modèle moderne réutilisable",
+        "Éviter les dix erreurs les plus courantes qui font rejeter une candidature"
+      ],
+      "prerequisites": [
+        "Aucun prérequis",
+        "Avoir sous la main la liste de vos formations et expériences",
+        "Un compte Google ou Canva gratuit"
+      ]
+    },
+    {
+      "slug": "canva-pour-debutants",
+      "schoolSlug": "design",
+      "title": "Canva pour débutants : créez vos visuels en toute autonomie",
+      "shortDescription": "Concevez affiches, posts, flyers et bannières professionnels sans être graphiste, directement dans votre navigateur.",
+      "longDescription": "Canva a démocratisé le design : plus besoin de logiciels complexes ni de compétences avancées pour produire des visuels de qualité. Cette formation outil vous rend autonome sur l'essentiel. Vous découvrez l'interface, les modèles, la bibliothèque d'éléments, la gestion des couleurs et des polices, puis vous créez de vrais projets utiles : un post Instagram/Facebook, un flyer d'événement, une affiche promotionnelle et une bannière de couverture. Vous apprendrez les principes de base d'un bon visuel (hiérarchie, contraste, alignement, respiration) pour que vos créations soient professionnelles et pas seulement jolies. Nous verrons aussi comment créer une identité visuelle simple et cohérente pour votre activité ou celle d'un client, et comment exporter aux bons formats pour l'impression et le web. Idéal pour entrepreneurs, community managers débutants et freelances.",
+      "level": "BEGINNER",
+      "duration": "3h",
+      "price": 12000,
+      "courseType": "outil",
+      "objectives": [
+        "Maîtriser l'interface de Canva et ses fonctionnalités essentielles",
+        "Créer des visuels pour les réseaux sociaux, l'impression et le web",
+        "Appliquer les principes de base d'un design professionnel : hiérarchie, contraste, alignement",
+        "Construire une identité visuelle simple et cohérente pour une marque",
+        "Exporter vos créations aux bons formats et résolutions selon l'usage"
+      ],
+      "prerequisites": [
+        "Savoir utiliser un ordinateur et un navigateur web",
+        "Un compte Canva gratuit (création guidée en début de formation)",
+        "Aucune compétence en design requise"
+      ]
+    },
+    {
+      "slug": "excel-debutant",
+      "schoolSlug": "data",
+      "title": "Excel débutant : vos premiers tableaux et calculs",
+      "shortDescription": "Maîtrisez les bases d'Excel (et Google Sheets) pour organiser vos données, faire vos calculs et présenter des tableaux propres.",
+      "longDescription": "Excel reste l'outil le plus demandé dans le monde professionnel, tous secteurs confondus. Cette formation outil part de zéro et vous rend opérationnel sur les fondamentaux. Vous apprendrez à saisir et organiser des données, à mettre en forme un tableau lisible, à utiliser les formules de base (somme, moyenne, minimum, maximum, pourcentage), les références de cellules, le tri et les filtres. Vous créerez des cas concrets utiles au quotidien : un suivi de dépenses, un tableau de stock, une liste de contacts, un petit budget. Nous introduirons aussi les graphiques simples pour visualiser vos chiffres et la fonction SI pour les premières logiques conditionnelles. Tout ce que vous apprenez fonctionne aussi bien sur Excel que sur Google Sheets. Une compétence de base indispensable, première marche vers l'École des Données & Analyse.",
+      "level": "BEGINNER",
+      "duration": "4h",
+      "price": 15000,
+      "courseType": "outil",
+      "objectives": [
+        "Saisir, organiser et mettre en forme des données dans un tableur",
+        "Utiliser les formules de base : somme, moyenne, min, max et pourcentages",
+        "Trier, filtrer et rechercher rapidement dans un tableau",
+        "Créer des graphiques simples pour visualiser vos données",
+        "Construire des tableaux de suivi concrets : budget, stock, dépenses"
+      ],
+      "prerequisites": [
+        "Savoir utiliser un ordinateur",
+        "Excel ou un compte Google gratuit (Google Sheets)",
+        "Aucune connaissance préalable des tableurs requise"
+      ]
+    },
+    {
+      "slug": "creer-page-html-simple",
+      "schoolSlug": "dev",
+      "title": "Créer votre première page web en HTML",
+      "shortDescription": "Écrivez et publiez votre toute première page web de vos propres mains : titres, textes, images et liens. Le déclic pour se lancer dans le code.",
+      "longDescription": "Vous êtes curieux du code mais vous ne savez pas par où commencer ? Cet atelier est votre première ligne. Sans installation compliquée, vous découvrez comment fonctionne une page web et vous écrivez du vrai HTML dès les premières minutes. Vous apprenez à structurer une page avec les balises essentielles (titres, paragraphes, listes, images, liens, boutons), à comprendre la logique des balises ouvrantes et fermantes, et à donner une première mise en forme avec quelques notions de CSS. Au fil de l'atelier, vous construisez votre propre mini page de présentation — une carte de visite en ligne — que vous pourrez mettre en ligne gratuitement. L'objectif n'est pas de tout maîtriser, mais de démystifier le code, de vivre le plaisir de créer et de savoir si le développement web est fait pour vous, avant d'attaquer les parcours complets de l'École de Développement.",
+      "level": "BEGINNER",
+      "duration": "3h",
+      "price": 12000,
+      "courseType": "atelier",
+      "objectives": [
+        "Comprendre la structure d'une page web et le rôle des balises HTML",
+        "Écrire du HTML : titres, paragraphes, listes, images, liens et boutons",
+        "Appliquer une première mise en forme avec quelques notions de CSS",
+        "Construire une page de présentation personnelle de A à Z",
+        "Mettre votre page en ligne gratuitement et la partager"
+      ],
+      "prerequisites": [
+        "Savoir utiliser un ordinateur et un navigateur web",
+        "Aucune expérience de programmation requise",
+        "Curiosité et envie d'expérimenter"
+      ]
+    },
+    {
+      "slug": "securiser-ses-comptes-en-ligne",
+      "schoolSlug": "cybersecurite",
+      "title": "Sécuriser ses comptes et sa vie en ligne",
+      "shortDescription": "Protégez vos comptes, votre argent mobile et vos données contre le piratage et les arnaques, avec des réflexes simples et gratuits.",
+      "longDescription": "Piratage de comptes WhatsApp et Facebook, arnaques au mobile money, faux liens, mots de passe volés : les cybermenaces touchent tout le monde, particuliers comme entrepreneurs. Cette initiation gratuite vous donne les réflexes essentiels pour vous protéger, sans jargon technique. Vous apprendrez à créer et gérer des mots de passe solides, à activer la double authentification sur vos comptes clés, à reconnaître les tentatives d'hameçonnage (phishing) et les arnaques par SMS ou WhatsApp, et à réagir vite en cas de compte compromis. Nous aborderons aussi la protection de votre argent mobile, la sécurité sur les réseaux Wi-Fi publics, et la gestion des informations que vous partagez sur les réseaux sociaux. Une formation de sensibilisation indispensable, offerte par Digital Access Academy, parce que la sécurité numérique est l'affaire de tous.",
+      "level": "BEGINNER",
+      "duration": "2h",
+      "price": 0,
+      "courseType": "initiation",
+      "objectives": [
+        "Créer et gérer des mots de passe robustes et uniques",
+        "Activer la double authentification sur vos comptes essentiels",
+        "Reconnaître et déjouer les tentatives d'hameçonnage et les arnaques mobile money",
+        "Réagir efficacement quand un compte est piraté ou compromis",
+        "Adopter des réflexes de sécurité au quotidien : Wi-Fi public, partage de données, réseaux sociaux"
+      ],
+      "prerequisites": [
+        "Aucun prérequis",
+        "Posséder au moins un compte en ligne (email, WhatsApp, réseau social)",
+        "Un smartphone ou un ordinateur"
+      ]
+    },
+    {
+      "slug": "creer-page-facebook-pro",
+      "schoolSlug": "marketing",
+      "title": "Créer une page Facebook professionnelle",
+      "shortDescription": "Lancez la page Facebook de votre activité, configurez-la correctement et publiez vos premiers contenus pour attirer des clients.",
+      "longDescription": "Facebook reste le réseau social le plus utilisé en Côte d'Ivoire et un canal de vente incontournable pour les petites entreprises. Cet atelier vous accompagne pas à pas dans la création d'une page professionnelle qui inspire confiance. Vous apprendrez à créer et paramétrer votre page (nom, catégorie, coordonnées, bouton d'action), à soigner votre photo de profil et votre bannière, à rédiger une présentation qui convertit et à configurer la messagerie et les réponses automatiques. Nous verrons ensuite comment planifier et rédiger des publications efficaces, quels types de contenus fonctionnent, et comment interagir avec votre communauté. Vous découvrirez également les bases pour promouvoir un post et comprendre les premières statistiques. À la fin, votre page est en ligne, professionnelle et prête à recevoir vos premiers clients. Idéal pour commerçants, artisans, freelances et jeunes entrepreneurs.",
+      "level": "BEGINNER",
+      "duration": "2h30",
+      "price": 10000,
+      "courseType": "atelier",
+      "objectives": [
+        "Créer et paramétrer entièrement une page Facebook professionnelle",
+        "Optimiser photo de profil, bannière et présentation pour inspirer confiance",
+        "Configurer la messagerie, le bouton d'action et les réponses automatiques",
+        "Rédiger et planifier des publications qui engagent votre audience",
+        "Comprendre les bases de la promotion d'un post et des statistiques de page"
+      ],
+      "prerequisites": [
+        "Posséder un compte Facebook personnel",
+        "Savoir utiliser un smartphone ou un ordinateur",
+        "Avoir en tête l'activité ou le projet à promouvoir"
+      ]
+    },
+    {
+      "slug": "maitriser-google-drive",
+      "schoolSlug": "productivite",
+      "title": "Maîtriser Google Drive et les outils collaboratifs",
+      "shortDescription": "Stockez, organisez et partagez vos fichiers dans le cloud, et travaillez à plusieurs en temps réel sur Docs, Sheets et Slides.",
+      "longDescription": "Fini les fichiers perdus, les clés USB oubliées et les versions « final_v3_vraiment_final ». Google Drive vous offre un espace de stockage sécurisé, accessible partout, depuis votre téléphone comme votre ordinateur. Cette formation outil vous rend autonome sur tout l'écosystème Google Workspace gratuit. Vous apprendrez à organiser vos fichiers en dossiers clairs, à téléverser et retrouver n'importe quel document, à gérer les partages et les droits d'accès (lecture, commentaire, modification) en toute sécurité. Vous découvrirez ensuite Google Docs, Sheets et Slides pour créer et surtout collaborer en temps réel : plusieurs personnes sur le même document, commentaires, suggestions et historique des versions. Nous verrons aussi la synchronisation, le travail hors connexion et les bonnes pratiques de sauvegarde. Une compétence transversale qui fait gagner du temps à tout étudiant, salarié ou entrepreneur.",
+      "level": "BEGINNER",
+      "duration": "2h",
+      "price": 8000,
+      "courseType": "outil",
+      "objectives": [
+        "Organiser, téléverser et retrouver vos fichiers dans Google Drive",
+        "Gérer les partages et les droits d'accès en toute sécurité",
+        "Créer et co-éditer des documents avec Docs, Sheets et Slides en temps réel",
+        "Utiliser commentaires, suggestions et historique des versions pour collaborer",
+        "Synchroniser vos fichiers et travailler hors connexion"
+      ],
+      "prerequisites": [
+        "Un compte Google gratuit",
+        "Savoir utiliser un ordinateur ou un smartphone",
+        "Aucune connaissance préalable requise"
+      ]
+    },
+    {
+      "slug": "introduction-au-freelancing",
+      "schoolSlug": "entrepreneuriat",
+      "title": "Introduction au freelancing : vendre vos compétences en ligne",
+      "shortDescription": "Découvrez comment devenir freelance, trouver vos premiers clients et transformer vos compétences numériques en revenus.",
+      "longDescription": "Et si vos compétences numériques devenaient une source de revenus, à votre rythme, depuis chez vous ? Cette initiation vous montre le chemin concret du freelancing pour les jeunes talents africains. Vous comprendrez ce qu'est réellement le travail en freelance, ses avantages et ses contraintes, et comment choisir une compétence à vendre (rédaction, design, développement, community management, saisie, traduction...). Vous découvrirez les plateformes locales et internationales (Fiverr, Upwork, groupes WhatsApp et Facebook, bouche-à-oreille), comment créer un profil qui attire, fixer vos tarifs sans vous brader, et rédiger une offre convaincante. Nous aborderons aussi la relation client, les acomptes, l'encaissement via mobile money et les premières règles pour éviter les arnaques et les impayés. Une porte d'entrée motivante vers l'indépendance, avant d'approfondir avec les parcours de l'École d'Entrepreneuriat Digital.",
+      "level": "BEGINNER",
+      "duration": "2h30",
+      "price": 5000,
+      "courseType": "initiation",
+      "objectives": [
+        "Comprendre le fonctionnement, les avantages et les contraintes du freelancing",
+        "Identifier une compétence numérique à vendre en fonction de votre profil",
+        "Créer un profil attractif sur les plateformes locales et internationales",
+        "Fixer des tarifs justes et rédiger une offre de services convaincante",
+        "Sécuriser vos premières missions : acompte, encaissement mobile money, relation client"
+      ],
+      "prerequisites": [
+        "Aucun prérequis",
+        "Avoir ou vouloir développer une compétence numérique",
+        "Un smartphone ou un ordinateur avec connexion internet"
+      ]
+    },
+    {
+      "slug": "introduction-au-seo",
+      "schoolSlug": "marketing",
+      "title": "Introduction au SEO : être visible sur Google",
+      "shortDescription": "Comprenez comment Google classe les sites et appliquez les premières optimisations pour être trouvé par vos futurs clients.",
+      "longDescription": "Avoir un site ou une page ne sert à rien si personne ne le trouve. Le SEO (référencement naturel) est l'art d'apparaître dans les résultats de Google sans payer de publicité. Cette initiation démystifie le sujet et vous donne des bases solides et actionnables. Vous comprendrez comment fonctionne un moteur de recherche, ce que Google regarde pour classer les pages, et la logique des mots-clés : identifier ce que vos clients tapent réellement. Vous apprendrez les optimisations de base d'une page (titre, balise meta, structure des titres, contenu utile, images, vitesse, version mobile) et les principes du SEO local, essentiel pour être trouvé « près de chez soi » à Abidjan ou ailleurs. Nous introduirons aussi le rôle des contenus et des liens, et les outils gratuits pour suivre votre visibilité. Une base indispensable pour tout entrepreneur, blogueur ou futur spécialiste du marketing digital.",
+      "level": "BEGINNER",
+      "duration": "3h",
+      "price": 15000,
+      "courseType": "initiation",
+      "objectives": [
+        "Comprendre comment les moteurs de recherche classent les pages web",
+        "Identifier les mots-clés que recherchent réellement vos clients",
+        "Appliquer les optimisations de base d'une page : titre, meta, structure, contenu",
+        "Mettre en place les fondamentaux du SEO local pour être trouvé dans votre ville",
+        "Utiliser des outils gratuits pour suivre votre visibilité sur Google"
+      ],
+      "prerequisites": [
+        "Aucun prérequis technique",
+        "Comprendre l'intérêt d'être présent en ligne",
+        "Idéalement avoir un site, un blog ou un projet à référencer (facultatif)"
+      ]
+    },
+    {
+      "slug": "decouvrir-le-no-code",
+      "schoolSlug": "dev",
+      "title": "Découvrir le No-Code : créer sans coder",
+      "shortDescription": "Créez sites, applications et automatisations sans écrire une ligne de code grâce aux outils no-code les plus populaires.",
+      "longDescription": "Et si vous pouviez concrétiser vos idées numériques sans être développeur ? Le no-code permet de construire des sites web, des applications, des formulaires et des automatisations à l'aide d'outils visuels, par simple glisser-déposer. Cette initiation vous fait découvrir tout l'univers no-code et son potentiel énorme pour les entrepreneurs et porteurs de projets africains. Vous comprendrez ce qu'est le no-code, ce qu'il permet et ses limites, puis vous explorerez les grandes catégories d'outils : création de sites (comme Carrd ou Framer), bases de données et applications (comme Airtable ou Glide), et automatisations qui connectent vos outils entre eux. À travers une démonstration guidée, vous verrez comment passer d'une idée à un premier prototype fonctionnel en quelques heures, sans budget de développement. L'objectif : vous donner le déclic et la vision pour lancer votre projet plus vite et à moindre coût.",
+      "level": "BEGINNER",
+      "duration": "2h30",
+      "price": 12000,
+      "courseType": "initiation",
+      "objectives": [
+        "Comprendre ce qu'est le no-code, ses possibilités et ses limites",
+        "Identifier les grandes familles d'outils no-code et leurs usages",
+        "Choisir le bon outil no-code selon votre type de projet",
+        "Suivre la création guidée d'un premier prototype fonctionnel",
+        "Estimer comment lancer votre idée plus vite et à moindre coût avec le no-code"
+      ],
+      "prerequisites": [
+        "Savoir utiliser un ordinateur et un navigateur web",
+        "Aucune compétence en programmation requise",
+        "Avoir une idée de projet en tête (facultatif mais recommandé)"
+      ]
+    }
+  ],
+  "badges": [
+    {
+      "name": "Ingénieur de Prompts",
+      "slug": "ingenieur-de-prompts",
+      "description": "Vous savez dialoguer avec les IA génératives pour produire des résultats précis, structurés et fiables. Vous concevez des prompts robustes, itérez méthodiquement et automatisez des tâches réelles.",
+      "category": "TECHNICAL_SKILL",
+      "level": "INTERMEDIATE",
+      "icon": "sparkles",
+      "criteria": "Terminer le module « Prompt Engineering » de l'École IA et livrer un assistant IA fonctionnel résolvant un cas d'usage métier concret, validé par un mentor.",
+      "skillName": "Prompt Engineering"
+    },
+    {
+      "name": "Bâtisseur Full-Stack",
+      "slug": "batisseur-full-stack",
+      "description": "Vous concevez des applications web complètes, du front-end interactif au back-end connecté à une base de données. Vous maîtrisez le cycle de développement jusqu'au déploiement.",
+      "category": "TECHNICAL_SKILL",
+      "level": "ADVANCED",
+      "icon": "code-2",
+      "criteria": "Développer et déployer une application full-stack (interface, API, base de données, authentification) dans le cadre d'un projet du parcours Développement Logiciel.",
+      "skillName": "Développement Full-Stack"
+    },
+    {
+      "name": "Stratège Growth",
+      "slug": "stratege-growth",
+      "description": "Vous savez faire grandir une audience et générer des prospects grâce à des campagnes mesurables sur les réseaux sociaux et la publicité en ligne.",
+      "category": "TECHNICAL_SKILL",
+      "level": "INTERMEDIATE",
+      "icon": "trending-up",
+      "criteria": "Concevoir et piloter une campagne marketing complète (stratégie, contenu, publicité Meta, tableau de bord de résultats) sur un projet réel ou simulé validé.",
+      "skillName": "Marketing de croissance"
+    },
+    {
+      "name": "Designer d'Interfaces",
+      "slug": "designer-d-interfaces",
+      "description": "Vous transformez des besoins utilisateurs en interfaces claires, esthétiques et ergonomiques. Vous maîtrisez la recherche, le wireframe, le prototypage et le design system.",
+      "category": "TECHNICAL_SKILL",
+      "level": "INTERMEDIATE",
+      "icon": "palette",
+      "criteria": "Livrer une maquette UI/UX complète et prototypée sous Figma (parcours utilisateur, écrans, composants) pour un projet de l'École Design Numérique.",
+      "skillName": "UI/UX Design"
+    },
+    {
+      "name": "Analyste de Données",
+      "slug": "analyste-de-donnees",
+      "description": "Vous transformez des données brutes en décisions. Vous nettoyez, analysez et visualisez l'information pour raconter une histoire claire aux décideurs.",
+      "category": "TECHNICAL_SKILL",
+      "level": "ADVANCED",
+      "icon": "bar-chart-3",
+      "criteria": "Réaliser une analyse de bout en bout (collecte, nettoyage, analyse, tableau de bord) et présenter des recommandations exploitables sur un jeu de données réel.",
+      "skillName": "Analyse de données"
+    },
+    {
+      "name": "Gardien Cyber",
+      "slug": "gardien-cyber",
+      "description": "Vous identifiez les vulnérabilités et protégez les systèmes et les données. Vous appliquez les bonnes pratiques de sécurité et réagissez face aux menaces.",
+      "category": "TECHNICAL_SKILL",
+      "level": "ADVANCED",
+      "icon": "shield-check",
+      "criteria": "Réussir un audit de sécurité guidé (analyse de vulnérabilités, plan de remédiation) et le quiz avancé de l'École Cybersécurité avec un score minimum de 85 %.",
+      "skillName": "Cybersécurité défensive"
+    },
+    {
+      "name": "Maître de la Productivité",
+      "slug": "maitre-de-la-productivite",
+      "description": "Vous exploitez les outils numériques pour travailler plus vite et mieux : organisation, collaboration, automatisation et bureautique moderne assistée par l'IA.",
+      "category": "PROFESSIONAL_SKILL",
+      "level": "BEGINNER",
+      "icon": "zap",
+      "criteria": "Terminer le parcours Productivité Numérique et mettre en place un système d'organisation personnel automatisé documenté et présenté.",
+      "skillName": "Productivité numérique"
+    },
+    {
+      "name": "Fondateur Digital",
+      "slug": "fondateur-digital",
+      "description": "Vous transformez une idée en projet viable : validation du marché, business model, offre et lancement. Vous pensez client, valeur et exécution.",
+      "category": "PROJECT",
+      "level": "INTERMEDIATE",
+      "icon": "rocket",
+      "criteria": "Formaliser un projet entrepreneurial complet (étude de marché, business model canvas, pitch) et le présenter devant un jury de mentors.",
+      "skillName": "Entrepreneuriat digital"
+    },
+    {
+      "name": "Premier Projet Livré",
+      "slug": "premier-projet-livre",
+      "description": "Le premier pas qui change tout : vous avez conçu, réalisé et livré votre tout premier projet concret ajouté à votre portfolio.",
+      "category": "PROJECT",
+      "level": "BEGINNER",
+      "icon": "package-check",
+      "criteria": "Livrer et faire valider un premier projet pratique, publié dans votre portfolio Access Academy.",
+      "skillName": "Gestion de projet"
+    },
+    {
+      "name": "Mention Excellence",
+      "slug": "mention-excellence",
+      "description": "La marque des meilleurs. Vous avez terminé un parcours métier complet avec une maîtrise remarquable, saluée par vos évaluateurs.",
+      "category": "EXCELLENCE",
+      "level": "EXPERT",
+      "icon": "award",
+      "criteria": "Terminer un parcours métier complet avec une moyenne d'évaluation supérieure ou égale à 90 % et un projet final noté « excellent ».",
+      "skillName": "Excellence académique"
+    },
+    {
+      "name": "Série d'Assiduité",
+      "slug": "serie-d-assiduite",
+      "description": "La régularité forge la compétence. Vous avez appris chaque jour sans relâche et bâti une véritable discipline d'apprentissage.",
+      "category": "ENGAGEMENT",
+      "level": "INTERMEDIATE",
+      "icon": "flame",
+      "criteria": "Maintenir une série (streak) d'apprentissage de 30 jours consécutifs sur la plateforme.",
+      "skillName": "Discipline d'apprentissage"
+    },
+    {
+      "name": "Mentor de la Communauté",
+      "slug": "mentor-de-la-communaute",
+      "description": "Apprendre, c'est bien ; faire grandir les autres, c'est mieux. Vous accompagnez vos pairs et enrichissez la communauté par vos contributions.",
+      "category": "TALENT",
+      "level": "ADVANCED",
+      "icon": "users",
+      "criteria": "Aider activement d'autres apprenants (réponses validées sur les forums, entraide) et être reconnu comme contributeur de référence par l'équipe pédagogique.",
+      "skillName": "Mentorat et communication"
+    }
+  ],
+  "companies": [
+    {
+      "name": "Ivoire Tech Solutions",
+      "slug": "ivoire-tech-solutions",
+      "description": "Studio de développement logiciel ivoirien spécialisé dans les applications web et mobiles sur mesure pour les PME, banques et administrations. Ivoire Tech Solutions accompagne la transformation numérique des organisations locales avec des équipes agiles basées à Abidjan.",
+      "sector": "Développement logiciel & solutions numériques",
+      "location": "Cocody, Abidjan, Côte d'Ivoire",
+      "verification": "PARTNER",
+      "website": "https://ivoiretechsolutions.ci"
+    },
+    {
+      "name": "Baobab Analytics",
+      "slug": "baobab-analytics",
+      "description": "Cabinet de conseil en données et intelligence artificielle qui aide les entreprises d'Afrique de l'Ouest à décider grâce à la donnée : tableaux de bord, modèles prédictifs et automatisation. Baobab Analytics mise sur la formation des jeunes talents ivoiriens du numérique.",
+      "sector": "Données, Analyse & Intelligence Artificielle",
+      "location": "Plateau, Abidjan, Côte d'Ivoire",
+      "verification": "VERIFIED",
+      "website": "https://baobab-analytics.ci"
+    },
+    {
+      "name": "Akwaba Digital",
+      "slug": "akwaba-digital",
+      "description": "Agence de marketing digital et de communication créative au service des marques ivoiriennes et de la diaspora. Akwaba Digital conçoit des campagnes social media, de la publicité en ligne et des identités visuelles à fort impact.",
+      "sector": "Marketing digital, communication & design",
+      "location": "Marcory, Abidjan, Côte d'Ivoire",
+      "verification": "PREMIUM",
+      "website": "https://akwaba-digital.ci"
+    }
+  ],
+  "opportunities": [
+    {
+      "companySlug": "ivoire-tech-solutions",
+      "title": "Stage — Développeur Web Full-Stack",
+      "type": "INTERNSHIP",
+      "description": "Rejoignez notre équipe produit pour développer des interfaces et des API d'applications web utilisées par nos clients bancaires. Vous serez encadré par un développeur senior, participerez aux revues de code et contribuerez à des fonctionnalités réelles mises en production. Stage de 4 à 6 mois avec forte possibilité d'embauche.",
+      "requiredSkills": [
+        "React",
+        "Node.js",
+        "TypeScript",
+        "Git",
+        "API REST"
+      ],
+      "location": "Cocody, Abidjan",
+      "remote": false,
+      "compensation": "150 000 FCFA / mois"
+    },
+    {
+      "companySlug": "baobab-analytics",
+      "title": "Data Analyst Junior",
+      "type": "JOB",
+      "description": "Poste en CDI pour un profil junior passionné par la donnée. Vous collecterez, nettoierez et analyserez des données clients, construirez des tableaux de bord décisionnels et présenterez des recommandations aux équipes métier. Formation continue et montée en compétences vers le Machine Learning assurées en interne.",
+      "requiredSkills": [
+        "SQL",
+        "Python",
+        "Power BI",
+        "Visualisation de données",
+        "Statistiques"
+      ],
+      "location": "Plateau, Abidjan",
+      "remote": false,
+      "compensation": "350 000 – 500 000 FCFA / mois"
+    },
+    {
+      "companySlug": "akwaba-digital",
+      "title": "Freelance — Community Manager & Publicité Meta",
+      "type": "FREELANCE",
+      "description": "Nous recherchons un freelance pour gérer les réseaux sociaux de 2 à 3 marques : ligne éditoriale, création de contenus, planification et pilotage de campagnes publicitaires Meta (Facebook/Instagram). Mission récurrente au mois, en télétravail, avec un point hebdomadaire avec l'équipe créative.",
+      "requiredSkills": [
+        "Meta Ads",
+        "Community management",
+        "Copywriting",
+        "Canva",
+        "Analyse de performance"
+      ],
+      "location": "Télétravail (Côte d'Ivoire)",
+      "remote": true,
+      "compensation": "200 000 FCFA / mois par marque"
+    },
+    {
+      "companySlug": "ivoire-tech-solutions",
+      "title": "Mission — Refonte UI/UX d'une application mobile",
+      "type": "CLIENT_PROJECT",
+      "description": "Projet ponctuel pour repenser l'expérience et l'interface d'une application mobile de services financiers. Livrables attendus : audit UX, parcours utilisateurs, wireframes, maquettes haute-fidélité et prototype interactif sous Figma, avec un design system réutilisable. Idéal pour enrichir un portfolio avec un cas client réel.",
+      "requiredSkills": [
+        "Figma",
+        "UI Design",
+        "Prototypage",
+        "Design system",
+        "Recherche utilisateur"
+      ],
+      "location": "Abidjan (hybride)",
+      "remote": true,
+      "compensation": "600 000 FCFA (forfait projet)"
+    },
+    {
+      "companySlug": "baobab-analytics",
+      "title": "Alternance — Assistant IA & Automatisation",
+      "type": "APPRENTICESHIP",
+      "description": "Contrat en alternance pour un apprenant motivé par l'IA appliquée. Vous assisterez nos consultants dans la conception d'assistants IA, l'automatisation de processus (no-code/low-code) et la rédaction de prompts pour des clients. Alternance rythme 3 jours entreprise / 2 jours formation, encadrée par un tuteur dédié.",
+      "requiredSkills": [
+        "Prompt Engineering",
+        "Automatisation no-code",
+        "Notions de Python",
+        "Google Workspace",
+        "Rigueur documentaire"
+      ],
+      "location": "Plateau, Abidjan",
+      "remote": false,
+      "compensation": "120 000 FCFA / mois + tutorat"
+    }
+  ],
+  "careerPaths": [
+    {
+      "slug": "assistant-ia-professionnel",
+      "schoolSlug": "ia",
+      "title": "Assistant IA Professionnel",
+      "shortDescription": "Devenez l'expert de l'IA au quotidien : maîtrisez le prompting, la rédaction, l'analyse et l'automatisation pour booster la productivité des équipes et assister les PME au quotidien.",
+      "longDescription": "L'intelligence artificielle générative a cessé d'être une curiosité : elle est devenue un outil de travail incontournable dans les entreprises ivoiriennes et africaines. Ce parcours métier « Apprendre en faisant » vous transforme en Assistant IA Professionnel, capable d'exploiter ChatGPT, Claude, Gemini et les outils d'automatisation no-code pour accélérer la rédaction, l'analyse, la relation client et la production de rapports au sein d'une organisation.\n\nVous n'apprendrez pas la théorie pour la théorie. Dès le premier module, vous construisez des livrables réels : une bibliothèque de prompts réutilisable, un assistant de service client, un générateur de rapports automatisé, et pour finir un assistant IA opérationnel complet pour une PME. Chaque projet enrichit votre portfolio et prouve votre valeur à un employeur ou à vos futurs clients.\n\nLe parcours couvre les fondamentaux du prompting professionnel, la création de contenu et la communication assistées par IA, l'analyse et la synthèse de données, puis l'automatisation et le déploiement d'assistants intelligents en entreprise. Une attention particulière est portée à l'éthique, à la confidentialité des données et à la vérification des résultats — des compétences indispensables pour utiliser l'IA de façon responsable en contexte professionnel.\n\nÀ l'issue du parcours, vous saurez concevoir des systèmes de travail augmentés par l'IA, faire gagner des heures à une équipe, et vous positionner comme la personne de référence sur l'IA dans votre organisation. Un métier d'avenir, accessible sans compétences en programmation, et directement monétisable en freelance ou en emploi.",
+      "targetJob": "Assistant IA Professionnel / Spécialiste productivité et automatisation IA en PME",
+      "level": "INTERMEDIATE",
+      "duration": "3 mois",
+      "estimatedHours": 110,
+      "price": 150000,
+      "prerequisites": [
+        "Savoir utiliser un ordinateur et naviguer sur Internet au quotidien",
+        "Maîtriser les bases de la bureautique (traitement de texte, tableur, email)",
+        "Bonne compréhension du français écrit (rédaction et lecture)",
+        "Aucune compétence en programmation requise",
+        "Disposer d'un accès à Internet et d'un compte sur au moins un outil d'IA générative (ChatGPT, Claude ou Gemini)"
+      ],
+      "objectives": [
+        "Comprendre le fonctionnement, les capacités et les limites des IA génératives (LLM)",
+        "Maîtriser les techniques de prompting professionnel pour obtenir des résultats fiables et précis",
+        "Automatiser des tâches répétitives de rédaction, d'analyse et de communication",
+        "Concevoir des assistants IA adaptés aux besoins réels d'une PME",
+        "Utiliser l'IA de manière éthique, sécurisée et respectueuse de la confidentialité des données",
+        "Structurer et documenter des flux de travail augmentés par l'IA pour une équipe"
+      ],
+      "outcomes": [
+        "Rédiger des prompts professionnels structurés qui produisent des résultats exploitables du premier coup",
+        "Créer et maintenir une bibliothèque de prompts réutilisable pour une équipe",
+        "Produire des contenus professionnels (emails, rapports, posts, supports) plus vite et de meilleure qualité grâce à l'IA",
+        "Mettre en place un assistant de service client capable de répondre aux demandes courantes",
+        "Automatiser la génération de rapports et de synthèses à partir de données brutes",
+        "Déployer un assistant IA opérationnel complet pour une PME et former ses utilisateurs",
+        "Évaluer la fiabilité d'une réponse d'IA et corriger les erreurs ou hallucinations"
+      ],
+      "tools": [
+        "ChatGPT",
+        "Claude",
+        "Google Gemini",
+        "Microsoft Copilot",
+        "Perplexity",
+        "Notion AI",
+        "Google Workspace (Docs, Sheets, Gmail)",
+        "Zapier",
+        "Make (Integromat)",
+        "Canva AI"
+      ],
+      "certificateTitle": "Certificat d'Assistant IA Professionnel — Digital Access Academy",
+      "skillNames": [
+        "Prompt engineering professionnel",
+        "Rédaction et communication assistées par IA",
+        "Automatisation no-code des tâches",
+        "Analyse et synthèse de données par IA",
+        "Conception d'assistants IA",
+        "Éthique et sécurité de l'IA",
+        "Assistance client augmentée",
+        "Gestion de la connaissance d'entreprise"
+      ],
+      "modules": [
+        {
+          "title": "Fondamentaux de l'IA générative et prompting professionnel",
+          "description": "Comprendre comment fonctionnent réellement les IA génératives et acquérir une méthode fiable de prompting pour obtenir des résultats professionnels reproductibles.",
+          "objectives": [
+            "Expliquer le fonctionnement, les forces et les limites des modèles de langage",
+            "Distinguer les principaux outils d'IA et choisir le bon selon la tâche",
+            "Rédiger des prompts structurés avec rôle, contexte, contraintes et format de sortie",
+            "Détecter et corriger les hallucinations et erreurs de l'IA"
+          ],
+          "lessons": [
+            {
+              "title": "Comment fonctionne une IA générative (LLM) ?",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 25,
+              "summary": "Découvrez de façon simple et imagée ce qu'est un modèle de langage, comment il prédit du texte, ce qu'il sait faire et ce qu'il ne sait pas faire, sans jargon technique."
+            },
+            {
+              "title": "Panorama des outils : ChatGPT, Claude, Gemini, Copilot",
+              "lessonType": "TEXT",
+              "estimatedDuration": 20,
+              "summary": "Comparez les principaux assistants IA du marché, leurs points forts, leurs coûts et leurs cas d'usage privilégiés pour choisir le bon outil selon la mission."
+            },
+            {
+              "title": "L'anatomie d'un prompt professionnel",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 30,
+              "summary": "Apprenez la méthode RCCF (Rôle, Contexte, Consigne, Format) pour construire des prompts clairs qui produisent des résultats fiables et directement exploitables."
+            },
+            {
+              "title": "Atelier : transformer un mauvais prompt en excellent prompt",
+              "lessonType": "EXERCISE",
+              "estimatedDuration": 35,
+              "summary": "À partir d'exemples réels flous, réécrivez des prompts en appliquant la méthode RCCF et mesurez la différence de qualité des résultats obtenus."
+            },
+            {
+              "title": "Détecter les hallucinations et vérifier les réponses",
+              "lessonType": "TEXT",
+              "estimatedDuration": 20,
+              "summary": "Identifiez les situations où l'IA invente des informations et adoptez des réflexes de vérification systématique pour garantir la fiabilité de votre travail."
+            },
+            {
+              "title": "Quiz : maîtrise des fondamentaux du prompting",
+              "lessonType": "QUIZ",
+              "estimatedDuration": 15,
+              "summary": "Validez votre compréhension du fonctionnement des LLM, du choix des outils et des principes du prompting professionnel."
+            }
+          ]
+        },
+        {
+          "title": "Rédaction, communication et création de contenu assistées par IA",
+          "description": "Utiliser l'IA comme copilote de rédaction pour produire emails, contenus marketing, supports et communications professionnelles plus vite et avec cohérence.",
+          "objectives": [
+            "Générer et affiner des contenus professionnels adaptés au ton de l'entreprise",
+            "Créer des modèles réutilisables pour les communications récurrentes",
+            "Traduire, reformuler et adapter des contenus à différents publics",
+            "Construire une bibliothèque de prompts documentée et partageable"
+          ],
+          "lessons": [
+            {
+              "title": "Rédiger emails et communications professionnelles avec l'IA",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 25,
+              "summary": "Produisez des emails clairs, des relances, des comptes rendus et des annonces internes en gardant un ton professionnel et une voix de marque cohérente."
+            },
+            {
+              "title": "Créer du contenu marketing et des posts réseaux sociaux",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 30,
+              "summary": "Générez des idées, des accroches et des calendriers de publication adaptés au contexte ivoirien, tout en gardant l'authenticité de la marque."
+            },
+            {
+              "title": "Reformulation, traduction et adaptation au public",
+              "lessonType": "TEXT",
+              "estimatedDuration": 20,
+              "summary": "Adaptez un même message à différents interlocuteurs (client, direction, grand public) et traduisez sans perdre le sens ni le ton."
+            },
+            {
+              "title": "Atelier : construire sa bibliothèque de prompts",
+              "lessonType": "EXERCISE",
+              "estimatedDuration": 40,
+              "summary": "Créez une collection organisée de prompts réutilisables pour les tâches récurrentes de votre métier, avec titre, objectif, variables et exemple de sortie."
+            },
+            {
+              "title": "Ressource : 50 prompts prêts à l'emploi par métier",
+              "lessonType": "RESOURCE",
+              "estimatedDuration": 15,
+              "summary": "Téléchargez une banque de prompts classés par fonction (RH, vente, communication, gestion) à adapter et intégrer dans votre propre bibliothèque."
+            }
+          ]
+        },
+        {
+          "title": "Analyse, synthèse et génération de rapports avec l'IA",
+          "description": "Transformer des données brutes et des documents volumineux en synthèses claires et en rapports professionnels grâce à l'IA.",
+          "objectives": [
+            "Synthétiser des documents longs et extraire les informations clés",
+            "Analyser des données de tableur et en tirer des insights",
+            "Structurer des rapports professionnels automatisés et récurrents",
+            "Protéger la confidentialité des données lors de l'usage de l'IA"
+          ],
+          "lessons": [
+            {
+              "title": "Résumer et synthétiser des documents volumineux",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 25,
+              "summary": "Extrayez l'essentiel de rapports, contrats et comptes rendus en quelques minutes, et générez des synthèses adaptées à chaque destinataire."
+            },
+            {
+              "title": "Analyser des données de tableur avec l'IA",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 30,
+              "summary": "Interprétez des chiffres de ventes, d'enquêtes ou de suivi, identifiez des tendances et formulez des recommandations exploitables."
+            },
+            {
+              "title": "Construire un modèle de rapport automatisé",
+              "lessonType": "EXERCISE",
+              "estimatedDuration": 40,
+              "summary": "Créez un gabarit de rapport (hebdomadaire ou mensuel) que l'IA remplit à partir de données brutes, avec structure fixe et ton constant."
+            },
+            {
+              "title": "Confidentialité et sécurité des données avec l'IA",
+              "lessonType": "TEXT",
+              "estimatedDuration": 20,
+              "summary": "Apprenez quelles données ne jamais partager, comment anonymiser les informations sensibles et respecter la protection des données en entreprise."
+            },
+            {
+              "title": "Quiz : analyse et reporting assistés par IA",
+              "lessonType": "QUIZ",
+              "estimatedDuration": 15,
+              "summary": "Vérifiez vos acquis sur la synthèse, l'analyse de données et les bonnes pratiques de confidentialité."
+            }
+          ]
+        },
+        {
+          "title": "Automatisation et déploiement d'un assistant IA en entreprise",
+          "description": "Passer de l'usage individuel à des systèmes automatisés et à un assistant IA opérationnel déployé et documenté pour toute une équipe.",
+          "objectives": [
+            "Connecter l'IA à des outils via l'automatisation no-code",
+            "Concevoir un assistant de service client fiable",
+            "Documenter et faire adopter des flux de travail augmentés par l'IA",
+            "Mesurer le gain de temps et la valeur créée pour l'entreprise"
+          ],
+          "lessons": [
+            {
+              "title": "Introduction à l'automatisation no-code (Zapier, Make)",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 30,
+              "summary": "Découvrez comment relier l'IA à vos emails, formulaires et tableurs pour déclencher des actions automatiques sans écrire de code."
+            },
+            {
+              "title": "Concevoir un assistant de service client",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 30,
+              "summary": "Construisez une base de réponses aux questions fréquentes et un flux qui traite les demandes clients avec un ton professionnel et cohérent."
+            },
+            {
+              "title": "Créer une base de connaissances pour l'assistant",
+              "lessonType": "EXERCISE",
+              "estimatedDuration": 40,
+              "summary": "Rassemblez et structurez les informations d'une entreprise (offres, procédures, FAQ) pour alimenter un assistant IA fiable et à jour."
+            },
+            {
+              "title": "Documenter et faire adopter l'IA dans une équipe",
+              "lessonType": "TEXT",
+              "estimatedDuration": 25,
+              "summary": "Rédigez un guide d'utilisation, formez les collègues et mesurez le retour sur investissement pour ancrer l'IA dans les pratiques."
+            },
+            {
+              "title": "Ressource : checklist de déploiement d'un assistant IA",
+              "lessonType": "RESOURCE",
+              "estimatedDuration": 15,
+              "summary": "Une liste de contrôle complète, de l'analyse du besoin à la mise en production, pour déployer un assistant IA sans rien oublier."
+            }
+          ]
+        }
+      ],
+      "projects": [
+        {
+          "title": "Bibliothèque de prompts professionnelle",
+          "projectType": "MINI_PROJECT",
+          "level": "BEGINNER",
+          "context": "Dans une organisation, les collaborateurs répètent chaque jour les mêmes types de demandes à l'IA (rédiger un email, résumer un document, créer un post) mais chacun improvise ses prompts, avec des résultats inégaux et une perte de temps constante.",
+          "problem": "L'absence de prompts standardisés et documentés fait perdre du temps, produit des résultats incohérents et empêche le partage des bonnes pratiques entre collègues.",
+          "mission": "Concevoir une bibliothèque de prompts professionnels réutilisable, organisée par fonction métier, que n'importe quel collaborateur peut utiliser pour obtenir des résultats fiables du premier coup.",
+          "objectives": [
+            "Identifier au moins 15 tâches récurrentes automatisables par prompt",
+            "Rédiger des prompts structurés avec la méthode RCCF",
+            "Documenter chaque prompt (objectif, variables, exemple de sortie)",
+            "Organiser la bibliothèque de façon claire et navigable"
+          ],
+          "deliverables": [
+            "Un document ou tableau structuré contenant au moins 15 prompts prêts à l'emploi",
+            "Une fiche de documentation par prompt (rôle, contexte, variables, résultat attendu)",
+            "Trois exemples concrets de résultats obtenus avec les prompts"
+          ],
+          "constraints": [
+            "Les prompts doivent couvrir au moins 3 fonctions métier différentes",
+            "Chaque prompt doit inclure des variables clairement identifiées à personnaliser",
+            "La bibliothèque doit être utilisable par une personne débutante sans explication supplémentaire"
+          ],
+          "estimatedHours": 10,
+          "rubricCriteria": [
+            {
+              "label": "Pertinence et diversité des prompts",
+              "points": 25
+            },
+            {
+              "label": "Application correcte de la méthode de prompting",
+              "points": 25
+            },
+            {
+              "label": "Qualité de la documentation et réutilisabilité",
+              "points": 25
+            },
+            {
+              "label": "Organisation et clarté de la bibliothèque",
+              "points": 25
+            }
+          ]
+        },
+        {
+          "title": "Assistant de service client et générateur de rapports",
+          "projectType": "PROFESSIONAL_MISSION",
+          "level": "INTERMEDIATE",
+          "context": "Une PME reçoit chaque jour de nombreuses demandes clients par email et WhatsApp (informations produits, tarifs, suivi de commande) et doit produire chaque semaine un rapport d'activité pour sa direction. Le personnel est débordé et les réponses tardent.",
+          "problem": "Le traitement manuel des demandes clients et la rédaction hebdomadaire des rapports mobilisent trop de temps, entraînent des retards et des incohérences dans les réponses.",
+          "mission": "Mettre en place un assistant de service client alimenté par une base de connaissances et un générateur de rapports automatisé qui transforme les données d'activité en synthèse hebdomadaire prête à présenter.",
+          "objectives": [
+            "Constituer une base de connaissances fiable des offres et procédures de la PME",
+            "Créer des flux de réponses cohérentes aux demandes clients courantes",
+            "Concevoir un modèle de rapport rempli automatiquement à partir de données",
+            "Démontrer le gain de temps par rapport au traitement manuel"
+          ],
+          "deliverables": [
+            "Une base de connaissances structurée (offres, FAQ, procédures)",
+            "Un ensemble de prompts ou flux répondant à au moins 10 demandes clients types",
+            "Un modèle de rapport hebdomadaire généré à partir de données brutes fournies",
+            "Une note de recommandations sur le déploiement et les limites de la solution"
+          ],
+          "constraints": [
+            "Aucune donnée client réelle et sensible ne doit être exposée sans anonymisation",
+            "Les réponses doivent respecter un ton professionnel et cohérent défini au préalable",
+            "Le rapport doit suivre une structure fixe et réutilisable chaque semaine",
+            "Toute réponse incertaine doit être signalée pour validation humaine"
+          ],
+          "estimatedHours": 18,
+          "rubricCriteria": [
+            {
+              "label": "Compréhension du besoin métier de la PME",
+              "points": 20
+            },
+            {
+              "label": "Qualité et robustesse de la base de connaissances et des prompts",
+              "points": 25
+            },
+            {
+              "label": "Automatisation et gain de temps démontré",
+              "points": 20
+            },
+            {
+              "label": "Qualité des livrables (réponses et rapport)",
+              "points": 20
+            },
+            {
+              "label": "Présentation et pertinence des recommandations",
+              "points": 15
+            }
+          ]
+        },
+        {
+          "title": "Assistant IA opérationnel pour une PME",
+          "projectType": "FINAL_PROJECT",
+          "level": "ADVANCED",
+          "context": "Une PME ivoirienne (au choix : commerce, service, artisanat ou association) souhaite intégrer l'IA dans son fonctionnement quotidien mais ne sait pas par où commencer. Elle vous mandate comme Assistant IA Professionnel pour concevoir et déployer une solution complète adaptée à ses moyens.",
+          "problem": "La PME perd du temps sur des tâches répétitives (communication, réponses clients, reporting, création de contenu) et n'a ni les compétences internes ni les outils pour tirer parti de l'IA de façon structurée et responsable.",
+          "mission": "Analyser les besoins réels de la PME, concevoir un assistant IA opérationnel couvrant plusieurs cas d'usage prioritaires, l'accompagner d'automatisations, le documenter et former ses utilisateurs pour une adoption durable.",
+          "objectives": [
+            "Réaliser un diagnostic des tâches à fort potentiel d'automatisation par l'IA",
+            "Concevoir un assistant couvrant au moins 3 cas d'usage prioritaires",
+            "Intégrer une base de connaissances et au moins une automatisation no-code",
+            "Produire une documentation et un guide de formation des utilisateurs",
+            "Quantifier la valeur créée (temps gagné, qualité, cohérence)"
+          ],
+          "deliverables": [
+            "Un document de cadrage : diagnostic des besoins et cas d'usage retenus",
+            "L'assistant IA fonctionnel (prompts, base de connaissances, automatisations)",
+            "Un guide d'utilisation clair destiné aux collaborateurs de la PME",
+            "Une démonstration commentée de l'assistant en situation réelle",
+            "Un bilan chiffré du gain de temps et de la valeur apportée"
+          ],
+          "constraints": [
+            "La solution doit rester utilisable avec des outils gratuits ou peu coûteux adaptés à une PME",
+            "La confidentialité des données de l'entreprise et des clients doit être garantie",
+            "L'assistant doit prévoir des points de contrôle humain pour les décisions sensibles",
+            "Le guide doit permettre à une personne non technique d'utiliser l'assistant en autonomie",
+            "Le projet doit couvrir au moins 3 cas d'usage distincts et cohérents entre eux"
+          ],
+          "estimatedHours": 30,
+          "rubricCriteria": [
+            {
+              "label": "Analyse du besoin de la PME et cadrage",
+              "points": 15
+            },
+            {
+              "label": "Architecture de l'assistant et cas d'usage couverts",
+              "points": 20
+            },
+            {
+              "label": "Qualité des prompts et de la base de connaissances",
+              "points": 20
+            },
+            {
+              "label": "Automatisations opérationnelles mises en place",
+              "points": 15
+            },
+            {
+              "label": "Documentation et guide de formation des utilisateurs",
+              "points": 15
+            },
+            {
+              "label": "Démonstration et pertinence business (valeur créée)",
+              "points": 15
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "community-manager-professionnel",
+      "schoolSlug": "marketing",
+      "title": "Community Manager Professionnel",
+      "shortDescription": "Devenez Community Manager en 3 mois : auditez, planifiez, créez et animez la présence digitale d'une marque, lancez des campagnes Meta Ads et mesurez vos résultats. Un parcours 100 % pratique qui se termine par une stratégie digitale complète pour enrichir votre portfolio.",
+      "longDescription": "Le Community Manager est aujourd'hui l'un des métiers les plus recherchés par les marques, PME, ONG et institutions en Côte d'Ivoire et en Afrique francophone. Chaque entreprise a besoin d'une présence digitale vivante, cohérente et rentable — et c'est exactement ce que vous apprendrez à construire dans ce parcours.\n\nFidèle au principe « Apprendre en faisant », ce parcours vous met immédiatement en situation professionnelle. Dès le premier module, vous auditez la présence digitale d'une vraie marque, puis vous construisez sa ligne éditoriale, son calendrier de publications, ses visuels et ses textes. Vous apprenez à animer une communauté, à gérer les commentaires et les situations de crise, puis à passer à la vitesse supérieure avec la publicité sociale : création d'une campagne Meta Ads (Facebook/Instagram) avec objectif, ciblage, budget et créations.\n\nÀ chaque étape, vous produisez un livrable concret que vous conservez dans votre portfolio. Le parcours se conclut par un projet final ambitieux : concevoir la stratégie digitale complète d'une marque, de l'audit au plan média payant, en passant par le calendrier éditorial et le plan de mesure. À la fin, vous ne saurez pas seulement « ce qu'est » le community management : vous saurez le faire, avec des preuves à montrer en entretien ou à un premier client.\n\nAucun prérequis technique n'est nécessaire. Le parcours s'adresse aussi bien aux jeunes diplômés et étudiants qu'aux personnes en reconversion et aux entrepreneurs qui veulent piloter eux-mêmes leur présence en ligne. Tous les outils utilisés sont accessibles (gratuits ou en version d'essai), pensés pour une utilisation depuis un ordinateur ou un smartphone, y compris en connexion 3G/4G.",
+      "targetJob": "Community Manager / Social Media Manager",
+      "level": "INTERMEDIATE",
+      "duration": "3 mois",
+      "estimatedHours": 90,
+      "price": 150000,
+      "prerequisites": [
+        "Savoir utiliser un ordinateur et un smartphone (navigation web, e-mail, réseaux sociaux)",
+        "Posséder un compte personnel actif sur au moins un réseau social (Facebook ou Instagram)",
+        "Aisance rédactionnelle en français",
+        "Aucune compétence technique ou en design préalable n'est requise"
+      ],
+      "objectives": [
+        "Comprendre le métier de Community Manager, ses missions et ses débouchés en Côte d'Ivoire et en Afrique francophone",
+        "Réaliser un audit de présence digitale et un benchmark concurrentiel professionnels",
+        "Définir une ligne éditoriale, des personas et un calendrier de publications aligné sur des objectifs business",
+        "Créer des visuels professionnels et rédiger des contenus qui génèrent de l'engagement",
+        "Concevoir, lancer et optimiser une campagne publicitaire Meta Ads (Facebook/Instagram)",
+        "Mesurer la performance à l'aide de KPIs et produire un reporting clair",
+        "Constituer un portfolio de Community Manager prêt à présenter en entretien ou à un client"
+      ],
+      "outcomes": [
+        "Auditer la présence digitale d'une marque et la comparer à ses concurrents",
+        "Construire un calendrier éditorial mensuel structuré autour de piliers de contenu",
+        "Créer des visuels professionnels avec Canva et monter des vidéos courtes (Reels, TikTok, Stories)",
+        "Rédiger des posts, accroches et appels à l'action qui suscitent l'engagement",
+        "Paramétrer et optimiser une campagne Meta Ads avec un objectif, un ciblage et un budget définis",
+        "Analyser les indicateurs de performance et présenter un reporting professionnel à un client ou un employeur",
+        "Élaborer une stratégie digitale complète, de l'audit au plan média payant",
+        "Présenter un portfolio de livrables concrets lors d'un entretien ou d'un premier contrat"
+      ],
+      "tools": [
+        "Meta Business Suite",
+        "Facebook Ads Manager",
+        "Instagram",
+        "Facebook",
+        "TikTok",
+        "LinkedIn",
+        "Canva",
+        "CapCut",
+        "Metricool",
+        "Notion",
+        "Google Sheets"
+      ],
+      "certificateTitle": "Certificat de Community Manager Professionnel — Digital Access Academy",
+      "skillNames": [
+        "Community management",
+        "Stratégie éditoriale et planification de contenu",
+        "Copywriting pour les réseaux sociaux",
+        "Création de visuels et de vidéos courtes",
+        "Publicité sociale Meta Ads (Facebook/Instagram)",
+        "Analyse de performance et reporting (KPIs)",
+        "Gestion et modération de communauté",
+        "Audit et veille digitale"
+      ],
+      "modules": [
+        {
+          "title": "Le métier de Community Manager et audit de présence digitale",
+          "description": "Posez les fondations du métier et apprenez à diagnostiquer la présence digitale d'une marque. Ce module vous donne la méthode pour observer, comparer et évaluer objectivement ce qui se passe sur les réseaux sociaux avant même de produire du contenu.",
+          "objectives": [
+            "Cerner le rôle, les missions et les débouchés du Community Manager",
+            "Choisir les réseaux sociaux pertinents selon la marque et sa cible",
+            "Réaliser un audit de présence digitale structuré",
+            "Analyser la concurrence à l'aide d'un benchmark"
+          ],
+          "lessons": [
+            {
+              "title": "Le rôle du Community Manager en 2026",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 18,
+              "summary": "Missions quotidiennes, compétences clés, positionnement dans l'entreprise et débouchés concrets du métier en Côte d'Ivoire et en Afrique francophone."
+            },
+            {
+              "title": "Cartographier les réseaux sociaux et choisir ses plateformes",
+              "lessonType": "TEXT",
+              "estimatedDuration": 20,
+              "summary": "Panorama des plateformes (Facebook, Instagram, TikTok, LinkedIn, WhatsApp Business) et méthode pour sélectionner celles qui correspondent à la marque et à son audience."
+            },
+            {
+              "title": "Réaliser un audit de présence digitale",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 22,
+              "summary": "Méthode pas à pas pour auditer une page : cohérence de la marque, qualité des contenus, fréquence, engagement et benchmark des concurrents."
+            },
+            {
+              "title": "Auditer une marque locale",
+              "lessonType": "EXERCISE",
+              "estimatedDuration": 45,
+              "summary": "Appliquez la grille d'audit à la page Facebook/Instagram d'une marque locale et identifiez ses points forts et ses axes d'amélioration."
+            },
+            {
+              "title": "Quiz : fondamentaux du métier et audit",
+              "lessonType": "QUIZ",
+              "estimatedDuration": 10,
+              "summary": "Validez votre maîtrise du rôle du Community Manager, du choix des plateformes et de la méthode d'audit."
+            }
+          ]
+        },
+        {
+          "title": "Stratégie éditoriale et planification de contenu",
+          "description": "Passez du diagnostic à la stratégie. Vous apprenez à définir une ligne éditoriale claire, à connaître votre audience et à organiser vos publications dans un calendrier éditorial professionnel, tout en maîtrisant les codes du copywriting social.",
+          "objectives": [
+            "Définir une ligne éditoriale et des personas",
+            "Construire un calendrier éditorial autour de piliers de contenu",
+            "Maîtriser les bases du copywriting pour les réseaux sociaux",
+            "Planifier un mois de publications cohérentes"
+          ],
+          "lessons": [
+            {
+              "title": "Ligne éditoriale et personas",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 20,
+              "summary": "Comment traduire les objectifs d'une marque en ligne éditoriale, définir la cible en personas et fixer un ton de communication cohérent."
+            },
+            {
+              "title": "Construire un calendrier éditorial",
+              "lessonType": "TEXT",
+              "estimatedDuration": 18,
+              "summary": "Piliers de contenu, rubriques récurrentes, fréquence et bonnes pratiques de planification avec un modèle de calendrier réutilisable."
+            },
+            {
+              "title": "Le copywriting pour les réseaux sociaux",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 22,
+              "summary": "Accroches, storytelling, appels à l'action et structure d'un post performant, adaptés aux usages locaux."
+            },
+            {
+              "title": "Rédiger 10 posts et planifier un mois",
+              "lessonType": "EXERCISE",
+              "estimatedDuration": 50,
+              "summary": "Rédigez dix publications variées et intégrez-les dans un calendrier éditorial mensuel structuré pour une marque de votre choix."
+            },
+            {
+              "title": "Quiz : stratégie et calendrier éditorial",
+              "lessonType": "QUIZ",
+              "estimatedDuration": 10,
+              "summary": "Vérifiez vos acquis sur la ligne éditoriale, les personas, la planification et le copywriting."
+            }
+          ]
+        },
+        {
+          "title": "Création de contenu visuel et animation de communauté",
+          "description": "Donnez vie à votre stratégie. Vous créez des visuels professionnels, montez des vidéos courtes et apprenez à faire vivre une communauté au quotidien : répondre, engager, modérer et gérer les situations sensibles.",
+          "objectives": [
+            "Créer des visuels professionnels avec Canva",
+            "Produire des formats courts (Reels, TikTok, Stories)",
+            "Animer et modérer une communauté au quotidien",
+            "Gérer les avis négatifs et les situations de crise"
+          ],
+          "lessons": [
+            {
+              "title": "Créer des visuels pro avec Canva",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 25,
+              "summary": "Charte graphique, formats par plateforme, templates et astuces pour produire rapidement des visuels cohérents et professionnels."
+            },
+            {
+              "title": "Formats courts : Reels, TikTok et Stories",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 22,
+              "summary": "Concevoir et monter des vidéos verticales engageantes avec CapCut, du script au montage, pour capter l'attention."
+            },
+            {
+              "title": "Animer et modérer une communauté",
+              "lessonType": "TEXT",
+              "estimatedDuration": 20,
+              "summary": "Techniques d'engagement, gestion des commentaires et des messages, modération et réponse aux avis négatifs et aux crises."
+            },
+            {
+              "title": "Produire un kit de contenu pour une PME",
+              "lessonType": "EXERCISE",
+              "estimatedDuration": 60,
+              "summary": "Créez cinq visuels et leurs légendes pour une PME en respectant sa charte et sa ligne éditoriale."
+            },
+            {
+              "title": "Boîte à outils : templates, accroches et ressources",
+              "lessonType": "RESOURCE",
+              "estimatedDuration": 15,
+              "summary": "Bibliothèque de modèles de visuels, banque d'accroches et sélection d'outils gratuits pour gagner du temps au quotidien."
+            }
+          ]
+        },
+        {
+          "title": "Publicité Meta Ads et mesure de la performance",
+          "description": "Franchissez le cap de la publicité sociale et du pilotage par la donnée. Vous apprenez à créer une campagne Meta Ads de A à Z, à cibler et optimiser un budget, puis à mesurer vos résultats et à présenter un reporting professionnel.",
+          "objectives": [
+            "Prendre en main Meta Business Suite et Ads Manager",
+            "Créer une campagne Meta Ads complète",
+            "Cibler, tester et optimiser un budget publicitaire",
+            "Mesurer la performance et produire un reporting"
+          ],
+          "lessons": [
+            {
+              "title": "Prise en main de Meta Business Suite et Ads Manager",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 22,
+              "summary": "Organisation d'un compte publicitaire, structure des campagnes et navigation dans les outils Meta pour les professionnels."
+            },
+            {
+              "title": "Créer une campagne Meta Ads",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 26,
+              "summary": "Choisir un objectif, définir l'audience, fixer le budget et concevoir les créations d'une campagne Facebook/Instagram."
+            },
+            {
+              "title": "Ciblage, A/B testing et optimisation",
+              "lessonType": "TEXT",
+              "estimatedDuration": 18,
+              "summary": "Types de ciblage, audiences personnalisées et similaires, tests A/B et méthode d'optimisation d'un budget limité."
+            },
+            {
+              "title": "KPIs, reporting et ROI",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 20,
+              "summary": "Indicateurs à suivre (portée, engagement, coût par résultat, ROI) et construction d'un reporting clair pour un client ou un employeur."
+            },
+            {
+              "title": "Construire une campagne Meta Ads fictive",
+              "lessonType": "EXERCISE",
+              "estimatedDuration": 50,
+              "summary": "Montez une campagne Meta Ads complète (objectif, ciblage, budget, créations et estimation de résultats) pour une marque fictive."
+            }
+          ]
+        }
+      ],
+      "projects": [
+        {
+          "title": "Audit de présence digitale d'une marque locale",
+          "projectType": "MINI_PROJECT",
+          "level": "BEGINNER",
+          "context": "« Élégance CI », une boutique de prêt-à-porter féminin basée à Abidjan, publie de façon irrégulière sur Facebook et Instagram. La gérante sent que sa présence en ligne ne reflète pas la qualité de ses produits, mais elle ne sait pas par où commencer. Elle vous confie un premier diagnostic avant d'investir davantage.",
+          "problem": "La marque manque de visibilité et d'engagement sur les réseaux sociaux, sans savoir objectivement où elle se situe par rapport à ses concurrents ni quelles priorités adopter.",
+          "mission": "Réaliser un audit complet de la présence digitale de la marque, la comparer à trois concurrents et formuler des recommandations concrètes et priorisées.",
+          "objectives": [
+            "Analyser les pages sociales de la marque (cohérence, contenus, fréquence, engagement)",
+            "Comparer la marque à trois concurrents pertinents",
+            "Identifier les forces, faiblesses et opportunités",
+            "Proposer des recommandations actionnables et hiérarchisées"
+          ],
+          "deliverables": [
+            "Rapport d'audit structuré (5 à 8 pages ou présentation)",
+            "Tableau de benchmark comparatif des concurrents",
+            "Liste de recommandations priorisées avec quick wins"
+          ],
+          "constraints": [
+            "Analyser au minimum deux plateformes (Facebook et Instagram)",
+            "Comparer avec exactement trois concurrents réels du secteur",
+            "S'appuyer uniquement sur des données publiques et observables",
+            "Présenter les constats de façon visuelle et synthétique"
+          ],
+          "estimatedHours": 8,
+          "rubricCriteria": [
+            {
+              "label": "Qualité et exhaustivité de l'audit (contenus, fréquence, engagement)",
+              "points": 30
+            },
+            {
+              "label": "Pertinence et rigueur du benchmark concurrentiel",
+              "points": 25
+            },
+            {
+              "label": "Clarté du diagnostic (forces, faiblesses, opportunités)",
+              "points": 20
+            },
+            {
+              "label": "Caractère actionnable et priorisé des recommandations",
+              "points": 20
+            },
+            {
+              "label": "Présentation et professionnalisme du rapport",
+              "points": 5
+            }
+          ]
+        },
+        {
+          "title": "Calendrier éditorial et kit de contenu pour une PME",
+          "projectType": "PROFESSIONAL_MISSION",
+          "level": "INTERMEDIATE",
+          "context": "« Saveurs du Terroir », un restaurant ivoirien qui souhaite développer sa clientèle, vous engage comme Community Manager freelance pour structurer sa communication d'un mois. Le gérant veut des publications régulières, cohérentes et attrayantes, mais il n'a ni ligne éditoriale ni visuels professionnels.",
+          "problem": "La PME publie sans stratégie ni régularité : les contenus sont improvisés, incohérents et n'attirent pas de nouveaux clients.",
+          "mission": "Concevoir la ligne éditoriale, un calendrier de publications d'un mois et un kit de contenu prêt à publier (textes et visuels) pour le restaurant.",
+          "objectives": [
+            "Définir une ligne éditoriale et un ou deux personas",
+            "Construire un calendrier éditorial d'un mois autour de piliers de contenu",
+            "Rédiger des publications engageantes et adaptées à la cible",
+            "Produire des visuels cohérents avec la charte de la marque"
+          ],
+          "deliverables": [
+            "Document de ligne éditoriale (ton, piliers, personas)",
+            "Calendrier éditorial d'un mois (dates, formats, plateformes, thèmes)",
+            "10 posts rédigés avec accroches et appels à l'action",
+            "5 visuels créés sur Canva prêts à publier"
+          ],
+          "constraints": [
+            "Couvrir au moins deux formats (post image, carrousel ou vidéo courte)",
+            "Respecter une charte graphique cohérente (couleurs, typographies, logo)",
+            "Prévoir au moins un contenu à visée conversion (promotion ou réservation)",
+            "Livrer des visuels aux bons formats selon les plateformes"
+          ],
+          "estimatedHours": 12,
+          "rubricCriteria": [
+            {
+              "label": "Cohérence de la ligne éditoriale et pertinence des personas",
+              "points": 20
+            },
+            {
+              "label": "Structure et pertinence du calendrier éditorial",
+              "points": 25
+            },
+            {
+              "label": "Qualité rédactionnelle des posts (copywriting, accroches, CTA)",
+              "points": 20
+            },
+            {
+              "label": "Qualité et cohérence graphique des visuels",
+              "points": 25
+            },
+            {
+              "label": "Respect de la charte et professionnalisme de la livraison",
+              "points": 10
+            }
+          ]
+        },
+        {
+          "title": "Stratégie digitale complète pour une marque",
+          "projectType": "FINAL_PROJECT",
+          "level": "ADVANCED",
+          "context": "« NafisiCosmetics », une jeune marque ivoirienne de cosmétiques naturels, veut accélérer sa croissance et recruter un Community Manager. Avant de vous confier son budget de communication, la fondatrice vous demande de bâtir la stratégie digitale complète de la marque, de l'analyse initiale jusqu'au plan média payant, et de la présenter comme lors d'un vrai rendez-vous client.",
+          "problem": "La marque a un fort potentiel mais une présence digitale immature : pas de stratégie claire, une audience limitée et aucun dispositif publicitaire pour transformer la notoriété en ventes.",
+          "mission": "Concevoir et présenter une stratégie digitale complète intégrant l'audit, la stratégie éditoriale, des créations de contenu, une campagne Meta Ads fictive et un plan de mesure de la performance.",
+          "objectives": [
+            "Réaliser un audit et définir des objectifs SMART et des personas",
+            "Élaborer une stratégie et un plan de contenu sur un trimestre",
+            "Produire un échantillon représentatif de contenus (visuels et textes)",
+            "Concevoir une campagne Meta Ads complète avec budget et ciblage",
+            "Définir un plan de mesure et de reporting des performances"
+          ],
+          "deliverables": [
+            "Document de stratégie digitale (audit, objectifs, personas, positionnement)",
+            "Plan de contenu trimestriel avec calendrier éditorial d'un mois détaillé",
+            "Échantillon de contenus : 6 visuels et 6 posts rédigés",
+            "Plan de campagne Meta Ads (objectif, audiences, budget, créations, estimations)",
+            "Tableau de bord de KPIs et modèle de reporting mensuel",
+            "Support de présentation (soutenance) synthétisant la stratégie"
+          ],
+          "constraints": [
+            "Budget publicitaire fictif imposé de 300 000 FCFA à répartir",
+            "Couvrir au moins deux plateformes cohérentes avec la cible",
+            "Fixer des objectifs SMART mesurables et un plan de suivi associé",
+            "Intégrer au moins une vidéo courte dans l'échantillon de contenus",
+            "Présenter la stratégie sous forme de soutenance orale de 10 à 15 minutes"
+          ],
+          "estimatedHours": 25,
+          "rubricCriteria": [
+            {
+              "label": "Analyse et diagnostic (audit, personas, objectifs SMART)",
+              "points": 20
+            },
+            {
+              "label": "Stratégie éditoriale et plan de contenu",
+              "points": 20
+            },
+            {
+              "label": "Qualité des créations (visuels et textes)",
+              "points": 15
+            },
+            {
+              "label": "Campagne Meta Ads (objectif, ciblage, budget, créations)",
+              "points": 20
+            },
+            {
+              "label": "Plan de mesure, KPIs et reporting",
+              "points": 15
+            },
+            {
+              "label": "Cohérence globale, présentation et soutenance",
+              "points": 10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "developpeur-web-front-end",
+      "schoolSlug": "dev",
+      "title": "Développeur Web Front-End Junior",
+      "shortDescription": "Apprenez à concevoir des interfaces web modernes, responsives et interactives avec HTML, CSS, JavaScript et React — et constituez un portfolio prêt à convaincre les recruteurs.",
+      "longDescription": "Le front-end, c'est tout ce que l'utilisateur voit et touche dans un navigateur : la beauté, la fluidité et l'ergonomie d'un produit numérique. Ce parcours métier vous forme, de zéro à opérationnel, au poste de Développeur Web Front-End Junior, l'un des profils les plus recherchés en Côte d'Ivoire et en Afrique francophone. Fidèle au principe « Apprendre en faisant », vous n'accumulez pas de la théorie : chaque compétence est immédiatement mise en pratique sur un projet concret. Vous démarrez par les fondations du Web (HTML5 sémantique, CSS3), vous maîtrisez la mise en page responsive avec Flexbox et Grid, vous donnez vie à vos interfaces avec JavaScript moderne (ES6+), puis vous montez en puissance avec React, la bibliothèque qui équipe les plus grandes plateformes du monde. À l'arrivée, vous ne repartez pas seulement avec un certificat : vous repartez avec un portfolio de vrais projets — page personnelle, landing page, et l'interface complète d'une plateforme — que vous pourrez montrer en entretien dès le lendemain. Le parcours est pensé pour un rythme soutenu mais accessible, entièrement en français, avec des exemples ancrés dans le contexte entrepreneurial ivoirien et une exigence de qualité de niveau professionnel.",
+      "targetJob": "Développeur Web Front-End Junior",
+      "level": "BEGINNER",
+      "duration": "4 mois",
+      "estimatedHours": 180,
+      "price": 150000,
+      "prerequisites": [
+        "Savoir utiliser un ordinateur et naviguer sur le web au quotidien",
+        "Être à l'aise avec la gestion de fichiers et de dossiers",
+        "Aucune expérience préalable en programmation requise",
+        "Disposer d'environ 8 à 10 heures d'apprentissage par semaine",
+        "Une connexion internet et un ordinateur (Windows, macOS ou Linux)"
+      ],
+      "objectives": [
+        "Comprendre le fonctionnement du Web (navigateur, serveur, HTTP) et le rôle du développeur front-end",
+        "Structurer des pages avec un HTML5 sémantique, propre et accessible",
+        "Styliser et mettre en page des interfaces modernes avec CSS3, Flexbox et Grid",
+        "Concevoir des sites parfaitement responsives selon l'approche mobile-first",
+        "Rendre les interfaces interactives avec JavaScript moderne (ES6+) et la manipulation du DOM",
+        "Consommer des API REST pour afficher des données dynamiques",
+        "Construire des interfaces à base de composants avec React et ses hooks",
+        "Versionner son code avec Git & GitHub et déployer un projet en ligne"
+      ],
+      "outcomes": [
+        "Intégrer une maquette Figma en une page web fidèle, responsive et soignée",
+        "Créer de A à Z un site vitrine multi-sections fonctionnel",
+        "Développer une interface dynamique qui réagit aux actions de l'utilisateur",
+        "Construire un tableau de bord React connecté à une API",
+        "Publier un projet en ligne accessible via une URL partageable",
+        "Collaborer avec Git/GitHub comme dans une équipe technique",
+        "Présenter un portfolio de projets professionnels lors d'un entretien d'embauche",
+        "Postuler en toute confiance à un poste de développeur front-end junior ou en freelance"
+      ],
+      "tools": [
+        "HTML5",
+        "CSS3",
+        "JavaScript (ES6+)",
+        "React",
+        "Vite",
+        "Visual Studio Code",
+        "Git & GitHub",
+        "Figma",
+        "Chrome DevTools",
+        "Netlify / Vercel"
+      ],
+      "certificateTitle": "Certificat de Développeur Web Front-End Junior — Access Academy",
+      "skillNames": [
+        "Intégration HTML5 sémantique",
+        "Stylisation avancée avec CSS3 (Flexbox & Grid)",
+        "Design responsive mobile-first",
+        "Programmation JavaScript (ES6+)",
+        "Manipulation du DOM et interactivité",
+        "Développement d'interfaces avec React",
+        "Consommation d'API REST",
+        "Versionnage avec Git & GitHub"
+      ],
+      "modules": [
+        {
+          "title": "Les fondations du Web : HTML5 sémantique",
+          "description": "Posez des bases solides. Vous découvrez comment fonctionne le Web et vous apprenez à structurer n'importe quelle page avec un HTML5 propre, accessible et compris par les moteurs de recherche.",
+          "objectives": [
+            "Comprendre l'architecture client-serveur et le protocole HTTP",
+            "Structurer une page avec les balises sémantiques HTML5",
+            "Créer des formulaires, des liens et intégrer des médias"
+          ],
+          "lessons": [
+            {
+              "title": "Comment fonctionne le Web : navigateur, serveur, HTTP",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 18,
+              "summary": "Vue d'ensemble du fonctionnement d'internet et du rôle précis du développeur front-end dans la chaîne de production d'un site."
+            },
+            {
+              "title": "Structurer une page avec le HTML5 sémantique",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 25,
+              "summary": "Les balises header, nav, main, section, article, footer et l'importance de la sémantique pour l'accessibilité et le SEO."
+            },
+            {
+              "title": "Formulaires, liens et intégration de médias",
+              "lessonType": "TEXT",
+              "estimatedDuration": 20,
+              "summary": "Construire des formulaires exploitables, gérer les champs de saisie, les liens et intégrer images, audio et vidéo."
+            },
+            {
+              "title": "Exercice guidé : baliser une page d'article",
+              "lessonType": "EXERCISE",
+              "estimatedDuration": 40,
+              "summary": "Transformez un texte brut en page HTML structurée et sémantiquement correcte, prête à être stylisée."
+            },
+            {
+              "title": "Quiz : maîtrise du HTML",
+              "lessonType": "QUIZ",
+              "estimatedDuration": 15,
+              "summary": "Validez vos acquis sur la structure, la sémantique et les bonnes pratiques du HTML5."
+            }
+          ]
+        },
+        {
+          "title": "Styliser et rendre responsive avec CSS3",
+          "description": "Donnez du style à vos pages et rendez-les impeccables sur tous les écrans. Vous maîtrisez la mise en page moderne avec Flexbox et Grid et l'approche mobile-first.",
+          "objectives": [
+            "Maîtriser le box model, la cascade et les sélecteurs CSS",
+            "Construire des mises en page avec Flexbox et CSS Grid",
+            "Rendre une interface responsive avec les media queries"
+          ],
+          "lessons": [
+            {
+              "title": "Sélecteurs, box model et cascade CSS",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 22,
+              "summary": "Les mécanismes fondamentaux du CSS : ciblage des éléments, marges, bordures, espacements et héritage."
+            },
+            {
+              "title": "Mise en page moderne : Flexbox et CSS Grid",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 30,
+              "summary": "Aligner, distribuer et organiser des éléments avec les deux systèmes de mise en page qui ont révolutionné le CSS."
+            },
+            {
+              "title": "Responsive & mobile-first : les media queries",
+              "lessonType": "TEXT",
+              "estimatedDuration": 20,
+              "summary": "Concevoir d'abord pour le mobile puis adapter aux écrans plus larges — essentiel pour le public ivoirien majoritairement mobile."
+            },
+            {
+              "title": "Exercice : reproduire une maquette Figma en CSS",
+              "lessonType": "EXERCISE",
+              "estimatedDuration": 50,
+              "summary": "Intégrez fidèlement une maquette fournie, en respectant couleurs, espacements, typographies et comportement responsive."
+            },
+            {
+              "title": "Quiz : CSS et responsive design",
+              "lessonType": "QUIZ",
+              "estimatedDuration": 15,
+              "summary": "Testez votre compréhension de la mise en page, du responsive et des bonnes pratiques CSS."
+            }
+          ]
+        },
+        {
+          "title": "JavaScript : l'interactivité",
+          "description": "Vos pages prennent vie. Vous apprenez la logique de programmation avec JavaScript moderne, la manipulation du DOM et la récupération de données depuis une API.",
+          "objectives": [
+            "Écrire de la logique avec les variables, fonctions et structures JavaScript ES6+",
+            "Manipuler le DOM et réagir aux actions de l'utilisateur",
+            "Récupérer et afficher des données depuis une API avec fetch"
+          ],
+          "lessons": [
+            {
+              "title": "Variables, fonctions et logique en JavaScript moderne (ES6+)",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 28,
+              "summary": "Les fondamentaux de la programmation : types, conditions, boucles, fonctions fléchées et syntaxe moderne."
+            },
+            {
+              "title": "Manipuler le DOM et gérer les événements",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 30,
+              "summary": "Sélectionner, modifier et créer des éléments dynamiquement, et réagir aux clics, saisies et autres interactions."
+            },
+            {
+              "title": "Consommer une API avec fetch et async/await",
+              "lessonType": "TEXT",
+              "estimatedDuration": 25,
+              "summary": "Récupérer des données distantes au format JSON et les afficher dynamiquement dans la page."
+            },
+            {
+              "title": "Exercice : construire un mini widget interactif",
+              "lessonType": "EXERCISE",
+              "estimatedDuration": 45,
+              "summary": "Développez un composant interactif (compteur, galerie filtrable ou météo) qui réagit en temps réel aux actions."
+            },
+            {
+              "title": "Quiz : JavaScript essentiel",
+              "lessonType": "QUIZ",
+              "estimatedDuration": 15,
+              "summary": "Vérifiez votre maîtrise de la logique, du DOM et des appels d'API en JavaScript."
+            }
+          ]
+        },
+        {
+          "title": "Construire des interfaces avec React",
+          "description": "Passez au niveau professionnel. Vous découvrez React, la bibliothèque des applications modernes, et apprenez à composer des interfaces dynamiques, à les versionner et à les déployer.",
+          "objectives": [
+            "Structurer une interface en composants réutilisables avec props et JSX",
+            "Gérer l'état et le cycle de vie avec les hooks React",
+            "Versionner avec Git/GitHub et déployer un projet en ligne"
+          ],
+          "lessons": [
+            {
+              "title": "Composants, props et JSX",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 26,
+              "summary": "La pensée en composants : découper une interface, passer des données via props et écrire du JSX."
+            },
+            {
+              "title": "État, hooks (useState, useEffect) et interactivité",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 32,
+              "summary": "Gérer l'état d'un composant, déclencher des effets et connecter React à une source de données."
+            },
+            {
+              "title": "Navigation, appels d'API et gestion des données",
+              "lessonType": "TEXT",
+              "estimatedDuration": 24,
+              "summary": "Mettre en place la navigation entre pages, charger des données et gérer les états de chargement et d'erreur."
+            },
+            {
+              "title": "Git, GitHub et déploiement en ligne",
+              "lessonType": "RESOURCE",
+              "estimatedDuration": 20,
+              "summary": "Versionner son travail comme en équipe et publier un projet React sur Netlify ou Vercel."
+            },
+            {
+              "title": "Quiz final : React et écosystème front-end",
+              "lessonType": "QUIZ",
+              "estimatedDuration": 18,
+              "summary": "Évaluation récapitulative sur les composants, les hooks, la gestion des données et le déploiement."
+            }
+          ]
+        }
+      ],
+      "projects": [
+        {
+          "title": "Votre carte de visite en ligne",
+          "projectType": "MINI_PROJECT",
+          "level": "BEGINNER",
+          "context": "À l'ère du numérique, tout professionnel a besoin d'une présence en ligne. Une simple page personnelle bien conçue peut faire la différence auprès d'un recruteur ou d'un premier client. C'est aussi la meilleure façon de mettre en pratique vos toutes premières compétences en HTML et CSS.",
+          "problem": "Vous n'avez aucune présence web personnelle et vous ne savez pas comment vous présenter en ligne de façon crédible et professionnelle, ni comment structurer et styliser une page à partir de zéro.",
+          "mission": "Concevoir et coder une page personnelle « carte de visite » qui présente votre identité, votre parcours, vos compétences et vos coordonnées, entièrement en HTML5 et CSS3, responsive et publiée en ligne.",
+          "objectives": [
+            "Structurer une page avec un HTML5 sémantique et valide",
+            "Appliquer une identité visuelle cohérente en CSS3",
+            "Assurer un affichage correct sur mobile et sur ordinateur",
+            "Rédiger un contenu personnel clair et professionnel"
+          ],
+          "deliverables": [
+            "Une page web personnelle en HTML/CSS (fichiers sources)",
+            "Une version responsive fonctionnelle sur mobile et desktop",
+            "Une capture d'écran de la page sur les deux formats",
+            "L'URL de la page publiée en ligne (Netlify, Vercel ou GitHub Pages)"
+          ],
+          "constraints": [
+            "Utiliser uniquement du HTML5 et du CSS3 (pas de framework ni de bibliothèque)",
+            "Code HTML sémantiquement correct et valide (validateur W3C sans erreur)",
+            "La page doit rester lisible sur un écran mobile de 360 px de large",
+            "Inclure au minimum : une photo/avatar, une bio, une liste de compétences et un moyen de contact"
+          ],
+          "estimatedHours": 10,
+          "rubricCriteria": [
+            {
+              "label": "Structure HTML sémantique et valide",
+              "points": 25
+            },
+            {
+              "label": "Design et cohérence visuelle (CSS)",
+              "points": 25
+            },
+            {
+              "label": "Affichage responsive (mobile et desktop)",
+              "points": 20
+            },
+            {
+              "label": "Qualité et complétude du contenu personnel",
+              "points": 15
+            },
+            {
+              "label": "Propreté et lisibilité du code",
+              "points": 15
+            }
+          ]
+        },
+        {
+          "title": "Landing page pour une startup ivoirienne",
+          "projectType": "PROFESSIONAL_MISSION",
+          "level": "INTERMEDIATE",
+          "context": "Une jeune startup ivoirienne de livraison à domicile s'apprête à lancer son application mobile. Avant l'ouverture, elle a besoin d'une page d'atterrissage (landing page) percutante pour présenter le service, récolter les pré-inscriptions et générer de l'attente. Elle vous confie l'intégration à partir d'une maquette Figma fournie.",
+          "problem": "La startup dispose d'une maquette de design mais d'aucune version web fonctionnelle. Elle a besoin d'une landing page fidèle, rapide, responsive et interactive, capable de convertir des visiteurs en pré-inscrits, y compris sur des connexions mobiles limitées.",
+          "mission": "Intégrer la maquette Figma en une landing page responsive et interactive, avec navigation fluide, animations légères et un formulaire de pré-inscription fonctionnel côté client.",
+          "objectives": [
+            "Reproduire fidèlement une maquette Figma en HTML/CSS",
+            "Mettre en œuvre une mise en page responsive mobile-first avec Flexbox/Grid",
+            "Ajouter de l'interactivité en JavaScript (menu, formulaire, animations au défilement)",
+            "Optimiser le chargement pour des connexions mobiles 3G/4G"
+          ],
+          "deliverables": [
+            "Le code source complet de la landing page (HTML/CSS/JS)",
+            "Un menu de navigation responsive fonctionnel",
+            "Un formulaire de pré-inscription avec validation côté client",
+            "L'URL du site déployé en ligne",
+            "Un court fichier README expliquant la structure du projet"
+          ],
+          "constraints": [
+            "Respecter fidèlement la maquette (couleurs, typographies, espacements)",
+            "Approche mobile-first obligatoire, sans défaut d'affichage entre 360 px et 1440 px",
+            "Images optimisées (format et poids) pour un chargement rapide",
+            "JavaScript vanilla uniquement, sans framework",
+            "Respecter les bases de l'accessibilité (contrastes, attributs alt, labels de formulaire)"
+          ],
+          "estimatedHours": 18,
+          "rubricCriteria": [
+            {
+              "label": "Fidélité à la maquette et qualité visuelle",
+              "points": 20
+            },
+            {
+              "label": "Responsive mobile-first sans défaut",
+              "points": 20
+            },
+            {
+              "label": "Interactivité JavaScript (menu, formulaire, animations)",
+              "points": 20
+            },
+            {
+              "label": "Performance et optimisation du chargement",
+              "points": 15
+            },
+            {
+              "label": "Accessibilité et SEO de base",
+              "points": 15
+            },
+            {
+              "label": "Organisation et qualité du code",
+              "points": 10
+            }
+          ]
+        },
+        {
+          "title": "Le tableau de bord d'une plateforme SaaS",
+          "projectType": "FINAL_PROJECT",
+          "level": "INTERMEDIATE",
+          "context": "Une plateforme SaaS de gestion de tâches recrute son premier développeur front-end junior. Pour évaluer les candidats, elle demande de construire l'interface complète de son tableau de bord : la zone où un utilisateur connecté visualise, crée et gère ses tâches. C'est le projet qui synthétise l'ensemble de vos compétences et qui deviendra la pièce maîtresse de votre portfolio.",
+          "problem": "La plateforme dispose d'une API mais d'aucune interface. Elle a besoin d'un tableau de bord complet, moderne et réactif, construit avec React, capable d'afficher des données dynamiques, de permettre leur gestion (ajout, modification, suppression, filtrage) et de fonctionner parfaitement sur tous les écrans.",
+          "mission": "Développer, avec React, l'interface complète d'un tableau de bord de gestion de tâches : navigation, affichage de données depuis une API, création et gestion des éléments, filtres, gestion des états de chargement et d'erreur, le tout responsive et déployé en ligne.",
+          "objectives": [
+            "Architecturer une interface React en composants réutilisables",
+            "Gérer l'état et les données avec les hooks (useState, useEffect)",
+            "Consommer une API REST et gérer les états de chargement et d'erreur",
+            "Implémenter les fonctionnalités de gestion (création, édition, suppression, filtrage)",
+            "Déployer une application React fonctionnelle et versionnée avec Git"
+          ],
+          "deliverables": [
+            "Le code source complet du tableau de bord React (dépôt GitHub)",
+            "Une interface avec navigation entre au moins deux vues",
+            "Les fonctionnalités CRUD (créer, lire, mettre à jour, supprimer) sur les tâches",
+            "Un système de filtres et/ou de recherche fonctionnel",
+            "L'URL de l'application déployée en ligne",
+            "Un README documentant le projet, les fonctionnalités et l'installation"
+          ],
+          "constraints": [
+            "Utiliser React avec une architecture claire en composants",
+            "Consommer des données depuis une API REST (fournie ou publique)",
+            "Gérer explicitement les états de chargement et d'erreur",
+            "Interface entièrement responsive (mobile, tablette, desktop)",
+            "Historique Git propre avec des commits réguliers et explicites",
+            "Application obligatoirement déployée et accessible via une URL publique"
+          ],
+          "estimatedHours": 30,
+          "rubricCriteria": [
+            {
+              "label": "Architecture React (composants réutilisables, props, état)",
+              "points": 20
+            },
+            {
+              "label": "Fonctionnalités complètes du tableau de bord (CRUD, filtres)",
+              "points": 20
+            },
+            {
+              "label": "Intégration d'API et gestion des données",
+              "points": 15
+            },
+            {
+              "label": "Qualité UI/UX et responsive",
+              "points": 15
+            },
+            {
+              "label": "Navigation et gestion des états de chargement/erreur",
+              "points": 10
+            },
+            {
+              "label": "Déploiement en ligne fonctionnel",
+              "points": 10
+            },
+            {
+              "label": "Qualité du code, Git et documentation (README)",
+              "points": 10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "graphiste-digital",
+      "schoolSlug": "design",
+      "title": "Graphiste Digital",
+      "shortDescription": "Apprenez à concevoir des visuels professionnels — affiches, flyers, carrousels et identités de marque — avec Canva et Figma, et constituez un portfolio prêt à décrocher vos premiers clients.",
+      "longDescription": "Le parcours Graphiste Digital vous forme, en 3 mois et par la pratique, à créer des supports visuels qui vendent et qui marquent les esprits. Vous partez des fondamentaux du design — couleur, typographie, composition, hiérarchie visuelle — puis vous passez immédiatement à l'action sur les deux outils les plus demandés du marché : Canva pour produire vite et bien (affiches, flyers, visuels réseaux sociaux) et Figma pour concevoir de façon professionnelle et réutilisable (grilles, composants, carrousels). Chaque module se termine par une réalisation concrète que vous ajoutez à votre portfolio. Le parcours culmine avec la création d'une identité visuelle complète pour une marque : logo, charte graphique et kit de déclinaisons. À l'issue de la formation, vous ne saurez pas seulement « utiliser un logiciel » — vous saurez comprendre un brief client, faire des choix graphiques argumentés, livrer des fichiers propres pour l'impression comme pour le web, et présenter votre travail de manière convaincante. Conçu pour le contexte ivoirien et africain francophone, ce parcours privilégie des projets réels (association, commerce de quartier, startup, entrepreneur) et une prise en main rapide, y compris sur mobile et connexion 4G. Objectif : l'employabilité immédiate, en freelance ou en agence.",
+      "targetJob": "Graphiste Digital / Infographiste (freelance ou en agence de communication)",
+      "level": "BEGINNER",
+      "duration": "3 mois",
+      "estimatedHours": 90,
+      "price": 120000,
+      "prerequisites": [
+        "Savoir utiliser un ordinateur et naviguer sur Internet",
+        "Aucune expérience préalable en design requise",
+        "Disposer d'un ordinateur ou d'un smartphone récent et d'une connexion Internet",
+        "Créer un compte gratuit sur Canva et Figma (guidé dans le parcours)",
+        "Motivation et sens de l'observation visuelle"
+      ],
+      "objectives": [
+        "Comprendre les principes fondamentaux du design graphique (couleur, typographie, composition)",
+        "Maîtriser Canva pour produire rapidement des supports de communication",
+        "Concevoir des visuels professionnels et réutilisables avec Figma",
+        "Créer une identité de marque cohérente (logo, charte, déclinaisons)",
+        "Adapter un même message à plusieurs formats (print et réseaux sociaux)",
+        "Livrer des fichiers propres et exportés selon le support de destination",
+        "Constituer un portfolio professionnel pour convaincre des clients"
+      ],
+      "outcomes": [
+        "Créer une affiche et un flyer prêts pour l'impression",
+        "Concevoir un carrousel Instagram/LinkedIn narratif et cohérent",
+        "Décliner une même campagne sur tous les formats réseaux sociaux",
+        "Construire une palette de couleurs et un couple typographique harmonieux",
+        "Concevoir un logo simple et ses variantes d'usage",
+        "Rédiger et présenter une charte graphique de marque",
+        "Assembler un kit de marque complet et un portfolio en ligne",
+        "Analyser un brief client et justifier ses choix graphiques"
+      ],
+      "tools": [
+        "Canva",
+        "Figma",
+        "Google Fonts",
+        "Coolors",
+        "Unsplash / Pexels",
+        "Générateur de mockups (Mockup / Smartmockups)",
+        "Remove.bg"
+      ],
+      "certificateTitle": "Certificat de Graphiste Digital — Digital Access Academy",
+      "skillNames": [
+        "Théorie des couleurs et palettes",
+        "Typographie et associations de polices",
+        "Composition et hiérarchie visuelle",
+        "Maîtrise de Canva",
+        "Design professionnel sur Figma",
+        "Création d'identité de marque",
+        "Conception de supports print et web",
+        "Construction de portfolio"
+      ],
+      "modules": [
+        {
+          "title": "Les fondamentaux du design graphique",
+          "description": "Acquérez le vocabulaire et les principes visuels qui distinguent un amateur d'un professionnel : couleur, typographie, composition et hiérarchie de l'information.",
+          "objectives": [
+            "Comprendre le rôle et le métier du graphiste digital",
+            "Choisir des couleurs et des typographies cohérentes",
+            "Organiser l'information avec une hiérarchie visuelle claire"
+          ],
+          "lessons": [
+            {
+              "title": "Le langage visuel : rôle et métier du graphiste digital",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 15,
+              "summary": "Découvrez ce que fait réellement un graphiste digital, les débouchés en Côte d'Ivoire et les qualités d'un bon visuel professionnel."
+            },
+            {
+              "title": "Théorie des couleurs et psychologie des palettes",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 25,
+              "summary": "Roue chromatique, harmonies (complémentaires, analogues), signification des couleurs et création d'une palette avec Coolors."
+            },
+            {
+              "title": "Typographie : choisir et associer les polices",
+              "lessonType": "TEXT",
+              "estimatedDuration": 20,
+              "summary": "Familles de polices, lisibilité, contraste et règle du duo titre/corps pour composer des textes élégants et efficaces."
+            },
+            {
+              "title": "Composition, grille et hiérarchie visuelle",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 25,
+              "summary": "Règle des tiers, espaces négatifs, alignement et points focaux : guider le regard et faire ressortir le message essentiel."
+            },
+            {
+              "title": "Quiz — Les principes fondamentaux",
+              "lessonType": "QUIZ",
+              "estimatedDuration": 15,
+              "summary": "Vérifiez votre maîtrise des notions de couleur, typographie et composition avant de passer à la pratique."
+            }
+          ]
+        },
+        {
+          "title": "Créer vite et bien avec Canva",
+          "description": "Prenez en main l'outil le plus rapide du marché pour produire des affiches, flyers et visuels réseaux sociaux de qualité professionnelle.",
+          "objectives": [
+            "Maîtriser l'interface et les bibliothèques de Canva",
+            "Concevoir affiche et flyer prêts à l'impression",
+            "Décliner un visuel sur les formats réseaux sociaux"
+          ],
+          "lessons": [
+            {
+              "title": "Prise en main de Canva : interface et bibliothèques",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 20,
+              "summary": "Navigation, gabarits, éléments, polices, calques et raccourcis pour travailler efficacement dès le premier jour."
+            },
+            {
+              "title": "Concevoir une affiche événementielle percutante",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 30,
+              "summary": "Du brief à la maquette : structurer titre, visuel, informations pratiques et appel à l'action sur un format A3/A4."
+            },
+            {
+              "title": "Flyer commercial : recto-verso et zones de sécurité",
+              "lessonType": "EXERCISE",
+              "estimatedDuration": 30,
+              "summary": "Concevez un flyer promotionnel en gérant marges, fonds perdus et zones de sécurité pour un rendu impression impeccable."
+            },
+            {
+              "title": "Décliner pour les réseaux sociaux (formats et gabarits)",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 25,
+              "summary": "Adapter un même message en post, story et bannière avec la fonction Redimensionner et des gabarits réutilisables."
+            },
+            {
+              "title": "Exporter proprement : impression vs web",
+              "lessonType": "TEXT",
+              "estimatedDuration": 15,
+              "summary": "PDF haute qualité, PNG/JPG, résolution, poids de fichier et bonnes pratiques d'export selon le support final."
+            }
+          ]
+        },
+        {
+          "title": "Design professionnel avec Figma",
+          "description": "Passez au niveau supérieur avec l'outil de référence des designers : précision, réutilisabilité et travail collaboratif.",
+          "objectives": [
+            "Concevoir avec précision grâce aux grilles et contraintes",
+            "Créer des composants et styles réutilisables",
+            "Réaliser un carrousel multi-slides cohérent"
+          ],
+          "lessons": [
+            {
+              "title": "Découvrir Figma : frames, calques et propriétés",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 25,
+              "summary": "Différences avec Canva, création de frames, panneau des propriétés et organisation d'un fichier de travail propre."
+            },
+            {
+              "title": "Grilles, contraintes et alignement pixel-perfect",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 25,
+              "summary": "Layout grids, contraintes responsives et outils d'alignement pour un rendu net et professionnel."
+            },
+            {
+              "title": "Composants et styles réutilisables",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 25,
+              "summary": "Créez des composants (boutons, cartes) et des styles de couleur/texte pour gagner du temps et rester cohérent."
+            },
+            {
+              "title": "Concevoir un carrousel Instagram multi-slides",
+              "lessonType": "EXERCISE",
+              "estimatedDuration": 35,
+              "summary": "Construisez un carrousel narratif de 5 à 8 slides avec accroche, développement et appel à l'action homogènes."
+            },
+            {
+              "title": "Quiz — Workflow Figma",
+              "lessonType": "QUIZ",
+              "estimatedDuration": 15,
+              "summary": "Testez votre compréhension des frames, composants, styles et bonnes pratiques d'organisation dans Figma."
+            }
+          ]
+        },
+        {
+          "title": "Identité de marque et employabilité",
+          "description": "Assemblez tout ce que vous avez appris pour créer une identité de marque complète et transformer vos réalisations en portfolio qui décroche des missions.",
+          "objectives": [
+            "Concevoir un logo et ses variantes d'usage",
+            "Rédiger une charte graphique complète",
+            "Bâtir un portfolio professionnel convaincant"
+          ],
+          "lessons": [
+            {
+              "title": "Anatomie d'une marque : logo, couleurs, typo, ton",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 25,
+              "summary": "Les composantes d'une identité forte et cohérente, du positionnement au système visuel, illustrées par des cas africains."
+            },
+            {
+              "title": "Construire une charte graphique (brand guidelines)",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 30,
+              "summary": "Documenter logo, couleurs, typographies, usages autorisés et interdits pour garantir la cohérence d'une marque."
+            },
+            {
+              "title": "Décliner un kit de marque cohérent",
+              "lessonType": "EXERCISE",
+              "estimatedDuration": 35,
+              "summary": "Appliquez l'identité sur carte de visite, en-tête, photo de profil et modèle de post pour un ensemble homogène."
+            },
+            {
+              "title": "Monter un portfolio qui décroche des clients",
+              "lessonType": "TEXT",
+              "estimatedDuration": 20,
+              "summary": "Sélectionner ses meilleurs travaux, raconter chaque projet et présenter son offre pour convaincre en freelance."
+            },
+            {
+              "title": "Ressources : banques d'images, mockups et veille",
+              "lessonType": "RESOURCE",
+              "estimatedDuration": 15,
+              "summary": "Répertoire d'outils gratuits (images, polices, mockups) et de sources d'inspiration pour progresser en continu."
+            }
+          ]
+        }
+      ],
+      "projects": [
+        {
+          "title": "Affiche pour un événement local",
+          "projectType": "MINI_PROJECT",
+          "level": "BEGINNER",
+          "context": "Une association culturelle de votre commune organise une soirée de sensibilisation ouverte au public. Elle dispose d'un petit budget de communication et compte principalement sur une affiche imprimée (format A3) et un visuel partageable sur WhatsApp et Facebook pour remplir la salle.",
+          "problem": "L'association n'a aucun support visuel et ses précédentes communications, faites à la va-vite, passaient inaperçues. Le message manquait de hiérarchie : on ne comprenait ni la date, ni le lieu, ni l'action attendue.",
+          "mission": "Concevoir, avec Canva, une affiche événementielle claire et attractive à partir du brief fourni, puis en tirer une déclinaison carrée pour les réseaux sociaux.",
+          "objectives": [
+            "Traduire un brief en composition visuelle hiérarchisée",
+            "Appliquer une palette et un duo typographique cohérents",
+            "Rendre l'information essentielle immédiatement lisible",
+            "Exporter des fichiers adaptés à l'impression et au web"
+          ],
+          "deliverables": [
+            "Affiche finale au format A3 exportée en PDF impression",
+            "Déclinaison carrée 1080x1080 px exportée en PNG pour réseaux sociaux",
+            "Court texte (5 lignes) justifiant vos choix de couleurs et de typographies"
+          ],
+          "constraints": [
+            "Utiliser au maximum deux polices et une palette de trois couleurs",
+            "Faire figurer titre, date, heure, lieu, entrée et un appel à l'action visible",
+            "Respecter les marges et zones de sécurité pour l'impression",
+            "N'utiliser que des visuels libres de droits (Unsplash/Pexels ou fournis)"
+          ],
+          "estimatedHours": 8,
+          "rubricCriteria": [
+            {
+              "label": "Respect du brief et lisibilité de l'information",
+              "points": 25
+            },
+            {
+              "label": "Composition et hiérarchie visuelle",
+              "points": 25
+            },
+            {
+              "label": "Harmonie chromatique et typographique",
+              "points": 25
+            },
+            {
+              "label": "Qualité d'export (impression et web)",
+              "points": 15
+            },
+            {
+              "label": "Originalité et impact visuel",
+              "points": 10
+            }
+          ]
+        },
+        {
+          "title": "Kit de communication réseaux sociaux pour un commerce",
+          "projectType": "PROFESSIONAL_MISSION",
+          "level": "INTERMEDIATE",
+          "context": "Un restaurant de quartier lance une nouvelle formule déjeuner et souhaite se faire connaître sur Instagram et Facebook. Le gérant vous confie sa première mission rémunérée : produire une campagne de lancement homogène sur plusieurs formats.",
+          "problem": "Le commerce publie des photos isolées, sans ligne graphique ni message clair. Résultat : la page manque de crédibilité, les publications ne se ressemblent pas et n'incitent pas à venir ni à commander.",
+          "mission": "Créer, avec Figma et Canva, un kit de communication cohérent : un carrousel de présentation de la formule et un flyer promotionnel, dans une même ligne graphique déclinable sur tous les formats.",
+          "objectives": [
+            "Définir et appliquer une ligne graphique cohérente sur plusieurs supports",
+            "Structurer un carrousel narratif qui retient l'attention",
+            "Concevoir un flyer promotionnel efficace avec appel à l'action",
+            "Adapter le message aux contraintes de chaque format social"
+          ],
+          "deliverables": [
+            "Carrousel de 5 à 7 slides au format 1080x1080 px (export PNG)",
+            "Flyer promotionnel A5 recto exporté en PDF impression et en PNG web",
+            "Gabarit de post réutilisable pour les prochaines publications",
+            "Une story verticale 1080x1920 px reprenant la campagne"
+          ],
+          "constraints": [
+            "Conserver une identité visuelle unique sur tous les supports (couleurs, polices, style)",
+            "Chaque support doit contenir un appel à l'action clair",
+            "Respecter les zones de sécurité propres à chaque format",
+            "Livrer un fichier Figma organisé avec composants ou styles réutilisables"
+          ],
+          "estimatedHours": 14,
+          "rubricCriteria": [
+            {
+              "label": "Cohérence de la ligne graphique sur tous les formats",
+              "points": 25
+            },
+            {
+              "label": "Efficacité du message et de l'appel à l'action",
+              "points": 20
+            },
+            {
+              "label": "Qualité du carrousel (rythme et narration slide à slide)",
+              "points": 20
+            },
+            {
+              "label": "Adaptation aux formats et zones de sécurité",
+              "points": 20
+            },
+            {
+              "label": "Finition et exportation multi-supports",
+              "points": 15
+            }
+          ]
+        },
+        {
+          "title": "Identité visuelle complète d'une marque",
+          "projectType": "FINAL_PROJECT",
+          "level": "INTERMEDIATE",
+          "context": "Une jeune entrepreneure ivoirienne lance une marque de produits cosmétiques naturels et n'a encore aucune identité visuelle. Elle veut une image professionnelle et mémorable pour convaincre distributeurs et clients, en boutique comme en ligne. Elle vous engage comme graphiste pour créer son univers de marque de A à Z.",
+          "problem": "Sans logo, sans charte ni déclinaisons, la marque n'inspire pas confiance et se confond avec la concurrence. Chaque nouveau support est fait au hasard, sans cohérence, ce qui dilue la reconnaissance de la marque.",
+          "mission": "Concevoir l'identité visuelle complète de la marque : logo et variantes, système de couleurs et de typographies, charte graphique documentée, et un kit de déclinaisons prêt à l'emploi — puis présenter le tout comme une pièce maîtresse de votre portfolio.",
+          "objectives": [
+            "Définir un positionnement et un univers visuel adaptés à la cible",
+            "Concevoir un logo simple, mémorable et déclinable",
+            "Formaliser un système graphique cohérent (couleurs, typographies, usages)",
+            "Produire un kit de supports appliquant l'identité",
+            "Présenter et argumenter le projet de manière professionnelle"
+          ],
+          "deliverables": [
+            "Logo principal + variantes (monochrome, favicon/icône) en PNG et fichier Figma",
+            "Moodboard et palette de couleurs justifiés",
+            "Charte graphique (PDF) : logo, couleurs, typographies, usages autorisés et interdits",
+            "Kit de marque : carte de visite, en-tête, photo de profil et modèle de post",
+            "Présentation portfolio (PDF ou lien) mettant en scène l'ensemble avec mockups"
+          ],
+          "constraints": [
+            "L'identité doit rester cohérente et reconnaissable sur tous les supports",
+            "Le logo doit rester lisible en petit format et en une seule couleur",
+            "Se limiter à deux typographies et une palette maîtrisée",
+            "Fournir un fichier Figma structuré avec styles et composants réutilisables",
+            "Utiliser exclusivement des ressources libres de droits ou originales"
+          ],
+          "estimatedHours": 22,
+          "rubricCriteria": [
+            {
+              "label": "Pertinence stratégique (positionnement, cible, moodboard)",
+              "points": 15
+            },
+            {
+              "label": "Qualité et versatilité du logo",
+              "points": 20
+            },
+            {
+              "label": "Système chromatique et typographique",
+              "points": 15
+            },
+            {
+              "label": "Charte graphique complète et claire",
+              "points": 20
+            },
+            {
+              "label": "Déclinaisons du kit de marque",
+              "points": 20
+            },
+            {
+              "label": "Présentation et argumentation du portfolio",
+              "points": 10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "excel-tableaux-de-bord",
+      "schoolSlug": "data",
+      "title": "Analyste Excel & Tableaux de bord",
+      "shortDescription": "Transformez des données brutes en décisions : maîtrisez Excel et Power BI pour construire des tableaux de suivi, analyser et concevoir des tableaux de bord clairs et exploitables par une PME.",
+      "longDescription": "Chaque jour, les entreprises ivoiriennes accumulent des données — ventes, stocks, dépenses, clients — mais peu savent les faire parler. Ce parcours « Apprendre en faisant » vous forme au métier d'analyste de données à travers l'outil le plus demandé sur le marché : Excel, prolongé par Power BI pour l'interactivité.\n\nVous partez des fondamentaux (formules, références, nettoyage de données) et montez progressivement vers les fonctions d'analyse (RECHERCHEX, SOMME.SI.ENS, tableaux croisés dynamiques), la visualisation et la conception de tableaux de bord de pilotage. À chaque étape, vous produisez un livrable concret qui rejoint votre portfolio : un tableau de suivi des ventes, un outil de gestion de stock avec alertes, puis un tableau de bord complet de PME sur Excel et Power BI.\n\nPensé pour les débutants, les étudiants, les personnes en reconversion et les entrepreneurs, ce parcours privilégie la pratique sur des données réalistes du contexte africain. À la fin, vous ne « connaissez » pas seulement Excel : vous savez livrer un reporting propre, fiable et lisible, et défendre vos analyses devant un décideur.",
+      "targetJob": "Analyste de données junior / Assistant reporting — suivi d'activité et tableaux de bord (Excel & Power BI)",
+      "level": "BEGINNER",
+      "duration": "3 mois",
+      "estimatedHours": 60,
+      "price": 95000,
+      "prerequisites": [
+        "Savoir utiliser un ordinateur (fichiers, dossiers, navigateur)",
+        "Notions d'arithmétique de base (pourcentages, moyennes)",
+        "Aucune expérience préalable d'Excel requise",
+        "Disposer d'Excel (Microsoft 365 ou 2016+) et pouvoir installer Power BI Desktop gratuit"
+      ],
+      "objectives": [
+        "Maîtriser les formules, références et tableaux structurés d'Excel",
+        "Nettoyer, trier et fiabiliser un jeu de données",
+        "Utiliser les fonctions de recherche et de calcul conditionnel (RECHERCHEX, SOMME.SI.ENS)",
+        "Analyser des données avec les tableaux croisés dynamiques",
+        "Choisir et construire des graphiques pertinents",
+        "Concevoir un tableau de bord lisible orienté KPI",
+        "Importer et transformer des données avec Power Query",
+        "Créer un tableau de bord interactif et le publier avec Power BI"
+      ],
+      "outcomes": [
+        "Construire un tableau de suivi d'activité automatisé de A à Z",
+        "Analyser des ventes, des stocks ou des dépenses et en tirer des indicateurs clés",
+        "Bâtir un tableau croisé dynamique pour répondre à une question métier",
+        "Créer des graphiques clairs qui racontent une histoire",
+        "Concevoir un tableau de bord de pilotage complet pour une PME",
+        "Automatiser le nettoyage de données répétitif avec Power Query",
+        "Publier et partager un rapport interactif Power BI",
+        "Présenter des résultats et formuler des recommandations à un décideur"
+      ],
+      "tools": [
+        "Microsoft Excel",
+        "Power BI Desktop",
+        "Power Query",
+        "Google Sheets"
+      ],
+      "certificateTitle": "Certificat d'Analyste Excel & Tableaux de bord — Digital Access Academy",
+      "skillNames": [
+        "Analyse de données sur Excel",
+        "Tableaux croisés dynamiques",
+        "Fonctions de recherche (RECHERCHEX, INDEX/EQUIV)",
+        "Calcul conditionnel (SOMME.SI.ENS)",
+        "Visualisation de données",
+        "Conception de tableaux de bord (KPI)",
+        "Power Query & transformation de données",
+        "Reporting interactif avec Power BI"
+      ],
+      "modules": [
+        {
+          "title": "Excel, socle de l'analyse de données",
+          "description": "Poser des bases solides : prendre en main Excel comme un analyste, écrire des formules fiables et préparer des données propres, prêtes à être analysées.",
+          "objectives": [
+            "Naviguer efficacement dans un classeur et adopter les bonnes pratiques de saisie",
+            "Écrire des formules avec références relatives et absolues",
+            "Structurer et nettoyer un jeu de données brut",
+            "Produire une première feuille de suivi automatisée"
+          ],
+          "lessons": [
+            {
+              "title": "Prendre en main Excel comme un analyste",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 18,
+              "summary": "Interface, classeurs et feuilles, navigation au clavier, raccourcis essentiels et bonnes pratiques de saisie pour des données exploitables."
+            },
+            {
+              "title": "Formules et références essentielles",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 22,
+              "summary": "Opérateurs de calcul, références relatives/absolues ($), et fonctions de base SOMME, MOYENNE, NB, MIN et MAX."
+            },
+            {
+              "title": "Structurer et nettoyer ses données",
+              "lessonType": "TEXT",
+              "estimatedDuration": 15,
+              "summary": "Tableaux structurés, tri et filtres, mise en forme conditionnelle, suppression des doublons et gestion des cellules vides."
+            },
+            {
+              "title": "Exercice : votre première feuille de suivi",
+              "lessonType": "EXERCISE",
+              "estimatedDuration": 30,
+              "summary": "Créer un tableau de suivi de ventes avec totaux, moyennes et pourcentages automatiques à partir de données fournies."
+            },
+            {
+              "title": "Quiz : fondamentaux d'Excel",
+              "lessonType": "QUIZ",
+              "estimatedDuration": 10,
+              "summary": "Valider vos acquis sur les références, les formules de base et la préparation des données."
+            }
+          ]
+        },
+        {
+          "title": "Fonctions d'analyse et tableaux croisés dynamiques",
+          "description": "Passer de la saisie à l'analyse : croiser des tables, calculer sous conditions et résumer des milliers de lignes en quelques clics avec les tableaux croisés dynamiques.",
+          "objectives": [
+            "Automatiser des calculs sous conditions avec SI et SOMME.SI.ENS",
+            "Relier deux tables avec RECHERCHEX et INDEX/EQUIV",
+            "Synthétiser des données avec un tableau croisé dynamique",
+            "Répondre à une question métier à partir d'un jeu de ventes"
+          ],
+          "lessons": [
+            {
+              "title": "Les fonctions de calcul conditionnel",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 24,
+              "summary": "SI, SI.CONDITIONS, SOMME.SI.ENS et NB.SI.ENS pour calculer et catégoriser selon des critères."
+            },
+            {
+              "title": "Rechercher et croiser des données",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 26,
+              "summary": "RECHERCHEV, la moderne RECHERCHEX et le duo INDEX/EQUIV pour relier des tables et enrichir vos données."
+            },
+            {
+              "title": "Tableaux croisés dynamiques",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 28,
+              "summary": "Créer, regrouper, filtrer et ajouter des champs calculés pour analyser de gros volumes en un instant."
+            },
+            {
+              "title": "Atelier : analyser un jeu de ventes",
+              "lessonType": "EXERCISE",
+              "estimatedDuration": 35,
+              "summary": "Nettoyer, croiser et synthétiser un fichier de ventes réel pour répondre à trois questions métier."
+            },
+            {
+              "title": "Quiz : fonctions & tableaux croisés dynamiques",
+              "lessonType": "QUIZ",
+              "estimatedDuration": 10,
+              "summary": "Contrôle des connaissances sur les fonctions de recherche, le calcul conditionnel et les TCD."
+            }
+          ]
+        },
+        {
+          "title": "Visualiser et construire un tableau de bord Excel",
+          "description": "Donner du sens aux chiffres : choisir les bons graphiques, rendre vos vues interactives et assembler un tableau de bord clair et professionnel dans Excel.",
+          "objectives": [
+            "Choisir le graphique adapté à chaque message",
+            "Rendre un rapport interactif avec segments et chronologies",
+            "Appliquer les principes de design d'un dashboard lisible",
+            "Assembler un tableau de bord de ventes orienté KPI"
+          ],
+          "lessons": [
+            {
+              "title": "Choisir le bon graphique",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 20,
+              "summary": "Histogrammes, courbes, secteurs, barres : quand les utiliser, quelles erreurs éviter et comment servir votre message."
+            },
+            {
+              "title": "Graphiques dynamiques, segments et chronologies",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 24,
+              "summary": "Rendre un rapport vivant avec des segments (slicers), des chronologies et des graphiques liés aux TCD."
+            },
+            {
+              "title": "Concevoir un tableau de bord lisible",
+              "lessonType": "TEXT",
+              "estimatedDuration": 18,
+              "summary": "Mise en page, hiérarchie visuelle, cartes de KPI et principes de design pour un dashboard compris en 5 secondes."
+            },
+            {
+              "title": "Projet guidé : dashboard de ventes",
+              "lessonType": "EXERCISE",
+              "estimatedDuration": 40,
+              "summary": "Construire pas à pas un tableau de bord de ventes complet avec indicateurs, graphiques et filtres interactifs."
+            },
+            {
+              "title": "Modèles et ressources de tableaux de bord",
+              "lessonType": "RESOURCE",
+              "estimatedDuration": 10,
+              "summary": "Palette de couleurs DA, modèles Excel réutilisables et check-list qualité d'un tableau de bord."
+            }
+          ]
+        },
+        {
+          "title": "Power BI : du tableur au tableau de bord interactif",
+          "description": "Franchir un cap professionnel : importer et transformer des données, modéliser, écrire des mesures simples et publier un rapport interactif que l'on partage en un lien.",
+          "objectives": [
+            "Découvrir Power BI Desktop et son flux de travail",
+            "Importer et transformer des données avec Power Query",
+            "Modéliser des données et écrire des mesures DAX simples",
+            "Créer des visuels interactifs et publier un rapport"
+          ],
+          "lessons": [
+            {
+              "title": "Découvrir Power BI Desktop",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 20,
+              "summary": "Installer Power BI, comprendre les vues Rapport/Données/Modèle et le flux importer → transformer → modéliser → visualiser."
+            },
+            {
+              "title": "Importer et transformer avec Power Query",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 26,
+              "summary": "Connecter des sources, nettoyer et fusionner des tables, et automatiser les transformations répétitives."
+            },
+            {
+              "title": "Modèle de données et mesures DAX simples",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 28,
+              "summary": "Relations entre tables, colonnes calculées et premières mesures DAX (SUM, CALCULATE, DIVIDE) pour vos KPI."
+            },
+            {
+              "title": "Créer des visuels interactifs et publier",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 24,
+              "summary": "Cartes, graphiques, filtres et segments interactifs, puis publication et partage du rapport en ligne."
+            },
+            {
+              "title": "Quiz : Power BI essentiel",
+              "lessonType": "QUIZ",
+              "estimatedDuration": 10,
+              "summary": "Valider la maîtrise de Power Query, du modèle de données, des mesures DAX de base et de la publication."
+            }
+          ]
+        }
+      ],
+      "projects": [
+        {
+          "title": "Tableau de suivi des ventes mensuelles",
+          "projectType": "MINI_PROJECT",
+          "level": "BEGINNER",
+          "context": "« Chez Awa », une petite boutique de prêt-à-porter à Abidjan, note ses ventes sur un cahier. La gérante n'a aucune visibilité sur ses meilleurs produits ni sur l'évolution de son chiffre d'affaires d'un mois à l'autre.",
+          "problem": "Sans outil de suivi, impossible de savoir ce qui se vend le mieux, quel jour est le plus rentable, ou si les ventes progressent. Les décisions se prennent au ressenti et l'argent des invendus dort en rayon.",
+          "mission": "Concevoir sous Excel un tableau de suivi des ventes simple et automatisé qui calcule seul les totaux et pourcentages, et met en évidence les produits phares grâce à un premier graphique.",
+          "objectives": [
+            "Structurer une table de saisie claire (date, produit, quantité, prix, montant)",
+            "Automatiser les calculs de chiffre d'affaires, totaux et part de chaque produit",
+            "Mettre en évidence les top et flop grâce à la mise en forme conditionnelle",
+            "Produire un graphique de suivi lisible et une courte synthèse"
+          ],
+          "deliverables": [
+            "Un classeur Excel avec une feuille de saisie structurée et propre",
+            "Une zone de synthèse avec CA total, panier moyen et part par produit (formules)",
+            "Une mise en forme conditionnelle signalant les 3 meilleurs produits",
+            "Un graphique de suivi des ventes et 3 phrases d'interprétation"
+          ],
+          "constraints": [
+            "Aucune valeur ne doit être saisie en dur dans la synthèse : tout par formule",
+            "Utiliser un tableau structuré Excel comme source",
+            "Le classeur doit rester lisible et utilisable par une personne non initiée",
+            "Respecter le format monétaire FCFA sans décimales"
+          ],
+          "estimatedHours": 6,
+          "rubricCriteria": [
+            {
+              "label": "Structure et propreté des données",
+              "points": 20
+            },
+            {
+              "label": "Exactitude des formules (totaux, moyennes, %)",
+              "points": 25
+            },
+            {
+              "label": "Mise en forme conditionnelle et lisibilité",
+              "points": 20
+            },
+            {
+              "label": "Pertinence du graphique de suivi",
+              "points": 20
+            },
+            {
+              "label": "Synthèse et interprétation des résultats",
+              "points": 15
+            }
+          ]
+        },
+        {
+          "title": "Outil de gestion de stock avec alertes",
+          "projectType": "PROFESSIONAL_MISSION",
+          "level": "INTERMEDIATE",
+          "context": "La quincaillerie « Bâti-Plus » gère près de 120 références. Les ruptures de stock font fuir les clients tandis que le surstock immobilise la trésorerie. Le gérant vous confie la création d'un outil de pilotage du stock.",
+          "problem": "Le stock est suivi de tête et sur des bouts de papier : personne ne sait quand réapprovisionner, quels articles sont sous le seuil critique, ni quelle est la valeur totale immobilisée. Les décisions d'achat sont hasardeuses.",
+          "mission": "Construire sous Excel un outil de gestion de stock qui calcule automatiquement les niveaux à partir des entrées et sorties, déclenche des alertes de réapprovisionnement et permet d'analyser le stock par catégorie via un tableau croisé dynamique.",
+          "objectives": [
+            "Modéliser une base articles reliée à un journal des mouvements",
+            "Calculer le stock courant, sa valeur et le statut de chaque article",
+            "Déclencher une alerte visuelle sous le seuil de réapprovisionnement",
+            "Analyser le stock par catégorie avec un tableau croisé dynamique"
+          ],
+          "deliverables": [
+            "Un classeur avec table articles, journal des mouvements et feuille de synthèse",
+            "Des colonnes calculées (stock actuel, valeur, statut) via RECHERCHEX et SOMME.SI.ENS",
+            "Un système d'alerte « à réapprovisionner » par mise en forme conditionnelle",
+            "Un tableau croisé dynamique et un graphique d'analyse du stock par catégorie",
+            "Une note d'une page expliquant l'utilisation de l'outil"
+          ],
+          "constraints": [
+            "Aucune double saisie : le stock se met à jour depuis le journal des mouvements",
+            "Utiliser au moins RECHERCHEX (ou INDEX/EQUIV) et SOMME.SI.ENS",
+            "Le seuil de réapprovisionnement doit être paramétrable par article",
+            "Outil utilisable au quotidien par un employé non expert"
+          ],
+          "estimatedHours": 10,
+          "rubricCriteria": [
+            {
+              "label": "Cohérence du modèle de données (articles + mouvements)",
+              "points": 20
+            },
+            {
+              "label": "Exactitude des calculs automatiques de stock et de valeur",
+              "points": 25
+            },
+            {
+              "label": "Fiabilité des alertes de réapprovisionnement",
+              "points": 20
+            },
+            {
+              "label": "Analyse par tableau croisé dynamique et graphique",
+              "points": 20
+            },
+            {
+              "label": "Ergonomie et documentation de l'outil",
+              "points": 15
+            }
+          ]
+        },
+        {
+          "title": "Tableau de bord de pilotage d'une PME",
+          "projectType": "FINAL_PROJECT",
+          "level": "INTERMEDIATE",
+          "context": "« Fraîcheur Express », une PME de distribution de produits frais présente dans trois communes d'Abidjan, veut enfin piloter son activité avec des chiffres. La direction dispose d'un export brut de ses ventes, achats et charges sur 12 mois et souhaite un tableau de bord pour ses réunions mensuelles.",
+          "problem": "Les données existent mais restent dispersées et illisibles. La direction ne peut pas répondre en réunion à des questions simples : quelle commune performe le mieux, comment évolue la marge, quels produits tirent le chiffre d'affaires ? Elle a besoin d'une vue unique, fiable et parlante.",
+          "mission": "Concevoir un tableau de bord de pilotage complet — sur Excel puis reproduit dans Power BI — qui consolide les données de la PME, met en avant les bons KPI et permet à la direction d'explorer l'activité par période, par commune et par produit.",
+          "objectives": [
+            "Consolider et fiabiliser les données brutes de la PME",
+            "Définir les KPI clés (CA, marge, panier moyen, évolution)",
+            "Concevoir des visualisations claires et hiérarchisées",
+            "Rendre le tableau de bord interactif par période, commune et produit",
+            "Reproduire le tableau de bord sous Power BI et le publier",
+            "Tirer des conclusions et formuler des recommandations à la direction"
+          ],
+          "deliverables": [
+            "Un classeur Excel de tableau de bord avec données nettoyées, KPI et graphiques interactifs (segments)",
+            "Un rapport Power BI équivalent, avec Power Query et au moins 3 mesures DAX",
+            "Une page de synthèse présentant 4 à 6 KPI et leur évolution",
+            "Un support de restitution (2 à 3 diapositives ou 1 page) avec analyse et 3 recommandations",
+            "Un lien de publication du rapport Power BI"
+          ],
+          "constraints": [
+            "Le tableau de bord doit être compris par un décideur en moins d'une minute",
+            "Au moins 4 KPI pertinents et justifiés, sans surcharge visuelle",
+            "Interactivité obligatoire : filtres par période, commune et produit",
+            "Les données sources et le rapport doivent rester cohérents entre Excel et Power BI",
+            "Respecter la charte visuelle (couleurs sobres, format FCFA sans décimales)"
+          ],
+          "estimatedHours": 18,
+          "rubricCriteria": [
+            {
+              "label": "Collecte, nettoyage et modélisation des données",
+              "points": 20
+            },
+            {
+              "label": "Pertinence et justification des KPI choisis",
+              "points": 20
+            },
+            {
+              "label": "Qualité et clarté des visualisations",
+              "points": 20
+            },
+            {
+              "label": "Interactivité et cohérence Excel / Power BI",
+              "points": 15
+            },
+            {
+              "label": "Design, mise en page et lisibilité du tableau de bord",
+              "points": 15
+            },
+            {
+              "label": "Restitution : analyse et recommandations",
+              "points": 10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "assistant-administratif-numerique",
+      "schoolSlug": "productivite",
+      "title": "Assistant Administratif Numérique",
+      "shortDescription": "Devenez l'atout organisationnel indispensable de toute structure. Maîtrisez Google Workspace et Microsoft 365 pour rédiger, classer, planifier et suivre l'activité d'un bureau — puis digitalisez un secrétariat complet de A à Z.",
+      "longDescription": "Dans les entreprises, administrations et associations de Côte d'Ivoire, l'assistant administratif est le pilier discret qui fait tourner l'organisation au quotidien. Mais le métier a changé : le papier cède la place au cloud, les classeurs deviennent des Drive partagés, et les cahiers de suivi se transforment en tableaux de bord automatisés. Ce parcours métier « Apprendre en faisant » vous forme à devenir un assistant administratif 100 % numérique, opérationnel et recherché.\n\nEn trois mois, vous passez de l'usage basique d'un ordinateur à la maîtrise professionnelle des deux grandes suites bureautiques cloud (Google Workspace et Microsoft 365). Vous apprenez à rédiger des documents administratifs irréprochables, à concevoir des modèles réutilisables, à organiser un classement numérique clair et pérenne, à bâtir des tableaux de suivi qui alertent sur les échéances, et à coordonner une équipe grâce aux calendriers partagés.\n\nChaque compétence est immédiatement mise en pratique sur des projets concrets tirés du terrain ivoirien : bibliothèque de modèles, refonte d'un classement Drive, tableau de suivi automatisé, et un projet final ambitieux — la digitalisation complète du secrétariat d'un cabinet. À la sortie, vous ne présentez pas seulement un certificat : vous présentez un portfolio de réalisations prêtes à convaincre un recruteur ou un premier client.",
+      "targetJob": "Assistant administratif numérique / Secrétaire numérique",
+      "level": "BEGINNER",
+      "duration": "3 mois",
+      "estimatedHours": 90,
+      "price": 95000,
+      "prerequisites": [
+        "Savoir utiliser un ordinateur et naviguer sur internet",
+        "Disposer d'un compte Google (Gmail) ou Microsoft",
+        "Connexion internet stable et accès à un ordinateur (recommandé)",
+        "Aucune expérience administrative préalable requise"
+      ],
+      "objectives": [
+        "Maîtriser les outils bureautiques cloud Google Workspace et Microsoft 365",
+        "Rédiger des documents administratifs professionnels et normés",
+        "Organiser un classement numérique clair, sécurisé et pérenne",
+        "Concevoir des tableaux de suivi et tableaux de bord de gestion",
+        "Planifier et coordonner l'activité via des calendriers partagés",
+        "Digitaliser et documenter les processus d'un secrétariat"
+      ],
+      "outcomes": [
+        "Créer une bibliothèque de modèles de documents réutilisables (courriers, notes, comptes rendus)",
+        "Structurer un Google Drive ou OneDrive avec une arborescence et une nomenclature professionnelles",
+        "Bâtir un tableau de suivi automatisé (statuts, échéances, relances)",
+        "Mettre en place et animer un calendrier partagé d'équipe",
+        "Rédiger courriers officiels, notes de service et comptes rendus sans faute",
+        "Digitaliser le fonctionnement complet d'un secrétariat et former ses utilisateurs"
+      ],
+      "tools": [
+        "Google Workspace (Docs, Sheets, Drive, Agenda, Gmail, Forms)",
+        "Microsoft 365 (Word, Excel, Outlook, OneDrive)",
+        "Google Keep & Google Tasks",
+        "Trello",
+        "Canva"
+      ],
+      "certificateTitle": "Certificat d'Assistant Administratif Numérique — Digital Access Academy",
+      "skillNames": [
+        "Bureautique cloud (Google Workspace & Microsoft 365)",
+        "Rédaction administrative",
+        "Gestion documentaire et archivage numérique",
+        "Conception de tableaux de suivi",
+        "Planification et gestion d'agenda partagé",
+        "Communication professionnelle écrite",
+        "Organisation du travail",
+        "Digitalisation des processus administratifs"
+      ],
+      "modules": [
+        {
+          "title": "Module 1 — Le bureau numérique : maîtriser Google Workspace & Microsoft 365",
+          "description": "Posez des fondations solides. Vous découvrez les deux grandes suites bureautiques cloud, configurez votre espace de travail professionnel et adoptez les réflexes de sécurité et de sauvegarde indispensables au métier.",
+          "objectives": [
+            "Comparer et utiliser Google Workspace et Microsoft 365",
+            "Gérer efficacement une messagerie professionnelle",
+            "Configurer un espace de travail cloud personnel",
+            "Appliquer les bonnes pratiques de sécurité et de sauvegarde"
+          ],
+          "lessons": [
+            {
+              "title": "Panorama des suites bureautiques cloud",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 15,
+              "summary": "Découvrez ce que sont Google Workspace et Microsoft 365, leurs différences, et pourquoi le cloud a remplacé le poste de travail isolé dans le travail administratif moderne."
+            },
+            {
+              "title": "Gmail et Outlook : gérer une messagerie professionnelle",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 20,
+              "summary": "Organisez votre boîte de réception avec libellés, dossiers, filtres et signatures. Rédigez des e-mails professionnels et gérez les pièces jointes sans vous noyer."
+            },
+            {
+              "title": "Configurer son espace de travail cloud",
+              "lessonType": "EXERCISE",
+              "estimatedDuration": 30,
+              "summary": "Mettez en place votre compte, votre Drive/OneDrive, votre agenda et votre signature. Un pas-à-pas guidé pour un environnement de travail prêt à l'emploi."
+            },
+            {
+              "title": "Sécurité, confidentialité et sauvegarde des données",
+              "lessonType": "TEXT",
+              "estimatedDuration": 15,
+              "summary": "Mots de passe, double authentification, partage maîtrisé et sauvegardes automatiques : protégez les documents sensibles d'une organisation."
+            },
+            {
+              "title": "Quiz : repères du bureau numérique",
+              "lessonType": "QUIZ",
+              "estimatedDuration": 10,
+              "summary": "Validez vos acquis sur les outils cloud, la messagerie et les bonnes pratiques de sécurité avant de passer à la rédaction."
+            }
+          ]
+        },
+        {
+          "title": "Module 2 — Rédiger des documents administratifs professionnels",
+          "description": "Le cœur du métier. Vous apprenez l'anatomie des documents administratifs et concevez des modèles réutilisables qui font gagner un temps précieux et garantissent une image professionnelle.",
+          "objectives": [
+            "Identifier la structure des principaux documents administratifs",
+            "Appliquer une charte de mise en forme cohérente",
+            "Créer des modèles réutilisables dans Docs et Word",
+            "Rédiger un courrier officiel et un compte rendu"
+          ],
+          "lessons": [
+            {
+              "title": "Anatomie d'un document administratif : courrier, note, compte rendu",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 20,
+              "summary": "En-tête, objet, corps, formules de politesse, pied de page : décortiquez la structure des documents que vous produirez chaque jour."
+            },
+            {
+              "title": "Chartes de mise en forme et documents réutilisables",
+              "lessonType": "TEXT",
+              "estimatedDuration": 15,
+              "summary": "Polices, marges, logos, numérotation : posez une charte visuelle cohérente pour tous vos documents et gagnez en crédibilité."
+            },
+            {
+              "title": "Créer des modèles dans Google Docs et Word",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 25,
+              "summary": "Transformez un document type en modèle avec champs variables et instructions, pour ne plus jamais repartir d'une page blanche."
+            },
+            {
+              "title": "Rédiger un courrier officiel et un compte rendu de réunion",
+              "lessonType": "EXERCISE",
+              "estimatedDuration": 40,
+              "summary": "Mettez-vous en situation : produisez un courrier administratif et un compte rendu à partir d'un cas réel, prêts à être relus par un supérieur."
+            },
+            {
+              "title": "Quiz : rédaction administrative",
+              "lessonType": "QUIZ",
+              "estimatedDuration": 10,
+              "summary": "Testez votre maîtrise des formats, formules et normes de rédaction administrative."
+            }
+          ]
+        },
+        {
+          "title": "Module 3 — Classer et archiver : organiser Drive et OneDrive",
+          "description": "Un secrétariat efficace repose sur un classement où tout se retrouve en trois clics. Vous concevez des arborescences claires, des conventions de nommage et une gestion fine des droits d'accès.",
+          "objectives": [
+            "Concevoir une arborescence de classement logique",
+            "Définir une convention de nommage des fichiers",
+            "Gérer les droits d'accès et le partage sécurisé",
+            "Construire un plan de classement complet"
+          ],
+          "lessons": [
+            {
+              "title": "Principes d'une arborescence de classement efficace",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 20,
+              "summary": "Par service, par année, par type de document : apprenez à structurer un Drive pour que chacun retrouve un fichier sans jamais demander."
+            },
+            {
+              "title": "Conventions de nommage des fichiers",
+              "lessonType": "TEXT",
+              "estimatedDuration": 15,
+              "summary": "Dates, versions, préfixes, mots-clés : adoptez une nomenclature qui met fin aux doublons et aux fichiers introuvables."
+            },
+            {
+              "title": "Droits d'accès, partage et Drive partagés",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 20,
+              "summary": "Lecteur, commentateur, éditeur : maîtrisez le partage par rôle pour protéger les documents confidentiels tout en facilitant le travail d'équipe."
+            },
+            {
+              "title": "Construire un plan de classement Drive",
+              "lessonType": "EXERCISE",
+              "estimatedDuration": 40,
+              "summary": "Concevez de A à Z l'arborescence numérique d'une petite structure, en appliquant nomenclature et droits d'accès."
+            },
+            {
+              "title": "Quiz : gestion documentaire et archivage",
+              "lessonType": "QUIZ",
+              "estimatedDuration": 10,
+              "summary": "Vérifiez vos réflexes de classement, de nommage et de gestion des accès."
+            }
+          ]
+        },
+        {
+          "title": "Module 4 — Suivre, planifier et coordonner",
+          "description": "Passez du classement à l'action. Vous concevez des tableaux de suivi automatisés, mettez en place des calendriers partagés et coordonnez l'activité d'une équipe comme un véritable chef d'orchestre administratif.",
+          "objectives": [
+            "Concevoir un tableau de suivi dans Sheets ou Excel",
+            "Automatiser statuts, échéances et relances",
+            "Mettre en place un calendrier partagé d'équipe",
+            "Assembler une boîte à outils réutilisable"
+          ],
+          "lessons": [
+            {
+              "title": "Concevoir un tableau de suivi dans Sheets et Excel",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 25,
+              "summary": "Colonnes utiles, listes déroulantes, mise en forme conditionnelle : construisez un tableau de suivi lisible et professionnel."
+            },
+            {
+              "title": "Automatiser statuts, échéances et relances",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 25,
+              "summary": "Alertes de couleur, dates d'échéance et rappels : faites travailler votre tableau à votre place pour ne plus rien oublier."
+            },
+            {
+              "title": "Calendriers partagés et coordination d'équipe",
+              "lessonType": "VIDEO",
+              "estimatedDuration": 20,
+              "summary": "Créez, partagez et animez un agenda commun : réunions, congés, échéances et disponibilités visibles par tous."
+            },
+            {
+              "title": "Mettre en place un calendrier et un tableau de bord",
+              "lessonType": "EXERCISE",
+              "estimatedDuration": 40,
+              "summary": "En situation réelle, déployez un calendrier partagé et un tableau de bord de suivi pour une petite équipe."
+            },
+            {
+              "title": "Boîte à outils : modèles et check-lists prêts à l'emploi",
+              "lessonType": "RESOURCE",
+              "estimatedDuration": 15,
+              "summary": "Récupérez une collection de modèles, check-lists et procédures réutilisables pour démarrer votre poste sur les chapeaux de roue."
+            }
+          ]
+        }
+      ],
+      "projects": [
+        {
+          "title": "Bibliothèque de modèles de documents professionnels",
+          "projectType": "MINI_PROJECT",
+          "level": "BEGINNER",
+          "context": "L'association « Éveil & Avenir », à Bouaké, produit chaque semaine courriers, invitations, comptes rendus et notes internes. Chaque bénévole repart d'une page blanche, ce qui donne des documents disparates et peu professionnels.",
+          "problem": "L'absence de modèles standardisés fait perdre du temps, multiplie les erreurs de mise en forme et nuit à l'image de l'association auprès de ses partenaires et bailleurs.",
+          "mission": "Concevoir une bibliothèque de modèles de documents administratifs cohérents, réutilisables et à l'image de l'association, dans Google Docs ou Word.",
+          "objectives": [
+            "Analyser les documents récurrents à modéliser",
+            "Définir une charte de mise en forme commune",
+            "Créer des modèles avec champs variables et instructions",
+            "Organiser et nommer les modèles pour un accès facile"
+          ],
+          "deliverables": [
+            "Au moins 5 modèles de documents (courrier officiel, note de service, compte rendu, invitation, attestation)",
+            "Un document de charte de mise en forme (police, marges, en-tête, logo)",
+            "Un dossier Drive organisé contenant les modèles nommés selon une convention"
+          ],
+          "constraints": [
+            "Utiliser exclusivement Google Docs ou Microsoft Word",
+            "Chaque modèle doit comporter des champs variables clairement identifiés",
+            "Mise en forme homogène sur l'ensemble des modèles",
+            "Livrables entièrement en français"
+          ],
+          "estimatedHours": 8,
+          "rubricCriteria": [
+            {
+              "label": "Complétude de la bibliothèque (5 modèles requis)",
+              "points": 30
+            },
+            {
+              "label": "Qualité et cohérence de la mise en forme",
+              "points": 25
+            },
+            {
+              "label": "Réutilisabilité (champs variables et instructions)",
+              "points": 25
+            },
+            {
+              "label": "Organisation et nommage des fichiers",
+              "points": 20
+            }
+          ]
+        },
+        {
+          "title": "Refonte du classement Drive et tableau de suivi des dossiers",
+          "projectType": "PROFESSIONAL_MISSION",
+          "level": "INTERMEDIATE",
+          "context": "La PME « Ivoire Import Services », à Abidjan, stocke ses documents sur un Drive désordonné partagé par cinq collaborateurs. Personne ne retrouve ses fichiers, les versions se multiplient et les échéances des dossiers clients passent inaperçues.",
+          "problem": "Le désordre documentaire et l'absence de suivi provoquent des pertes de temps quotidiennes, des doublons, et surtout des retards sur les dossiers clients qui mettent en danger la relation commerciale.",
+          "mission": "Réorganiser entièrement le Drive de l'entreprise et déployer un tableau de suivi des dossiers clients, avec statuts, échéances et relances automatiques.",
+          "objectives": [
+            "Concevoir une arborescence et une nomenclature applicables à toute l'équipe",
+            "Définir des droits d'accès adaptés à chaque rôle",
+            "Créer un tableau de suivi fonctionnel des dossiers",
+            "Rédiger un guide d'utilisation pour l'équipe"
+          ],
+          "deliverables": [
+            "Une structure Google Drive réorganisée et partagée",
+            "Un document de convention de nommage des fichiers",
+            "Un tableau de suivi (Sheets) avec statuts, échéances et alertes visuelles",
+            "Un guide d'utilisation d'une page destiné à l'équipe"
+          ],
+          "constraints": [
+            "Solution entièrement basée sur Google Workspace (outils gratuits)",
+            "Droits d'accès définis par rôle (direction, commercial, comptabilité)",
+            "Le tableau de suivi doit signaler automatiquement les échéances proches",
+            "Documentation claire et exploitable sans formation préalable"
+          ],
+          "estimatedHours": 12,
+          "rubricCriteria": [
+            {
+              "label": "Cohérence et logique de l'arborescence de classement",
+              "points": 25
+            },
+            {
+              "label": "Convention de nommage appliquée",
+              "points": 20
+            },
+            {
+              "label": "Gestion des droits d'accès et du partage",
+              "points": 15
+            },
+            {
+              "label": "Fonctionnalité du tableau de suivi (statuts, échéances, alertes)",
+              "points": 25
+            },
+            {
+              "label": "Qualité du guide d'utilisation",
+              "points": 15
+            }
+          ]
+        },
+        {
+          "title": "Projet final : digitalisation complète d'un secrétariat",
+          "projectType": "FINAL_PROJECT",
+          "level": "INTERMEDIATE",
+          "context": "Le cabinet comptable « Kablan & Associés », à Abidjan, gère encore son secrétariat sur papier et sur des fichiers éparpillés entre plusieurs ordinateurs. Le dirigeant vous confie la mission de digitaliser entièrement son fonctionnement administratif pour que ses deux secrétaires travaillent enfin de façon fluide et coordonnée.",
+          "problem": "Fichiers perdus ou dupliqués, courriers non archivés, échéances fiscales oubliées et coordination difficile entre secrétaires : le cabinet perd un temps considérable et risque des erreurs coûteuses vis-à-vis de ses clients.",
+          "mission": "Concevoir et déployer un système de secrétariat 100 % numérique sur Google Workspace, couvrant le classement, les modèles de documents, le suivi des dossiers, la planification partagée et la formation des utilisateurs.",
+          "objectives": [
+            "Cartographier les processus administratifs existants",
+            "Concevoir l'arborescence Drive et la nomenclature du cabinet",
+            "Créer les modèles de documents et procédures",
+            "Mettre en place un tableau de bord de suivi des dossiers clients",
+            "Déployer un calendrier partagé d'équipe",
+            "Rédiger un guide de prise en main pour les secrétaires"
+          ],
+          "deliverables": [
+            "Un document de cartographie des processus (situation avant / après)",
+            "Une structure Google Drive complète, organisée et partagée",
+            "Un jeu d'au moins 5 modèles de documents à l'image du cabinet",
+            "Un tableau de bord de suivi (Sheets) des dossiers et échéances",
+            "Un calendrier partagé configuré pour l'équipe",
+            "Un guide de prise en main au format PDF"
+          ],
+          "constraints": [
+            "Utiliser exclusivement des outils gratuits (Google Workspace)",
+            "Nomenclature de fichiers documentée et appliquée partout",
+            "Droits d'accès définis par rôle (dirigeant, secrétaires, comptables)",
+            "Solution utilisable par deux secrétaires sans compétence technique avancée",
+            "Tous les livrables en français et présentables au client"
+          ],
+          "estimatedHours": 25,
+          "rubricCriteria": [
+            {
+              "label": "Analyse de l'existant et cartographie des processus",
+              "points": 15
+            },
+            {
+              "label": "Plan de classement Drive complet et cohérent",
+              "points": 20
+            },
+            {
+              "label": "Modèles de documents et procédures rédigés",
+              "points": 20
+            },
+            {
+              "label": "Tableau de bord de suivi fonctionnel",
+              "points": 20
+            },
+            {
+              "label": "Calendrier partagé et coordination d'équipe",
+              "points": 10
+            },
+            {
+              "label": "Qualité du guide de prise en main / documentation",
+              "points": 15
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

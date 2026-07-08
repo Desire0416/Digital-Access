@@ -1,376 +1,246 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Quote } from "lucide-react";
 import {
-  AnimatedCounter,
-  Avatar,
-  Badge,
-  Card,
-  Container,
-  GradientText,
-  IconBadge,
-  Reveal,
+  ArrowRight,
+  GraduationCap,
+  Compass,
+  Rocket,
+  Target,
+  FolderKanban,
+  Award,
+  Briefcase,
+  BadgeCheck,
+} from "lucide-react";
+import {
   Section,
+  Container,
   SectionHeading,
+  GradientText,
+  Reveal,
   StaggerGroup,
   StaggerItem,
-  StarRating,
+  IconBadge,
   buttonClasses,
+  cn,
 } from "@da/ui";
-import { getCategories, getFeaturedCourses } from "@/lib/queries";
-import { CourseCard } from "@/components/CourseCard";
-import { Icon } from "@/components/Icon";
-import { HeroAcademy } from "./HeroAcademy";
-import { CtaAcademy } from "./CtaAcademy";
+import { getSchools, getFeaturedCareerPaths, getAcademyStats } from "@/lib/queries";
+import { SchoolCardView, CareerPathCardView } from "@/components/cards";
 
-export const revalidate = 300;
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Accueil",
+  title: "Apprenez un métier du numérique — Digital Access Academy",
   description:
-    "Access Academy — formations en ligne aux métiers du numérique en Côte d'Ivoire : développement web, design, marketing digital, bureautique. Certificats vérifiables, quiz interactifs et paiement Mobile Money.",
+    "Parcours métiers, projets concrets, portfolio, badges et certificats vérifiables. L'académie numérique qui transforme vos compétences en opportunités professionnelles en Côte d'Ivoire.",
+  alternates: { canonical: "/" },
 };
 
-/* ──────────────────────────── Contenu statique ─────────────────────────────── */
-
-const stats = [
-  { value: 2500, suffix: "+", label: "Apprenants inscrits" },
-  { value: 4, suffix: "+", label: "Cours complets — et ça continue" },
-  { value: 98, suffix: " %", label: "d'apprenants satisfaits" },
-  { value: 100, suffix: " %", label: "de certificats vérifiables" },
+const method = [
+  { icon: Compass, title: "Choisir un parcours métier", text: "Un objectif professionnel clair : Assistant IA, Développeur Front-End, Community Manager…" },
+  { icon: Target, title: "Apprendre en pratiquant", text: "Des modules courts, des exercices et des quiz orientés savoir-faire, pas seulement des vidéos." },
+  { icon: FolderKanban, title: "Réaliser des projets", text: "Des missions professionnelles concrètes qui alimentent votre portfolio et prouvent vos compétences." },
+  { icon: Award, title: "Certifier & valoriser", text: "Badges par preuve, certificats vérifiables par QR code, et accès à des opportunités." },
 ];
-
-const steps = [
-  {
-    number: "01",
-    title: "Créez votre compte",
-    description:
-      "Inscription gratuite en deux minutes, par email ou avec Google. Aucune carte bancaire demandée.",
-  },
-  {
-    number: "02",
-    title: "Choisissez un cours",
-    description:
-      "Parcourez le catalogue, comparez les avis des apprenants et lancez-vous — certains cours sont 100 % gratuits.",
-  },
-  {
-    number: "03",
-    title: "Apprenez à votre rythme",
-    description:
-      "Vidéos, leçons et quiz accessibles 24h/24, sur ordinateur comme sur mobile, même en 3G.",
-  },
-  {
-    number: "04",
-    title: "Obtenez votre certificat",
-    description:
-      "Validez les quiz, terminez les chapitres et téléchargez votre certificat vérifiable par QR code.",
-  },
-];
-
-const advantages = [
-  {
-    icon: "smartphone",
-    title: "À votre rythme, sur mobile",
-    description:
-      "Vos cours vous suivent partout : interface pensée mobile d'abord, optimisée pour les connexions 3G/4G.",
-  },
-  {
-    icon: "brain",
-    title: "Quiz interactifs",
-    description:
-      "Des QCM avec feedback immédiat et score en direct pour ancrer chaque notion, chapitre après chapitre.",
-  },
-  {
-    icon: "award",
-    title: "Certificats vérifiables",
-    description:
-      "Chaque certificat porte un QR code unique, vérifiable en ligne par les recruteurs et employeurs.",
-  },
-  {
-    icon: "zap",
-    title: "Paiement Mobile Money",
-    description:
-      "Payez en FCFA avec Orange Money, MTN MoMo ou Wave — sans carte bancaire, en quelques secondes.",
-  },
-];
-
-const paymentPills = [
-  "Orange Money",
-  "MTN Mobile Money",
-  "Wave",
-  "Paiement 100 % FCFA",
-];
-
-const testimonials = [
-  {
-    name: "Aïcha Koné",
-    role: "Community manager · Abidjan",
-    course: "Marketing Digital",
-    rating: 5,
-    content:
-      "J'ai suivi le cours de marketing digital entre deux missions. Les quiz m'ont obligée à vraiment retenir, et le certificat a fait la différence auprès de mon nouvel employeur.",
-  },
-  {
-    name: "Jean-Marc Kouassi",
-    role: "Étudiant en informatique · Yamoussoukro",
-    course: "Développement Web",
-    rating: 5,
-    content:
-      "Le cours de développement web est très concret : j'ai mis mon premier site en ligne avant même de finir le dernier module. Et j'ai tout payé avec Orange Money, sans carte bancaire.",
-  },
-  {
-    name: "Mariam Traoré",
-    role: "Assistante de direction · Bouaké",
-    course: "Bureautique",
-    rating: 4,
-    content:
-      "Je suivais les leçons le soir sur mon téléphone. Le format court des chapitres et le suivi de progression m'ont permis de tenir le rythme jusqu'au certificat.",
-  },
-];
-
-/* ─────────────────────────────────── Page ──────────────────────────────────── */
 
 export default async function HomePage() {
-  const [categories, featured] = await Promise.all([
-    getCategories(),
-    getFeaturedCourses(4),
+  const [schools, featured, stats] = await Promise.all([
+    getSchools(),
+    getFeaturedCareerPaths(6),
+    getAcademyStats(),
   ]);
+
+  const statItems = [
+    { value: stats.schools, label: "Écoles" },
+    { value: stats.careerPaths, label: "Parcours métiers" },
+    { value: stats.shortCourses, label: "Formations courtes" },
+    { value: stats.projects, label: "Projets professionnels" },
+  ].filter((s) => s.value > 0);
 
   return (
     <>
-      {/* 1 — Hero */}
-      <HeroAcademy />
+      {/* ── Hero ── */}
+      <section className="relative isolate overflow-hidden">
+        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute -right-40 -top-40 h-[32rem] w-[32rem] rounded-full bg-gradient-da opacity-[0.12] blur-3xl" />
+          <div className="absolute -left-40 top-40 h-[28rem] w-[28rem] rounded-full bg-brand-violet/10 blur-3xl" />
+          <div className="absolute inset-0 bg-grid opacity-[0.5]" />
+        </div>
+        <Container className="relative pb-16 pt-20 sm:pt-28">
+          <Reveal>
+            <span className="inline-flex items-center gap-2 rounded-full border border-brand-blue-vif/20 bg-brand-blue-vif/[0.06] px-4 py-1.5 text-xs font-bold uppercase tracking-[0.14em] text-brand-blue-royal">
+              <GraduationCap size={15} />
+              Académie numérique · Côte d'Ivoire
+            </span>
+          </Reveal>
+          <Reveal delay={0.05}>
+            <h1 className="mt-6 max-w-4xl font-display text-4xl font-extrabold leading-[1.08] tracking-tight text-navy sm:text-5xl lg:text-6xl">
+              Apprenez un métier. Réalisez des projets.{" "}
+              <GradientText>Construisez votre avenir.</GradientText>
+            </h1>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-text-secondary">
+              Digital Access Academy vous forme aux compétences pratiques du numérique, de
+              l'intelligence artificielle, du marketing, du design, de la data et de
+              l'entrepreneuriat — à travers des parcours métiers, des projets concrets, des badges
+              et des certificats vérifiables.
+            </p>
+          </Reveal>
+          <Reveal delay={0.15}>
+            <div className="mt-9 flex flex-wrap items-center gap-3">
+              <Link href="/career-paths" className={buttonClasses({ variant: "primary", size: "lg" })}>
+                Explorer les parcours métiers
+                <ArrowRight size={18} />
+              </Link>
+              <Link href="/schools" className={buttonClasses({ variant: "outline", size: "lg" })}>
+                Découvrir les écoles
+              </Link>
+            </div>
+          </Reveal>
 
-      {/* 2 — Bandeau stats */}
-      <section className="relative overflow-hidden bg-surface-dark py-16">
-        <div aria-hidden className="absolute inset-0 bg-gradient-da opacity-10" />
-        <div aria-hidden className="absolute inset-0 bg-grid opacity-30" />
-        <Container className="relative">
-          <StaggerGroup className="grid grid-cols-2 gap-8 lg:grid-cols-4">
-            {stats.map((stat) => (
-              <StaggerItem key={stat.label} className="text-center">
-                <p className="font-display text-4xl font-extrabold sm:text-5xl">
-                  <span className="text-gradient-da">
-                    <AnimatedCounter value={stat.value} suffix={stat.suffix} />
-                  </span>
-                </p>
-                <p className="mt-2 text-sm font-medium text-white/60">
-                  {stat.label}
-                </p>
-              </StaggerItem>
-            ))}
-          </StaggerGroup>
+          {statItems.length > 0 && (
+            <Reveal delay={0.2}>
+              <dl className="mt-14 grid max-w-3xl grid-cols-2 gap-x-8 gap-y-6 sm:grid-cols-4">
+                {statItems.map((s) => (
+                  <div key={s.label}>
+                    <dt className="font-display text-3xl font-extrabold text-navy sm:text-4xl">
+                      {s.value}
+                    </dt>
+                    <dd className="mt-1 text-sm font-medium text-text-secondary">{s.label}</dd>
+                  </div>
+                ))}
+              </dl>
+            </Reveal>
+          )}
         </Container>
       </section>
 
-      {/* 3 — Catégories */}
+      {/* ── Écoles ── */}
       <Section tone="muted">
         <Container>
           <SectionHeading
-            eyebrow="Catégories"
-            title={
-              <>
-                Explorez nos <GradientText>univers de formation</GradientText>
-              </>
-            }
-            subtitle="Du code au marketing, chaque parcours est conçu pour vous mener d'un premier pas curieux à une compétence qui compte sur le marché."
+            eyebrow="Nos écoles"
+            title={<>Huit écoles, <GradientText>un objectif</GradientText> : l'employabilité</>}
+            subtitle="Chaque école regroupe des parcours métiers et des formations courtes autour d'un grand domaine de compétences."
           />
-          <StaggerGroup className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {categories.map((cat) => (
-              <StaggerItem key={cat.id} className="h-full">
-                <Link
-                  href={`/courses?category=${cat.slug}`}
-                  className="group block h-full"
-                >
-                  <Card interactive className="flex h-full flex-col">
-                    <IconBadge tone="gradient">
-                      <Icon name={cat.icon ?? "sparkles"} size={22} />
-                    </IconBadge>
-                    <h3 className="mt-4 font-display text-lg font-bold text-navy">
-                      {cat.name}
-                    </h3>
-                    <p className="mt-1 text-sm text-text-secondary">
-                      {cat.courseCount} cours{" "}
-                      {cat.courseCount > 1 ? "disponibles" : "disponible"}
-                    </p>
-                    <span className="mt-auto inline-flex items-center gap-1.5 pt-5 text-sm font-semibold text-brand-blue-royal">
-                      Découvrir
-                      <ArrowRight
-                        size={15}
-                        className="transition-transform duration-200 group-hover:translate-x-1"
-                      />
-                    </span>
-                  </Card>
-                </Link>
-              </StaggerItem>
-            ))}
-          </StaggerGroup>
+          {schools.length > 0 ? (
+            <StaggerGroup className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {schools.map((s) => (
+                <StaggerItem key={s.id}>
+                  <SchoolCardView school={s} />
+                </StaggerItem>
+              ))}
+            </StaggerGroup>
+          ) : (
+            <p className="mt-12 text-center text-text-muted">Les écoles arrivent très bientôt.</p>
+          )}
         </Container>
       </Section>
 
-      {/* 4 — Cours populaires */}
-      <Section>
-        <Container>
-          <div className="flex flex-wrap items-end justify-between gap-6">
+      {/* ── Parcours métiers vedettes ── */}
+      {featured.length > 0 && (
+        <Section>
+          <Container>
             <SectionHeading
-              align="left"
-              eyebrow="Cours populaires"
-              title={
-                <>
-                  Les formations <GradientText>préférées</GradientText> de nos
-                  apprenants
-                </>
-              }
-              className="max-w-xl"
+              eyebrow="Parcours métiers"
+              title={<>Formez-vous à un <GradientText>métier recherché</GradientText></>}
+              subtitle="Des parcours structurés qui vous mènent d'une ambition à un portfolio et un certificat."
             />
-            <Reveal>
-              <Link
-                href="/courses"
-                className={buttonClasses({ variant: "ghost", size: "md" })}
-              >
-                Tout le catalogue
-                <ArrowRight size={17} />
+            <StaggerGroup className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {featured.map((p) => (
+                <StaggerItem key={p.id}>
+                  <CareerPathCardView path={p} />
+                </StaggerItem>
+              ))}
+            </StaggerGroup>
+            <div className="mt-12 text-center">
+              <Link href="/career-paths" className={buttonClasses({ variant: "ghost", size: "md" })}>
+                Voir tous les parcours
+                <ArrowRight size={16} />
               </Link>
-            </Reveal>
-          </div>
-          <StaggerGroup className="mt-12 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-            {featured.map((course, i) => (
-              <StaggerItem key={course.id} className="h-full">
-                <CourseCard course={course} index={i} />
-              </StaggerItem>
-            ))}
-          </StaggerGroup>
-        </Container>
-      </Section>
+            </div>
+          </Container>
+        </Section>
+      )}
 
-      {/* 5 — Comment ça marche */}
+      {/* ── Méthode ── */}
       <Section tone="muted">
         <Container>
           <SectionHeading
-            eyebrow="Comment ça marche"
-            title={
-              <>
-                Du premier clic au <GradientText>certificat</GradientText>
-              </>
-            }
-            subtitle="Un parcours simple et motivant, pensé pour vous faire progresser sans pression."
+            eyebrow="Notre méthode"
+            title={<>Apprendre <GradientText>en faisant</GradientText></>}
+            subtitle="Pas de compétence sans pratique. Pas de certification sans projet. Pas d'employabilité sans preuve."
           />
-          <StaggerGroup className="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
-            {steps.map((step) => (
-              <StaggerItem key={step.number} className="relative">
-                <span className="font-display text-5xl font-extrabold text-gradient-da">
-                  {step.number}
-                </span>
-                <h3 className="mt-3 font-display text-lg font-bold text-navy">
-                  {step.title}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-text-secondary">
-                  {step.description}
-                </p>
-              </StaggerItem>
-            ))}
-          </StaggerGroup>
-        </Container>
-      </Section>
-
-      {/* 6 — Bandeau avantages */}
-      <Section tone="dark" className="overflow-hidden">
-        <div aria-hidden className="absolute inset-0 bg-dots opacity-20" />
-        <div
-          aria-hidden
-          className="absolute -top-32 right-0 h-80 w-80 rounded-full bg-accent/20 blur-[120px]"
-        />
-        <div
-          aria-hidden
-          className="absolute -bottom-32 left-0 h-80 w-80 rounded-full bg-brand-cyan/15 blur-[120px]"
-        />
-        <Container className="relative">
-          <SectionHeading
-            invert
-            eyebrow="Pourquoi Academy"
-            title={
-              <>
-                Une plateforme conçue pour apprendre{" "}
-                <GradientText>ici, en Côte d'Ivoire</GradientText>
-              </>
-            }
-            subtitle="Pas une plateforme importée : une expérience pensée pour nos réalités — mobile d'abord, FCFA, Mobile Money."
-          />
-          <StaggerGroup className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {advantages.map((a) => (
+          <StaggerGroup className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {method.map((m, i) => (
               <StaggerItem
-                key={a.title}
-                className="rounded-xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-sm"
+                key={m.title}
+                className="relative rounded-2xl border border-navy/[0.07] bg-surface-primary p-6"
               >
+                <span className="absolute right-5 top-5 font-display text-4xl font-extrabold text-navy/[0.06]">
+                  0{i + 1}
+                </span>
                 <IconBadge tone="gradient">
-                  <Icon name={a.icon} size={22} />
+                  <m.icon size={22} />
                 </IconBadge>
-                <h3 className="mt-4 font-display text-lg font-bold text-white">
-                  {a.title}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-white/65">
-                  {a.description}
-                </p>
+                <h3 className="mt-4 font-display text-lg font-bold text-navy">{m.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-text-secondary">{m.text}</p>
               </StaggerItem>
             ))}
           </StaggerGroup>
-          <Reveal delay={0.15} className="mt-10 flex flex-wrap items-center justify-center gap-3">
-            {paymentPills.map((p) => (
-              <span
-                key={p}
-                className="rounded-full border border-white/15 bg-white/[0.06] px-4 py-1.5 text-xs font-semibold text-white/80"
-              >
-                {p}
-              </span>
-            ))}
-          </Reveal>
         </Container>
       </Section>
 
-      {/* 7 — Témoignages */}
+      {/* ── Preuve & employabilité ── */}
       <Section>
         <Container>
-          <SectionHeading
-            eyebrow="Ils apprennent avec nous"
-            title={
-              <>
-                Ce que disent <GradientText>nos apprenants</GradientText>
-              </>
-            }
-            subtitle="Des parcours réels, des compétences qui changent des carrières."
-          />
-          <StaggerGroup className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {testimonials.map((t) => (
-              <StaggerItem key={t.name} className="h-full">
-                <Card interactive className="flex h-full flex-col">
-                  <div className="flex items-start justify-between gap-3">
-                    <Quote
-                      size={32}
-                      className="text-brand-blue-vif/25"
-                      fill="currentColor"
-                    />
-                    <Badge variant="soft">{t.course}</Badge>
-                  </div>
-                  <StarRating rating={t.rating} className="mt-3" />
-                  <p className="mt-4 flex-1 text-[0.95rem] leading-relaxed text-navy/85">
-                    «&nbsp;{t.content}&nbsp;»
-                  </p>
-                  <div className="mt-6 flex items-center gap-3 border-t border-navy/[0.06] pt-5">
-                    <Avatar name={t.name} />
-                    <div>
-                      <p className="text-sm font-bold text-navy">{t.name}</p>
-                      <p className="text-xs text-text-secondary">{t.role}</p>
-                    </div>
-                  </div>
-                </Card>
-              </StaggerItem>
+          <div className="grid gap-6 md:grid-cols-3">
+            {[
+              { icon: FolderKanban, title: "Un portfolio de projets", text: "Chaque projet validé enrichit votre portfolio professionnel — votre meilleure preuve de savoir-faire." },
+              { icon: BadgeCheck, title: "Badges & certificats vérifiables", text: "Des badges par preuve et des certificats à QR code, vérifiables publiquement par un employeur." },
+              { icon: Briefcase, title: "Un pont vers l'emploi", text: "Passeport de compétences, opportunités, missions freelance et mise en relation avec les entreprises." },
+            ].map((c) => (
+              <Reveal key={c.title} className="rounded-2xl border border-navy/[0.07] bg-surface-secondary/40 p-7">
+                <IconBadge tone="gradient">
+                  <c.icon size={22} />
+                </IconBadge>
+                <h3 className="mt-4 font-display text-lg font-bold text-navy">{c.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-text-secondary">{c.text}</p>
+              </Reveal>
             ))}
-          </StaggerGroup>
+          </div>
         </Container>
       </Section>
 
-      {/* 8 — CTA final */}
-      <CtaAcademy />
+      {/* ── CTA ── */}
+      <Section tone="muted">
+        <Container size="lg">
+          <div className="relative overflow-hidden rounded-3xl bg-navy px-7 py-14 text-center sm:px-12">
+            <div aria-hidden className="absolute inset-0 overflow-hidden">
+              <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-gradient-da opacity-30 blur-3xl" />
+              <div className="absolute inset-0 bg-grid opacity-[0.08]" />
+            </div>
+            <div className="relative">
+              <Rocket size={34} className="mx-auto text-brand-cyan" />
+              <h2 className="mt-5 font-display text-3xl font-extrabold text-white sm:text-4xl">
+                Prêt à construire des compétences <GradientText>visibles et utiles</GradientText> ?
+              </h2>
+              <p className="mx-auto mt-4 max-w-xl text-white/70">
+                Créez votre compte gratuitement, choisissez votre parcours et commencez à produire dès aujourd'hui.
+              </p>
+              <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+                <Link href="/auth/register" className={cn(buttonClasses({ variant: "primary", size: "lg" }))}>
+                  Créer un compte gratuit
+                  <ArrowRight size={18} />
+                </Link>
+                <Link href="/career-paths" className="inline-flex h-12 items-center gap-2 rounded-lg border border-white/20 px-6 text-[0.95rem] font-semibold text-white transition-colors hover:bg-white/10">
+                  Explorer les parcours
+                </Link>
+              </div>
+            </div>
+          </div>
+        </Container>
+      </Section>
     </>
   );
 }

@@ -12,12 +12,6 @@ import { AcademyLogo } from "./AcademyLogo";
 import { LogoutButton } from "./LogoutButton";
 import { NotificationBell } from "./NotificationBell";
 
-const learnerLinks = [
-  { label: "Catalogue", href: "/courses" },
-  { label: "Mes cours", href: "/dashboard" },
-  { label: "Certificats", href: "/certificates" },
-];
-
 type HeaderUser = { name?: string | null; email?: string | null; roles?: string[] };
 
 export function AcademyHeader({ initialUser }: { initialUser?: HeaderUser | null }) {
@@ -28,11 +22,8 @@ export function AcademyHeader({ initialUser }: { initialUser?: HeaderUser | null
   // La session serveur (initialUser, résolue par requête) fait foi ; useSession
   // ne sert qu'aux mises à jour réactives (connexion/déconnexion sans rechargement).
   const user = (session?.user as HeaderUser | undefined) ?? initialUser ?? undefined;
-  const roles = user?.roles ?? [];
-  const isAdmin = roles.some((r) => r === "ADMIN" || r === "SUPER_ADMIN");
-  const isInstructor = roles.includes("INSTRUCTOR") || isAdmin;
-  // Destination « maison » adaptée au rôle (comme sur l'app web).
-  const homeHref = isAdmin ? "/admin/dashboard" : isInstructor ? "/studio" : "/dashboard";
+  // Destination « mon espace » (le dashboard apprenant arrive en Phase 3).
+  const homeHref = "/profil";
 
   React.useEffect(() => {
     setOpen(false);
@@ -48,13 +39,8 @@ export function AcademyHeader({ initialUser }: { initialUser?: HeaderUser | null
     };
   }, [open]);
 
-  const nav = user
-    ? [
-        ...learnerLinks,
-        ...(isInstructor ? [{ label: "Studio", href: "/studio" }] : []),
-        ...(isAdmin ? [{ label: "Admin", href: "/admin/dashboard" }] : []),
-      ]
-    : visitorNav;
+  // Navigation publique unique pour tous (les espaces par rôle arrivent aux phases suivantes).
+  const nav = visitorNav;
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
