@@ -942,6 +942,8 @@ model Certificate {
   issuedAt          DateTime            @default(now())
   status            CredentialStatus    @default(ACTIVE)
 
+  @@unique([learnerId, careerPathId])
+  @@unique([learnerId, shortCourseId])
   @@index([learnerId])
   @@index([certificateNumber])
 }

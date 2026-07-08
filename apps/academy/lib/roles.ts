@@ -50,13 +50,15 @@ export function landingForUser(user: { roles: string[] } | null): string {
     // case "SUPER_ADMIN":
     // case "ADMIN":
     // case "ACADEMIC_MANAGER":  return "/admin";
-    // case "INSTRUCTOR":        return "/studio";
-    // case "REVIEWER":          return "/reviews";
     // case "COMPANY":           return "/companies/espace";
+    case "REVIEWER":
+    case "INSTRUCTOR":
+      // Relecteurs & formateurs : espace de relecture des projets.
+      return "/reviews";
     case "LEARNER":
       return "/dashboard";
     default:
-      // Rôles internes (admin/formateur…) : leurs espaces arrivent plus tard ;
+      // Rôles internes (admin…) : leur back-office arrive en Phase 5 ;
       // en attendant, l'espace apprenant leur sert de point d'entrée.
       return "/dashboard";
   }

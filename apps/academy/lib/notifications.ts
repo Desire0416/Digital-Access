@@ -15,6 +15,9 @@ export type NotifType =
   | "FORUM_REPLY"
   | "CHAT_MENTION"
   | "STREAK_REMINDER"
+  | "PROJECT_SUBMITTED"
+  | "PROJECT_FEEDBACK"
+  | "BADGE_EARNED"
   | "SYSTEM";
 
 type Prefs = { inApp?: Record<string, boolean>; email?: Record<string, boolean> } | null;

@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { ScrollText, ShieldCheck, Award } from "lucide-react";
+import { ScrollText, ShieldCheck, Award, Download, ArrowUpRight } from "lucide-react";
 import { GradientText } from "@da/ui";
 import { currentUser } from "@da/auth/guards";
 import { getMyCertificates } from "@/lib/learn-queries";
@@ -57,11 +57,31 @@ export default async function CertificatsPage() {
                 </div>
               )}
 
-              <div className="mt-5 flex items-center justify-between border-t border-navy/[0.06] pt-4">
-                <span className="inline-flex items-center gap-1.5 text-xs font-medium text-success">
-                  <ShieldCheck size={15} /> Vérifiable
-                </span>
-                <span className="font-mono text-xs text-text-muted">{c.certificateNumber}</span>
+              <div className="mt-5 border-t border-navy/[0.06] pt-4">
+                <div className="flex items-center justify-between">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-success">
+                    <ShieldCheck size={15} /> Vérifiable
+                  </span>
+                  <span className="font-mono text-xs text-text-muted">{c.certificateNumber}</span>
+                </div>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <a
+                    href={`/api/certificates/${c.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-da px-3.5 py-2 text-xs font-semibold text-white shadow-brand transition-transform hover:scale-[1.02]"
+                  >
+                    <Download size={14} /> Télécharger le PDF
+                  </a>
+                  <a
+                    href={`/verify/${encodeURIComponent(c.certificateNumber)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-navy/15 px-3.5 py-2 text-xs font-semibold text-navy transition-colors hover:border-brand-blue-vif/50 hover:text-brand-blue-royal"
+                  >
+                    <ArrowUpRight size={14} /> Vérifier
+                  </a>
+                </div>
               </div>
             </article>
           ))}

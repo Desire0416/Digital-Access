@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Menu, X, GraduationCap, LayoutDashboard } from "lucide-react";
+import { Menu, X, GraduationCap, LayoutDashboard, ClipboardCheck } from "lucide-react";
 import { Avatar, buttonClasses, cn, useScrolled } from "@da/ui";
 import { visitorNav } from "@/lib/site";
 import { AcademyLogo } from "./AcademyLogo";
@@ -41,6 +41,7 @@ export function AcademyHeader({ initialUser }: { initialUser?: HeaderUser | null
 
   // Navigation publique unique pour tous (les espaces par rôle arrivent aux phases suivantes).
   const nav = visitorNav;
+  const isReviewer = Boolean(user?.roles?.some((r) => ["REVIEWER", "INSTRUCTOR", "ADMIN", "SUPER_ADMIN"].includes(r)));
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
@@ -86,6 +87,11 @@ export function AcademyHeader({ initialUser }: { initialUser?: HeaderUser | null
         <div className="hidden items-center gap-2 lg:flex">
           {user ? (
             <>
+              {isReviewer && (
+                <Link href="/reviews" className={cn(buttonClasses({ variant: "ghost", size: "sm" }), "gap-1.5")}>
+                  <ClipboardCheck size={16} /> Relecture
+                </Link>
+              )}
               <NotificationBell />
               <Link
                 href={homeHref}
@@ -179,6 +185,11 @@ export function AcademyHeader({ initialUser }: { initialUser?: HeaderUser | null
               <div className="mt-3 flex flex-col gap-2">
                 {user ? (
                   <>
+                    {isReviewer && (
+                      <Link href="/reviews" className={cn(buttonClasses({ variant: "outline", size: "md" }), "gap-2")}>
+                        <ClipboardCheck size={17} /> Relecture
+                      </Link>
+                    )}
                     <Link
                       href={homeHref}
                       className={cn(buttonClasses({ variant: "outline", size: "md" }), "gap-2")}

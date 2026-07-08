@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@da/db/client";
 import { currentUser } from "@da/auth/guards";
 import { createNotification } from "./notifications";
+import { issueCertificateIfEligible } from "./certificates";
 import type { QuizSubmissionResult } from "./learn-types";
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -134,6 +135,9 @@ async function completeLesson(
       link: "/dashboard/certificats",
     });
   }
+  // Le certificat s'émet quand TOUTES les exigences sont réunies (leçons + projets) ;
+  // c'est peut-être la complétion des leçons qui débloque le dernier verrou.
+  if (courseCompleted) await issueCertificateIfEligible(userId, path.id);
 
   return { progress, courseCompleted, courseTitle: path.title, slug: path.slug };
 }

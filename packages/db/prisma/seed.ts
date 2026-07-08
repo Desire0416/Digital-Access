@@ -363,6 +363,85 @@ async function main() {
   await seedProgress("developpeur-web-front-end", 0.45, `seed-enr-front-${demoLearner}`);
   await seedProgress("assistant-ia-professionnel", 1, `seed-enr-ia-${demoLearner}`);
 
+  /* ─────────── Phase 4 : soumissions démo (file de relecture + validé) ─── */
+  const [yann, koffi] = await Promise.all([
+    prisma.user.findUnique({ where: { email: "yann@digitalaccess.ci" }, select: { id: true } }),
+    prisma.user.findUnique({ where: { email: "koffi@digitalaccess.ci" }, select: { id: true } }),
+  ]);
+  const graphPath = await prisma.careerPath.findUnique({ where: { slug: "graphiste-digital" }, select: { id: true } });
+
+  // Yann : inscrit au parcours graphiste + une soumission en attente d'évaluation.
+  if (yann && graphPath) {
+    await prisma.enrollment.upsert({
+      where: { learnerId_careerPathId: { learnerId: yann.id, careerPathId: graphPath.id } },
+      update: {},
+      create: { learnerId: yann.id, careerPathId: graphPath.id, status: "ACTIVE", accessType: "FREE", progress: 60 },
+    });
+    const gProject = await prisma.professionalProject.findFirst({
+      where: { careerPathId: graphPath.id, status: "PUBLISHED", requiresSubmission: true },
+      orderBy: { createdAt: "asc" }, select: { id: true },
+    });
+    if (gProject) {
+      // Badge « par preuve » lié à ce projet — décerné automatiquement à la validation.
+      await prisma.badge.upsert({
+        where: { slug: "createur-affiche" },
+        update: {},
+        create: {
+          name: "Créateur d'affiche", slug: "createur-affiche",
+          description: "A conçu une affiche professionnelle validée par un relecteur.",
+          category: "PROJECT", icon: "palette", projectId: gProject.id, status: "PUBLISHED",
+        },
+      });
+      const exists = await prisma.projectSubmission.findFirst({ where: { learnerId: yann.id, projectId: gProject.id }, select: { id: true } });
+      if (!exists) {
+        await prisma.projectSubmission.create({
+          data: {
+            learnerId: yann.id, projectId: gProject.id, status: "SUBMITTED", version: 1, submittedAt: new Date(),
+            links: [
+              { label: "Maquette Figma", url: "https://www.figma.com/file/demo-affiche" },
+              { label: "Aperçu Canva", url: "https://www.canva.com/design/demo" },
+            ],
+            aiDeclaration: "J'ai utilisé une IA pour générer des idées de palette, mais toute la composition est la mienne.",
+            comment: "Première version de l'affiche pour la boutique. Ouvert à vos retours sur la hiérarchie visuelle.",
+          },
+        });
+      }
+    }
+  }
+
+  // Apprenant démo : une soumission déjà validée + son élément de portfolio.
+  if (iaPath) {
+    const iaProject = await prisma.professionalProject.findFirst({
+      where: { careerPathId: iaPath.id, status: "PUBLISHED", requiresSubmission: true },
+      orderBy: { createdAt: "asc" }, select: { id: true, title: true, mission: true, problem: true },
+    });
+    if (iaProject) {
+      const exists = await prisma.projectSubmission.findFirst({ where: { learnerId: demoLearner, projectId: iaProject.id }, select: { id: true } });
+      if (!exists) {
+        await prisma.projectSubmission.create({
+          data: {
+            learnerId: demoLearner, projectId: iaProject.id, status: "VALIDATED", version: 1, score: 92,
+            submittedAt: new Date(), reviewedAt: new Date(), reviewerId: koffi?.id ?? null,
+            feedback: "Excellent travail : prompts clairs, résultats reproductibles et bien documentés. Bravo !",
+            links: [{ label: "Bibliothèque de prompts", url: "https://docs.google.com/document/d/demo" }],
+            aiDeclaration: "Projet réalisé avec ChatGPT et Claude, avec analyse critique de chaque sortie.",
+          },
+        });
+      }
+      const pExists = await prisma.portfolioItem.findFirst({ where: { learnerId: demoLearner, projectId: iaProject.id }, select: { id: true } });
+      if (!pExists) {
+        await prisma.portfolioItem.create({
+          data: {
+            learnerId: demoLearner, projectId: iaProject.id, title: iaProject.title,
+            description: iaProject.mission ?? null, problemSolved: iaProject.problem ?? null,
+            toolsUsed: ["ChatGPT", "Claude", "Google Sheets"], skillsUsed: ["Prompt Engineering", "Automatisation IA"],
+            demoUrl: "https://docs.google.com/document/d/demo", visibility: "PUBLIC",
+          },
+        });
+      }
+    }
+  }
+
   /* ─────────────────── Web : témoignages, blog, leads ────────────────── */
   if ((await prisma.testimonial.count()) === 0) {
     await prisma.testimonial.createMany({

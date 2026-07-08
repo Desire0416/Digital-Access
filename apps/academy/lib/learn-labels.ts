@@ -38,3 +38,23 @@ export const OPPORTUNITY_TYPE_LABEL: Record<string, string> = {
   CLIENT_PROJECT: "Projet client",
   APPRENTICESHIP: "Alternance",
 };
+
+export const PROJECT_TYPE_LABEL: Record<string, string> = {
+  EXERCISE: "Exercice",
+  MINI_PROJECT: "Mini-projet",
+  PROFESSIONAL_MISSION: "Mission professionnelle",
+  FINAL_PROJECT: "Projet final",
+  CLIENT_PROJECT: "Projet client",
+  COLLABORATIVE_PROJECT: "Projet collaboratif",
+};
+
+export const SUBMISSION_STATUS_LABEL: Record<string, string> = {
+  NOT_STARTED: "À démarrer",
+  IN_PROGRESS: "Brouillon",
+  SUBMITTED: "Soumis",
+  UNDER_REVIEW: "En évaluation",
+  REVISION_REQUESTED: "Révisions demandées",
+  VALIDATED: "Validé",
+  REJECTED: "Non retenu",
+  PORTFOLIO_READY: "Dans le portfolio",
+};

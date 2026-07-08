@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, BookOpen, Fingerprint, Medal, ScrollText, FolderKanban, Briefcase } from "lucide-react";
+import { LayoutDashboard, BookOpen, Rocket, Fingerprint, Medal, ScrollText, FolderKanban, Briefcase } from "lucide-react";
 import { cn } from "@da/ui";
 
 const TABS = [
   { href: "/dashboard", label: "Vue d'ensemble", icon: LayoutDashboard, exact: true },
   { href: "/dashboard/mes-cours", label: "Mes cours", icon: BookOpen },
+  { href: "/dashboard/projets", label: "Projets", icon: Rocket },
   { href: "/dashboard/passeport", label: "Passeport", icon: Fingerprint },
   { href: "/dashboard/badges", label: "Badges", icon: Medal },
   { href: "/dashboard/certificats", label: "Certificats", icon: ScrollText },
