@@ -182,6 +182,8 @@ export interface CatalogueFilters {
   schoolSlug?: string;
   level?: string;
   search?: string;
+  price?: "free" | "paid";
+  sort?: "recent" | "price-asc" | "price-desc" | "az";
 }
 
 const VALID_LEVELS = new Set(["BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"]);
@@ -193,6 +195,7 @@ function catalogueWhere(f: CatalogueFilters) {
     status: "PUBLISHED" as const,
     ...(f.schoolSlug ? { school: { slug: f.schoolSlug } } : {}),
     ...(level ? { level: level as never } : {}),
+    ...(f.price === "free" ? { price: { lte: 0 } } : f.price === "paid" ? { price: { gt: 0 } } : {}),
     ...(search
       ? {
           OR: [
@@ -202,6 +205,17 @@ function catalogueWhere(f: CatalogueFilters) {
         }
       : {}),
   };
+}
+
+/** Tri du catalogue (par défaut : vedettes puis ancienneté). */
+function catalogueOrderBy(sort?: string) {
+  switch (sort) {
+    case "price-asc": return [{ price: "asc" as const }];
+    case "price-desc": return [{ price: "desc" as const }];
+    case "az": return [{ title: "asc" as const }];
+    case "recent": return [{ createdAt: "desc" as const }];
+    default: return [{ featured: "desc" as const }, { createdAt: "asc" as const }];
+  }
 }
 
 /** Parcours métiers publiés, filtres optionnels (école, niveau, recherche). */
@@ -221,7 +235,7 @@ export async function getCareerPaths(filters: CatalogueFilters = {}): Promise<Ca
             }
           : {}),
       },
-      orderBy: [{ featured: "desc" }, { createdAt: "asc" }],
+      orderBy: catalogueOrderBy(filters.sort),
       select: pathCardSelect,
     });
     return rows.map(mapPathCard);
@@ -303,7 +317,22 @@ export async function getShortCourses(filters: CatalogueFilters = {}): Promise<S
   try {
     const rows = await prisma.shortCourse.findMany({
       where: catalogueWhere(filters),
+      orderBy: catalogueOrderBy(filters.sort),
+      select: shortCardSelect,
+    });
+    return rows.map(mapShortCard);
+  } catch {
+    return [];
+  }
+}
+
+/** Formations courtes mises en avant (pour la page d'accueil). */
+export async function getFeaturedShortCourses(limit = 4): Promise<ShortCourseCard[]> {
+  try {
+    const rows = await prisma.shortCourse.findMany({
+      where: { status: "PUBLISHED" },
       orderBy: [{ featured: "desc" }, { createdAt: "asc" }],
+      take: limit,
       select: shortCardSelect,
     });
     return rows.map(mapShortCard);

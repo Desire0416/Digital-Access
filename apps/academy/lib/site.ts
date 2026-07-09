@@ -52,11 +52,32 @@ export interface NavItem {
   href: string;
 }
 
-/** Navigation publique (VISITOR). */
+/** Méga-menu « Catalogue » : tout ce qui permet de choisir une formation. */
+export interface CatalogueEntry extends NavItem {
+  desc: string;
+  icon: string;
+}
+export const catalogueMenu = {
+  label: "Catalogue",
+  intro: "Une école, un métier complet ou une compétence ciblée — trouvez votre voie.",
+  items: [
+    { label: "Parcours métiers", href: "/career-paths", desc: "Se former à un métier complet, preuve à l'appui", icon: "rocket" },
+    { label: "Formations courtes", href: "/short-courses", desc: "Monter en compétence sur un outil précis", icon: "book" },
+    { label: "Écoles", href: "/schools", desc: "Huit domaines de compétences numériques", icon: "school" },
+  ] as CatalogueEntry[],
+  secondary: { label: "Certifications & badges", href: "/certifications" },
+} as const;
+
+/** Liens de navigation principaux (hors méga-menu Catalogue). */
+export const primaryNav: NavItem[] = [
+  { label: "Entreprises", href: "/companies" },
+];
+
+/** Ancienne navigation à plat (conservée pour compat plan du site). */
 export const visitorNav: NavItem[] = [
-  { label: "Écoles", href: "/schools" },
   { label: "Parcours métiers", href: "/career-paths" },
   { label: "Formations courtes", href: "/short-courses" },
+  { label: "Écoles", href: "/schools" },
   { label: "Certifications", href: "/certifications" },
   { label: "Entreprises", href: "/companies" },
 ];

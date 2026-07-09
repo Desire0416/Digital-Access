@@ -7,8 +7,9 @@ import { useSession } from "next-auth/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X, GraduationCap, LayoutDashboard, ClipboardCheck } from "lucide-react";
 import { Avatar, buttonClasses, cn, useScrolled } from "@da/ui";
-import { visitorNav } from "@/lib/site";
+import { catalogueMenu, primaryNav } from "@/lib/site";
 import { AcademyLogo } from "./AcademyLogo";
+import { CatalogueMenu } from "./CatalogueMenu";
 import { LogoutButton } from "./LogoutButton";
 import { NotificationBell } from "./NotificationBell";
 
@@ -39,8 +40,6 @@ export function AcademyHeader({ initialUser }: { initialUser?: HeaderUser | null
     };
   }, [open]);
 
-  // Navigation publique unique pour tous (les espaces par rôle arrivent aux phases suivantes).
-  const nav = visitorNav;
   const isReviewer = Boolean(user?.roles?.some((r) => ["REVIEWER", "INSTRUCTOR", "ADMIN", "SUPER_ADMIN"].includes(r)));
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -61,7 +60,8 @@ export function AcademyHeader({ initialUser }: { initialUser?: HeaderUser | null
 
         {/* Nav desktop */}
         <nav className="hidden items-center gap-1 lg:flex">
-          {nav.map((item) => (
+          <CatalogueMenu />
+          {primaryNav.map((item) => (
             <Link
               key={item.href + item.label}
               href={item.href}
@@ -168,15 +168,36 @@ export function AcademyHeader({ initialUser }: { initialUser?: HeaderUser | null
               className="absolute inset-x-0 top-full z-50 max-h-[calc(100dvh-4.5rem)] overflow-y-auto bg-surface-primary shadow-xl lg:hidden"
             >
               <nav className="mx-auto flex max-w-7xl flex-col gap-1 px-5 py-4 sm:px-8">
-              {nav.map((item) => (
+              <p className="px-4 pb-1 pt-2 text-[11px] font-bold uppercase tracking-[0.14em] text-text-muted">{catalogueMenu.label}</p>
+              {catalogueMenu.items.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "rounded-lg px-4 py-3 text-base font-medium transition-colors",
+                    isActive(item.href) ? "bg-brand-blue-vif/10 text-brand-blue-royal" : "text-navy hover:bg-navy/5",
+                  )}
+                >
+                  {item.label}
+                </Link>
+              ))}
+              <Link
+                href={catalogueMenu.secondary.href}
+                className={cn(
+                  "rounded-lg px-4 py-3 text-base font-medium transition-colors",
+                  isActive(catalogueMenu.secondary.href) ? "bg-brand-blue-vif/10 text-brand-blue-royal" : "text-navy hover:bg-navy/5",
+                )}
+              >
+                {catalogueMenu.secondary.label}
+              </Link>
+              <div className="my-1 h-px bg-navy/[0.06]" />
+              {primaryNav.map((item) => (
                 <Link
                   key={item.href + item.label}
                   href={item.href}
                   className={cn(
                     "rounded-lg px-4 py-3 text-base font-medium transition-colors",
-                    isActive(item.href)
-                      ? "bg-brand-blue-vif/10 text-brand-blue-royal"
-                      : "text-navy hover:bg-navy/5",
+                    isActive(item.href) ? "bg-brand-blue-vif/10 text-brand-blue-royal" : "text-navy hover:bg-navy/5",
                   )}
                 >
                   {item.label}

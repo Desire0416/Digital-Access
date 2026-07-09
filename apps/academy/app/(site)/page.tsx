@@ -10,6 +10,7 @@ import {
   Award,
   Briefcase,
   BadgeCheck,
+  Zap,
 } from "lucide-react";
 import {
   Section,
@@ -23,8 +24,9 @@ import {
   buttonClasses,
   cn,
 } from "@da/ui";
-import { getSchools, getFeaturedCareerPaths, getAcademyStats } from "@/lib/queries";
-import { SchoolCardView, CareerPathCardView } from "@/components/cards";
+import { getSchools, getFeaturedCareerPaths, getFeaturedShortCourses, getAcademyStats } from "@/lib/queries";
+import { SchoolCardView, CareerPathCardView, ShortCourseCardView } from "@/components/cards";
+import { HeroVisual } from "@/components/HeroVisual";
 
 export const dynamic = "force-dynamic";
 
@@ -43,9 +45,10 @@ const method = [
 ];
 
 export default async function HomePage() {
-  const [schools, featured, stats] = await Promise.all([
+  const [schools, featured, shortCourses, stats] = await Promise.all([
     getSchools(),
     getFeaturedCareerPaths(6),
+    getFeaturedShortCourses(4),
     getAcademyStats(),
   ]);
 
@@ -61,57 +64,63 @@ export default async function HomePage() {
       {/* ── Hero ── */}
       <section className="relative isolate overflow-hidden">
         <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -right-40 -top-40 h-[32rem] w-[32rem] rounded-full bg-gradient-da opacity-[0.12] blur-3xl" />
+          <div className="absolute -right-40 -top-40 h-[32rem] w-[32rem] rounded-full bg-gradient-da opacity-[0.1] blur-3xl" />
           <div className="absolute -left-40 top-40 h-[28rem] w-[28rem] rounded-full bg-brand-violet/10 blur-3xl" />
           <div className="absolute inset-0 bg-grid opacity-[0.5]" />
         </div>
-        <Container className="relative pb-16 pt-20 sm:pt-28">
-          <Reveal>
-            <span className="inline-flex items-center gap-2 rounded-full border border-brand-blue-vif/20 bg-brand-blue-vif/[0.06] px-4 py-1.5 text-xs font-bold uppercase tracking-[0.14em] text-brand-blue-royal">
-              <GraduationCap size={15} />
-              Académie numérique · Côte d'Ivoire
-            </span>
-          </Reveal>
-          <Reveal delay={0.05}>
-            <h1 className="mt-6 max-w-4xl font-display text-4xl font-extrabold leading-[1.08] tracking-tight text-navy sm:text-5xl lg:text-6xl">
-              Apprenez un métier. Réalisez des projets.{" "}
-              <GradientText>Construisez votre avenir.</GradientText>
-            </h1>
-          </Reveal>
-          <Reveal delay={0.1}>
-            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-text-secondary">
-              Digital Access Academy vous forme aux compétences pratiques du numérique, de
-              l'intelligence artificielle, du marketing, du design, de la data et de
-              l'entrepreneuriat — à travers des parcours métiers, des projets concrets, des badges
-              et des certificats vérifiables.
-            </p>
-          </Reveal>
-          <Reveal delay={0.15}>
-            <div className="mt-9 flex flex-wrap items-center gap-3">
-              <Link href="/career-paths" className={buttonClasses({ variant: "primary", size: "lg" })}>
-                Explorer les parcours métiers
-                <ArrowRight size={18} />
-              </Link>
-              <Link href="/schools" className={buttonClasses({ variant: "outline", size: "lg" })}>
-                Découvrir les écoles
-              </Link>
-            </div>
-          </Reveal>
+        <Container className="relative pb-16 pt-16 sm:pt-20">
+          <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
+            {/* Colonne texte */}
+            <div>
+              <Reveal>
+                <span className="inline-flex items-center gap-2 rounded-full border border-brand-blue-vif/20 bg-brand-blue-vif/[0.06] px-4 py-1.5 text-xs font-bold uppercase tracking-[0.14em] text-brand-blue-royal">
+                  <GraduationCap size={15} />
+                  Académie numérique · Côte d'Ivoire
+                </span>
+              </Reveal>
+              <Reveal delay={0.05}>
+                <h1 className="mt-6 font-display text-4xl font-extrabold leading-[1.06] tracking-tight text-navy sm:text-5xl lg:text-[3.4rem]">
+                  Apprenez un métier.<br className="hidden sm:block" /> Prouvez vos compétences.{" "}
+                  <GradientText>Décrochez l'emploi.</GradientText>
+                </h1>
+              </Reveal>
+              <Reveal delay={0.1}>
+                <p className="mt-6 max-w-xl text-lg leading-relaxed text-text-secondary">
+                  Des parcours métiers concrets en IA, développement, marketing, design et data — avec
+                  de vrais projets, un portfolio, des badges et des certificats vérifiables.
+                </p>
+              </Reveal>
+              <Reveal delay={0.15}>
+                <div className="mt-8 flex flex-wrap items-center gap-3">
+                  <Link href="/career-paths" className={buttonClasses({ variant: "primary", size: "lg" })}>
+                    Explorer les parcours
+                    <ArrowRight size={18} />
+                  </Link>
+                  <Link href="/short-courses" className={buttonClasses({ variant: "outline", size: "lg" })}>
+                    <Zap size={17} /> Formations rapides
+                  </Link>
+                </div>
+              </Reveal>
 
-          {statItems.length > 0 && (
-            <Reveal delay={0.2}>
-              <dl className="mt-14 grid max-w-3xl grid-cols-2 gap-x-8 gap-y-6 sm:grid-cols-4">
-                {statItems.map((s) => (
-                  <div key={s.label}>
-                    <dt className="font-display text-3xl font-extrabold text-navy sm:text-4xl">
-                      {s.value}
-                    </dt>
-                    <dd className="mt-1 text-sm font-medium text-text-secondary">{s.label}</dd>
-                  </div>
-                ))}
-              </dl>
+              {statItems.length > 0 && (
+                <Reveal delay={0.2}>
+                  <dl className="mt-12 grid max-w-lg grid-cols-2 gap-x-8 gap-y-5 sm:grid-cols-4">
+                    {statItems.map((s) => (
+                      <div key={s.label}>
+                        <dt className="font-display text-3xl font-extrabold text-navy">{s.value}</dt>
+                        <dd className="mt-0.5 text-xs font-medium text-text-secondary">{s.label}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </Reveal>
+              )}
+            </div>
+
+            {/* Colonne visuelle */}
+            <Reveal delay={0.15} className="hidden lg:block">
+              <HeroVisual />
             </Reveal>
-          )}
+          </div>
         </Container>
       </section>
 
@@ -161,6 +170,39 @@ export default async function HomePage() {
             </div>
           </Container>
         </Section>
+      )}
+
+      {/* ── Formations courtes (mises en avant, traitement distinct) ── */}
+      {shortCourses.length > 0 && (
+        <section className="relative overflow-hidden border-y border-brand-blue-vif/10 bg-gradient-to-br from-brand-blue-vif/[0.05] via-surface-primary to-brand-cyan/[0.06] py-20 sm:py-24">
+          <div aria-hidden className="pointer-events-none absolute -right-24 top-0 h-72 w-72 rounded-full bg-brand-cyan/10 blur-3xl" />
+          <Container className="relative">
+            <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+              <div className="max-w-2xl">
+                <span className="inline-flex items-center gap-2 rounded-full bg-brand-cyan/15 px-3.5 py-1.5 text-xs font-bold uppercase tracking-[0.14em] text-[#0891a6]">
+                  <Zap size={14} /> Résultats rapides
+                </span>
+                <h2 className="mt-4 font-display text-3xl font-extrabold tracking-tight text-navy sm:text-[2.1rem]">
+                  Formations courtes : <GradientText>une compétence à la fois</GradientText>
+                </h2>
+                <p className="mt-3 text-lg text-text-secondary">
+                  Pas le temps pour un parcours complet ? Maîtrisez un outil précis — Canva, Excel, l'IA,
+                  le HTML — en quelques heures, à votre rythme.
+                </p>
+              </div>
+              <Link href="/short-courses" className={cn(buttonClasses({ variant: "primary", size: "md" }), "shrink-0")}>
+                Toutes les formations <ArrowRight size={16} />
+              </Link>
+            </div>
+            <StaggerGroup className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {shortCourses.map((c) => (
+                <StaggerItem key={c.id}>
+                  <ShortCourseCardView course={c} />
+                </StaggerItem>
+              ))}
+            </StaggerGroup>
+          </Container>
+        </section>
       )}
 
       {/* ── Méthode ── */}
