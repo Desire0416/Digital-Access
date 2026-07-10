@@ -16,7 +16,11 @@ export default async function UtilisateursPage() {
         title="Utilisateurs"
         description="Comptes et rôles de la plateforme."
       />
-      <UsersTable users={users} currentUserId={me?.id ?? null} />
+      <UsersTable
+        users={users}
+        currentUserId={me?.id ?? null}
+        currentUserIsSuperAdmin={me?.roles.includes("SUPER_ADMIN") ?? false}
+      />
     </>
   );
 }

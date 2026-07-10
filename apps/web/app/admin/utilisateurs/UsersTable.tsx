@@ -21,11 +21,12 @@ import {
   Loader2,
   Trash2,
   AlertTriangle,
+  UserPlus,
 } from "lucide-react";
 import { cn, formatDate, Avatar } from "@da/ui";
 import { EmptyState, StatusPill, type Tone } from "@/components/admin/ui";
 import { Select, type SelectOption } from "@/components/Select";
-import { updateUserRoles, toggleUserActive, deleteUser } from "@/lib/admin-actions";
+import { updateUserRoles, toggleUserActive, deleteUser, createUser } from "@/lib/admin-actions";
 import type { getAdminUsers } from "@/lib/admin-queries";
 
 /* Type dérivé de la query — évite de dupliquer la forme. */
@@ -34,29 +35,50 @@ type AdminUser = Awaited<ReturnType<typeof getAdminUsers>>[number];
 /* ──────────────────────────────── Rôles ────────────────────────────────── */
 
 const ALL_ROLES = [
-  "LEARNER",
-  "CLIENT",
-  "INSTRUCTOR",
-  "ADMIN",
   "SUPER_ADMIN",
+  "ADMIN",
+  "RESPONSABLE_COMMERCIAL",
+  "COMMERCIAL",
+  "CHEF_PROJET",
+  "ACADEMIC_MANAGER",
+  "INSTRUCTOR",
+  "MENTOR",
+  "REVIEWER",
+  "COMPANY",
+  "CLIENT",
+  "LEARNER",
 ] as const;
 type Role = (typeof ALL_ROLES)[number];
 
 const ROLE_META: Record<Role, { label: string; tone: Tone; hint: string }> = {
-  LEARNER: { label: "Apprenant", tone: "cyan", hint: "Accès Academy" },
-  CLIENT: { label: "Client", tone: "blue", hint: "Portail projets & factures" },
-  INSTRUCTOR: { label: "Instructeur", tone: "violet", hint: "Studio de cours" },
-  ADMIN: { label: "Admin", tone: "amber", hint: "Back-office CRM" },
   SUPER_ADMIN: { label: "Super Admin", tone: "red", hint: "Contrôle total" },
+  ADMIN: { label: "Admin", tone: "amber", hint: "Back-office & validations" },
+  RESPONSABLE_COMMERCIAL: { label: "Responsable commercial", tone: "violet", hint: "Pilotage de l'équipe commerciale" },
+  COMMERCIAL: { label: "Commercial", tone: "blue", hint: "Prospection, audits & ventes" },
+  CHEF_PROJET: { label: "Chef de projet", tone: "cyan", hint: "Suivi de production des projets" },
+  ACADEMIC_MANAGER: { label: "Responsable pédagogique", tone: "violet", hint: "Gestion Academy" },
+  INSTRUCTOR: { label: "Formateur", tone: "violet", hint: "Studio de cours" },
+  MENTOR: { label: "Mentor", tone: "cyan", hint: "Accompagnement apprenants" },
+  REVIEWER: { label: "Évaluateur", tone: "blue", hint: "Revue des projets Academy" },
+  COMPANY: { label: "Entreprise", tone: "slate", hint: "Espace recruteur" },
+  CLIENT: { label: "Client", tone: "blue", hint: "Portail projets & factures" },
+  LEARNER: { label: "Apprenant", tone: "cyan", hint: "Accès Academy" },
 };
 
 /* Poids de tri des rôles pour un affichage cohérent (plus élevé d'abord). */
 const ROLE_WEIGHT: Record<string, number> = {
   SUPER_ADMIN: 0,
   ADMIN: 1,
-  INSTRUCTOR: 2,
-  CLIENT: 3,
-  LEARNER: 4,
+  RESPONSABLE_COMMERCIAL: 2,
+  COMMERCIAL: 3,
+  CHEF_PROJET: 4,
+  ACADEMIC_MANAGER: 5,
+  INSTRUCTOR: 6,
+  MENTOR: 7,
+  REVIEWER: 8,
+  COMPANY: 9,
+  CLIENT: 10,
+  LEARNER: 11,
 };
 
 /* Mappe un ton de statut vers un hex pour la pastille des Select. */
@@ -110,9 +132,11 @@ const item = {
 export function UsersTable({
   users,
   currentUserId,
+  currentUserIsSuperAdmin = false,
 }: {
   users: AdminUser[];
   currentUserId?: string | null;
+  currentUserIsSuperAdmin?: boolean;
 }) {
   const [query, setQuery] = React.useState("");
   // Filtres par rôle et par statut de compte (valeur "ALL" = pas de filtre).
@@ -124,6 +148,10 @@ export function UsersTable({
   const [deleting, setDeleting] = React.useState<AdminUser | null>(null);
   // Erreur d'action éphémère (ex. rôle SUPER_ADMIN refusé, activation).
   const [error, setError] = React.useState<string | null>(null);
+  // Modale de création d'un compte.
+  const [creating, setCreating] = React.useState(false);
+
+  const canCreateSuper = currentUserIsSuperAdmin;
 
   const filtered = React.useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -172,16 +200,40 @@ export function UsersTable({
 
   if (users.length === 0) {
     return (
-      <EmptyState
-        icon={<Users2 className="h-6 w-6" />}
-        title="Aucun utilisateur"
-        description="Les comptes créés depuis l'inscription publique ou l'espace admin apparaîtront ici."
-      />
+      <>
+        <EmptyState
+          icon={<Users2 className="h-6 w-6" />}
+          title="Aucun utilisateur"
+          description="Les comptes créés depuis l'inscription publique ou l'espace admin apparaîtront ici."
+        >
+          <button
+            type="button"
+            onClick={() => setCreating(true)}
+            className="inline-flex items-center gap-2 rounded-lg bg-gradient-da px-4 py-2.5 text-sm font-semibold text-white shadow-brand transition-all hover:shadow-lg"
+          >
+            <UserPlus className="h-4 w-4" /> Nouvel utilisateur
+          </button>
+        </EmptyState>
+        <AnimatePresence>
+          {creating && <CreateUserModal canCreateSuper={canCreateSuper} onClose={() => setCreating(false)} />}
+        </AnimatePresence>
+      </>
     );
   }
 
   return (
     <div>
+      {/* En-tête : action de création */}
+      <div className="mb-4 flex justify-end">
+        <button
+          type="button"
+          onClick={() => setCreating(true)}
+          className="inline-flex items-center gap-2 rounded-lg bg-gradient-da px-4 py-2.5 text-sm font-semibold text-white shadow-brand transition-all hover:shadow-lg"
+        >
+          <UserPlus className="h-4 w-4" /> Nouvel utilisateur
+        </button>
+      </div>
+
       {/* Bandeau d'erreur global */}
       <AnimatePresence>
         {error && (
@@ -354,6 +406,11 @@ export function UsersTable({
             onClose={() => setDeleting(null)}
           />
         )}
+      </AnimatePresence>
+
+      {/* Modal de création d'un compte */}
+      <AnimatePresence>
+        {creating && <CreateUserModal canCreateSuper={canCreateSuper} onClose={() => setCreating(false)} />}
       </AnimatePresence>
     </div>
   );
@@ -1081,6 +1138,209 @@ function DeleteConfirm({
               <>
                 <Trash2 className="h-4 w-4" />
                 Supprimer le compte
+              </>
+            )}
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+/* ───────────────────────── Modal de création d'un compte ────────────────── */
+
+function CreateUserModal({
+  canCreateSuper,
+  onClose,
+}: {
+  canCreateSuper: boolean;
+  onClose: () => void;
+}) {
+  const router = useRouter();
+  const [pending, startTransition] = React.useTransition();
+  const [name, setName] = React.useState("");
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [selected, setSelected] = React.useState<Set<string>>(() => new Set(["COMMERCIAL"]));
+  const [error, setError] = React.useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = React.useState<Record<string, string>>({});
+
+  React.useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && !pending) onClose();
+    };
+    document.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [onClose, pending]);
+
+  const roleOptions = ALL_ROLES.filter((r) => canCreateSuper || r !== "SUPER_ADMIN");
+
+  const toggleRole = (role: Role) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(role)) next.delete(role);
+      else next.add(role);
+      return next;
+    });
+  };
+
+  const generatePassword = () => {
+    const part = Math.random().toString(36).slice(2, 8);
+    setPassword("Da" + part + Math.floor(10 + Math.random() * 89) + "!");
+  };
+
+  const submit = () => {
+    setError(null);
+    setFieldErrors({});
+    startTransition(async () => {
+      const res = await createUser({ name, email, password, roles: [...selected] });
+      if (res.ok) {
+        router.refresh();
+        onClose();
+      } else {
+        setError(res.error);
+        if ("fieldErrors" in res && res.fieldErrors) setFieldErrors(res.fieldErrors);
+      }
+    });
+  };
+
+  const disabled = pending || name.trim().length < 2 || !email.trim() || password.length < 8 || selected.size === 0;
+  const inputCls =
+    "w-full rounded-xl border border-navy/[0.12] bg-surface-primary px-3.5 py-2.5 text-sm text-navy outline-none focus:border-brand-blue-vif focus:ring-2 focus:ring-brand-blue-vif/20";
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-end justify-center bg-navy/50 p-0 backdrop-blur-sm sm:items-center sm:p-4"
+      onClick={() => !pending && onClose()}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Créer un utilisateur"
+    >
+      <motion.div
+        initial={{ opacity: 0, y: 24, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 24, scale: 0.98 }}
+        transition={{ type: "spring", stiffness: 320, damping: 30 }}
+        onClick={(e) => e.stopPropagation()}
+        className="flex max-h-[92dvh] w-full max-w-lg flex-col overflow-hidden rounded-t-2xl bg-surface-primary shadow-xl sm:rounded-2xl"
+      >
+        <div className="relative flex items-center gap-3 bg-gradient-da px-5 py-4 text-white">
+          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white/15">
+            <UserPlus className="h-6 w-6" />
+          </span>
+          <div className="min-w-0">
+            <h2 className="font-display text-base font-bold">Nouvel utilisateur</h2>
+            <p className="truncate text-xs text-white/80">Le compte est actif immédiatement.</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => !pending && onClose()}
+            aria-label="Fermer"
+            className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-lg text-white/80 transition-colors hover:bg-white/15 hover:text-white"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
+          <div className="flex flex-col gap-4">
+            <label className="block">
+              <span className="mb-1 block text-sm font-semibold text-navy">Nom complet</span>
+              <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Ex. Awa Traoré" className={inputCls} />
+              {fieldErrors.name && <span className="mt-1 block text-xs font-medium text-error">{fieldErrors.name}</span>}
+            </label>
+
+            <label className="block">
+              <span className="mb-1 block text-sm font-semibold text-navy">Email</span>
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="prenom.nom@digitalaccess.ci" className={inputCls} />
+              {fieldErrors.email && <span className="mt-1 block text-xs font-medium text-error">{fieldErrors.email}</span>}
+            </label>
+
+            <label className="block">
+              <span className="mb-1 flex items-center justify-between text-sm font-semibold text-navy">
+                Mot de passe temporaire
+                <button type="button" onClick={generatePassword} className="text-xs font-semibold text-brand-blue-royal hover:text-brand-violet">
+                  Générer
+                </button>
+              </span>
+              <input type="text" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="8+ caractères, 1 majuscule, 1 chiffre" className={cn(inputCls, "font-mono")} />
+              {fieldErrors.password ? (
+                <span className="mt-1 block text-xs font-medium text-error">{fieldErrors.password}</span>
+              ) : (
+                <span className="mt-1 block text-xs text-text-muted">À communiquer à l&apos;utilisateur ; il pourra le changer ensuite.</span>
+              )}
+            </label>
+
+            <div>
+              <span className="mb-1.5 block text-sm font-semibold text-navy">Rôles</span>
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                {roleOptions.map((role) => {
+                  const meta = ROLE_META[role];
+                  const checked = selected.has(role);
+                  return (
+                    <button
+                      key={role}
+                      type="button"
+                      onClick={() => toggleRole(role)}
+                      aria-pressed={checked}
+                      className={cn(
+                        "flex items-center gap-2.5 rounded-xl border px-3 py-2.5 text-left transition-all",
+                        checked ? "border-brand-violet/40 bg-brand-violet/[0.06]" : "border-navy/[0.09] hover:border-navy/20 hover:bg-surface-secondary/60",
+                      )}
+                    >
+                      <span className={cn("grid h-5 w-5 shrink-0 place-items-center rounded-md border", checked ? "border-transparent bg-gradient-da text-white" : "border-navy/20")}>
+                        {checked && <Check className="h-3.5 w-3.5" />}
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block truncate text-sm font-semibold text-navy">{meta.label}</span>
+                        <span className="block truncate text-[11px] text-text-secondary">{meta.hint}</span>
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+              {fieldErrors.roles && <span className="mt-1 block text-xs font-medium text-error">{fieldErrors.roles}</span>}
+            </div>
+
+            {error && (
+              <p className="flex items-start gap-2 rounded-lg border border-error/20 bg-error/5 px-3 py-2 text-xs font-medium text-error">
+                <ShieldAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                {error}
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="flex items-center justify-end gap-3 border-t border-navy/[0.07] bg-surface-secondary/40 px-5 py-4">
+          <button
+            type="button"
+            onClick={() => !pending && onClose()}
+            disabled={pending}
+            className="rounded-lg px-4 py-2 text-sm font-semibold text-text-secondary transition-colors hover:bg-navy/[0.05] hover:text-navy disabled:opacity-50"
+          >
+            Annuler
+          </button>
+          <button
+            type="button"
+            onClick={submit}
+            disabled={disabled}
+            className="inline-flex items-center gap-2 rounded-lg bg-gradient-da px-4 py-2 text-sm font-semibold text-white shadow-brand transition-all hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
+          >
+            {pending ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" /> Création…
+              </>
+            ) : (
+              <>
+                <UserPlus className="h-4 w-4" /> Créer le compte
               </>
             )}
           </button>

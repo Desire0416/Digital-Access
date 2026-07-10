@@ -1,19 +1,19 @@
 import type { Metadata } from "next";
 import { Building2, ClipboardCheck, Handshake, ReceiptText, Trophy, Percent } from "lucide-react";
 import { formatFCFA } from "@da/ui";
-import { currentUser } from "@da/auth/guards";
 import { AdminPageHeader, StatCard, EmptyState, toneColor } from "@/components/admin/ui";
 import { BarChart, FunnelBars, DonutChart } from "@/components/admin/Charts";
 import { getCommercialDashboard } from "@/lib/crm-stats-queries";
 import { PROSPECT_STATUS_TONE } from "@/lib/crm-types";
-import { isAdmin } from "@/lib/permissions";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Rapports commerciaux" };
 
 export default async function RapportsPage() {
-  const [user, dash] = await Promise.all([currentUser(), getCommercialDashboard()]);
-  const admin = isAdmin(user);
+  const dash = await getCommercialDashboard();
+  // Vue « équipe » = accès global (ADMIN ou RESPONSABLE_COMMERCIAL via scopeAll) :
+  // ces rôles voient les chiffres de toute l'équipe + la performance par commercial.
+  const teamView = dash.scopeAll;
   const { kpis } = dash;
 
   const donut = dash.prospectsByStatus.slice(0, 6).map((s) => ({
@@ -24,7 +24,7 @@ export default async function RapportsPage() {
     <div>
       <AdminPageHeader
         title="Rapports commerciaux"
-        description={admin ? "Performance du pipeline de toute l'équipe." : "Vos indicateurs commerciaux."}
+        description={teamView ? "Performance du pipeline de toute l'équipe." : "Vos indicateurs commerciaux."}
       />
 
       {/* KPI */}
@@ -65,8 +65,8 @@ export default async function RapportsPage() {
         <BarChart data={dash.monthly.map((m) => ({ label: m.label, value: m.wonValue }))} format="fcfa" />
       </div>
 
-      {/* Performance par commercial (admin) */}
-      {admin && (
+      {/* Performance par commercial (accès équipe : admin ou responsable commercial) */}
+      {teamView && (
         <div className="mt-6 rounded-2xl border border-navy/[0.07] bg-surface-primary p-6">
           <h2 className="mb-4 font-display text-base font-bold text-navy">Performance par commercial</h2>
           {dash.byCommercial.length > 0 ? (

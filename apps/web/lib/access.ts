@@ -70,11 +70,16 @@ export interface AccessScope {
   scopeAll: boolean;
 }
 
-/** Construit le scope de lecture pour un utilisateur staff. */
+/** Construit le scope de lecture pour un utilisateur staff.
+ *  `scopeAll` = accès à toute l'équipe : admin OU rôle avec visibilité globale
+ *  (prospect:read_all, ex. RESPONSABLE_COMMERCIAL). Les autres restent limités
+ *  à leurs propres dossiers. Les MUTATIONS restent gardées par l'ownership
+ *  (isAdmin) dans chaque action, sauf la réattribution (prospect:assign). */
 export async function staffScope(): Promise<AccessScope> {
   const user = await requireStaff();
   const admin = isAdmin(user);
-  return { user, isAdmin: admin, scopeAll: admin };
+  const scopeAll = admin || can(user, "prospect:read_all");
+  return { user, isAdmin: admin, scopeAll };
 }
 
 export { can, isStaff, isAdmin, hasRole };

@@ -31,6 +31,7 @@ enum UserRole {
   // Pôle Solutions — CRM commercial (ajoutés en fin de liste : append Postgres sûr)
   COMMERCIAL
   CHEF_PROJET
+  RESPONSABLE_COMMERCIAL
 }
 
 enum TokenType {

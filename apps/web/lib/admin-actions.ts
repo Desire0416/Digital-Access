@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import bcrypt from "bcryptjs";
 import { prisma } from "@da/db/client";
 import { sendInvoiceEmail } from "@da/email";
 import { requireAdmin } from "./admin-queries";
@@ -690,7 +691,62 @@ export async function deletePortfolioItem(input: { id: string }): Promise<Result
 
 /* ────────────────────────────── Utilisateurs ───────────────────────────── */
 
-const ROLES = ["LEARNER", "CLIENT", "INSTRUCTOR", "ADMIN", "SUPER_ADMIN"] as const;
+const ROLES = [
+  "LEARNER", "CLIENT", "INSTRUCTOR", "MENTOR", "REVIEWER", "COMPANY",
+  "ACADEMIC_MANAGER", "COMMERCIAL", "RESPONSABLE_COMMERCIAL", "CHEF_PROJET",
+  "ADMIN", "SUPER_ADMIN",
+] as const;
+
+/**
+ * Création d'un compte par un administrateur. Fixe un mot de passe temporaire
+ * (bcrypt) que l'admin communique à l'utilisateur ; le compte est actif et son
+ * email marqué vérifié (création interne de confiance). Un admin ne peut pas
+ * créer de SUPER_ADMIN (réservé aux super-administrateurs).
+ */
+export async function createUser(input: {
+  name?: unknown; email?: unknown; roles?: unknown; password?: unknown;
+}): Promise<{ ok: true; userId: string } | { ok: false; error: string; fieldErrors?: Record<string, string> }> {
+  const admin = await requireAdmin();
+  const parsed = z.object({
+    name: z.string().trim().min(2, "Nom requis").max(120),
+    email: z.string().trim().toLowerCase().email("Email invalide").max(160),
+    roles: z.array(z.enum(ROLES)).min(1, "Au moins un rôle."),
+    password: z.string().min(8, "8 caractères minimum").max(200)
+      .regex(/[A-Z]/, "Une majuscule requise").regex(/[0-9]/, "Un chiffre requis"),
+  }).safeParse(input);
+  if (!parsed.success) {
+    const fieldErrors: Record<string, string> = {};
+    for (const i of parsed.error.issues) { const k = i.path[0]; if (typeof k === "string" && !fieldErrors[k]) fieldErrors[k] = i.message; }
+    return { ok: false, error: "Veuillez corriger les champs indiqués.", fieldErrors };
+  }
+  const { name, email, roles, password } = parsed.data;
+
+  // Seul un super-administrateur peut créer un compte super-administrateur.
+  if (roles.includes("SUPER_ADMIN") && !admin.roles.includes("SUPER_ADMIN")) {
+    return { ok: false, error: "Seul un super-administrateur peut créer ce rôle.", fieldErrors: { roles: "Rôle non autorisé." } };
+  }
+
+  try {
+    const existing = await prisma.user.findUnique({ where: { email }, select: { id: true, deletedAt: true } });
+    if (existing) {
+      return { ok: false, error: "Un compte existe déjà avec cet email.", fieldErrors: { email: "Email déjà utilisé." } };
+    }
+    const user = await prisma.user.create({
+      data: {
+        name, email,
+        password: await bcrypt.hash(password, 12),
+        roles: roles as never,
+        isActive: true,
+        emailVerified: new Date(),
+      },
+      select: { id: true },
+    });
+    revalidatePath("/admin/utilisateurs");
+    return { ok: true, userId: user.id };
+  } catch {
+    return { ok: false, error: "Impossible de créer le compte." };
+  }
+}
 
 export async function updateUserRoles(input: { id: string; roles: string[] }): Promise<Result> {
   const admin = await requireAdmin();

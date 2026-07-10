@@ -79,7 +79,7 @@ export type Permission =
   | "stats:read_own";
 
 /** Rôles considérés comme « équipe interne » (accès au back-office). */
-export const STAFF_ROLES = ["ADMIN", "SUPER_ADMIN", "COMMERCIAL", "CHEF_PROJET"] as const;
+export const STAFF_ROLES = ["ADMIN", "SUPER_ADMIN", "RESPONSABLE_COMMERCIAL", "COMMERCIAL", "CHEF_PROJET"] as const;
 
 /** Rôles d'administration (accès total au CRM). */
 export const ADMIN_ROLES = ["ADMIN", "SUPER_ADMIN"] as const;
@@ -136,8 +136,32 @@ const CHEF_PROJET_PERMISSIONS: Permission[] = [
   "stats:read_own",
 ];
 
+/**
+ * Responsable commercial : tout ce que fait un commercial, PLUS la visibilité de
+ * toute l'équipe (read_all), la réattribution des dossiers, la validation des
+ * devis et les statistiques globales. Ne valide PAS les audits/conversions
+ * (réservés à l'administration) et ne gère pas les comptes.
+ */
+const RESPONSABLE_COMMERCIAL_PERMISSIONS: Permission[] = [
+  ...COMMERCIAL_PERMISSIONS,
+  "org:read_all",
+  "org:update_all",
+  "prospect:read_all",
+  "prospect:update_all",
+  "prospect:assign",
+  "lead:read_all",
+  "lead:assign",
+  "audit:read_all",
+  "deal:read_all",
+  "deal:update_all",
+  "quote:send",
+  "quote:validate",
+  "stats:read_global",
+];
+
 export const ROLE_PERMISSIONS: Record<string, Permission[]> = {
   COMMERCIAL: COMMERCIAL_PERMISSIONS,
+  RESPONSABLE_COMMERCIAL: RESPONSABLE_COMMERCIAL_PERMISSIONS,
   CHEF_PROJET: CHEF_PROJET_PERMISSIONS,
   // ADMIN / SUPER_ADMIN : gérés par ALL_PERMISSIONS (accès total).
 };
@@ -210,6 +234,7 @@ export function canAny(user: UserLike, ...permissions: Permission[]): boolean {
 export const ROLE_LABEL: Record<string, string> = {
   SUPER_ADMIN: "Super administrateur",
   ADMIN: "Administrateur",
+  RESPONSABLE_COMMERCIAL: "Responsable commercial",
   COMMERCIAL: "Commercial",
   CHEF_PROJET: "Chef de projet",
   CLIENT: "Client",
@@ -225,6 +250,7 @@ export const ROLE_LABEL: Record<string, string> = {
 const ROLE_PRIORITY = [
   "SUPER_ADMIN",
   "ADMIN",
+  "RESPONSABLE_COMMERCIAL",
   "COMMERCIAL",
   "CHEF_PROJET",
   "ACADEMIC_MANAGER",
@@ -255,6 +281,7 @@ export function landingForUser(user: UserLike): string {
   if (!user) return "/auth/login";
   const r = user.roles;
   if (r.includes("SUPER_ADMIN") || r.includes("ADMIN")) return "/admin/dashboard";
+  if (r.includes("RESPONSABLE_COMMERCIAL")) return "/admin/rapports";
   if (r.includes("COMMERCIAL")) return "/admin/commercial";
   if (r.includes("CHEF_PROJET")) return "/admin/mes-projets";
   return "/mon-espace";
