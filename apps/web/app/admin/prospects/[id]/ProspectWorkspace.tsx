@@ -35,6 +35,7 @@ import {
   updateProspectStatus, assignProspect, archiveProspect, updateProspect,
   updateOrganization, createContact, updateContact, deleteContact, logProspectActivity,
 } from "@/lib/crm-actions";
+import { createAudit } from "@/lib/crm-audit-actions";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Fiche prospect à onglets — CRM commercial. En-tête (statut/attribution/
@@ -1129,45 +1130,69 @@ function ActivitiesTab({ prospect }: { prospect: ProspectDetail }) {
 /* ════════════════════════════════ ONGLET AUDITS ════════════════════════════ */
 
 function AuditsTab({ prospect }: { prospect: ProspectDetail }) {
-  if (prospect.audits.length === 0) {
-    return (
-      <EmptyState
-        icon={<FileSearch size={22} />}
-        title="Aucun audit"
-        description="La création d'audits arrive avec le module Audits."
-      />
-    );
-  }
+  const router = useRouter();
+  const [pending, start] = React.useTransition();
+  const [error, setError] = React.useState<string | null>(null);
+
+  const createNew = () => {
+    setError(null);
+    start(async () => {
+      const res = await createAudit({ prospectId: prospect.id, title: `Audit — ${prospect.organization.name}` });
+      if (res.ok) router.push(`/admin/audits/${res.auditId}`);
+      else setError(res.error);
+    });
+  };
+
   return (
-    <StaggerGroup className="space-y-3">
-      {prospect.audits.map((a) => (
-        <StaggerItem key={a.id}>
-          <Card interactive={false} className="p-4 sm:p-5">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-              <div className="min-w-0">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="inline-flex items-center gap-1.5 rounded-md bg-navy/[0.05] px-2 py-0.5 font-mono text-xs font-semibold text-text-secondary">
-                    <FileText size={12} /> {a.reference}
-                  </span>
-                  <span className="text-xs font-medium text-text-muted">v{a.version}</span>
-                </div>
-                <p className="mt-1.5 break-words font-display font-bold text-navy">{a.title}</p>
-                <p className="mt-1 text-xs text-text-muted">
-                  {a.findingCount} constat{a.findingCount > 1 ? "s" : ""}
-                  {a.auditDate ? ` · ${formatDate(a.auditDate)}` : ` · créé le ${formatDate(a.createdAt)}`}
-                </p>
-              </div>
-              <div className="flex shrink-0 flex-wrap items-center gap-2">
-                <StatusPill label={AUDIT_STATUS_LABEL[a.status]} tone={AUDIT_STATUS_TONE[a.status]} />
-                {a.overallSeverity && (
-                  <StatusPill label={AUDIT_SEVERITY_LABEL[a.overallSeverity]} tone={AUDIT_SEVERITY_TONE[a.overallSeverity]} />
-                )}
-              </div>
-            </div>
-          </Card>
-        </StaggerItem>
-      ))}
-    </StaggerGroup>
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-text-secondary">Diagnostics numériques réalisés pour ce prospect.</p>
+        <Button size="sm" onClick={createNew} loading={pending}>
+          <Plus size={16} /> Nouvel audit
+        </Button>
+      </div>
+      {error && <p className="text-sm font-medium text-error">{error}</p>}
+
+      {prospect.audits.length === 0 ? (
+        <EmptyState
+          icon={<FileSearch size={22} />}
+          title="Aucun audit"
+          description="Créez un audit pour diagnostiquer la présence numérique de ce prospect et préparer votre approche commerciale."
+        />
+      ) : (
+        <StaggerGroup className="space-y-3">
+          {prospect.audits.map((a) => (
+            <StaggerItem key={a.id}>
+              <Link href={`/admin/audits/${a.id}`} className="block">
+                <Card className="p-4 sm:p-5">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="inline-flex items-center gap-1.5 rounded-md bg-navy/[0.05] px-2 py-0.5 font-mono text-xs font-semibold text-text-secondary">
+                          <FileText size={12} /> {a.reference}
+                        </span>
+                        <span className="text-xs font-medium text-text-muted">v{a.version}</span>
+                      </div>
+                      <p className="mt-1.5 break-words font-display font-bold text-navy">{a.title}</p>
+                      <p className="mt-1 text-xs text-text-muted">
+                        {a.findingCount} constat{a.findingCount > 1 ? "s" : ""}
+                        {a.auditDate ? ` · ${formatDate(a.auditDate)}` : ` · créé le ${formatDate(a.createdAt)}`}
+                      </p>
+                    </div>
+                    <div className="flex shrink-0 flex-wrap items-center gap-2">
+                      <StatusPill label={AUDIT_STATUS_LABEL[a.status]} tone={AUDIT_STATUS_TONE[a.status]} />
+                      {a.overallSeverity && (
+                        <StatusPill label={AUDIT_SEVERITY_LABEL[a.overallSeverity]} tone={AUDIT_SEVERITY_TONE[a.overallSeverity]} />
+                      )}
+                    </div>
+                  </div>
+                </Card>
+              </Link>
+            </StaggerItem>
+          ))}
+        </StaggerGroup>
+      )}
+    </div>
   );
 }
 

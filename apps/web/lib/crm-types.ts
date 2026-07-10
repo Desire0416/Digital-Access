@@ -348,3 +348,88 @@ export interface CommercialHomeStats {
   pipelineValue: number;
   wonDeals: number;
 }
+
+/* ─── Audits ────────────────────────────────────────────────────────────────── */
+
+/** Statuts d'audit où l'auteur peut encore éditer (avant soumission). */
+export const AUDIT_EDITABLE_STATUSES: AuditStatus[] = ["DRAFT", "IN_PROGRESS", "INTERNAL_REVIEW"];
+
+export interface AuditFindingItem {
+  id: string;
+  title: string;
+  category: AuditCategory;
+  description: string | null;
+  severity: AuditSeverity;
+  businessImpact: string | null;
+  userImpact: string | null;
+  securityImpact: string | null;
+  evidenceText: string | null;
+  evidenceUrl: string | null;
+  affectedPageUrl: string | null;
+  recommendation: string | null;
+  priorityOrder: number;
+  isPublic: boolean;
+}
+
+export interface AuditDocumentItem {
+  id: string;
+  documentType: AuditDocType;
+  fileName: string;
+  fileUrl: string;
+  mimeType: string | null;
+  size: number | null;
+  version: number;
+  visibility: DocVisibility;
+  uploadedByName: string | null;
+  createdAt: string;
+}
+
+export interface AuditContactOption {
+  id: string;
+  fullName: string;
+}
+
+export interface AuditDetail {
+  id: string;
+  reference: string;
+  title: string;
+  auditType: string | null;
+  version: number;
+  status: AuditStatus;
+  overallSeverity: AuditSeverity | null;
+  summary: string | null;
+  methodology: string | null;
+  digitalImportanceStatement: string | null;
+  auditDate: string | null;
+  lastVerifiedAt: string | null;
+  reviewNote: string | null;
+  internalNotes: string | null;
+  validatedAt: string | null;
+  sentAt: string | null;
+  createdAt: string;
+  /** Dérivé du statut : l'auteur peut modifier le contenu. */
+  editable: boolean;
+  organization: { id: string; name: string };
+  prospectId: string | null;
+  author: { id: string; name: string } | null;
+  validatedByName: string | null;
+  sentByName: string | null;
+  recipientContact: { id: string; fullName: string } | null;
+  contacts: AuditContactOption[];
+  findings: AuditFindingItem[];
+  documents: AuditDocumentItem[];
+}
+
+export interface AuditListRow {
+  id: string;
+  reference: string;
+  title: string;
+  status: AuditStatus;
+  overallSeverity: AuditSeverity | null;
+  findingCount: number;
+  organizationName: string;
+  prospectId: string | null;
+  authorName: string | null;
+  auditDate: string | null;
+  updatedAt: string;
+}

@@ -8,6 +8,7 @@ import {
   LayoutDashboard,
   Gauge,
   Building2,
+  FileSearch,
   Target,
   FolderKanban,
   FileText,
@@ -41,6 +42,8 @@ interface NavGroup {
 const adminOnly = (roles: string[]) => roleIsAdmin({ roles });
 const commercialView = (roles: string[]) =>
   can({ roles }, "prospect:read_assigned") || can({ roles }, "prospect:read_all");
+const auditView = (roles: string[]) =>
+  can({ roles }, "audit:read_assigned") || can({ roles }, "audit:read_all");
 const staffAll = () => true;
 
 const NAV: NavGroup[] = [
@@ -54,6 +57,7 @@ const NAV: NavGroup[] = [
     section: "Commercial",
     items: [
       { label: "Prospects", href: "/admin/prospects", icon: Building2, visible: commercialView },
+      { label: "Audits", href: "/admin/audits", icon: FileSearch, visible: auditView },
     ],
   },
   {
