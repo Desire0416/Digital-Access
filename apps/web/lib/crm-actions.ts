@@ -459,9 +459,16 @@ export async function deleteContact(input: { id?: unknown; organizationId?: unkn
   if (!can(me, "contact:manage")) return { ok: false, error: "Permission insuffisante." };
   const parsed = z.object({ id: z.string().min(1), organizationId: z.string().min(1) }).safeParse(input);
   if (!parsed.success) return { ok: false, error: "Données invalides." };
-  if (!(await canWriteOrg(me, parsed.data.organizationId))) return { ok: false, error: "Contact introuvable." };
+  // Le contact DOIT appartenir à l'organisation sur laquelle l'appelant a le droit
+  // d'écrire (empêche un IDOR : supprimer par id un contact d'une autre org).
+  const existing = await prisma.contact.findFirst({
+    where: { id: parsed.data.id, organizationId: parsed.data.organizationId, deletedAt: null },
+    select: { id: true },
+  });
+  if (!existing || !(await canWriteOrg(me, parsed.data.organizationId))) return { ok: false, error: "Contact introuvable." };
   try {
-    await prisma.contact.update({ where: { id: parsed.data.id }, data: { deletedAt: new Date() } });
+    // Écriture bornée à l'organisation (defense in depth).
+    await prisma.contact.updateMany({ where: { id: parsed.data.id, organizationId: parsed.data.organizationId }, data: { deletedAt: new Date() } });
     await logAction({ actor: me, action: "contact.delete", entity: "Contact", entityId: parsed.data.id });
     revalidateProspect();
     return { ok: true };
