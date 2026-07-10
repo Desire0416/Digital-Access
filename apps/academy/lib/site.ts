@@ -71,7 +71,7 @@ export const catalogueMenu = {
 /** Liens de navigation du header (hors méga-menu Catalogue). */
 export const mainNav: NavItem[] = [
   { label: "Accueil", href: "/" },
-  { label: "Formation certifiante", href: "/certifications" },
+  { label: "Formation certifiante", href: "/short-courses" },
 ];
 
 /** Ancien alias conservé pour compat (plan du site / anciens imports). */

@@ -160,7 +160,7 @@ export async function setCareerPathStatus(id: string, status: string): Promise<A
   }
 }
 
-export async function updateShortCourse(id: string, input: { title?: unknown; shortDescription?: unknown; schoolId?: unknown; level?: unknown; price?: unknown; duration?: unknown; courseType?: unknown; featured?: unknown }): Promise<AdminResult> {
+export async function updateShortCourse(id: string, input: { title?: unknown; shortDescription?: unknown; schoolId?: unknown; level?: unknown; price?: unknown; duration?: unknown; courseType?: unknown; coverImage?: unknown; featured?: unknown }): Promise<AdminResult> {
   const me = await requireAdminUser();
   if (!me) return { ok: false, error: "Accès réservé aux administrateurs." };
   const title = str(input.title, 160);
@@ -177,6 +177,7 @@ export async function updateShortCourse(id: string, input: { title?: unknown; sh
         price: Math.max(0, Math.round(Number(input.price) || 0)),
         duration: input.duration ? str(input.duration, 60) : null,
         courseType: input.courseType ? str(input.courseType, 60) : null,
+        coverImage: input.coverImage ? str(input.coverImage, 500) : null,
         featured: Boolean(input.featured),
       },
     });

@@ -80,8 +80,13 @@ export default async function HomePage() {
 
   return (
     <>
+      {/* ── Carrousel promotionnel (en tête, façon Coursera) ── */}
+      <Container className="pt-6 sm:pt-8">
+        <PromoCarousel />
+      </Container>
+
       {/* ── Hero pleine largeur (photo + superposition) ── */}
-      <section className="relative isolate overflow-hidden bg-navy text-white">
+      <section className="relative isolate mt-10 overflow-hidden bg-navy text-white">
         <div aria-hidden className="absolute inset-0">
           <div
             className="absolute inset-0 bg-cover bg-center"
@@ -148,11 +153,6 @@ export default async function HomePage() {
           )}
         </Container>
       </section>
-
-      {/* ── Carrousel promotionnel ── */}
-      <Container className="pt-10">
-        <PromoCarousel />
-      </Container>
 
       {/* ── Nouveautés & populaires (onglets) ── */}
       {trendingTabs.length > 0 && (

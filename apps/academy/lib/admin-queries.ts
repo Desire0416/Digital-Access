@@ -173,7 +173,7 @@ export async function getShortCourseForEdit(id: string): Promise<AdminShortCours
   try {
     const c = await prisma.shortCourse.findUnique({
       where: { id },
-      select: { id: true, title: true, shortDescription: true, schoolId: true, level: true, price: true, duration: true, courseType: true, featured: true, status: true },
+      select: { id: true, title: true, shortDescription: true, schoolId: true, level: true, price: true, duration: true, courseType: true, coverImage: true, featured: true, status: true },
     });
     return c ?? null;
   } catch {

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Check, Save, Star } from "lucide-react";
 import { Button, Input, Textarea, Field, cn } from "@da/ui";
 import { Select, type SelectOption } from "@/components/Select";
+import { ImageUpload } from "@/components/ImageUpload";
 import { AdminCard } from "@/components/admin/ui";
 import { LEVEL_LABEL, type Level } from "@/lib/types";
 import { updateShortCourse } from "@/lib/admin-actions";
@@ -37,6 +38,7 @@ export function ShortCourseEditForm({
   const [price, setPrice] = React.useState(String(course.price));
   const [duration, setDuration] = React.useState(course.duration ?? "");
   const [courseType, setCourseType] = React.useState(course.courseType ?? "");
+  const [coverImage, setCoverImage] = React.useState<string | null>(course.coverImage ?? null);
   const [featured, setFeatured] = React.useState(course.featured);
 
   const schoolOptions: SelectOption[] = schools.map((s) => ({ value: s.id, label: s.name }));
@@ -64,6 +66,7 @@ export function ShortCourseEditForm({
         price: Number(price) || 0,
         duration,
         courseType: courseType.trim() || undefined,
+        coverImage: coverImage || undefined,
         featured,
       });
       if (!res.ok) {
@@ -113,6 +116,19 @@ export function ShortCourseEditForm({
               />
             </Field>
           </div>
+        </AdminCard>
+
+        <AdminCard title="Image de couverture">
+          <ImageUpload
+            value={coverImage}
+            onChange={(v) => {
+              dirty();
+              setCoverImage(v);
+            }}
+            folder="short-courses"
+            aspect="16 / 10"
+            hint="PNG, JPG ou WebP — 5 Mo max. Affichée sur la carte de la formation (idéalement 1600 × 1000)."
+          />
         </AdminCard>
       </div>
 

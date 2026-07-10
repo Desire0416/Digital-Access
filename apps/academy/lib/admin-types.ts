@@ -96,6 +96,7 @@ export interface AdminShortCourseEdit {
   price: number;
   duration: string | null;
   courseType: string | null;
+  coverImage: string | null;
   featured: boolean;
   status: string;
 }
