@@ -8,6 +8,7 @@ import {
   LayoutGrid,
   Table2,
   Plus,
+  FileUp,
   RotateCcw,
   Search,
   CalendarClock,
@@ -272,6 +273,13 @@ export function ProspectsBoard({
             );
           })}
         </div>
+
+        <Link
+          href="/admin/prospects/importer"
+          className={buttonClasses({ variant: "outline", className: "gap-2" })}
+        >
+          <FileUp size={16} /> Importer (Word/PDF)
+        </Link>
 
         <Link
           href="/admin/prospects/nouveau"
