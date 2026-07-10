@@ -128,7 +128,20 @@ export async function extractProspectFromText(text: string): Promise<ExtractedPr
       ],
     });
   } catch (e) {
-    throw new ImportError("AI_FAILED", (e as Error).message);
+    // Message FR explicite selon la cause côté Anthropic (facturation, clé, quota…).
+    const err = e as { status?: number; message?: string };
+    const msg = String(err?.message ?? "");
+    let fr = "L'analyse par IA a échoué. Réessayez dans un instant.";
+    if (err?.status === 401 || /authentication|invalid x-api-key|invalid api key/i.test(msg)) {
+      fr = "Clé API Anthropic invalide. Vérifiez ANTHROPIC_API_KEY.";
+    } else if (/credit balance is too low|insufficient|billing|quota/i.test(msg)) {
+      fr = "Crédit Anthropic insuffisant : ajoutez des crédits sur console.anthropic.com (Plans & Billing), puis réessayez.";
+    } else if (err?.status === 429 || /rate.?limit|overloaded/i.test(msg)) {
+      fr = "Service IA momentanément saturé. Réessayez dans quelques instants.";
+    } else if (err?.status === 404 || /model/i.test(msg)) {
+      fr = "Modèle IA introuvable. Vérifiez la variable ANTHROPIC_MODEL.";
+    }
+    throw new ImportError("AI_FAILED", fr);
   }
 
   const toolUse = resp.content.find((c): c is Anthropic.ToolUseBlock => c.type === "tool_use");

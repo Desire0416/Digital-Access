@@ -93,7 +93,9 @@ export async function POST(req: NextRequest) {
   } catch (e) {
     if (e instanceof ImportError) {
       const status = e.code === "AI_KEY_MISSING" ? 503 : 422;
-      return NextResponse.json({ error: IMPORT_ERROR_MESSAGE[e.code], code: e.code }, { status });
+      // AI_FAILED porte un message FR précis (facturation, clé, quota…) ; les autres codes ont un message fixe.
+      const error = e.code === "AI_FAILED" ? e.message : IMPORT_ERROR_MESSAGE[e.code];
+      return NextResponse.json({ error, code: e.code }, { status });
     }
     console.error("[import-prospect] error:", e);
     return NextResponse.json({ error: "Échec de l'analyse. Réessayez." }, { status: 500 });
