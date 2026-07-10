@@ -12,6 +12,8 @@ import {
   ListTodo,
   Handshake,
   Rocket,
+  LineChart,
+  ClipboardList,
   Target,
   FolderKanban,
   FileText,
@@ -52,6 +54,7 @@ const auditView = (roles: string[]) =>
 const taskView = (roles: string[]) => can({ roles }, "task:create");
 const dealView = (roles: string[]) =>
   can({ roles }, "deal:read_assigned") || can({ roles }, "deal:read_all");
+const pmView = (roles: string[]) => can({ roles }, "project:manage");
 const staffAll = () => true;
 
 const NAV: NavGroup[] = [
@@ -59,6 +62,7 @@ const NAV: NavGroup[] = [
     items: [
       { label: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard, visible: adminOnly },
       { label: "Espace commercial", href: "/admin/commercial", icon: Gauge, visible: staffAll },
+      { label: "Mes projets", href: "/admin/mes-projets", icon: ClipboardList, visible: pmView },
     ],
   },
   {
@@ -68,6 +72,7 @@ const NAV: NavGroup[] = [
       { label: "Audits", href: "/admin/audits", icon: FileSearch, visible: auditView },
       { label: "Opportunités", href: "/admin/opportunites", icon: Handshake, visible: dealView },
       { label: "Conversions", href: "/admin/conversions", icon: Rocket, visible: adminOnly },
+      { label: "Rapports", href: "/admin/rapports", icon: LineChart, visible: commercialView },
       { label: "Tâches", href: "/admin/tasks", icon: ListTodo, visible: taskView },
     ],
   },

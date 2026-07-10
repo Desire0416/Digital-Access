@@ -582,6 +582,63 @@ export interface ConversionRequestRow {
   requestedAt: string | null;
 }
 
+/* ─── Tableaux de bord & rapports ───────────────────────────────────────────── */
+
+export interface DashKPIs {
+  prospects: number;
+  auditsSent: number;
+  openDeals: number;
+  pipelineValue: number;
+  weightedValue: number;
+  quotesSent: number;
+  won: number;
+  wonValue: number;
+  lost: number;
+  conversionRate: number; // %
+}
+export interface DashFunnelItem { stage: DealStage; label: string; count: number; value: number }
+export interface DashStatusItem { status: ProspectStatus; label: string; count: number }
+export interface DashMonthItem { label: string; wonCount: number; wonValue: number }
+export interface DashCommercialRow {
+  id: string;
+  name: string;
+  prospects: number;
+  openDeals: number;
+  won: number;
+  wonValue: number;
+  conversionRate: number;
+}
+export interface CommercialDashboard {
+  scopeAll: boolean;
+  kpis: DashKPIs;
+  funnel: DashFunnelItem[];
+  prospectsByStatus: DashStatusItem[];
+  monthly: DashMonthItem[];
+  byCommercial: DashCommercialRow[];
+}
+
+export interface PmProjectRow {
+  id: string;
+  title: string;
+  slug: string;
+  status: string;
+  clientName: string;
+  progress: number; // % étapes terminées
+  totalStages: number;
+  completedStages: number;
+  endDate: string | null;
+  isOverdue: boolean;
+  openTickets: number;
+}
+export interface ChefProjetDashboard {
+  total: number;
+  inProgress: number;
+  delivered: number;
+  overdue: number;
+  openTickets: number;
+  projects: PmProjectRow[];
+}
+
 export interface QuoteDetail {
   id: string;
   number: string;
