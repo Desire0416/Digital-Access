@@ -10,6 +10,7 @@ import {
   Building2,
   FileSearch,
   ListTodo,
+  Handshake,
   Target,
   FolderKanban,
   FileText,
@@ -48,6 +49,8 @@ const commercialView = (roles: string[]) =>
 const auditView = (roles: string[]) =>
   can({ roles }, "audit:read_assigned") || can({ roles }, "audit:read_all");
 const taskView = (roles: string[]) => can({ roles }, "task:create");
+const dealView = (roles: string[]) =>
+  can({ roles }, "deal:read_assigned") || can({ roles }, "deal:read_all");
 const staffAll = () => true;
 
 const NAV: NavGroup[] = [
@@ -62,6 +65,7 @@ const NAV: NavGroup[] = [
     items: [
       { label: "Prospects", href: "/admin/prospects", icon: Building2, visible: commercialView },
       { label: "Audits", href: "/admin/audits", icon: FileSearch, visible: auditView },
+      { label: "Opportunités", href: "/admin/opportunites", icon: Handshake, visible: dealView },
       { label: "Tâches", href: "/admin/tasks", icon: ListTodo, visible: taskView },
     ],
   },

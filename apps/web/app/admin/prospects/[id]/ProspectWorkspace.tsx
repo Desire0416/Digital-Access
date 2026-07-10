@@ -37,6 +37,7 @@ import {
 } from "@/lib/crm-actions";
 import { createAudit } from "@/lib/crm-audit-actions";
 import { completeTask } from "@/lib/crm-task-actions";
+import { createDeal } from "@/lib/crm-deal-actions";
 import { TaskFormModal } from "@/components/admin/TaskFormModal";
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -1280,40 +1281,62 @@ function TasksTab({ prospect, assignable, canAssign }: { prospect: ProspectDetai
 /* ═════════════════════════════ ONGLET OPPORTUNITÉS ═════════════════════════ */
 
 function DealsTab({ prospect }: { prospect: ProspectDetail }) {
-  if (prospect.deals.length === 0) {
-    return (
-      <EmptyState
-        icon={<Handshake size={22} />}
-        title="Aucune opportunité"
-        description="Convertissez ce prospect en opportunité depuis le module Opportunités."
-      />
-    );
-  }
+  const router = useRouter();
+  const [pending, start] = React.useTransition();
+  const [error, setError] = React.useState<string | null>(null);
+
+  const createNew = () => {
+    setError(null);
+    start(async () => {
+      const res = await createDeal({ prospectId: prospect.id, title: `Opportunité — ${prospect.organization.name}` });
+      if (res.ok) router.push(`/admin/opportunites/${res.dealId}`);
+      else setError(res.error);
+    });
+  };
+
   return (
-    <StaggerGroup className="space-y-3">
-      {prospect.deals.map((d) => (
-        <StaggerItem key={d.id}>
-          <Card interactive={false} className="p-4 sm:p-5">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-              <div className="min-w-0">
-                <p className="break-words font-display font-bold text-navy">{d.title}</p>
-                <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-text-muted">
-                  <span className="inline-flex items-center gap-1">
-                    <TrendingUp size={12} /> {d.estimatedAmount != null ? formatFCFA(d.estimatedAmount) : "Montant à définir"}
-                  </span>
-                  {d.probability != null && <span>{d.probability}% de probabilité</span>}
-                  {d.expectedCloseDate && (
-                    <span className="inline-flex items-center gap-1"><Calendar size={12} /> {formatDate(d.expectedCloseDate)}</span>
-                  )}
-                </p>
-              </div>
-              <div className="shrink-0">
-                <StatusPill label={DEAL_STAGE_LABEL[d.stage]} tone={DEAL_STAGE_TONE[d.stage]} />
-              </div>
-            </div>
-          </Card>
-        </StaggerItem>
-      ))}
-    </StaggerGroup>
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-text-secondary">Opportunités commerciales ouvertes pour ce prospect.</p>
+        <Button size="sm" onClick={createNew} loading={pending}><Plus size={16} /> Créer une opportunité</Button>
+      </div>
+      {error && <p className="text-sm font-medium text-error">{error}</p>}
+
+      {prospect.deals.length === 0 ? (
+        <EmptyState
+          icon={<Handshake size={22} />}
+          title="Aucune opportunité"
+          description="Transformez ce prospect qualifié en opportunité commerciale pour lancer devis et négociation."
+        />
+      ) : (
+        <StaggerGroup className="space-y-3">
+          {prospect.deals.map((d) => (
+            <StaggerItem key={d.id}>
+              <Link href={`/admin/opportunites/${d.id}`} className="block">
+                <Card className="p-4 sm:p-5">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="min-w-0">
+                      <p className="break-words font-display font-bold text-navy">{d.title}</p>
+                      <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-text-muted">
+                        <span className="inline-flex items-center gap-1">
+                          <TrendingUp size={12} /> {d.estimatedAmount != null ? formatFCFA(d.estimatedAmount) : "Montant à définir"}
+                        </span>
+                        {d.probability != null && <span>{d.probability}% de probabilité</span>}
+                        {d.expectedCloseDate && (
+                          <span className="inline-flex items-center gap-1"><Calendar size={12} /> {formatDate(d.expectedCloseDate)}</span>
+                        )}
+                      </p>
+                    </div>
+                    <div className="shrink-0">
+                      <StatusPill label={DEAL_STAGE_LABEL[d.stage]} tone={DEAL_STAGE_TONE[d.stage]} />
+                    </div>
+                  </div>
+                </Card>
+              </Link>
+            </StaggerItem>
+          ))}
+        </StaggerGroup>
+      )}
+    </div>
   );
 }

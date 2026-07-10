@@ -490,3 +490,106 @@ export interface FollowUpAlert {
   description: string;
   href: string;
 }
+
+/* ─── Opportunités commerciales (Deal) & Devis ──────────────────────────────── */
+
+export interface DealCard {
+  id: string;
+  title: string;
+  stage: DealStage;
+  estimatedAmount: number | null;
+  probability: number | null;
+  expectedCloseDate: string | null;
+  assignedTo: { id: string; name: string } | null;
+  organizationId: string;
+  organizationName: string;
+  prospectId: string | null;
+  recommendedOffer: string | null;
+  quoteCount: number;
+  updatedAt: string;
+}
+
+export interface DealActivityItem {
+  id: string;
+  type: ActivityType;
+  subject: string | null;
+  notes: string | null;
+  activityDate: string;
+  authorName: string | null;
+}
+
+export interface QuoteRow {
+  id: string;
+  number: string;
+  title: string;
+  status: QuoteStatus;
+  total: number;
+  sentAt: string | null;
+  acceptedAt: string | null;
+  createdAt: string;
+}
+
+export interface DealDetail {
+  id: string;
+  title: string;
+  description: string | null;
+  stage: DealStage;
+  estimatedAmount: number | null;
+  currency: string;
+  probability: number | null;
+  expectedCloseDate: string | null;
+  recommendedOffer: string | null;
+  identifiedNeed: string | null;
+  competitors: string[];
+  lossReason: string | null;
+  wonAt: string | null;
+  lostAt: string | null;
+  conversionStatus: DealConversionStatus;
+  createdAt: string;
+  assignedTo: { id: string; name: string } | null;
+  organization: { id: string; name: string };
+  prospectId: string | null;
+  primaryContact: { id: string; fullName: string } | null;
+  contacts: { id: string; fullName: string }[];
+  activities: DealActivityItem[];
+  quotes: QuoteRow[];
+  /** Projet créé après conversion (le cas échéant). */
+  projectId: string | null;
+}
+
+export interface DealPipelineStats {
+  openCount: number;
+  pipelineValue: number;
+  weightedValue: number;
+  wonCount: number;
+  wonValue: number;
+  lostCount: number;
+}
+
+export interface QuoteLineItem {
+  label: string;
+  quantity: number;
+  unitPrice: number;
+}
+
+export interface QuoteDetail {
+  id: string;
+  number: string;
+  title: string;
+  status: QuoteStatus;
+  items: QuoteLineItem[];
+  amount: number;
+  tax: number;
+  total: number;
+  currency: string;
+  notes: string | null;
+  sentAt: string | null;
+  acceptedAt: string | null;
+  rejectedAt: string | null;
+  expiresAt: string | null;
+  createdAt: string;
+  organization: { id: string; name: string } | null;
+  dealId: string | null;
+  dealTitle: string | null;
+  contactName: string | null;
+}
