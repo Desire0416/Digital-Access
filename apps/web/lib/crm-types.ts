@@ -433,3 +433,60 @@ export interface AuditListRow {
   auditDate: string | null;
   updatedAt: string;
 }
+
+/* ─── Tâches & relances ─────────────────────────────────────────────────────── */
+
+/** Rattachement d'une tâche à une entité (pour l'étiquette + le lien). */
+export interface TaskContext {
+  kind: "prospect" | "deal" | "lead" | "project" | "organization" | "none";
+  id: string | null;
+  label: string | null;
+  href: string | null;
+}
+
+export interface TaskRow {
+  id: string;
+  title: string;
+  description: string | null;
+  type: TaskType;
+  priority: Priority;
+  status: TaskStatus;
+  dueDate: string | null;
+  reminderAt: string | null;
+  completedAt: string | null;
+  assignedTo: { id: string; name: string } | null;
+  createdByName: string | null;
+  isOverdue: boolean;
+  context: TaskContext;
+  createdAt: string;
+}
+
+export interface TaskCounts {
+  today: number;
+  overdue: number;
+  week: number;
+  open: number;
+}
+
+/* ─── Notifications internes ────────────────────────────────────────────────── */
+
+export interface NotificationItem {
+  id: string;
+  type: string;
+  title: string;
+  message: string;
+  link: string | null;
+  read: boolean;
+  createdAt: string;
+}
+
+/* ─── Alertes de relance (calculées) ────────────────────────────────────────── */
+
+export interface FollowUpAlert {
+  id: string;
+  kind: string; // no_next_action | overdue | stale | audit_not_sent
+  tone: Tone;
+  title: string;
+  description: string;
+  href: string;
+}

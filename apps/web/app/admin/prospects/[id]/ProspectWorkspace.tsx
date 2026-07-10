@@ -36,6 +36,8 @@ import {
   updateOrganization, createContact, updateContact, deleteContact, logProspectActivity,
 } from "@/lib/crm-actions";
 import { createAudit } from "@/lib/crm-audit-actions";
+import { completeTask } from "@/lib/crm-task-actions";
+import { TaskFormModal } from "@/components/admin/TaskFormModal";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Fiche prospect à onglets — CRM commercial. En-tête (statut/attribution/
@@ -283,7 +285,7 @@ export function ProspectWorkspace({
         {tab === "contacts" && <ContactsTab prospect={prospect} />}
         {tab === "activities" && <ActivitiesTab prospect={prospect} />}
         {tab === "audits" && <AuditsTab prospect={prospect} />}
-        {tab === "tasks" && <TasksTab prospect={prospect} />}
+        {tab === "tasks" && <TasksTab prospect={prospect} assignable={assignable} canAssign={canAssign} />}
         {tab === "deals" && <DealsTab prospect={prospect} />}
       </div>
 
@@ -1198,38 +1200,80 @@ function AuditsTab({ prospect }: { prospect: ProspectDetail }) {
 
 /* ════════════════════════════════ ONGLET TÂCHES ════════════════════════════ */
 
-function TasksTab({ prospect }: { prospect: ProspectDetail }) {
-  if (prospect.tasks.length === 0) {
-    return (
-      <EmptyState
-        icon={<ListChecks size={22} />}
-        title="Aucune tâche"
-        description="La gestion des tâches arrive prochainement."
-      />
-    );
-  }
+function TasksTab({ prospect, assignable, canAssign }: { prospect: ProspectDetail; assignable: AssignableUser[]; canAssign: boolean }) {
+  const router = useRouter();
+  const [pending, start] = React.useTransition();
+  const [modalOpen, setModalOpen] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+
+  const finish = (id: string) => {
+    setError(null);
+    start(async () => {
+      const res = await completeTask({ id, done: true });
+      if (res.ok) router.refresh();
+      else setError(res.error);
+    });
+  };
+
   return (
-    <StaggerGroup className="space-y-3">
-      {prospect.tasks.map((t) => (
-        <StaggerItem key={t.id}>
-          <Card interactive={false} className="p-4 sm:p-5">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-              <div className="min-w-0">
-                <p className="break-words font-display font-bold text-navy">{t.title}</p>
-                <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-text-muted">
-                  {t.dueDate && (<span className="inline-flex items-center gap-1"><Calendar size={12} /> Échéance {formatDate(t.dueDate)}</span>)}
-                  {t.assignedToName && (<><span>•</span><span>{t.assignedToName}</span></>)}
-                </p>
-              </div>
-              <div className="flex shrink-0 flex-wrap items-center gap-2">
-                <StatusPill label={TASK_STATUS_LABEL[t.status]} tone={TASK_STATUS_TONE[t.status]} />
-                <StatusPill label={PRIORITY_LABEL[t.priority]} tone={PRIORITY_TONE[t.priority]} />
-              </div>
-            </div>
-          </Card>
-        </StaggerItem>
-      ))}
-    </StaggerGroup>
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-text-secondary">Actions et relances planifiées pour ce prospect.</p>
+        <Button size="sm" onClick={() => setModalOpen(true)}><Plus size={16} /> Nouvelle tâche</Button>
+      </div>
+      {error && <p className="text-sm font-medium text-error">{error}</p>}
+
+      {prospect.tasks.length === 0 ? (
+        <EmptyState
+          icon={<ListChecks size={22} />}
+          title="Aucune tâche"
+          description="Planifiez une relance ou une action pour ne pas perdre ce prospect."
+        />
+      ) : (
+        <StaggerGroup className="space-y-3">
+          {prospect.tasks.map((t) => (
+            <StaggerItem key={t.id}>
+              <Card interactive={false} className="p-4 sm:p-5">
+                <div className="flex items-start gap-3">
+                  <button
+                    type="button"
+                    onClick={() => finish(t.id)}
+                    disabled={pending}
+                    aria-label="Terminer la tâche"
+                    className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full border border-navy/25 text-transparent transition-colors hover:border-success hover:text-success"
+                  >
+                    <CheckCircle2 size={14} />
+                  </button>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                      <div className="min-w-0">
+                        <p className="break-words font-semibold text-navy">{t.title}</p>
+                        <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-text-muted">
+                          {t.dueDate && (<span className="inline-flex items-center gap-1"><Calendar size={12} /> Échéance {formatDate(t.dueDate)}</span>)}
+                          {t.assignedToName && (<><span>•</span><span>{t.assignedToName}</span></>)}
+                        </p>
+                      </div>
+                      <div className="flex shrink-0 flex-wrap items-center gap-2">
+                        <StatusPill label={TASK_STATUS_LABEL[t.status]} tone={TASK_STATUS_TONE[t.status]} />
+                        <StatusPill label={PRIORITY_LABEL[t.priority]} tone={PRIORITY_TONE[t.priority]} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </StaggerItem>
+          ))}
+        </StaggerGroup>
+      )}
+
+      <TaskFormModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        context={{ prospectId: prospect.id }}
+        assignable={assignable}
+        canAssign={canAssign}
+      />
+    </div>
   );
 }
 

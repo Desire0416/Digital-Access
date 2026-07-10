@@ -2,19 +2,24 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import {
   Building2, PhoneCall, ClipboardCheck, FileSearch, Handshake, Trophy,
-  CalendarClock, AlertTriangle, ArrowRight, Plus,
+  CalendarClock, AlertTriangle, ArrowRight, Plus, BellRing,
 } from "lucide-react";
-import { buttonClasses, formatFCFA } from "@da/ui";
+import { buttonClasses, formatFCFA, cn } from "@da/ui";
 import { currentUser } from "@da/auth/guards";
 import { AdminPageHeader, StatCard } from "@/components/admin/ui";
 import { getCommercialHomeStats } from "@/lib/crm-queries";
+import { getFollowUpAlerts } from "@/lib/crm-alerts";
 import { isAdmin } from "@/lib/permissions";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Espace commercial" };
 
 export default async function CommercialHomePage() {
-  const [user, stats] = await Promise.all([currentUser(), getCommercialHomeStats()]);
+  const [user, stats, alerts] = await Promise.all([
+    currentUser(),
+    getCommercialHomeStats(),
+    getFollowUpAlerts(12),
+  ]);
   const admin = isAdmin(user);
   const firstName = (user?.name ?? "").split(" ")[0] || "vous";
 
@@ -60,6 +65,36 @@ export default async function CommercialHomePage() {
         <StatCard icon={<Handshake size={20} />} tone="violet" label="Opportunités ouvertes" value={stats.openDeals} hint={formatFCFA(stats.pipelineValue)} />
         <StatCard icon={<Trophy size={20} />} tone="green" label="Contrats gagnés" value={stats.wonDeals} />
       </div>
+
+      {/* Alertes & relances */}
+      {alerts.length > 0 && (
+        <div className="mt-8">
+          <h2 className="mb-4 flex items-center gap-2 font-display text-lg font-bold text-navy">
+            <BellRing size={18} className="text-brand-violet" /> Alertes &amp; relances
+          </h2>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {alerts.map((a) => (
+              <Link
+                key={a.id}
+                href={a.href}
+                className={cn(
+                  "flex items-start gap-3 rounded-xl border p-4 transition-shadow hover:shadow-md",
+                  a.tone === "red" ? "border-error/20 bg-error/[0.04]" : "border-warning/25 bg-warning/[0.05]",
+                )}
+              >
+                <span className={cn("mt-0.5 shrink-0", a.tone === "red" ? "text-error" : "text-[#B45309]")}>
+                  <AlertTriangle size={16} />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-navy">{a.title}</p>
+                  <p className="text-xs text-text-secondary">{a.description}</p>
+                </div>
+                <ArrowRight size={15} className="ml-auto mt-0.5 shrink-0 text-navy/40" />
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Accès rapides */}
       <div className="mt-8 grid gap-4 sm:grid-cols-2">

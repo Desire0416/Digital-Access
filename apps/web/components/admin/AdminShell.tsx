@@ -9,6 +9,7 @@ import {
   Gauge,
   Building2,
   FileSearch,
+  ListTodo,
   Target,
   FolderKanban,
   FileText,
@@ -25,7 +26,9 @@ import {
 } from "lucide-react";
 import { Monogram, Avatar, cn } from "@da/ui";
 import { LogoutButton } from "@/components/LogoutButton";
+import { NotificationBell } from "@/components/admin/NotificationBell";
 import { can, isAdmin as roleIsAdmin } from "@/lib/permissions";
+import type { NotificationItem } from "@/lib/crm-types";
 
 interface NavItem {
   label: string;
@@ -44,6 +47,7 @@ const commercialView = (roles: string[]) =>
   can({ roles }, "prospect:read_assigned") || can({ roles }, "prospect:read_all");
 const auditView = (roles: string[]) =>
   can({ roles }, "audit:read_assigned") || can({ roles }, "audit:read_all");
+const taskView = (roles: string[]) => can({ roles }, "task:create");
 const staffAll = () => true;
 
 const NAV: NavGroup[] = [
@@ -58,6 +62,7 @@ const NAV: NavGroup[] = [
     items: [
       { label: "Prospects", href: "/admin/prospects", icon: Building2, visible: commercialView },
       { label: "Audits", href: "/admin/audits", icon: FileSearch, visible: auditView },
+      { label: "Tâches", href: "/admin/tasks", icon: ListTodo, visible: taskView },
     ],
   },
   {
@@ -230,9 +235,13 @@ function SidebarContent({
 
 export function AdminShell({
   user,
+  notifications = [],
+  unreadCount = 0,
   children,
 }: {
   user: { name: string; email: string; roles: string[]; roleLabel: string };
+  notifications?: NotificationItem[];
+  unreadCount?: number;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
@@ -292,20 +301,27 @@ export function AdminShell({
 
       {/* Colonne droite */}
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex h-16 shrink-0 items-center justify-between border-b border-navy/[0.06] bg-surface-primary px-4 lg:hidden">
-          <Link href="/admin" className="flex items-center gap-2">
+        <header className="flex h-16 shrink-0 items-center justify-between gap-3 border-b border-navy/[0.06] bg-surface-primary px-4 sm:px-6">
+          {/* Mobile : marque + titre de page ; Desktop : titre de page */}
+          <Link href="/admin" className="flex items-center gap-2 lg:hidden">
             <Monogram size={30} />
             <span className="font-display text-sm font-extrabold text-navy">{current?.label ?? "Back-office"}</span>
           </Link>
-          <button
-            type="button"
-            onClick={() => setOpen(true)}
-            aria-label="Ouvrir le menu"
-            aria-expanded={open}
-            className="grid h-10 w-10 place-items-center rounded-lg text-navy transition-colors hover:bg-navy/5"
-          >
-            <Menu size={22} />
-          </button>
+          <span className="hidden font-display text-base font-bold text-navy lg:block">
+            {current?.label ?? "Back-office"}
+          </span>
+          <div className="flex items-center gap-1">
+            <NotificationBell notifications={notifications} unreadCount={unreadCount} />
+            <button
+              type="button"
+              onClick={() => setOpen(true)}
+              aria-label="Ouvrir le menu"
+              aria-expanded={open}
+              className="grid h-10 w-10 place-items-center rounded-lg text-navy transition-colors hover:bg-navy/5 lg:hidden"
+            >
+              <Menu size={22} />
+            </button>
+          </div>
         </header>
 
         <main className="flex-1 overflow-y-auto">
