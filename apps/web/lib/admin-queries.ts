@@ -534,6 +534,40 @@ export async function getAdminPortfolioItem(id: string): Promise<PortfolioDetail
   };
 }
 
+/* ─────────────────────────────── Témoignages ───────────────────────────── */
+
+export interface TestimonialRow {
+  id: string; name: string; role: string | null; company: string | null;
+  content: string; avatar: string | null; rating: number; featured: boolean; createdAt: string;
+}
+
+export async function getAdminTestimonials(): Promise<TestimonialRow[]> {
+  await requireAdmin();
+  const items = await prisma.testimonial.findMany({
+    orderBy: { createdAt: "desc" },
+    select: {
+      id: true, name: true, role: true, company: true,
+      content: true, avatar: true, rating: true, featured: true, createdAt: true,
+    },
+  });
+  return items.map((t) => ({ ...t, createdAt: iso(t.createdAt)! }));
+}
+
+export interface TestimonialDetail {
+  id: string; name: string; role: string | null; company: string | null;
+  content: string; avatar: string | null; rating: number; featured: boolean;
+}
+
+export async function getAdminTestimonial(id: string): Promise<TestimonialDetail | null> {
+  await requireAdmin();
+  const t = await prisma.testimonial.findUnique({ where: { id } });
+  if (!t) return null;
+  return {
+    id: t.id, name: t.name, role: t.role, company: t.company,
+    content: t.content, avatar: t.avatar, rating: t.rating, featured: t.featured,
+  };
+}
+
 /* ────────────────────────────── Utilisateurs ───────────────────────────── */
 
 export interface UserRow {

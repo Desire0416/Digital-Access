@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import {
@@ -12,8 +11,10 @@ import {
   GradientText,
   buttonClasses,
 } from "@da/ui";
-import { stats, testimonials } from "@da/db";
+import { stats } from "@da/db";
 import { getPublicPortfolio } from "@/lib/public-portfolio";
+import { getFeaturedTestimonials } from "@/lib/public-testimonials";
+import { buildMetadata } from "@/lib/seo";
 import { servicePacks, whyChoose, processSteps } from "@/lib/content";
 import { HeroHome } from "@/components/HeroHome";
 import { StatsBand } from "@/components/StatsBand";
@@ -24,19 +25,28 @@ import { CTABanner } from "@/components/CTABanner";
 import { AcademyPromo } from "@/components/AcademyPromo";
 import { Icon } from "@/components/Icon";
 
-export const metadata: Metadata = {
+export const metadata = buildMetadata({
   title: "Agence web & e-learning en Côte d'Ivoire",
   description:
     "Digital Access conçoit sites vitrines, e-commerce, plateformes e-learning et applications sur-mesure à Abidjan. Paiement Mobile Money, design soigné et accompagnement local.",
-  alternates: { canonical: "/" },
-};
+  path: "/",
+  keywords: [
+    "agence web Abidjan",
+    "création site web Côte d'Ivoire",
+    "site internet Abidjan",
+    "plateforme e-learning",
+    "site établissement scolaire",
+    "paiement Mobile Money",
+  ],
+});
 
 export default async function HomePage() {
   const homeServices = servicePacks.slice(0, 3);
-  const featuredWork = (await getPublicPortfolio())
-    .filter((p) => p.featured)
-    .slice(0, 3);
-  const featuredTestimonials = testimonials.filter((t) => t.featured).slice(0, 3);
+  const [portfolio, featuredTestimonials] = await Promise.all([
+    getPublicPortfolio(),
+    getFeaturedTestimonials(3),
+  ]);
+  const featuredWork = portfolio.filter((p) => p.featured).slice(0, 3);
 
   return (
     <>

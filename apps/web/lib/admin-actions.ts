@@ -689,6 +689,113 @@ export async function deletePortfolioItem(input: { id: string }): Promise<Result
   }
 }
 
+/* ─────────────────────────────── Témoignages ───────────────────────────── */
+
+const testimonialSchema = z.object({
+  name: z.string().trim().min(2, "Le nom est requis (2 caractères minimum).").max(120),
+  role: z.string().trim().max(120).optional().nullable(),
+  company: z.string().trim().max(120).optional().nullable(),
+  content: z
+    .string()
+    .trim()
+    .min(10, "Le témoignage est trop court (10 caractères minimum).")
+    .max(2000),
+  // Avatar : URL absolue (upload Blob) OU chemin racine, ou vide.
+  avatar: z
+    .string()
+    .max(500)
+    .refine(
+      (v) => v === "" || v.startsWith("/") || /^https?:\/\//i.test(v),
+      "Avatar invalide.",
+    )
+    .optional()
+    .nullable(),
+  rating: z.coerce.number().int().min(1, "Note minimale : 1.").max(5, "Note maximale : 5."),
+  featured: z.boolean().optional(),
+});
+
+export async function createTestimonial(
+  input: z.input<typeof testimonialSchema>,
+): Promise<{ ok: true; id: string } | { ok: false; error: string }> {
+  await requireAdmin();
+  const parsed = testimonialSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: parsed.error.errors[0]?.message ?? "Témoignage invalide." };
+  const d = parsed.data;
+  try {
+    const item = await prisma.testimonial.create({
+      data: {
+        name: d.name, role: d.role || null, company: d.company || null,
+        content: d.content, avatar: d.avatar || null,
+        rating: d.rating, featured: d.featured ?? false,
+      },
+    });
+    revalidatePath("/admin/temoignages");
+    revalidatePath("/");
+    return { ok: true, id: item.id };
+  } catch {
+    return { ok: false, error: "Impossible de créer le témoignage." };
+  }
+}
+
+export async function updateTestimonial(
+  input: z.input<typeof testimonialSchema> & { id: string },
+): Promise<Result> {
+  await requireAdmin();
+  const parsed = testimonialSchema.extend({ id: z.string().min(1) }).safeParse(input);
+  if (!parsed.success) return { ok: false, error: parsed.error.errors[0]?.message ?? "Témoignage invalide." };
+  const d = parsed.data;
+  try {
+    await prisma.testimonial.update({
+      where: { id: d.id },
+      data: {
+        name: d.name, role: d.role || null, company: d.company || null,
+        content: d.content, avatar: d.avatar || null,
+        rating: d.rating, featured: d.featured ?? false,
+      },
+    });
+    revalidatePath("/admin/temoignages");
+    revalidatePath(`/admin/temoignages/${d.id}`);
+    revalidatePath("/");
+    return { ok: true };
+  } catch {
+    return { ok: false, error: "Impossible de mettre à jour le témoignage." };
+  }
+}
+
+export async function deleteTestimonial(input: { id: string }): Promise<Result> {
+  await requireAdmin();
+  const parsed = z.object({ id: z.string().min(1) }).safeParse(input);
+  if (!parsed.success) return { ok: false, error: "Identifiant invalide." };
+  try {
+    await prisma.testimonial.delete({ where: { id: parsed.data.id } });
+    revalidatePath("/admin/temoignages");
+    revalidatePath("/");
+    return { ok: true };
+  } catch {
+    return { ok: false, error: "Impossible de supprimer le témoignage." };
+  }
+}
+
+export async function toggleTestimonialFeatured(input: {
+  id: string;
+  featured: boolean;
+}): Promise<Result> {
+  await requireAdmin();
+  const parsed = z.object({ id: z.string().min(1), featured: z.boolean() }).safeParse(input);
+  if (!parsed.success) return { ok: false, error: "Données invalides." };
+  try {
+    await prisma.testimonial.update({
+      where: { id: parsed.data.id },
+      data: { featured: parsed.data.featured },
+    });
+    revalidatePath("/admin/temoignages");
+    revalidatePath("/");
+    return { ok: true };
+  } catch {
+    return { ok: false, error: "Impossible de mettre à jour le témoignage." };
+  }
+}
+
 /* ────────────────────────────── Utilisateurs ───────────────────────────── */
 
 const ROLES = [

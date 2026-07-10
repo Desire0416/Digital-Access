@@ -13,14 +13,19 @@ import {
   StaggerItem,
   Monogram,
 } from "@da/ui";
-import { blogPosts } from "@da/db";
 import { siteConfig } from "@/lib/site";
+import { buildMetadata, absoluteUrl } from "@/lib/seo";
+import { getPostBySlug, getPublishedPosts } from "@/lib/public-blog";
 import { JsonLd } from "@/components/JsonLd";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { Markdown } from "@/components/Markdown";
 import { CTABanner } from "@/components/CTABanner";
 import { BlogCard } from "@/components/BlogCard";
 import { ArticleHero } from "./ArticleHero";
 import { ShareButtons } from "./ShareButtons";
-import { buildArticleBody, contentToParagraphs } from "./articleBody";
+import { buildArticleBody } from "./articleBody";
+
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -28,27 +33,29 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const post = blogPosts.find((p) => p.slug === slug);
+  const post = await getPostBySlug(slug);
 
   if (!post) {
     return {
       title: "Article introuvable",
       description: "Cet article n'existe pas ou a été déplacé.",
+      alternates: { canonical: `/blog/${slug}` },
     };
   }
 
-  return {
-    title: `${post.title} — Blog Digital Access`,
+  return buildMetadata({
+    title: post.title,
     description: post.excerpt,
+    path: `/blog/${post.slug}`,
+    type: "article",
     keywords: post.tags,
-    openGraph: {
-      title: post.title,
-      description: post.excerpt,
-      type: "article",
-      publishedTime: post.publishedAt,
-      authors: [post.author.name],
-    },
-  };
+    publishedTime: post.publishedAt,
+    modifiedTime: post.publishedAt,
+    authors: [post.author.name],
+    // Laisse le fichier opengraph-image.tsx du segment générer l'image par article.
+    ogImageFallback: false,
+    ...(post.coverImage ? { images: [post.coverImage] } : {}),
+  });
 }
 
 export default async function BlogPostPage({
@@ -57,29 +64,28 @@ export default async function BlogPostPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const index = blogPosts.findIndex((p) => p.slug === slug);
-  const post = index >= 0 ? blogPosts[index] : undefined;
+  const posts = await getPublishedPosts();
+  const index = posts.findIndex((p) => p.slug === slug);
+  const post = index >= 0 ? posts[index] : await getPostBySlug(slug);
 
   if (!post) {
     notFound();
   }
 
-  // Corps de l'article : contenu réel si présent, sinon généré depuis l'extrait.
-  const realParagraphs = contentToParagraphs(post.content);
-  const blocks = realParagraphs
-    ? [{ heading: "", paragraphs: realParagraphs }]
-    : buildArticleBody(post);
+  // Corps de l'article : Markdown réel si présent, sinon corps généré depuis l'extrait.
+  const hasMarkdown = !!post.content && post.content.trim().length > 0;
+  const blocks = hasMarkdown ? [] : buildArticleBody(post);
 
   // Articles similaires : même catégorie en priorité, complétés si besoin.
-  const sameCategory = blogPosts.filter(
+  const sameCategory = posts.filter(
     (p) => p.slug !== post.slug && p.category === post.category,
   );
-  const others = blogPosts.filter(
+  const others = posts.filter(
     (p) => p.slug !== post.slug && p.category !== post.category,
   );
   const related = [...sameCategory, ...others].slice(0, 3);
 
-  const articleUrl = `${siteConfig.url}/blog/${post.slug}`;
+  const articleUrl = absoluteUrl(`/blog/${post.slug}`);
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -87,11 +93,12 @@ export default async function BlogPostPage({
     description: post.excerpt,
     datePublished: post.publishedAt,
     dateModified: post.publishedAt,
+    ...(post.coverImage ? { image: absoluteUrl(post.coverImage) } : {}),
     author: { "@type": "Person", name: post.author.name },
     publisher: {
       "@type": "Organization",
       name: siteConfig.name,
-      logo: { "@type": "ImageObject", url: `${siteConfig.url}/icon.svg` },
+      logo: { "@type": "ImageObject", url: `${siteConfig.url}/icon-512.png` },
     },
     keywords: post.tags.join(", "),
     articleSection: post.category,
@@ -108,6 +115,14 @@ export default async function BlogPostPage({
       {/* Corps de l'article + partage */}
       <Section spacing="md">
         <Container>
+          <Breadcrumbs
+            className="mb-8"
+            items={[
+              { name: "Accueil", path: "/" },
+              { name: "Blog", path: "/blog" },
+              { name: post.title, path: `/blog/${post.slug}` },
+            ]}
+          />
           <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_15rem] lg:gap-16">
             {/* Colonne article */}
             <article className="min-w-0">
@@ -118,7 +133,14 @@ export default async function BlogPostPage({
                 </p>
               </Reveal>
 
-              {/* Sections */}
+              {/* Corps : Markdown réel si présent */}
+              {hasMarkdown && (
+                <div className="mt-10">
+                  <Markdown>{post.content as string}</Markdown>
+                </div>
+              )}
+
+              {/* Corps généré (articles sans contenu markdown) */}
               <div className="mt-10 space-y-10">
                 {blocks.map((block, bi) => (
                   <Reveal key={bi} delay={0.05}>
@@ -143,7 +165,7 @@ export default async function BlogPostPage({
                       </div>
 
                       {/* Citation signature au milieu de l'article */}
-                      {bi === 1 && !realParagraphs && (
+                      {bi === 1 && !hasMarkdown && (
                         <div className="relative mt-8 overflow-hidden rounded-2xl bg-gradient-da px-7 py-8 sm:px-10">
                           <div
                             aria-hidden

@@ -20,6 +20,7 @@ import {
   LifeBuoy,
   Newspaper,
   Images,
+  Quote,
   UsersRound,
   ExternalLink,
   Menu,
@@ -90,6 +91,7 @@ const NAV: NavGroup[] = [
     items: [
       { label: "Blog", href: "/admin/blog", icon: Newspaper, visible: adminOnly },
       { label: "Portfolio", href: "/admin/portfolio", icon: Images, visible: adminOnly },
+      { label: "Témoignages", href: "/admin/temoignages", icon: Quote, visible: adminOnly },
     ],
   },
   {

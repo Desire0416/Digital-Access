@@ -1,15 +1,16 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { Section, Container, GradientText } from "@da/ui";
 import { PageHero } from "@/components/PageHero";
 import { siteConfig } from "@/lib/site";
+import { buildMetadata } from "@/lib/seo";
 import { LegalArticle, LegalTOC, type LegalSectionData } from "./LegalDoc";
 
-export const metadata: Metadata = {
+export const metadata = buildMetadata({
   title: "Conditions Générales d'Utilisation — Digital Access",
   description:
     "Conditions Générales d'Utilisation du site digitalaccess.ci : objet, accès au service, propriété intellectuelle, responsabilités, données personnelles et droit applicable en Côte d'Ivoire.",
-};
+  path: "/cgu",
+});
 
 const LAST_UPDATE = "4 juillet 2026";
 

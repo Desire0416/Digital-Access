@@ -1,15 +1,17 @@
-import type { Metadata } from "next";
 import { Monogram } from "@da/ui";
 import { VerifyError, VerifySuccess } from "./VerifyResult";
 import { verifyEmailToken } from "../actions";
+import { buildMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
+export const metadata = buildMetadata({
   title: "Confirmation du compte",
   description:
     "Confirmation de votre adresse email et activation de votre compte Digital Access.",
-};
+  path: "/auth/verify",
+  noindex: true,
+});
 
 export default async function VerifyPage({
   searchParams,

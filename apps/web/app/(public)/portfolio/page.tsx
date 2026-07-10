@@ -1,15 +1,24 @@
-import type { Metadata } from "next";
 import { Section, Container, GradientText } from "@da/ui";
 import { getPublicPortfolio } from "@/lib/public-portfolio";
 import { PageHero } from "@/components/PageHero";
 import { CTABanner } from "@/components/CTABanner";
 import { PortfolioGallery } from "./PortfolioGallery";
+import { buildMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Réalisations — Nos projets web & e-learning",
+export const metadata = buildMetadata({
+  title: "Réalisations — Nos projets web & e-learning à Abidjan",
   description:
     "Découvrez les sites vitrines, e-commerce, plateformes institutionnelles et e-learning conçus par Digital Access pour des entreprises et institutions en Côte d'Ivoire.",
-};
+  path: "/portfolio",
+  keywords: [
+    "réalisations Digital Access",
+    "portfolio agence web Abidjan",
+    "création site web Côte d'Ivoire",
+    "projets e-learning Abidjan",
+    "site vitrine e-commerce Côte d'Ivoire",
+    "études de cas web Abidjan",
+  ],
+});
 
 export default async function PortfolioPage() {
   const portfolio = await getPublicPortfolio();

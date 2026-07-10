@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { Section, Container, GradientText } from "@da/ui";
 import { PageHero } from "@/components/PageHero";
 import { siteConfig } from "@/lib/site";
+import { buildMetadata } from "@/lib/seo";
 import {
   LegalSection,
   LegalTOC,
@@ -11,11 +11,12 @@ import {
   type LegalSectionData,
 } from "./LegalDoc";
 
-export const metadata: Metadata = {
+export const metadata = buildMetadata({
   title: "Politique de confidentialité — Digital Access",
   description:
     "Politique de confidentialité de Digital Access : données collectées, finalités, base légale, durée de conservation, cookies et exercice de vos droits sur vos données personnelles.",
-};
+  path: "/confidentialite",
+});
 
 const LAST_UPDATE = "4 juillet 2026";
 

@@ -53,6 +53,26 @@ export const servicePacks: ServicePack[] = [
       "SEO avancé + Google Business",
       "Formation à la prise en main",
     ],
+    cta: "Choisir ce pack",
+  },
+  {
+    id: "etablissement-scolaire",
+    slug: "etablissement-scolaire",
+    icon: "school",
+    name: "Établissement Scolaire",
+    tagline: "Écoles, collèges, lycées, universités & centres de formation",
+    description:
+      "Le site institutionnel pensé pour les établissements d'enseignement : présentation, actualités, admissions en ligne et espace élèves / parents.",
+    price: 350000,
+    priceLabel: "À partir de",
+    features: [
+      "Site institutionnel 8 à 15 pages",
+      "Actualités, événements & galerie photos",
+      "Préinscription / admission en ligne",
+      "Espace élèves & parents (annuaire, documents)",
+      "SEO local + fiche Google Business",
+      "Formation de l'équipe administrative",
+    ],
     featured: true,
     cta: "Choisir ce pack",
   },
@@ -104,7 +124,7 @@ export const servicePacks: ServicePack[] = [
     tagline: "Votre site toujours au top",
     description:
       "Mises à jour, sauvegardes, sécurité et support : nous veillons pendant que vous entreprenez.",
-    price: 25000,
+    price: 50000,
     priceLabel: "À partir de / mois",
     features: [
       "Mises à jour & sauvegardes",

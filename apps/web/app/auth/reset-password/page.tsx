@@ -1,13 +1,14 @@
-import type { Metadata } from "next";
 import { AuthShell } from "../AuthShell";
 import { RequestResetForm } from "./RequestResetForm";
 import { NewPasswordForm } from "./NewPasswordForm";
+import { buildMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = buildMetadata({
   title: "Mot de passe oublié",
   description: "Réinitialisez le mot de passe de votre compte Digital Access.",
-  robots: { index: false, follow: false },
-};
+  path: "/auth/reset-password",
+  noindex: true,
+});
 
 export const dynamic = "force-dynamic";
 

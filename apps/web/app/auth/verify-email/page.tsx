@@ -1,14 +1,16 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { Monogram } from "@da/ui";
 import { AnimatedEnvelope } from "./AnimatedEnvelope";
 import { ResendPanel } from "./ResendPanel";
+import { buildMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = buildMetadata({
   title: "Confirmez votre email",
   description:
     "Un email de confirmation a été envoyé. Cliquez sur le lien reçu pour activer votre compte Digital Access.",
-};
+  path: "/auth/verify-email",
+  noindex: true,
+});
 
 export default async function VerifyEmailPage({
   searchParams,

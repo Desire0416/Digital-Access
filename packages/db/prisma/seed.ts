@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { portfolio as realPortfolio } from "../src/mock";
+import { blogSeedArticles } from "../src/blog-seed-data";
 
 const prisma = new PrismaClient();
 
@@ -443,22 +444,42 @@ async function main() {
   }
 
   /* ─────────────────── Web : témoignages, blog, leads ────────────────── */
-  if ((await prisma.testimonial.count()) === 0) {
-    await prisma.testimonial.createMany({
-      data: [
-        { name: "Aïcha Koné", role: "Directrice", company: "Boutique Élégance", content: "Digital Access a transformé notre présence en ligne.", rating: 5, featured: true },
-        { name: "Dr. Mamadou Traoré", role: "Fondateur", company: "Clinique La Providence", content: "Un travail sérieux et un vrai sens du détail.", rating: 5, featured: true },
-      ],
-    });
+  // Témoignages canoniques (ids fixes → idempotent, non dupliqués). Éditables
+  // ensuite dans le back-office /admin/temoignages ; la home lit la base.
+  const seedTestimonials = [
+    { id: "seed-t1", name: "Aïcha Koné", role: "Directrice", company: "Boutique Élégance Abidjan", content: "Digital Access a transformé notre présence en ligne. Le site est magnifique, rapide, et nous recevons désormais des commandes chaque jour. Un accompagnement humain et professionnel du début à la fin.", rating: 5, featured: true },
+    { id: "seed-t2", name: "Dr. Mamadou Traoré", role: "Fondateur", company: "Clinique La Providence", content: "Un travail sérieux et un vrai sens du détail. Notre plateforme de prise de rendez-vous fonctionne parfaitement et nos patients l'adorent. Je recommande sans hésiter.", rating: 5, featured: true },
+    { id: "seed-t3", name: "Fatou Bamba", role: "Responsable formation", company: "Institut Supérieur ISTC", content: "La plateforme e-learning développée par Digital Access a révolutionné nos formations à distance. Interface intuitive, certificats automatiques, suivi des apprenants : tout y est.", rating: 5, featured: true },
+    { id: "seed-t4", name: "Jean-Baptiste Yao", role: "Gérant", company: "Yao Import-Export", content: "Réactivité exemplaire et résultats au rendez-vous. Notre site institutionnel inspire confiance à nos partenaires internationaux. Merci à toute l'équipe.", rating: 5, featured: false },
+    { id: "seed-t5", name: "Sandrine Adjoua", role: "CEO", company: "AfroStyle Cosmetics", content: "De la maquette au lancement, chaque étape a été soignée. Le dégradé de leur identité se retrouve partout, notre marque est enfin cohérente en ligne.", rating: 5, featured: false },
+  ];
+  // Nettoie les 2 anciens témoignages courts auto-seedés (sans id fixe) une seule fois.
+  await prisma.testimonial.deleteMany({ where: { company: { in: ["Boutique Élégance", "Clinique La Providence"] }, id: { notIn: seedTestimonials.map((t) => t.id) } } });
+  for (const t of seedTestimonials) {
+    await prisma.testimonial.upsert({ where: { id: t.id }, update: t, create: t });
   }
+  // Article historique conservé.
   await prisma.blogPost.upsert({
     where: { slug: "pourquoi-site-web-2026" }, update: {},
     create: {
       title: "Pourquoi votre entreprise a besoin d'un site web en 2026", slug: "pourquoi-site-web-2026",
       excerpt: "Une présence en ligne n'est plus un luxe mais une nécessité.", content: "# Introduction\nÀ l'ère du digital…",
       category: "Stratégie digitale", status: "PUBLISHED", authorId: admin.id, publishedAt: new Date(),
+      readMinutes: 4,
     },
   });
+  // Articles SEO éditoriaux (publiés, dates échelonnées). Éditables dans /admin/blog.
+  const blogBase = Date.UTC(2026, 5, 1); // 1er juin 2026
+  for (let i = 0; i < blogSeedArticles.length; i++) {
+    const a = blogSeedArticles[i];
+    const publishedAt = new Date(blogBase + i * 5 * 24 * 60 * 60 * 1000);
+    const data = {
+      title: a.title, slug: a.slug, excerpt: a.excerpt, content: a.content,
+      category: a.category, tags: a.tags, readMinutes: a.readMinutes,
+      status: "PUBLISHED" as const, authorId: admin.id, publishedAt,
+    };
+    await prisma.blogPost.upsert({ where: { slug: a.slug }, update: data, create: data });
+  }
   if ((await prisma.lead.count()) === 0) {
     await prisma.lead.createMany({
       data: [

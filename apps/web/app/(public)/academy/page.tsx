@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import {
@@ -19,12 +18,22 @@ import { CategoryGrid } from "./CategoryGrid";
 import { HowItWorks } from "./HowItWorks";
 import { AdvantagesBand } from "./AdvantagesBand";
 import { AcademyCTA } from "./AcademyCTA";
+import { buildMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Access Academy — Formations numériques en ligne",
+export const metadata = buildMetadata({
+  title: "Access Academy — Formations numériques en ligne en Côte d'Ivoire",
   description:
     "Découvrez Access Academy, la plateforme e-learning de Digital Access. Développement web, design, marketing digital et data : formez-vous aux métiers du numérique en Côte d'Ivoire, à votre rythme, avec certificats vérifiables et paiement Mobile Money.",
-};
+  path: "/academy",
+  keywords: [
+    "Access Academy",
+    "formation en ligne Côte d'Ivoire",
+    "formation numérique Abidjan",
+    "e-learning développement web Abidjan",
+    "formation marketing digital Côte d'Ivoire",
+    "cours en ligne certifiants Abidjan",
+  ],
+});
 
 export default function AcademyLandingPage() {
   return (

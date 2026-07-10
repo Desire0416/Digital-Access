@@ -1,22 +1,27 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, MessageCircle } from "lucide-react";
 import { Section, Container, GradientText, Reveal, buttonClasses } from "@da/ui";
 import { PageHero } from "@/components/PageHero";
 import { CTABanner } from "@/components/CTABanner";
+import { JsonLd } from "@/components/JsonLd";
 import { faqItems } from "@/lib/content";
 import { siteConfig } from "@/lib/site";
+import { buildMetadata } from "@/lib/seo";
+import { faqPageSchema } from "@/lib/structured-data";
 import { FaqAccordion } from "./FaqAccordion";
 
-export const metadata: Metadata = {
+export const metadata = buildMetadata({
   title: "FAQ — Questions fréquentes",
   description:
     "Toutes les réponses à vos questions sur Digital Access : délais, tarifs, moyens de paiement Mobile Money, maintenance, référencement et autonomie sur votre site.",
-};
+  path: "/faq",
+});
 
 export default function FaqPage() {
   return (
     <>
+      <JsonLd data={faqPageSchema(faqItems)} />
+
       <PageHero
         eyebrow="FAQ"
         title={

@@ -14,9 +14,11 @@ import {
 } from "@da/ui";
 import { testimonials } from "@da/db";
 import { getPublicPortfolio } from "@/lib/public-portfolio";
+import { buildMetadata } from "@/lib/seo";
 import { CTABanner } from "@/components/CTABanner";
 import { PortfolioCard } from "@/components/PortfolioCard";
 import { TestimonialCard } from "@/components/TestimonialCard";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Icon } from "@/components/Icon";
 import { DetailHero } from "./DetailHero";
 
@@ -54,18 +56,18 @@ export async function generateMetadata({
     return {
       title: "Réalisation introuvable",
       description: "Cette réalisation n'existe pas ou a été déplacée.",
+      alternates: { canonical: `/portfolio/${slug}` },
     };
   }
 
-  return {
+  return buildMetadata({
     title: `${item.title} — Réalisation ${item.category}`,
     description: item.description,
-    openGraph: {
-      title: item.title,
-      description: item.description,
-      type: "article",
-    },
-  };
+    path: `/portfolio/${item.slug}`,
+    type: "website",
+    // Laisse le fichier opengraph-image.tsx du segment générer l'image par projet.
+    ogImageFallback: false,
+  });
 }
 
 export default async function PortfolioDetailPage({
@@ -97,6 +99,14 @@ export default async function PortfolioDetailPage({
       {/* Aperçu du projet */}
       <Section>
         <Container>
+          <Breadcrumbs
+            className="mb-10"
+            items={[
+              { name: "Accueil", path: "/" },
+              { name: "Réalisations", path: "/portfolio" },
+              { name: item.title, path: `/portfolio/${item.slug}` },
+            ]}
+          />
           <div className="grid gap-12 lg:grid-cols-[1.4fr_1fr] lg:gap-16">
             {/* Description */}
             <Reveal>

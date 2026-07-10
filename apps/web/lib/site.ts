@@ -8,9 +8,20 @@ export const siteConfig = {
   locale: "fr_CI",
   contact: {
     email: "contact@digitalaccess.ci",
-    phone: "+225 07 00 00 00 00",
-    whatsapp: "2250700000000",
+    /** Numéro principal (affichage). */
+    phone: "+225 07 57 90 88 84",
+    /** Numéro secondaire (affichage). */
+    phoneSecondary: "+225 05 64 45 26 92",
+    /** Les deux numéros, pour les listes d'affichage et le JSON-LD. */
+    phones: ["+225 07 57 90 88 84", "+225 05 64 45 26 92"],
+    /** Numéro WhatsApp au format wa.me (chiffres uniquement, sans + ni espaces). */
+    whatsapp: "2250757908884",
     address: "Cocody, Abidjan — Côte d'Ivoire",
+    /** Champs d'adresse structurés (PostalAddress JSON-LD). */
+    street: "Cocody",
+    addressLocality: "Abidjan",
+    addressRegion: "Abidjan",
+    addressCountry: "CI",
   },
   socials: {
     facebook: "https://facebook.com/digitalaccess.ci",
@@ -50,10 +61,11 @@ export const footerNav: { title: string; items: NavItem[] }[] = [
   {
     title: "Services",
     items: [
-      { label: "Sites vitrines", href: "/services#presence-web" },
-      { label: "Sites institutionnels", href: "/services#institution" },
-      { label: "Plateformes e-learning", href: "/services#elearning" },
-      { label: "Maintenance", href: "/services#maintenance" },
+      { label: "Création de site web", href: "/services/creation-site-web" },
+      { label: "Sites établissements scolaires", href: "/services/site-etablissement-scolaire" },
+      { label: "Plateformes e-learning", href: "/services/plateforme-e-learning" },
+      { label: "Applications web", href: "/services/application-web" },
+      { label: "Maintenance", href: "/services/maintenance-site-web" },
       { label: "Demander un devis", href: "/devis" },
     ],
   },

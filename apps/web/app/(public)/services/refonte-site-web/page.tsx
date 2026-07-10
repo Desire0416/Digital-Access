@@ -1,0 +1,18 @@
+import { buildMetadata } from "@/lib/seo";
+import { getServicePage } from "@/lib/service-pages";
+import { ServiceLanding } from "@/components/ServiceLanding";
+
+const page = getServicePage("refonte-site-web")!;
+
+export const dynamic = "force-dynamic";
+
+export const metadata = buildMetadata({
+  title: page.metaTitle,
+  description: page.metaDescription,
+  path: `/services/${page.slug}`,
+  keywords: page.keywords,
+});
+
+export default function RefonteSiteWebPage() {
+  return <ServiceLanding page={page} />;
+}

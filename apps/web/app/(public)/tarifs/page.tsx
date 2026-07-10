@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Sparkles } from "lucide-react";
 import {
@@ -12,6 +11,7 @@ import {
   formatFCFA,
 } from "@da/ui";
 import { servicePacks, faqItems } from "@/lib/content";
+import { buildMetadata } from "@/lib/seo";
 import { PageHero } from "@/components/PageHero";
 import { CTABanner } from "@/components/CTABanner";
 import { PricingGrid } from "./PricingGrid";
@@ -23,11 +23,15 @@ import {
 import { PaymentNote } from "./PaymentNote";
 import { PricingFaq } from "./PricingFaq";
 
-export const metadata: Metadata = {
+export const dynamic = "force-dynamic";
+
+export const metadata = buildMetadata({
   title: "Tarifs — Des offres claires, sans surprise",
   description:
-    "Découvrez les tarifs Digital Access : sites vitrines, plateformes institutionnelles, e-learning et maintenance. Prix transparents, paiement Mobile Money (Orange, MTN, Wave) et paiement en plusieurs fois.",
-};
+    "Découvrez les tarifs Digital Access : sites vitrines, sites d'établissements scolaires, plateformes institutionnelles, e-learning et maintenance. Prix transparents, paiement Mobile Money (Orange, MTN, Wave) et en plusieurs fois.",
+  path: "/tarifs",
+  keywords: ["tarif site web Abidjan", "prix création site internet Côte d'Ivoire", "tarif site école", "prix plateforme e-learning"],
+});
 
 /* Les 3 packs « projet » mis en grille tarifaire principale. */
 const mainPacks = servicePacks.filter((p) =>
@@ -64,9 +68,11 @@ const comparisonRows: ComparisonRow[] = [
   { label: "Accompagnement dédié", values: [false, false, true] },
 ];
 
-/* Offres complémentaires (bandeau bas). */
+/* Offres dédiées & complémentaires (bandeau bas) : établissements scolaires,
+   e-learning et maintenance. Le pack scolaire a aussi sa page dédiée
+   /services/site-etablissement-scolaire. */
 const extraPacks = servicePacks.filter((p) =>
-  ["elearning", "maintenance"].includes(p.id),
+  ["etablissement-scolaire", "elearning", "maintenance"].includes(p.id),
 );
 
 const pricingFaq = faqItems.filter((f) => f.category === "Tarifs");

@@ -1,12 +1,14 @@
-import type { Metadata } from "next";
 import { AuthShell } from "../AuthShell";
 import { LoginForm } from "./LoginForm";
+import { buildMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = buildMetadata({
   title: "Connexion",
   description:
     "Connectez-vous à votre espace client Digital Access pour suivre vos projets, télécharger vos factures et gérer vos tickets de support.",
-};
+  path: "/auth/login",
+  noindex: true,
+});
 
 export const dynamic = "force-dynamic";
 

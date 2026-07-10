@@ -1,19 +1,24 @@
-import type { Metadata } from "next";
 import { Section, Container, GradientText, SectionHeading } from "@da/ui";
-import { blogPosts } from "@da/db";
+import { getPublishedPosts } from "@/lib/public-blog";
+import { buildMetadata } from "@/lib/seo";
 import { PageHero } from "@/components/PageHero";
 import { CTABanner } from "@/components/CTABanner";
 import { BlogList, FeaturedPost } from "./BlogList";
 import { NewsletterSignup } from "./NewsletterSignup";
 
-export const metadata: Metadata = {
+export const dynamic = "force-dynamic";
+
+export const metadata = buildMetadata({
   title: "Blog — Ressources & conseils numériques",
   description:
     "Conseils, guides pratiques et actualités pour réussir votre présence en ligne en Côte d'Ivoire : sites web, Mobile Money, UX, formation et stratégie digitale.",
-};
+  path: "/blog",
+  keywords: ["blog numérique Côte d'Ivoire", "conseils site web", "SEO Abidjan", "Mobile Money", "stratégie digitale"],
+});
 
-export default function BlogPage() {
-  const [featured, ...rest] = blogPosts;
+export default async function BlogPage() {
+  const posts = await getPublishedPosts();
+  const [featured, ...rest] = posts;
 
   return (
     <>
@@ -56,7 +61,7 @@ export default function BlogPage() {
             subtitle="Filtrez par thématique pour trouver rapidement ce qui vous intéresse."
           />
           <div className="mt-12">
-            <BlogList posts={rest.length > 0 ? rest : blogPosts} />
+            <BlogList posts={rest.length > 0 ? rest : posts} />
           </div>
         </Container>
       </Section>

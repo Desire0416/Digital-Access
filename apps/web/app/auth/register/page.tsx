@@ -1,12 +1,14 @@
-import type { Metadata } from "next";
 import { AuthShell } from "../AuthShell";
 import { RegisterForm } from "./RegisterForm";
+import { buildMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = buildMetadata({
   title: "Créer un compte",
   description:
     "Créez votre compte Digital Access gratuitement pour suivre vos projets, accéder à vos factures et échanger avec notre équipe.",
-};
+  path: "/auth/register",
+  noindex: true,
+});
 
 export const dynamic = "force-dynamic";
 

@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { Section, Container, GradientText } from "@da/ui";
 import { PageHero } from "@/components/PageHero";
 import { siteConfig } from "@/lib/site";
+import { buildMetadata } from "@/lib/seo";
 import {
   LegalSection,
   LegalTOC,
@@ -10,11 +10,12 @@ import {
   type LegalSectionData,
 } from "./LegalDoc";
 
-export const metadata: Metadata = {
+export const metadata = buildMetadata({
   title: "Mentions légales — Digital Access",
   description:
     "Mentions légales de Digital Access : identité de l'éditeur, direction de la publication, hébergement et informations légales du site digitalaccess.ci.",
-};
+  path: "/mentions-legales",
+});
 
 const LAST_UPDATE = "4 juillet 2026";
 

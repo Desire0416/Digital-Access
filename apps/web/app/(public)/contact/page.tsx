@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { Mail, Phone, MapPin, Clock, MessageCircle, ArrowRight } from "lucide-react";
@@ -13,14 +12,17 @@ import {
   cn,
 } from "@da/ui";
 import { siteConfig } from "@/lib/site";
+import { buildMetadata } from "@/lib/seo";
 import { PageHero } from "@/components/PageHero";
 import { ContactForm } from "./ContactForm";
 
-export const metadata: Metadata = {
-  title: "Contact — Digital Access | Parlons de votre projet à Abidjan",
+export const metadata = buildMetadata({
+  title: "Contact — Parlons de votre projet à Abidjan",
   description:
     "Contactez Digital Access : email, téléphone, WhatsApp et formulaire. Basés à Cocody, Abidjan, nous vous répondons sous 24h pour donner vie à votre site web ou votre plateforme e-learning.",
-};
+  path: "/contact",
+  keywords: ["contact agence web Abidjan", "devis site web Côte d'Ivoire", "WhatsApp Digital Access"],
+});
 
 const { contact, socials, academyUrl } = siteConfig;
 const whatsappHref = `https://wa.me/${contact.whatsapp}?text=${encodeURIComponent(
@@ -90,7 +92,7 @@ const contactCards: {
   {
     icon: <Phone size={20} />,
     label: "Téléphone",
-    value: contact.phone,
+    value: `${contact.phone} · ${contact.phoneSecondary}`,
     href: `tel:${contact.phone.replace(/\s/g, "")}`,
     note: "Du lundi au vendredi",
   },

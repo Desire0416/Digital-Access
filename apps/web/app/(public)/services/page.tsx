@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Sparkles } from "lucide-react";
 import {
@@ -13,17 +12,36 @@ import {
   buttonClasses,
 } from "@da/ui";
 import { servicePacks, whyChoose, processSteps } from "@/lib/content";
+import { buildMetadata } from "@/lib/seo";
+import { offerCatalogSchema } from "@/lib/structured-data";
 import { ServiceCard } from "@/components/ServiceCard";
+import { JsonLd } from "@/components/JsonLd";
 import { CTABanner } from "@/components/CTABanner";
 import { PageHero } from "@/components/PageHero";
 import { ComparisonMatrix } from "@/components/ComparisonMatrix";
 import { Icon } from "@/components/Icon";
 
-export const metadata: Metadata = {
-  title: "Services",
+export const dynamic = "force-dynamic";
+
+export const metadata = buildMetadata({
+  title: "Services — Sites web, e-learning & établissements scolaires",
   description:
-    "Sites vitrines, plateformes institutionnelles, e-learning et maintenance : découvrez les packs Digital Access pour donner vie à votre présence numérique en Côte d'Ivoire.",
-};
+    "Création de site web, refonte, applications, plateformes e-learning, sites d'établissements scolaires et maintenance : découvrez les packs Digital Access pour votre présence numérique en Côte d'Ivoire.",
+  path: "/services",
+  keywords: [
+    "services web Abidjan",
+    "création site web Côte d'Ivoire",
+    "site établissement scolaire",
+    "plateforme e-learning",
+    "maintenance site web",
+  ],
+});
+
+/** Catalogue d'offres structuré (OfferCatalog / Offer) pour Google. */
+const servicesCatalog = offerCatalogSchema(
+  "Services Digital Access",
+  servicePacks.map((p) => ({ name: p.name, description: p.description, price: p.price, slug: p.slug })),
+);
 
 /**
  * Ancres supplémentaires attendues par les liens du footer
@@ -34,39 +52,43 @@ const anchorAliases: Record<string, string> = {
   "etablissement-visible": "etablissement",
 };
 
-/** Points de repère du comparatif rapide entre packs. */
+/** Points de repère du comparatif rapide entre packs.
+   Ordre des colonnes = servicePacks : Présence Web, Établissement Visible,
+   Établissement Scolaire, Institution Premium, E-Learning, Maintenance. */
 const compareRows = [
   {
     label: "Idéal pour",
     values: [
       "Indépendants & premiers pas",
       "Commerces & PME",
+      "Écoles, collèges, lycées & universités",
       "Institutions & grandes structures",
-      "Écoles & organismes de formation",
+      "Organismes de formation & académies",
       "Tout site déjà en ligne",
     ],
   },
   {
     label: "Délai moyen",
-    values: ["2 semaines", "3 à 4 semaines", "6 à 10 semaines", "8 à 12 semaines", "En continu"],
+    values: ["2 semaines", "3 à 4 semaines", "4 à 6 semaines", "6 à 10 semaines", "8 à 12 semaines", "En continu"],
   },
   {
     label: "Paiement Mobile Money",
-    values: [false, true, true, true, false],
+    values: [false, true, true, true, true, false],
   },
   {
     label: "Espace d'administration",
-    values: [false, true, true, true, false],
+    values: [false, true, true, true, true, false],
   },
   {
     label: "Accompagnement dédié",
-    values: [false, false, true, true, true],
+    values: [false, false, true, true, true, true],
   },
 ];
 
 export default function ServicesPage() {
   return (
     <>
+      <JsonLd data={servicesCatalog} />
       <PageHero
         eyebrow="Nos services"
         title={

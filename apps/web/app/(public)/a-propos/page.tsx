@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import {
   Section,
   Container,
@@ -18,12 +17,22 @@ import { Icon } from "@/components/Icon";
 import { AboutStory } from "./AboutStory";
 import { FounderCard } from "./FounderCard";
 import { Timeline } from "./Timeline";
+import { buildMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = buildMetadata({
   title: "À propos — Digital Access | Agence numérique à Abidjan",
   description:
     "Découvrez Digital Access : notre histoire, notre mission et nos valeurs. Une agence numérique ivoirienne qui conçoit des sites, applications et plateformes e-learning sur-mesure, ancrée à Abidjan.",
-};
+  path: "/a-propos",
+  keywords: [
+    "Digital Access",
+    "agence numérique Abidjan",
+    "agence web Côte d'Ivoire",
+    "à propos Digital Access",
+    "développement web sur-mesure Abidjan",
+    "entreprise digitale ivoirienne",
+  ],
+});
 
 export default function AboutPage() {
   return (

@@ -95,13 +95,20 @@ export function SiteFooter() {
             <Mail size={16} className="text-brand-cyan" />
             {siteConfig.contact.email}
           </a>
-          <a
-            href={`tel:${siteConfig.contact.phone.replace(/\s/g, "")}`}
-            className="flex items-center gap-3 text-sm text-white/60 transition-colors hover:text-white"
-          >
-            <Phone size={16} className="text-brand-cyan" />
-            {siteConfig.contact.phone}
-          </a>
+          <div className="flex items-start gap-3 text-sm text-white/60">
+            <Phone size={16} className="mt-0.5 shrink-0 text-brand-cyan" />
+            <span className="flex flex-col gap-1">
+              {siteConfig.contact.phones.map((tel) => (
+                <a
+                  key={tel}
+                  href={`tel:${tel.replace(/\s/g, "")}`}
+                  className="transition-colors hover:text-white"
+                >
+                  {tel}
+                </a>
+              ))}
+            </span>
+          </div>
           <span className="flex items-center gap-3 text-sm text-white/60">
             <MapPin size={16} className="text-brand-cyan" />
             {siteConfig.contact.address}
