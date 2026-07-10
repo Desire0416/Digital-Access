@@ -26,6 +26,12 @@ export function SiteHeader({ initialUser }: { initialUser?: HeaderUser | null })
   );
   const nav = isClient ? clientNav : mainNav;
 
+  // Espaces connectés (portail client) : largeur d'application élargie, alignée
+  // sur le contenu des pages ; le site vitrine reste centré à 7xl.
+  const PORTAL_PREFIXES = ["/mon-espace", "/mes-projets", "/factures", "/maintenance", "/support"];
+  const isPortal = PORTAL_PREFIXES.some((p) => pathname.startsWith(p));
+  const shellWidth = isPortal ? "max-w-[1600px]" : "max-w-7xl";
+
   React.useEffect(() => {
     setOpen(false);
   }, [pathname]);
@@ -52,7 +58,7 @@ export function SiteHeader({ initialUser }: { initialUser?: HeaderUser | null })
           : "bg-transparent",
       )}
     >
-      <div className="relative z-50 mx-auto flex h-18 max-w-7xl items-center justify-between px-5 py-3 sm:px-8 lg:px-10">
+      <div className={cn("relative z-50 mx-auto flex h-18 items-center justify-between px-5 py-3 sm:px-8 lg:px-10", shellWidth)}>
         <Link href="/" aria-label="Digital Access — accueil" className="shrink-0">
           <Logo height={46} />
         </Link>
@@ -156,7 +162,7 @@ export function SiteHeader({ initialUser }: { initialUser?: HeaderUser | null })
               transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
               className="absolute inset-x-0 top-full z-50 max-h-[calc(100dvh-4.5rem)] overflow-y-auto bg-surface-primary shadow-xl lg:hidden"
             >
-              <nav className="mx-auto flex max-w-7xl flex-col gap-1 px-5 py-4 sm:px-8">
+              <nav className={cn("mx-auto flex flex-col gap-1 px-5 py-4 sm:px-8", shellWidth)}>
               {nav.map((item) => (
                 <Link
                   key={item.href}

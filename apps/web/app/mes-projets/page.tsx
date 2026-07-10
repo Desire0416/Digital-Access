@@ -51,7 +51,7 @@ export default async function MesProjetsPage() {
       </PageHero>
 
       <Section spacing="lg" className="pt-0">
-        <Container>
+        <Container size="full">
           {hasProjects ? (
             <>
               {/* Résumé */}

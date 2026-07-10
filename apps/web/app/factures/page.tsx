@@ -69,7 +69,7 @@ export default async function FacturesPage() {
       />
 
       <Section spacing="md" className="pt-0">
-        <Container>
+        <Container size="full">
           {/* Récapitulatif */}
           <div className="grid gap-5 sm:grid-cols-2">
             <div className="relative overflow-hidden rounded-2xl border border-navy/[0.07] bg-surface-primary p-6">

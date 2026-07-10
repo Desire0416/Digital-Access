@@ -127,7 +127,7 @@ export default async function MaintenancePage() {
       />
 
       <Section spacing="md" className="pt-0">
-        <Container>
+        <Container size="full">
           {hasContracts ? (
             <div className="grid gap-6">
               {contracts.map((c) => {

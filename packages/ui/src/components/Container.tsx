@@ -2,7 +2,7 @@ import * as React from "react";
 import { cn } from "../lib/cn";
 
 export interface ContainerProps extends React.HTMLAttributes<HTMLDivElement> {
-  size?: "sm" | "md" | "lg" | "xl";
+  size?: "sm" | "md" | "lg" | "xl" | "full";
 }
 
 const sizes = {
@@ -10,6 +10,9 @@ const sizes = {
   md: "max-w-5xl",
   lg: "max-w-6xl",
   xl: "max-w-7xl",
+  // « full » = largeur d'application confortable pour les espaces connectés
+  // (tableaux de bord, portail) — bien plus large que le site vitrine.
+  full: "max-w-[1600px]",
 };
 
 /** Conteneur centré avec gouttières responsives. */

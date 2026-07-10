@@ -305,7 +305,10 @@ export function AdminShell({
         </header>
 
         <main className="flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-10 lg:py-10">{children}</div>
+          {/* Contenu FLUIDE : occupe toute la largeur disponible (replier la
+              sidebar élargit réellement le contenu). Padding généreux, pas de
+              colonne centrée étriquée. */}
+          <div className="w-full px-4 py-6 sm:px-6 lg:px-10 lg:py-8 2xl:px-12">{children}</div>
         </main>
       </div>
 

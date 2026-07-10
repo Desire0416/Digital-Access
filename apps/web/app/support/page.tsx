@@ -50,7 +50,7 @@ export default async function SupportPage() {
       </PageHero>
 
       <Section spacing="md" className="pt-0">
-        <Container>
+        <Container size="full">
           {hasTickets ? (
             <div className="grid gap-8 lg:grid-cols-[1.7fr_1fr]">
               {/* Liste des tickets */}
