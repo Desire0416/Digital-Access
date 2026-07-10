@@ -1,6 +1,6 @@
 import { prisma } from "@da/db/client";
 import { staffScope, type AccessScope } from "./access";
-import type { DealCard, DealDetail, DealPipelineStats } from "./crm-types";
+import type { DealCard, DealDetail, DealPipelineStats, ConversionRequestRow } from "./crm-types";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Data layer Opportunités (Deal) — LECTURE. Un commercial voit uniquement les
@@ -64,7 +64,7 @@ export async function getDeal(id: string): Promise<DealDetail | null> {
     select: {
       id: true, title: true, description: true, stage: true, estimatedAmount: true, currency: true,
       probability: true, expectedCloseDate: true, recommendedOffer: true, identifiedNeed: true,
-      competitors: true, lossReason: true, wonAt: true, lostAt: true, conversionStatus: true, createdAt: true,
+      competitors: true, lossReason: true, wonAt: true, lostAt: true, conversionStatus: true, conversionNote: true, createdAt: true,
       assignedTo: { select: { id: true, name: true } },
       organization: {
         select: {
@@ -93,6 +93,7 @@ export async function getDeal(id: string): Promise<DealDetail | null> {
     expectedCloseDate: iso(d.expectedCloseDate), recommendedOffer: d.recommendedOffer,
     identifiedNeed: d.identifiedNeed, competitors: d.competitors, lossReason: d.lossReason,
     wonAt: iso(d.wonAt), lostAt: iso(d.lostAt), conversionStatus: d.conversionStatus as never,
+    conversionNote: d.conversionNote,
     createdAt: iso(d.createdAt)!, assignedTo: d.assignedTo,
     organization: { id: d.organization.id, name: d.organization.name },
     prospectId: d.prospect?.id ?? null, primaryContact: d.primaryContact,
@@ -132,4 +133,23 @@ export async function getDealPipelineStats(): Promise<DealPipelineStats> {
     wonValue: wonAgg._sum?.estimatedAmount ?? 0,
     lostCount,
   };
+}
+
+/** File d'attente des demandes de conversion (admin). */
+export async function getConversionQueue(): Promise<ConversionRequestRow[]> {
+  await staffScope();
+  const rows = await prisma.deal.findMany({
+    where: { conversionStatus: "PENDING", archivedAt: null },
+    orderBy: { conversionRequestedAt: "asc" },
+    select: {
+      id: true, title: true, estimatedAmount: true, conversionRequestedAt: true,
+      organization: { select: { name: true } },
+      assignedTo: { select: { name: true } },
+    },
+  });
+  return rows.map((d) => ({
+    dealId: d.id, title: d.title, organizationName: d.organization.name,
+    assignedToName: d.assignedTo?.name ?? null, estimatedAmount: d.estimatedAmount,
+    requestedAt: iso(d.conversionRequestedAt),
+  }));
 }

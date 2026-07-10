@@ -545,6 +545,7 @@ export interface DealDetail {
   wonAt: string | null;
   lostAt: string | null;
   conversionStatus: DealConversionStatus;
+  conversionNote: string | null;
   createdAt: string;
   assignedTo: { id: string; name: string } | null;
   organization: { id: string; name: string };
@@ -570,6 +571,15 @@ export interface QuoteLineItem {
   label: string;
   quantity: number;
   unitPrice: number;
+}
+
+export interface ConversionRequestRow {
+  dealId: string;
+  title: string;
+  organizationName: string;
+  assignedToName: string | null;
+  estimatedAmount: number | null;
+  requestedAt: string | null;
 }
 
 export interface QuoteDetail {

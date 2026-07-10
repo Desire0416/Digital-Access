@@ -233,6 +233,17 @@ export async function getAssignableCommercials(): Promise<AssignableUser[]> {
   return users.map((u) => ({ id: u.id, name: u.name, roles: u.roles as string[] }));
 }
 
+/** Chefs de projet assignables (CHEF_PROJET + admins). */
+export async function getProjectManagers(): Promise<AssignableUser[]> {
+  await staffScope();
+  const users = await prisma.user.findMany({
+    where: { roles: { hasSome: ["CHEF_PROJET", "ADMIN", "SUPER_ADMIN"] as never }, deletedAt: null },
+    orderBy: { name: "asc" },
+    select: { id: true, name: true, roles: true },
+  });
+  return users.map((u) => ({ id: u.id, name: u.name, roles: u.roles as string[] }));
+}
+
 /* ─── Détection de doublons (organisation) ──────────────────────────────────── */
 
 function domainOf(url: string | null | undefined): string | null {

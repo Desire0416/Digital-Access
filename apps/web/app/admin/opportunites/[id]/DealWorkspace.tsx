@@ -102,13 +102,14 @@ function toIntOrNull(s: string): number | null {
 /* ══════════════════════════ COMPOSANT PRINCIPAL ════════════════════════════ */
 
 export function DealWorkspace({
-  deal, assignable, canAssign, canArchive, canQuote,
+  deal, assignable, canAssign, canArchive, canQuote, conversionSlot,
 }: {
   deal: DealDetail;
   assignable: AssignableUser[];
   canAssign: boolean;
   canArchive: boolean;
   canQuote: boolean;
+  conversionSlot?: React.ReactNode;
 }) {
   const router = useRouter();
   const [tab, setTab] = React.useState<TabId>("overview");
@@ -291,6 +292,9 @@ export function DealWorkspace({
           </Banner>
         )}
       </div>
+
+      {/* Conversion en projet (demande commercial / validation admin) */}
+      {conversionSlot && <div className="mt-4">{conversionSlot}</div>}
 
       {/* Onglets */}
       <div className="mt-6">
