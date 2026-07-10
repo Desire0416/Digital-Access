@@ -3,16 +3,11 @@ import Link from "next/link";
 import {
   ArrowRight,
   GraduationCap,
-  Compass,
   Rocket,
-  Target,
   FolderKanban,
-  Award,
-  Briefcase,
   BadgeCheck,
+  Briefcase,
   Zap,
-  Sparkles,
-  TrendingUp,
 } from "lucide-react";
 import {
   Section,
@@ -20,14 +15,11 @@ import {
   SectionHeading,
   GradientText,
   Reveal,
-  StaggerGroup,
-  StaggerItem,
   IconBadge,
   buttonClasses,
   cn,
 } from "@da/ui";
 import { getSchools, getCareerPaths, getShortCourses, getAcademyStats } from "@/lib/queries";
-import { SchoolCardView } from "@/components/cards";
 import { HomeSearch } from "@/components/HomeSearch";
 import { PromoCarousel } from "@/components/PromoCarousel";
 import { TrendingTabs, type TrendingTab } from "@/components/TrendingTabs";
@@ -42,24 +34,6 @@ export const metadata: Metadata = {
     "Parcours métiers, projets concrets, portfolio, badges et certificats vérifiables. L'académie numérique qui transforme vos compétences en opportunités professionnelles en Côte d'Ivoire.",
   alternates: { canonical: "/" },
 };
-
-const method = [
-  { icon: Compass, title: "Choisir un parcours métier", text: "Un objectif professionnel clair : Assistant IA, Développeur Front-End, Community Manager…" },
-  { icon: Target, title: "Apprendre en pratiquant", text: "Des modules courts, des exercices et des quiz orientés savoir-faire, pas seulement des vidéos." },
-  { icon: FolderKanban, title: "Réaliser des projets", text: "Des missions professionnelles concrètes qui alimentent votre portfolio et prouvent vos compétences." },
-  { icon: Award, title: "Certifier & valoriser", text: "Badges par preuve, certificats vérifiables par QR code, et accès à des opportunités." },
-];
-
-const popularSearches = [
-  "Intelligence artificielle",
-  "Développement web",
-  "Marketing digital",
-  "Data",
-  "Design",
-  "Excel",
-  "Canva",
-  "Bureautique",
-];
 
 const faq: HomeFaqItem[] = [
   { q: "Les certificats sont-ils reconnus ?", a: "Chaque parcours délivre un certificat vérifiable publiquement par QR code, ainsi que des badges de compétences « par preuve » que vous pouvez partager à un employeur ou sur LinkedIn." },
@@ -106,28 +80,33 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* ── Hero recherche ── */}
-      <section className="relative isolate overflow-hidden">
-        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -right-40 -top-40 h-[32rem] w-[32rem] rounded-full bg-gradient-da opacity-[0.1] blur-3xl" />
-          <div className="absolute -left-40 top-40 h-[28rem] w-[28rem] rounded-full bg-brand-violet/10 blur-3xl" />
-          <div className="absolute inset-0 bg-grid opacity-[0.5]" />
+      {/* ── Hero pleine largeur (photo + superposition) ── */}
+      <section className="relative isolate overflow-hidden bg-navy text-white">
+        <div aria-hidden className="absolute inset-0">
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: "url('/hero-academy.jpg')" }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-navy/95 via-navy/85 to-brand-violet/70" />
+          <div className="absolute inset-0 bg-grid opacity-[0.08]" />
         </div>
-        <Container className="relative pb-14 pt-12 text-center sm:pt-16">
+        <Container className="relative py-16 text-center sm:py-20 lg:py-24">
           <Reveal>
-            <span className="inline-flex items-center gap-2 rounded-full border border-brand-blue-vif/20 bg-brand-blue-vif/[0.06] px-4 py-1.5 text-xs font-bold uppercase tracking-[0.14em] text-brand-blue-royal">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.14em] text-white backdrop-blur">
               <GraduationCap size={15} />
               Académie numérique · Côte d'Ivoire
             </span>
           </Reveal>
           <Reveal delay={0.05}>
-            <h1 className="mx-auto mt-6 max-w-3xl font-display text-4xl font-extrabold leading-[1.07] tracking-tight text-navy sm:text-5xl lg:text-[3.4rem]">
+            <h1 className="mx-auto mt-6 max-w-3xl font-display text-4xl font-extrabold leading-[1.07] tracking-tight text-white sm:text-5xl lg:text-[3.4rem]">
               Apprenez un métier. Prouvez vos compétences.{" "}
-              <GradientText>Décrochez l'emploi.</GradientText>
+              <span className="bg-gradient-to-r from-brand-cyan to-brand-blue-vif bg-clip-text text-transparent">
+                Décrochez l'emploi.
+              </span>
             </h1>
           </Reveal>
           <Reveal delay={0.1}>
-            <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-text-secondary">
+            <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-white/75">
               Des parcours métiers concrets en IA, développement, marketing, design et data —
               avec de vrais projets, un portfolio, des badges et des certificats vérifiables.
             </p>
@@ -141,12 +120,12 @@ export default async function HomePage() {
           {heroChips.length > 0 && (
             <Reveal delay={0.2}>
               <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
-                <span className="text-sm font-medium text-text-muted">Explorez :</span>
+                <span className="text-sm font-medium text-white/60">Explorez :</span>
                 {heroChips.map((s) => (
                   <Link
                     key={s.id}
                     href={`/schools/${s.slug}`}
-                    className="rounded-full border border-navy/[0.1] bg-surface-primary px-3.5 py-1.5 text-sm font-medium text-navy transition-colors hover:border-brand-blue-vif/40 hover:text-brand-blue-royal"
+                    className="rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 text-sm font-medium text-white backdrop-blur transition-colors hover:bg-white/20"
                   >
                     {s.name}
                   </Link>
@@ -160,8 +139,8 @@ export default async function HomePage() {
               <dl className="mx-auto mt-12 grid max-w-2xl grid-cols-2 gap-x-8 gap-y-5 sm:grid-cols-4">
                 {statItems.map((s) => (
                   <div key={s.label}>
-                    <dt className="font-display text-3xl font-extrabold text-navy">{s.value}</dt>
-                    <dd className="mt-0.5 text-xs font-medium text-text-secondary">{s.label}</dd>
+                    <dt className="font-display text-3xl font-extrabold text-white">{s.value}</dt>
+                    <dd className="mt-0.5 text-xs font-medium text-white/60">{s.label}</dd>
                   </div>
                 ))}
               </dl>
@@ -171,7 +150,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── Carrousel promotionnel ── */}
-      <Container className="pb-6">
+      <Container className="pt-10">
         <PromoCarousel />
       </Container>
 
@@ -197,7 +176,7 @@ export default async function HomePage() {
         </Section>
       )}
 
-      {/* ── Prêt pour un métier (onglets par domaine, façon « Get job-ready ») ── */}
+      {/* ── Prêt pour un métier (onglets par domaine) ── */}
       {jobReadyGroups.length > 0 && (
         <Section tone="muted">
           <Container>
@@ -213,29 +192,7 @@ export default async function HomePage() {
         </Section>
       )}
 
-      {/* ── Écoles / domaines ── */}
-      <Section>
-        <Container>
-          <SectionHeading
-            eyebrow="Nos écoles"
-            title={<>Explorez par <GradientText>domaine de compétences</GradientText></>}
-            subtitle="Chaque école regroupe des parcours métiers et des formations courtes autour d'un grand domaine du numérique."
-          />
-          {schools.length > 0 ? (
-            <StaggerGroup className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {schools.map((s) => (
-                <StaggerItem key={s.id}>
-                  <SchoolCardView school={s} />
-                </StaggerItem>
-              ))}
-            </StaggerGroup>
-          ) : (
-            <p className="mt-12 text-center text-text-muted">Les écoles arrivent très bientôt.</p>
-          )}
-        </Container>
-      </Section>
-
-      {/* ── Résultats / employabilité (3 cartes, façon « Launch a career ») ── */}
+      {/* ── Preuve & employabilité (3 cartes) ── */}
       <Section>
         <Container>
           <SectionHeading
@@ -258,56 +215,6 @@ export default async function HomePage() {
               </Reveal>
             ))}
           </div>
-        </Container>
-      </Section>
-
-      {/* ── Recherches populaires ── */}
-      <Section tone="muted" spacing="sm">
-        <Container>
-          <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-[0.14em] text-text-muted">
-            <TrendingUp size={16} className="text-brand-blue-royal" />
-            Recherches populaires
-          </div>
-          <div className="mt-5 flex flex-wrap gap-2.5">
-            {popularSearches.map((tag) => (
-              <Link
-                key={tag}
-                href={`/career-paths?search=${encodeURIComponent(tag)}`}
-                className="inline-flex items-center gap-1.5 rounded-full border border-navy/[0.1] bg-surface-primary px-4 py-2 text-sm font-medium text-navy transition-colors hover:border-brand-blue-vif/40 hover:text-brand-blue-royal"
-              >
-                <Sparkles size={14} className="text-brand-blue-vif" />
-                {tag}
-              </Link>
-            ))}
-          </div>
-        </Container>
-      </Section>
-
-      {/* ── Méthode ── */}
-      <Section>
-        <Container>
-          <SectionHeading
-            eyebrow="Notre méthode"
-            title={<>Apprendre <GradientText>en faisant</GradientText></>}
-            subtitle="Pas de compétence sans pratique. Pas de certification sans projet. Pas d'employabilité sans preuve."
-          />
-          <StaggerGroup className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {method.map((m, i) => (
-              <StaggerItem
-                key={m.title}
-                className="relative rounded-2xl border border-navy/[0.07] bg-surface-primary p-6"
-              >
-                <span className="absolute right-5 top-5 font-display text-4xl font-extrabold text-navy/[0.06]">
-                  0{i + 1}
-                </span>
-                <IconBadge tone="gradient">
-                  <m.icon size={22} />
-                </IconBadge>
-                <h3 className="mt-4 font-display text-lg font-bold text-navy">{m.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-text-secondary">{m.text}</p>
-              </StaggerItem>
-            ))}
-          </StaggerGroup>
         </Container>
       </Section>
 

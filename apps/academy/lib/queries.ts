@@ -5,6 +5,7 @@ import type {
   CareerPathCard,
   CareerPathDetail,
   ShortCourseCard,
+  ProjectCard,
   AcademyStats,
   Level,
 } from "./types";
@@ -115,6 +116,7 @@ export async function getSchools(): Promise<SchoolCard[]> {
         shortDescription: true,
         icon: true,
         color: true,
+        image: true,
         _count: { select: { careerPaths: true, shortCourses: true } },
       },
     });
@@ -125,6 +127,7 @@ export async function getSchools(): Promise<SchoolCard[]> {
       shortDescription: s.shortDescription,
       icon: s.icon,
       color: s.color,
+      image: s.image,
       careerPathCount: s._count.careerPaths,
       shortCourseCount: s._count.shortCourses,
     }));
@@ -146,6 +149,7 @@ export async function getSchool(slug: string): Promise<SchoolDetail | null> {
         longDescription: true,
         icon: true,
         color: true,
+        image: true,
         _count: { select: { careerPaths: true, shortCourses: true } },
         careerPaths: {
           where: { status: "PUBLISHED" },
@@ -168,6 +172,7 @@ export async function getSchool(slug: string): Promise<SchoolDetail | null> {
       longDescription: s.longDescription,
       icon: s.icon,
       color: s.color,
+      image: s.image,
       careerPathCount: s._count.careerPaths,
       shortCourseCount: s._count.shortCourses,
       careerPaths: s.careerPaths.map(mapPathCard),
@@ -373,5 +378,43 @@ export async function getAcademyStats(): Promise<AcademyStats> {
     return { schools, careerPaths, shortCourses, projects, badges };
   } catch {
     return { schools: 0, careerPaths: 0, shortCourses: 0, projects: 0, badges: 0 };
+  }
+}
+
+/** Projets professionnels publiés (page publique /projets). Résilient. */
+export async function getPublicProjects(): Promise<ProjectCard[]> {
+  try {
+    const rows = await prisma.professionalProject.findMany({
+      where: { status: "PUBLISHED" },
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        projectType: true,
+        level: true,
+        context: true,
+        mission: true,
+        estimatedDuration: true,
+        school: { select: { name: true, slug: true } },
+        careerPath: { select: { title: true, slug: true } },
+      },
+    });
+    return rows.map((p) => ({
+      id: p.id,
+      title: p.title,
+      slug: p.slug,
+      projectType: p.projectType,
+      level: p.level as Level,
+      context: p.context,
+      mission: p.mission,
+      estimatedDuration: p.estimatedDuration,
+      schoolName: p.school?.name ?? null,
+      schoolSlug: p.school?.slug ?? null,
+      careerPathTitle: p.careerPath?.title ?? null,
+      careerPathSlug: p.careerPath?.slug ?? null,
+    }));
+  } catch {
+    return [];
   }
 }

@@ -7,7 +7,7 @@ import { useSession } from "next-auth/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X, GraduationCap, LayoutDashboard, ClipboardCheck } from "lucide-react";
 import { Avatar, buttonClasses, cn, useScrolled } from "@da/ui";
-import { catalogueMenu, primaryNav, audienceNav } from "@/lib/site";
+import { catalogueMenu, mainNav, audienceNav } from "@/lib/site";
 import { AcademyLogo } from "./AcademyLogo";
 import { CatalogueMenu } from "./CatalogueMenu";
 import { HomeSearch } from "./HomeSearch";
@@ -84,8 +84,7 @@ export function AcademyHeader({ initialUser }: { initialUser?: HeaderUser | null
 
         {/* Nav desktop */}
         <nav className="hidden shrink-0 items-center gap-1 lg:flex">
-          <CatalogueMenu />
-          {primaryNav.map((item) => (
+          {mainNav.map((item) => (
             <Link
               key={item.href + item.label}
               href={item.href}
@@ -106,6 +105,7 @@ export function AcademyHeader({ initialUser }: { initialUser?: HeaderUser | null
               )}
             </Link>
           ))}
+          <CatalogueMenu />
         </nav>
 
         {/* Recherche (desktop) */}
@@ -223,7 +223,7 @@ export function AcademyHeader({ initialUser }: { initialUser?: HeaderUser | null
                 {catalogueMenu.secondary.label}
               </Link>
               <div className="my-1 h-px bg-navy/[0.06]" />
-              {primaryNav.map((item) => (
+              {mainNav.map((item) => (
                 <Link
                   key={item.href + item.label}
                   href={item.href}

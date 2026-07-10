@@ -59,16 +59,22 @@ export interface CatalogueEntry extends NavItem {
 }
 export const catalogueMenu = {
   label: "Catalogue",
-  intro: "Une école, un métier complet ou une compétence ciblée — trouvez votre voie.",
+  intro: "Un métier complet, un domaine d'expertise ou un projet concret — trouvez votre voie.",
   items: [
     { label: "Parcours métiers", href: "/career-paths", desc: "Se former à un métier complet, preuve à l'appui", icon: "rocket" },
-    { label: "Formations courtes", href: "/short-courses", desc: "Monter en compétence sur un outil précis", icon: "book" },
     { label: "Écoles", href: "/schools", desc: "Huit domaines de compétences numériques", icon: "school" },
+    { label: "Projets", href: "/projets", desc: "Des missions concrètes pour prouver vos compétences", icon: "project" },
   ] as CatalogueEntry[],
-  secondary: { label: "Certifications & badges", href: "/certifications" },
+  secondary: { label: "Formations courtes", href: "/short-courses" },
 } as const;
 
-/** Liens de navigation principaux (hors méga-menu Catalogue). */
+/** Liens de navigation du header (hors méga-menu Catalogue). */
+export const mainNav: NavItem[] = [
+  { label: "Accueil", href: "/" },
+  { label: "Formation certifiante", href: "/certifications" },
+];
+
+/** Ancien alias conservé pour compat (plan du site / anciens imports). */
 export const primaryNav: NavItem[] = [
   { label: "Entreprises", href: "/companies" },
 ];

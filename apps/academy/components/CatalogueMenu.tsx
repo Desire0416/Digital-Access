@@ -4,12 +4,12 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, Rocket, BookOpen, GraduationCap, ArrowRight, BadgeCheck, type LucideIcon } from "lucide-react";
+import { ChevronDown, Rocket, BookOpen, GraduationCap, ArrowRight, FolderKanban, type LucideIcon } from "lucide-react";
 import { cn } from "@da/ui";
 import { catalogueMenu } from "@/lib/site";
 
-const ICONS: Record<string, LucideIcon> = { rocket: Rocket, book: BookOpen, school: GraduationCap };
-const CATALOGUE_HREFS = ["/career-paths", "/short-courses", "/schools", "/certifications"];
+const ICONS: Record<string, LucideIcon> = { rocket: Rocket, book: BookOpen, school: GraduationCap, project: FolderKanban };
+const CATALOGUE_HREFS = ["/career-paths", "/schools", "/projets", "/short-courses"];
 
 /** Méga-menu « Catalogue » du header (desktop) : survol + clic, fermeture propre. */
 export function CatalogueMenu() {
@@ -111,7 +111,7 @@ export function CatalogueMenu() {
               role="menuitem"
               className="mt-1 flex items-center gap-2 rounded-xl border-t border-navy/[0.06] px-3 py-2.5 text-sm font-semibold text-brand-blue-royal transition-colors hover:bg-navy/[0.035]"
             >
-              <BadgeCheck size={16} /> {catalogueMenu.secondary.label}
+              <BookOpen size={16} /> {catalogueMenu.secondary.label}
               <ArrowRight size={13} className="ml-auto" />
             </Link>
           </motion.div>

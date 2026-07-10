@@ -20,8 +20,25 @@ export interface SchoolCard {
   shortDescription: string;
   icon: string | null;
   color: string | null;
+  image: string | null;
   careerPathCount: number;
   shortCourseCount: number;
+}
+
+/** Carte projet professionnel (page publique /projets). */
+export interface ProjectCard {
+  id: string;
+  title: string;
+  slug: string;
+  projectType: string;
+  level: Level;
+  context: string | null;
+  mission: string | null;
+  estimatedDuration: number | null;
+  schoolName: string | null;
+  schoolSlug: string | null;
+  careerPathTitle: string | null;
+  careerPathSlug: string | null;
 }
 
 export interface SchoolDetail extends SchoolCard {
