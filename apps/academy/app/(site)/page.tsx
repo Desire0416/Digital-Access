@@ -31,6 +31,7 @@ import { SchoolCardView } from "@/components/cards";
 import { HomeSearch } from "@/components/HomeSearch";
 import { PromoCarousel } from "@/components/PromoCarousel";
 import { TrendingTabs, type TrendingTab } from "@/components/TrendingTabs";
+import { JobReadyTabs, type JobReadyGroup } from "@/components/JobReadyTabs";
 import { HomeFaq, type HomeFaqItem } from "@/components/HomeFaq";
 
 export const dynamic = "force-dynamic";
@@ -90,6 +91,11 @@ export default async function HomePage() {
   ].filter((t) => (t.paths?.length ?? 0) + (t.shorts?.length ?? 0) > 0);
 
   const heroChips = schools.slice(0, 6);
+
+  // Groupes « Prêt pour un métier » : chaque école avec ses parcours (onglets par domaine).
+  const jobReadyGroups: JobReadyGroup[] = schools
+    .map((s) => ({ school: s, paths: allPaths.filter((p) => p.schoolSlug === s.slug) }))
+    .filter((g) => g.paths.length > 0);
 
   const statItems = [
     { value: stats.schools, label: "Écoles" },
@@ -191,8 +197,24 @@ export default async function HomePage() {
         </Section>
       )}
 
+      {/* ── Prêt pour un métier (onglets par domaine, façon « Get job-ready ») ── */}
+      {jobReadyGroups.length > 0 && (
+        <Section tone="muted">
+          <Container>
+            <SectionHeading
+              eyebrow="Employabilité"
+              title={<>Prêt pour un <GradientText>métier recherché</GradientText></>}
+              subtitle="Choisissez un domaine et découvrez les parcours qui y mènent — de la première compétence jusqu'au poste."
+            />
+            <div className="mt-10">
+              <JobReadyTabs groups={jobReadyGroups} />
+            </div>
+          </Container>
+        </Section>
+      )}
+
       {/* ── Écoles / domaines ── */}
-      <Section tone="muted">
+      <Section>
         <Container>
           <SectionHeading
             eyebrow="Nos écoles"
