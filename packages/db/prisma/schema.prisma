@@ -28,6 +28,9 @@ enum UserRole {
   ACADEMIC_MANAGER
   ADMIN
   SUPER_ADMIN
+  // Pôle Solutions — CRM commercial (ajoutés en fin de liste : append Postgres sûr)
+  COMMERCIAL
+  CHEF_PROJET
 }
 
 enum TokenType {
@@ -315,6 +318,23 @@ enum NotificationType {
   OPPORTUNITY_NEW
   APPLICATION_UPDATE
   SYSTEM
+  // Pôle Solutions — CRM commercial
+  PROSPECT_ASSIGNED
+  AUDIT_SUBMITTED
+  AUDIT_VALIDATED
+  AUDIT_REJECTED
+  TASK_ASSIGNED
+  TASK_DUE
+  TASK_OVERDUE
+  FOLLOW_UP_DUE
+  DEAL_ASSIGNED
+  DEAL_WON
+  DEAL_LOST
+  QUOTE_SENT
+  CONVERSION_REQUESTED
+  CONVERSION_VALIDATED
+  CONVERSION_REJECTED
+  PROJECT_ASSIGNED
 }
 
 // ═══════════════════════════════ USER & AUTH ════════════════════════════════
@@ -353,6 +373,23 @@ model User {
   tickets             Ticket[]
   ticketMessages      TicketMessage[]
   projectMessages     ProjectMessage[]
+
+  // Pôle Solutions — CRM commercial
+  ownedOrganizations     Organization[]  @relation("OrgOwner")
+  assignedProspects      Prospect[]      @relation("ProspectAssignee")
+  createdProspects       Prospect[]      @relation("ProspectCreator")
+  authoredAudits         Audit[]         @relation("AuditAuthor")
+  validatedAudits        Audit[]         @relation("AuditValidator")
+  sentAudits             Audit[]         @relation("AuditSender")
+  uploadedAuditDocuments AuditDocument[] @relation("AuditDocUploader")
+  createdActivities      Activity[]      @relation("ActivityCreator")
+  assignedCrmTasks       Task[]          @relation("TaskAssignee")
+  createdCrmTasks        Task[]          @relation("TaskCreator")
+  assignedDeals          Deal[]          @relation("DealAssignee")
+  createdQuotes          Quote[]         @relation("QuoteCreator")
+  uploadedDocuments      CrmDocument[]   @relation("DocUploader")
+  commercialProjects     Project[]       @relation("ProjectCommercialOwner")
+  managedProjects        Project[]       @relation("ProjectManager")
 
   // Pôle Academy (refonte)
   learnerProfile      LearnerProfile?
@@ -439,8 +476,22 @@ model Lead {
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
+  // ── Enrichissement CRM (additif, nullable) ──
+  organizationId      String?
+  organization        Organization? @relation(fields: [organizationId], references: [id])
+  priority            Priority?
+  qualificationStatus String? // nouveau, à-qualifier, qualifié, non-qualifié, converti, fermé, spam…
+  nextAction          String?
+  nextActionDate      DateTime?
+  lastActivityAt      DateTime?
+  archivedAt          DateTime?
+  deal                Deal?      @relation("DealInboundLead")
+  activities          Activity[]
+  tasks               Task[]
+
   @@index([status])
   @@index([createdAt])
+  @@index([organizationId])
 }
 
 model Project {
@@ -462,14 +513,40 @@ model Project {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
-  stages   ProjectStage[]
-  invoices Invoice[]
-  tickets  Ticket[]
-  messages ProjectMessage[]
-  contract MaintenanceContract?
+  // ── Origine commerciale (CRM, additif nullable) ──
+  organizationId    String?
+  organization      Organization? @relation(fields: [organizationId], references: [id])
+  dealId            String?       @unique
+  deal              Deal?         @relation("DealProject", fields: [dealId], references: [id])
+  auditId           String?
+  audit             Audit?        @relation("ProjectAudit", fields: [auditId], references: [id])
+  quoteId           String?       @unique
+  quote             Quote?        @relation("QuoteProject", fields: [quoteId], references: [id])
+  primaryContactId  String?
+  primaryContact    Contact?      @relation("ProjectPrimaryContact", fields: [primaryContactId], references: [id])
+  commercialOwnerId String?
+  commercialOwner   User?         @relation("ProjectCommercialOwner", fields: [commercialOwnerId], references: [id])
+  projectManagerId  String?
+  projectManager    User?         @relation("ProjectManager", fields: [projectManagerId], references: [id])
+  sourceType        String? // LEAD | PROSPECT | DEAL | MANUAL
+  sourceId          String?
+  commercialSummary String?
+  initialNeed       String?
+  validatedScope    String?
+
+  stages     ProjectStage[]
+  invoices   Invoice[]
+  tickets    Ticket[]
+  messages   ProjectMessage[]
+  contract   MaintenanceContract?
+  activities Activity[]
+  tasks      Task[]
 
   @@index([clientId])
   @@index([status])
+  @@index([organizationId])
+  @@index([projectManagerId])
+  @@index([commercialOwnerId])
 }
 
 model ProjectStage {
@@ -1180,4 +1257,575 @@ model PortfolioProject {
   createdAt    DateTime @default(now())
 
   @@index([slug])
+}
+
+// ═══════════════════════════ PÔLE SOLUTIONS — CRM COMMERCIAL ═════════════════
+// Prospection sortante + leads entrants → pipeline commun (qualification →
+// opportunité → devis → négociation → conversion en projet). Organisation =
+// entité centrale (peut être successivement prospect, lead, opportunité, client).
+// « Deal » = opportunité commerciale (distinct du modèle Opportunity académique).
+
+enum LifecycleStage {
+  PROSPECT
+  LEAD
+  OPPORTUNITY
+  CLIENT
+  PARTNER
+  FORMER_CLIENT
+  ARCHIVED
+}
+
+enum OrganizationType {
+  COMPANY
+  SCHOOL
+  UNIVERSITY
+  FIRM
+  CLINIC
+  NGO
+  ASSOCIATION
+  PUBLIC_INSTITUTION
+  PROFESSIONAL // particulier professionnel
+  OTHER
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum ProspectStatus {
+  TO_ANALYZE
+  AUDIT_IN_PROGRESS
+  AUDIT_COMPLETED
+  READY_TO_CONTACT
+  CONTACTED
+  FOLLOW_UP_REQUIRED
+  ENGAGED
+  QUALIFIED
+  CONVERTED_TO_OPPORTUNITY
+  NOT_INTERESTED
+  UNREACHABLE
+  POSTPONED
+  ARCHIVED
+}
+
+enum AuditStatus {
+  DRAFT
+  IN_PROGRESS
+  INTERNAL_REVIEW
+  TO_VALIDATE
+  VALIDATED
+  READY_TO_SEND
+  SENT
+  OUTDATED
+  ARCHIVED
+}
+
+enum AuditSeverity {
+  LOW
+  MODERATE
+  MAJOR
+  CRITICAL
+}
+
+enum AuditCategory {
+  SECURITY
+  PERFORMANCE
+  UX
+  MOBILE
+  SEO
+  CONTENT
+  INSTITUTIONAL_IMAGE
+  CONVERSION
+  ACCESSIBILITY
+  COMPLIANCE
+  MAINTENANCE
+  DIGITAL_STRATEGY
+  ECOMMERCE
+  ENROLLMENT
+  SUPPORT
+  INFRASTRUCTURE
+}
+
+enum AuditDocType {
+  INTERNAL_REPORT
+  CLIENT_REPORT
+  PDF
+  DOCX
+  SCREENSHOT
+  EVIDENCE
+  PRESENTATION
+  OTHER
+}
+
+enum DocVisibility {
+  INTERNAL_ONLY
+  COMMERCIAL_TEAM
+  CLIENT_SHAREABLE
+  SHARED_WITH_CLIENT
+}
+
+enum ActivityType {
+  NOTE
+  CALL
+  EMAIL
+  WHATSAPP
+  MEETING
+  DOCUMENT_SENT
+  AUDIT_SENT
+  RESPONSE_RECEIVED
+  FOLLOW_UP
+  STATUS_CHANGE
+  QUOTE_SENT
+  PAYMENT_RECEIVED
+  OTHER
+}
+
+enum ActivityVisibility {
+  INTERNAL
+  TEAM
+  CLIENT_VISIBLE
+}
+
+enum TaskType {
+  CALL
+  EMAIL
+  WHATSAPP
+  MEETING
+  FOLLOW_UP
+  AUDIT
+  QUOTE
+  ADMIN
+  OTHER
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  OVERDUE
+}
+
+enum DealStage {
+  TO_QUALIFY
+  NEED_CONFIRMED
+  MEETING_SCHEDULED
+  SOLUTION_PREPARATION
+  PROPOSAL_SENT
+  QUOTE_SENT
+  NEGOTIATION
+  VERBAL_AGREEMENT
+  DEPOSIT_PENDING
+  WON
+  LOST
+  POSTPONED
+  ON_HOLD
+}
+
+enum DealConversionStatus {
+  NOT_REQUESTED
+  PENDING
+  VALIDATED
+  REJECTED
+}
+
+enum QuoteStatus {
+  DRAFT
+  SENT
+  ACCEPTED
+  REJECTED
+  EXPIRED
+}
+
+model Organization {
+  id                String           @id @default(cuid())
+  name              String
+  legalName         String?
+  slug              String           @unique
+  organizationType  OrganizationType @default(COMPANY)
+  sector            String?
+  subSector         String?
+  description       String?
+  website           String?
+  email             String?
+  phone             String?
+  whatsapp          String?
+  address           String?
+  city              String?
+  country           String?          @default("Côte d'Ivoire")
+  googleBusinessUrl String?
+  linkedinUrl       String?
+  facebookUrl       String?
+  instagramUrl      String?
+  lifecycleStage    LifecycleStage   @default(PROSPECT)
+  ownerId           String?
+  owner             User?            @relation("OrgOwner", fields: [ownerId], references: [id])
+  priority          Priority?
+  source            String?
+  notes             String?
+  createdById       String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  archivedAt        DateTime?
+
+  contacts   Contact[]
+  prospects  Prospect[]
+  audits     Audit[]
+  activities Activity[]
+  tasks      Task[]
+  deals      Deal[]
+  quotes     Quote[]
+  documents  CrmDocument[]
+  leads      Lead[]
+  projects   Project[]
+  tags       Tag[]
+
+  @@index([slug])
+  @@index([lifecycleStage])
+  @@index([ownerId])
+}
+
+model Contact {
+  id               String    @id @default(cuid())
+  organizationId   String
+  organization     Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  firstName        String
+  lastName         String?
+  fullName         String
+  jobTitle         String?
+  department       String?
+  email            String?
+  phone            String?
+  whatsapp         String?
+  linkedinUrl      String?
+  isPrimary        Boolean   @default(false)
+  isDecisionMaker  Boolean   @default(false)
+  influenceLevel   String?
+  preferredChannel String?
+  notes            String?
+  deletedAt        DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  activities        Activity[]
+  receivedAudits    Audit[]   @relation("AuditRecipient")
+  dealsAsPrimary    Deal[]    @relation("DealPrimaryContact")
+  quotes            Quote[]
+  projectsAsPrimary Project[] @relation("ProjectPrimaryContact")
+
+  @@index([organizationId])
+}
+
+model Prospect {
+  id                 String         @id @default(cuid())
+  organizationId     String
+  organization       Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  source             String?
+  status             ProspectStatus @default(TO_ANALYZE)
+  priority           Priority?
+  assignedToId       String?
+  assignedTo         User?          @relation("ProspectAssignee", fields: [assignedToId], references: [id])
+  digitalMaturity    String? // faible, moyenne, bonne, avancée
+  estimatedPotential Int? // FCFA
+  recommendedOffer   String?
+  mainObservedNeed   String?
+  lastActivityAt     DateTime?
+  nextAction         String?
+  nextActionDate     DateTime?
+  contactStatus      String?
+  createdById        String?
+  createdBy          User?          @relation("ProspectCreator", fields: [createdById], references: [id])
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  archivedAt         DateTime?
+
+  audits     Audit[]
+  activities Activity[]
+  tasks      Task[]
+  deals      Deal[]
+
+  @@index([organizationId])
+  @@index([status])
+  @@index([assignedToId])
+}
+
+model Audit {
+  id                         String         @id @default(cuid())
+  organizationId             String
+  organization               Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  prospectId                 String?
+  prospect                   Prospect?      @relation(fields: [prospectId], references: [id])
+  reference                  String         @unique
+  title                      String
+  auditType                  String?
+  version                    Int            @default(1)
+  status                     AuditStatus    @default(DRAFT)
+  overallSeverity            AuditSeverity?
+  summary                    String?
+  methodology                String?
+  digitalImportanceStatement String?
+  auditDate                  DateTime?
+  lastVerifiedAt             DateTime?
+  authorId                   String?
+  author                     User?          @relation("AuditAuthor", fields: [authorId], references: [id])
+  validatedById              String?
+  validatedBy                User?          @relation("AuditValidator", fields: [validatedById], references: [id])
+  validatedAt                DateTime?
+  sentAt                     DateTime?
+  sentById                   String?
+  sentBy                     User?          @relation("AuditSender", fields: [sentById], references: [id])
+  recipientContactId         String?
+  recipientContact           Contact?       @relation("AuditRecipient", fields: [recipientContactId], references: [id])
+  reviewNote                 String? // motif de refus de validation
+  internalNotes              String?
+  createdAt                  DateTime       @default(now())
+  updatedAt                  DateTime       @updatedAt
+  archivedAt                 DateTime?
+
+  findings  AuditFinding[]
+  documents AuditDocument[]
+  projects  Project[]      @relation("ProjectAudit")
+
+  @@index([organizationId])
+  @@index([prospectId])
+  @@index([status])
+  @@index([reference])
+}
+
+model AuditFinding {
+  id                   String        @id @default(cuid())
+  auditId              String
+  audit                Audit         @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  title                String
+  category             AuditCategory @default(UX)
+  description          String?
+  severity             AuditSeverity @default(MODERATE)
+  businessImpact       String?
+  userImpact           String?
+  securityImpact       String?
+  evidenceText         String?
+  evidenceUrl          String?
+  affectedPageUrl      String?
+  screenshotDocumentId String?
+  recommendation       String?
+  priorityOrder        Int           @default(0)
+  isPublic             Boolean       @default(true)
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+
+  @@index([auditId])
+}
+
+model AuditDocument {
+  id           String        @id @default(cuid())
+  auditId      String
+  audit        Audit         @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  documentType AuditDocType  @default(PDF)
+  fileName     String
+  fileUrl      String
+  mimeType     String?
+  size         Int?
+  version      Int           @default(1)
+  visibility   DocVisibility @default(INTERNAL_ONLY)
+  uploadedById String?
+  uploadedBy   User?         @relation("AuditDocUploader", fields: [uploadedById], references: [id])
+  createdAt    DateTime      @default(now())
+
+  @@index([auditId])
+}
+
+model Activity {
+  id             String             @id @default(cuid())
+  organizationId String?
+  organization   Organization?      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  prospectId     String?
+  prospect       Prospect?          @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+  leadId         String?
+  lead           Lead?              @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  dealId         String?
+  deal           Deal?              @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  projectId      String?
+  project        Project?           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  contactId      String?
+  contact        Contact?           @relation(fields: [contactId], references: [id])
+  type           ActivityType       @default(NOTE)
+  subject        String?
+  notes          String?
+  activityDate   DateTime           @default(now())
+  createdById    String?
+  createdBy      User?              @relation("ActivityCreator", fields: [createdById], references: [id])
+  visibility     ActivityVisibility @default(INTERNAL)
+  createdAt      DateTime           @default(now())
+
+  @@index([organizationId])
+  @@index([prospectId])
+  @@index([dealId])
+  @@index([leadId])
+  @@index([projectId])
+}
+
+model Task {
+  id             String        @id @default(cuid())
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  prospectId     String?
+  prospect       Prospect?     @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+  leadId         String?
+  lead           Lead?         @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  dealId         String?
+  deal           Deal?         @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  projectId      String?
+  project        Project?      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title          String
+  description    String?
+  type           TaskType      @default(FOLLOW_UP)
+  priority       Priority      @default(MEDIUM)
+  status         TaskStatus    @default(TODO)
+  assignedToId   String?
+  assignedTo     User?         @relation("TaskAssignee", fields: [assignedToId], references: [id])
+  createdById    String?
+  createdBy      User?         @relation("TaskCreator", fields: [createdById], references: [id])
+  dueDate        DateTime?
+  completedAt    DateTime?
+  reminderAt     DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([assignedToId])
+  @@index([status])
+  @@index([dueDate])
+}
+
+model Deal {
+  id                      String               @id @default(cuid())
+  organizationId          String
+  organization            Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  prospectId              String?
+  prospect                Prospect?            @relation(fields: [prospectId], references: [id])
+  inboundLeadId           String?              @unique
+  inboundLead             Lead?                @relation("DealInboundLead", fields: [inboundLeadId], references: [id])
+  primaryContactId        String?
+  primaryContact          Contact?             @relation("DealPrimaryContact", fields: [primaryContactId], references: [id])
+  title                   String
+  description             String?
+  stage                   DealStage            @default(TO_QUALIFY)
+  estimatedAmount         Int? // FCFA
+  currency                String               @default("XOF")
+  probability             Int? // 0-100
+  expectedCloseDate       DateTime?
+  assignedToId            String?
+  assignedTo              User?                @relation("DealAssignee", fields: [assignedToId], references: [id])
+  recommendedOffer        String?
+  identifiedNeed          String?
+  competitors             String[]             @default([])
+  lossReason              String?
+  wonAt                   DateTime?
+  lostAt                  DateTime?
+  conversionStatus        DealConversionStatus @default(NOT_REQUESTED)
+  conversionRequestedAt   DateTime?
+  conversionRequestedById String?
+  conversionValidatedAt   DateTime?
+  conversionValidatedById String?
+  conversionNote          String?
+  createdAt               DateTime             @default(now())
+  updatedAt               DateTime             @updatedAt
+  archivedAt              DateTime?
+
+  quotes     Quote[]
+  activities Activity[]
+  tasks      Task[]
+  project    Project?   @relation("DealProject")
+
+  @@index([organizationId])
+  @@index([stage])
+  @@index([assignedToId])
+}
+
+model Quote {
+  id             String        @id @default(cuid())
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  dealId         String?
+  deal           Deal?         @relation(fields: [dealId], references: [id])
+  contactId      String?
+  contact        Contact?      @relation(fields: [contactId], references: [id])
+  number         String        @unique
+  title          String
+  items          Json // [{ label, quantity, unitPrice }]
+  amount         Int           @default(0)
+  tax            Int           @default(0)
+  total          Int           @default(0)
+  currency       String        @default("XOF")
+  status         QuoteStatus   @default(DRAFT)
+  notes          String?
+  createdById    String?
+  createdBy      User?         @relation("QuoteCreator", fields: [createdById], references: [id])
+  validatedById  String?
+  sentAt         DateTime?
+  acceptedAt     DateTime?
+  rejectedAt     DateTime?
+  expiresAt      DateTime?
+  documentUrl    String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  project Project? @relation("QuoteProject")
+
+  @@index([organizationId])
+  @@index([dealId])
+  @@index([status])
+}
+
+model CrmDocument {
+  id             String        @id @default(cuid())
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  title          String
+  documentType   AuditDocType  @default(OTHER)
+  fileName       String
+  fileUrl        String
+  mimeType       String?
+  size           Int?
+  visibility     DocVisibility @default(INTERNAL_ONLY)
+  uploadedById   String?
+  uploadedBy     User?         @relation("DocUploader", fields: [uploadedById], references: [id])
+  createdAt      DateTime      @default(now())
+
+  @@index([organizationId])
+}
+
+model Tag {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  color     String?
+  createdAt DateTime @default(now())
+
+  organizations Organization[]
+
+  @@index([slug])
+}
+
+/// Journal des opérations sensibles du CRM (création/attribution/validation/
+/// envoi/conversion/suppression…). userId/userName conservés en clair pour
+/// survivre à la suppression d'un compte (pas de FK).
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  userName  String?
+  action    String
+  entity    String
+  entityId  String?
+  oldValue  Json?
+  newValue  Json?
+  ip        String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  @@index([entity, entityId])
+  @@index([userId])
+  @@index([createdAt])
 }
