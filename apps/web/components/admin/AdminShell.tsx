@@ -6,6 +6,8 @@ import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   LayoutDashboard,
+  Gauge,
+  Building2,
   Target,
   FolderKanban,
   FileText,
@@ -22,34 +24,80 @@ import {
 } from "lucide-react";
 import { Monogram, Avatar, cn } from "@da/ui";
 import { LogoutButton } from "@/components/LogoutButton";
+import { can, isAdmin as roleIsAdmin } from "@/lib/permissions";
 
 interface NavItem {
   label: string;
   href: string;
   icon: LucideIcon;
+  /** Visible pour cet ensemble de rôles ? */
+  visible: (roles: string[]) => boolean;
+}
+interface NavGroup {
+  section?: string;
+  items: NavItem[];
 }
 
-const NAV: NavItem[] = [
-  { label: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
-  { label: "Leads", href: "/admin/leads", icon: Target },
-  { label: "Projets", href: "/admin/projets", icon: FolderKanban },
-  { label: "Factures", href: "/admin/factures", icon: FileText },
-  { label: "Tickets", href: "/admin/tickets", icon: LifeBuoy },
-  { label: "Blog", href: "/admin/blog", icon: Newspaper },
-  { label: "Portfolio", href: "/admin/portfolio", icon: Images },
-  { label: "Utilisateurs", href: "/admin/utilisateurs", icon: UsersRound },
+const adminOnly = (roles: string[]) => roleIsAdmin({ roles });
+const commercialView = (roles: string[]) =>
+  can({ roles }, "prospect:read_assigned") || can({ roles }, "prospect:read_all");
+const staffAll = () => true;
+
+const NAV: NavGroup[] = [
+  {
+    items: [
+      { label: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard, visible: adminOnly },
+      { label: "Espace commercial", href: "/admin/commercial", icon: Gauge, visible: staffAll },
+    ],
+  },
+  {
+    section: "Commercial",
+    items: [
+      { label: "Prospects", href: "/admin/prospects", icon: Building2, visible: commercialView },
+    ],
+  },
+  {
+    section: "Solutions",
+    items: [
+      { label: "Leads", href: "/admin/leads", icon: Target, visible: adminOnly },
+      { label: "Projets", href: "/admin/projets", icon: FolderKanban, visible: adminOnly },
+      { label: "Factures", href: "/admin/factures", icon: FileText, visible: adminOnly },
+      { label: "Tickets", href: "/admin/tickets", icon: LifeBuoy, visible: adminOnly },
+    ],
+  },
+  {
+    section: "Contenu",
+    items: [
+      { label: "Blog", href: "/admin/blog", icon: Newspaper, visible: adminOnly },
+      { label: "Portfolio", href: "/admin/portfolio", icon: Images, visible: adminOnly },
+    ],
+  },
+  {
+    section: "Administration",
+    items: [
+      { label: "Utilisateurs", href: "/admin/utilisateurs", icon: UsersRound, visible: adminOnly },
+    ],
+  },
 ];
+
+function visibleGroups(roles: string[]): NavGroup[] {
+  return NAV
+    .map((g) => ({ ...g, items: g.items.filter((i) => i.visible(roles)) }))
+    .filter((g) => g.items.length > 0);
+}
 
 const STORAGE_KEY = "da-admin-sidebar-collapsed";
 
 function SidebarContent({
   user,
+  groups,
   isActive,
   collapsed,
   onNavigate,
   onToggleCollapse,
 }: {
-  user: { name: string; email: string; isSuperAdmin: boolean };
+  user: { name: string; roleLabel: string };
+  groups: NavGroup[];
   isActive: (href: string) => boolean;
   collapsed: boolean;
   onNavigate?: () => void;
@@ -58,12 +106,7 @@ function SidebarContent({
   return (
     <div className="flex h-full flex-col bg-[#14142a] text-white">
       {/* Marque + bouton replier */}
-      <div
-        className={cn(
-          "flex items-center py-6",
-          collapsed ? "flex-col gap-4 px-3" : "justify-between gap-2 px-5",
-        )}
-      >
+      <div className={cn("flex items-center py-6", collapsed ? "flex-col gap-4 px-3" : "justify-between gap-2 px-5")}>
         <div className="flex items-center gap-3">
           <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white/10">
             <Monogram variant="white" size={26} />
@@ -71,9 +114,7 @@ function SidebarContent({
           {!collapsed && (
             <div className="leading-tight">
               <p className="font-display text-sm font-extrabold">Digital Access</p>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-cyan">
-                Back-office
-              </p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-cyan">Back-office</p>
             </div>
           )}
         </div>
@@ -90,43 +131,50 @@ function SidebarContent({
         )}
       </div>
 
-      {/* Navigation */}
+      {/* Navigation groupée */}
       <nav className={cn("flex-1 space-y-1 overflow-y-auto overflow-x-hidden py-2", collapsed ? "px-2.5" : "px-3")}>
-        {NAV.map((item) => {
-          const active = isActive(item.href);
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={onNavigate}
-              aria-current={active ? "page" : undefined}
-              title={collapsed ? item.label : undefined}
-              className={cn(
-                "group relative flex items-center rounded-xl text-sm font-medium transition-colors",
-                collapsed ? "justify-center px-0 py-3" : "gap-3 px-3.5 py-2.5",
-                active
-                  ? "bg-white/10 text-white"
-                  : "text-white/60 hover:bg-white/[0.06] hover:text-white",
-              )}
-            >
-              {active && (
-                <motion.span
-                  layoutId="admin-nav-active"
-                  className="absolute inset-y-1.5 left-0 w-1 rounded-full bg-gradient-to-b from-brand-violet to-brand-cyan"
-                  transition={{ type: "spring", stiffness: 380, damping: 32 }}
-                />
-              )}
-              <item.icon
-                size={19}
-                className={cn(
-                  "shrink-0",
-                  active ? "text-brand-cyan" : "text-white/50 group-hover:text-white/80",
-                )}
-              />
-              {!collapsed && item.label}
-            </Link>
-          );
-        })}
+        {groups.map((group, gi) => (
+          <div key={group.section ?? `g${gi}`} className={gi > 0 ? "pt-2" : undefined}>
+            {group.section &&
+              (collapsed ? (
+                <div className="mx-auto my-2 h-px w-6 bg-white/10" aria-hidden />
+              ) : (
+                <p className="px-3.5 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/35">
+                  {group.section}
+                </p>
+              ))}
+            {group.items.map((item) => {
+              const active = isActive(item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={onNavigate}
+                  aria-current={active ? "page" : undefined}
+                  title={collapsed ? item.label : undefined}
+                  className={cn(
+                    "group relative flex items-center rounded-xl text-sm font-medium transition-colors",
+                    collapsed ? "justify-center px-0 py-3" : "gap-3 px-3.5 py-2.5",
+                    active ? "bg-white/10 text-white" : "text-white/60 hover:bg-white/[0.06] hover:text-white",
+                  )}
+                >
+                  {active && (
+                    <motion.span
+                      layoutId="admin-nav-active"
+                      className="absolute inset-y-1.5 left-0 w-1 rounded-full bg-gradient-to-b from-brand-violet to-brand-cyan"
+                      transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                    />
+                  )}
+                  <item.icon
+                    size={19}
+                    className={cn("shrink-0", active ? "text-brand-cyan" : "text-white/50 group-hover:text-white/80")}
+                  />
+                  {!collapsed && item.label}
+                </Link>
+              );
+            })}
+          </div>
+        ))}
       </nav>
 
       {/* Retour au site */}
@@ -160,9 +208,7 @@ function SidebarContent({
           {!collapsed && (
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-semibold text-white">{user.name}</p>
-              <p className="truncate text-xs text-white/50">
-                {user.isSuperAdmin ? "Super Admin" : "Administrateur"} · Profil
-              </p>
+              <p className="truncate text-xs text-white/50">{user.roleLabel} · Profil</p>
             </div>
           )}
         </Link>
@@ -182,14 +228,15 @@ export function AdminShell({
   user,
   children,
 }: {
-  user: { name: string; email: string; isSuperAdmin: boolean };
+  user: { name: string; email: string; roles: string[]; roleLabel: string };
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
   const [open, setOpen] = React.useState(false);
   const [collapsed, setCollapsed] = React.useState(false);
 
-  // Persistance du repli de la sidebar.
+  const groups = React.useMemo(() => visibleGroups(user.roles), [user.roles]);
+
   React.useEffect(() => {
     try {
       setCollapsed(window.localStorage.getItem(STORAGE_KEY) === "1");
@@ -218,11 +265,12 @@ export function AdminShell({
     setOpen(false);
   }, [pathname]);
 
-  const current = NAV.find((n) => isActive(n.href));
+  const flat = React.useMemo(() => groups.flatMap((g) => g.items), [groups]);
+  const current = flat.find((n) => isActive(n.href));
 
   return (
     <div className="relative flex h-[100dvh] overflow-hidden bg-surface-secondary">
-      {/* Sidebar — desktop (largeur animée) */}
+      {/* Sidebar — desktop */}
       <aside
         className={cn(
           "hidden shrink-0 transition-[width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] lg:block",
@@ -231,6 +279,7 @@ export function AdminShell({
       >
         <SidebarContent
           user={user}
+          groups={groups}
           isActive={isActive}
           collapsed={collapsed}
           onToggleCollapse={toggleCollapse}
@@ -239,13 +288,10 @@ export function AdminShell({
 
       {/* Colonne droite */}
       <div className="flex min-w-0 flex-1 flex-col">
-        {/* Barre supérieure — mobile */}
         <header className="flex h-16 shrink-0 items-center justify-between border-b border-navy/[0.06] bg-surface-primary px-4 lg:hidden">
-          <Link href="/admin/dashboard" className="flex items-center gap-2">
+          <Link href="/admin" className="flex items-center gap-2">
             <Monogram size={30} />
-            <span className="font-display text-sm font-extrabold text-navy">
-              {current?.label ?? "Admin"}
-            </span>
+            <span className="font-display text-sm font-extrabold text-navy">{current?.label ?? "Back-office"}</span>
           </Link>
           <button
             type="button"
@@ -258,7 +304,6 @@ export function AdminShell({
           </button>
         </header>
 
-        {/* Contenu défilant */}
         <main className="flex-1 overflow-y-auto">
           <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-10 lg:py-10">{children}</div>
         </main>
@@ -298,6 +343,7 @@ export function AdminShell({
               </button>
               <SidebarContent
                 user={user}
+                groups={groups}
                 isActive={isActive}
                 collapsed={false}
                 onNavigate={() => setOpen(false)}

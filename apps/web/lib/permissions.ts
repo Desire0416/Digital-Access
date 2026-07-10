@@ -256,6 +256,6 @@ export function landingForUser(user: UserLike): string {
   const r = user.roles;
   if (r.includes("SUPER_ADMIN") || r.includes("ADMIN")) return "/admin/dashboard";
   if (r.includes("COMMERCIAL")) return "/admin/commercial";
-  if (r.includes("CHEF_PROJET")) return "/admin/mes-projets";
+  if (r.includes("CHEF_PROJET")) return "/admin/commercial";
   return "/mon-espace";
 }
