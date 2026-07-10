@@ -85,7 +85,7 @@ export default async function HomePage() {
         <div aria-hidden className="absolute inset-0">
           <div
             className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: "url('/hero-academy.jpg')" }}
+            style={{ backgroundImage: "url('/hero.png')" }}
           />
           <div className="absolute inset-0 bg-gradient-to-br from-navy/95 via-navy/85 to-brand-violet/70" />
           <div className="absolute inset-0 bg-grid opacity-[0.08]" />
