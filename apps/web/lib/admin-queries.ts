@@ -1,5 +1,6 @@
 import { prisma } from "@da/db/client";
 import { currentUser, hasRole, type SessionUser } from "@da/auth/guards";
+import { STAFF_ROLES } from "./permissions";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Data layer — CRM Admin Digital Access (lecture).
@@ -329,7 +330,7 @@ export async function getAdminProject(id: string): Promise<AdminProjectDetail | 
     })),
     messages: p.messages.map((m) => ({
       id: m.id, content: m.content, createdAt: iso(m.createdAt)!,
-      author: { name: m.user.name, isTeam: m.user.roles.some((r) => r === "ADMIN" || r === "SUPER_ADMIN") },
+      author: { name: m.user.name, isTeam: STAFF_ROLES.some((r) => m.user.roles.includes(r)) },
     })),
   };
 }
@@ -449,7 +450,7 @@ export async function getAdminTicket(id: string): Promise<TicketDetail | null> {
     client: t.client, projectTitle: t.project?.title ?? null, createdAt: iso(t.createdAt)!,
     messages: t.messages.map((m) => ({
       id: m.id, content: m.content, createdAt: iso(m.createdAt)!,
-      author: { name: m.user.name, isTeam: m.user.roles.some((r) => r === "ADMIN" || r === "SUPER_ADMIN") },
+      author: { name: m.user.name, isTeam: STAFF_ROLES.some((r) => m.user.roles.includes(r)) },
     })),
   };
 }

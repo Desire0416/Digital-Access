@@ -61,7 +61,7 @@ export async function currentUser(): Promise<SessionUser | null> {
   // par un admin) ne doit jamais élever les privilèges effectifs.
   if (token.startsWith("role:")) {
     const role = token.slice(5);
-    const PREVIEWABLE = ["LEARNER", "INSTRUCTOR", "REVIEWER", "MENTOR", "CLIENT", "COMPANY"];
+    const PREVIEWABLE = ["LEARNER", "INSTRUCTOR", "REVIEWER", "MENTOR", "CLIENT", "COMPANY", "COMMERCIAL", "CHEF_PROJET"];
     if (!role || !PREVIEWABLE.includes(role)) return real;
     return { ...real, roles: [role], impersonatedBy: by };
   }
