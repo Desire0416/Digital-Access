@@ -7,9 +7,10 @@ import { useSession } from "next-auth/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X, GraduationCap, LayoutDashboard, ClipboardCheck } from "lucide-react";
 import { Avatar, buttonClasses, cn, useScrolled } from "@da/ui";
-import { catalogueMenu, primaryNav } from "@/lib/site";
+import { catalogueMenu, primaryNav, audienceNav } from "@/lib/site";
 import { AcademyLogo } from "./AcademyLogo";
 import { CatalogueMenu } from "./CatalogueMenu";
+import { HomeSearch } from "./HomeSearch";
 import { LogoutButton } from "./LogoutButton";
 import { NotificationBell } from "./NotificationBell";
 
@@ -53,13 +54,36 @@ export function AcademyHeader({ initialUser }: { initialUser?: HeaderUser | null
           : "bg-transparent",
       )}
     >
-      <div className="relative z-50 mx-auto flex h-18 max-w-7xl items-center justify-between px-5 py-3 sm:px-8 lg:px-10">
+      {/* Barre « publics » (façon Coursera) — se replie au défilement */}
+      <div
+        className={cn(
+          "overflow-hidden border-b border-navy/[0.04] transition-all duration-300",
+          scrolled ? "max-h-0 opacity-0" : "max-h-10 opacity-100",
+        )}
+      >
+        <div className="mx-auto flex h-9 max-w-7xl items-center gap-0.5 px-5 sm:px-8 lg:px-10">
+          {audienceNav.map((a) => (
+            <Link
+              key={a.href + a.label}
+              href={a.href}
+              className={cn(
+                "rounded px-2.5 py-1 text-xs font-semibold transition-colors",
+                isActive(a.href) ? "text-brand-blue-royal" : "text-text-muted hover:text-navy",
+              )}
+            >
+              {a.label}
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      <div className="relative z-50 mx-auto flex h-16 max-w-7xl items-center gap-3 px-5 sm:px-8 lg:h-18 lg:gap-4 lg:px-10">
         <Link href="/" aria-label="Access Academy — accueil" className="shrink-0">
           <AcademyLogo size={38} />
         </Link>
 
         {/* Nav desktop */}
-        <nav className="hidden items-center gap-1 lg:flex">
+        <nav className="hidden shrink-0 items-center gap-1 lg:flex">
           <CatalogueMenu />
           {primaryNav.map((item) => (
             <Link
@@ -84,7 +108,12 @@ export function AcademyHeader({ initialUser }: { initialUser?: HeaderUser | null
           ))}
         </nav>
 
-        <div className="hidden items-center gap-2 lg:flex">
+        {/* Recherche (desktop) */}
+        <div className="hidden min-w-0 flex-1 lg:block">
+          <HomeSearch variant="header" className="mx-auto max-w-md" />
+        </div>
+
+        <div className="ml-auto hidden shrink-0 items-center gap-2 lg:flex">
           {user ? (
             <>
               {isReviewer && (
@@ -127,7 +156,7 @@ export function AcademyHeader({ initialUser }: { initialUser?: HeaderUser | null
         </div>
 
         {/* Actions mobile : cloche + toggle */}
-        <div className="flex items-center gap-1 lg:hidden">
+        <div className="ml-auto flex items-center gap-1 lg:hidden">
           {user && <NotificationBell />}
           <button
             type="button"
@@ -168,6 +197,9 @@ export function AcademyHeader({ initialUser }: { initialUser?: HeaderUser | null
               className="absolute inset-x-0 top-full z-50 max-h-[calc(100dvh-4.5rem)] overflow-y-auto bg-surface-primary shadow-xl lg:hidden"
             >
               <nav className="mx-auto flex max-w-7xl flex-col gap-1 px-5 py-4 sm:px-8">
+              <div className="px-1 pb-3">
+                <HomeSearch variant="header" />
+              </div>
               <p className="px-4 pb-1 pt-2 text-[11px] font-bold uppercase tracking-[0.14em] text-text-muted">{catalogueMenu.label}</p>
               {catalogueMenu.items.map((item) => (
                 <Link

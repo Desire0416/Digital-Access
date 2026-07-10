@@ -73,6 +73,13 @@ export const primaryNav: NavItem[] = [
   { label: "Entreprises", href: "/companies" },
 ];
 
+/** Barre « publics » en haut du header (façon Coursera : par audience). */
+export const audienceNav: NavItem[] = [
+  { label: "Apprenants", href: "/" },
+  { label: "Écoles", href: "/schools" },
+  { label: "Entreprises", href: "/companies" },
+];
+
 /** Ancienne navigation à plat (conservée pour compat plan du site). */
 export const visitorNav: NavItem[] = [
   { label: "Parcours métiers", href: "/career-paths" },
