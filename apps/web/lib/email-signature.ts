@@ -2,13 +2,25 @@ import { siteConfig } from "./site";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Générateur de signature email Digital Access.
-   HTML « compatible email » : mise en page en <table>, styles INLINE, image en
-   URL absolue — pour un rendu fidèle dans Gmail, Outlook, Apple Mail, etc.
+   HTML « compatible email » : mise en page en <table>, styles INLINE, images en
+   URL absolue (logo + icônes monochromes hébergés — les SVG inline sont
+   supprimés par Gmail). Palette limitée : violet DA, cyan DA, noir, gris.
    Utilisé à la fois pour l'aperçu et pour la copie (presse-papiers).
    ══════════════════════════════════════════════════════════════════════════ */
 
-/** Logo hébergé publiquement (voir public/images/email/). */
-export const SIGNATURE_LOGO_URL = "https://digitalaccess.ci/images/email/logo-digital-access.png";
+const BASE = "https://digitalaccess.ci";
+export const SIGNATURE_LOGO_URL = `${BASE}/images/email/logo-digital-access.png`;
+const ICONS = `${BASE}/images/email/icons`;
+
+/* Palette (uniquement : violet, cyan, noir, gris). */
+const VIOLET = "#5B3FA8";
+const CYAN = "#00BCD4";
+const BLACK = "#111827";
+const GRAY = "#4B5563";
+const GRAY_SOFT = "#6B7280";
+const GRAY_FAINT = "#9CA3AF";
+const DIVIDER = "#CFC3F5"; // violet clair
+const HAIRLINE = "#E5E7EB";
 
 export interface SignatureInput {
   name: string;
@@ -27,6 +39,23 @@ export const SIGNATURE_ROLES = [
   "Marketing",
 ] as const;
 
+const EMAIL_DOMAIN = siteConfig.contact.email.split("@")[1] || "digitalaccess.ci";
+
+/** Adresse email proposée automatiquement selon le poste (boîte de service). */
+export function suggestedEmailForPoste(poste: string): string {
+  const p = (poste || "").toLowerCase();
+  let prefix = "contact";
+  if (p.includes("support")) prefix = "support";
+  else if (p.includes("audit")) prefix = "audit";
+  else if (p.includes("commercial") || p.includes("vente") || p.includes("devis")) prefix = "devis";
+  return `${prefix}@${EMAIL_DOMAIN}`;
+}
+
+/** Toutes les adresses de service possibles (pour distinguer auto vs. saisie manuelle). */
+export const SUGGESTED_EMAILS = ["contact", "support", "audit", "devis"].map(
+  (p) => `${p}@${EMAIL_DOMAIN}`,
+);
+
 /** Échappe le HTML pour empêcher toute injection dans l'aperçu / la signature. */
 function esc(value: string): string {
   return String(value ?? "")
@@ -34,6 +63,14 @@ function esc(value: string): string {
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
+}
+
+/** Une ligne de contact : icône monochrome + contenu. */
+function contactRow(icon: string, content: string): string {
+  return `<tr>
+    <td style="padding:3px 9px 3px 0;vertical-align:middle;width:15px;"><img src="${ICONS}/${icon}.png" width="15" height="15" alt="" style="display:block;border:0;" /></td>
+    <td style="padding:3px 0;vertical-align:middle;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.35;color:${GRAY};">${content}</td>
+  </tr>`;
 }
 
 /** Construit la signature en HTML compatible email. */
@@ -45,40 +82,44 @@ export function buildSignatureHtml(input: SignatureInput): string {
   const emailEsc = esc(email);
   const phoneEsc = esc(phone);
   const telHref = phone.replace(/[^\d+]/g, "");
-  const website = siteConfig.url.replace(/^https?:\/\//, "");
+  const website = esc(siteConfig.url.replace(/^https?:\/\//, ""));
   const address = esc(siteConfig.contact.address);
   const tagline = esc(siteConfig.tagline);
+  const linkedin = siteConfig.socials.linkedin;
 
-  const row = (symbol: string, content: string) =>
-    `<tr><td style="padding:2px 8px 2px 0;vertical-align:top;font-size:12px;line-height:1.5;">${symbol}</td><td style="padding:2px 0;vertical-align:top;font-size:12px;line-height:1.5;color:#4B5563;">${content}</td></tr>`;
+  const rows = [
+    phone ? contactRow("phone", `<a href="tel:${telHref}" style="color:${GRAY};text-decoration:none;">${phoneEsc}</a>`) : "",
+    email ? contactRow("mail", `<a href="mailto:${emailEsc}" style="color:${VIOLET};text-decoration:none;">${emailEsc}</a>`) : "",
+    contactRow("globe", `<a href="${siteConfig.url}" style="color:${VIOLET};text-decoration:none;">${website}</a>`),
+    contactRow("linkedin", `<a href="${linkedin}" style="color:${VIOLET};text-decoration:none;">LinkedIn</a>`),
+    contactRow("pin", `<span style="color:${GRAY_SOFT};">${address}</span>`),
+  ].join("");
 
-  const emailRow = email
-    ? row("✉️", `<a href="mailto:${emailEsc}" style="color:#2B3A8C;text-decoration:none;">${emailEsc}</a>`)
-    : "";
-  const phoneRow = phone
-    ? row("📞", `<a href="tel:${telHref}" style="color:#4B5563;text-decoration:none;">${phoneEsc}</a>`)
-    : "";
-  const siteRow = row(
-    "🌐",
-    `<a href="${siteConfig.url}" style="color:#2B3A8C;text-decoration:none;">${esc(website)}</a>`,
-  );
-  const addressRow = row("📍", address);
-
-  return `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;color:#1A1A2E;">
+  return `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;color:${BLACK};">
   <tr>
-    <td style="padding:0 18px 0 0;vertical-align:middle;">
-      <img src="${SIGNATURE_LOGO_URL}" alt="Digital Access" width="132" style="display:block;width:132px;height:auto;border:0;" />
+    <td style="padding:0 4px 0 0;vertical-align:middle;">
+      <img src="${SIGNATURE_LOGO_URL}" alt="Digital Access" width="184" style="display:block;width:184px;height:auto;border:0;" />
     </td>
-    <td style="padding:2px 0 2px 18px;vertical-align:middle;border-left:3px solid #2B3A8C;">
-      <div style="font-size:16px;font-weight:bold;color:#1A1A2E;line-height:1.25;">${name}</div>
-      <div style="font-size:13px;font-weight:bold;color:#2B3A8C;margin-top:3px;">${poste}</div>
-      <table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;margin-top:9px;">
-        ${emailRow}${phoneRow}${siteRow}${addressRow}
+    <td style="padding:0 22px;vertical-align:middle;">
+      <table cellpadding="0" cellspacing="0" border="0" role="presentation"><tr><td style="width:2px;height:70px;background:${DIVIDER};font-size:0;line-height:0;">&nbsp;</td></tr></table>
+    </td>
+    <td style="vertical-align:middle;">
+      <div style="font-size:19px;font-weight:bold;color:${BLACK};line-height:1.2;">${name}</div>
+      <div style="font-size:13px;color:${GRAY_SOFT};margin-top:2px;">${poste}</div>
+      <div style="font-size:13px;font-weight:bold;color:${VIOLET};letter-spacing:1.2px;margin-top:7px;">DIGITAL ACCESS</div>
+      <div style="font-size:12px;color:${GRAY_SOFT};font-style:italic;margin-top:2px;">${tagline}</div>
+      <table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;margin-top:11px;">
+        ${rows}
       </table>
     </td>
   </tr>
   <tr>
-    <td colspan="2" style="padding:12px 0 0;font-size:11px;font-style:italic;color:#9CA3AF;">${tagline}</td>
+    <td colspan="3" style="padding:14px 0 0;">
+      <div style="border-top:1px solid ${HAIRLINE};padding-top:9px;">
+        <div style="font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:bold;letter-spacing:0.3px;color:${GRAY};">Access Web Solutions <span style="color:${GRAY_FAINT};font-weight:normal;">·</span> <span style="color:${CYAN};">Access Academy</span></div>
+        <div style="font-family:Arial,Helvetica,sans-serif;font-size:10px;color:${GRAY_FAINT};margin-top:2px;">Création de sites web • Plateformes e-learning • IA • Stratégie numérique</div>
+      </div>
+    </td>
   </tr>
 </table>`;
 }
@@ -89,12 +130,17 @@ export function buildSignatureText(input: SignatureInput): string {
   return [
     input.name.trim() || "Prénom Nom",
     input.poste.trim() || "Poste",
-    input.email.trim(),
+    "DIGITAL ACCESS",
+    siteConfig.tagline,
+    "",
     input.phone.trim(),
+    input.email.trim(),
     website,
     siteConfig.contact.address,
-    siteConfig.tagline,
+    "",
+    "Access Web Solutions · Access Academy",
+    "Création de sites web • Plateformes e-learning • IA • Stratégie numérique",
   ]
-    .filter(Boolean)
+    .filter((line, i, arr) => line !== "" || (arr[i - 1] ?? "") !== "")
     .join("\n");
 }

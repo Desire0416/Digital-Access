@@ -1,11 +1,13 @@
 "use client";
 
 import * as React from "react";
-import { Copy, Check, Code2, User, Briefcase, Mail, Phone, Sparkles, Info } from "lucide-react";
+import { Copy, Check, Code2, Info, Monitor, Smartphone } from "lucide-react";
 import { Field, Input, Button, cn } from "@da/ui";
 import {
   buildSignatureHtml,
   buildSignatureText,
+  suggestedEmailForPoste,
+  SUGGESTED_EMAILS,
   SIGNATURE_ROLES,
   type SignatureInput,
 } from "@/lib/email-signature";
@@ -13,18 +15,17 @@ import {
 type Copied = null | "rich" | "html";
 
 export function SignatureGenerator() {
-  const [form, setForm] = React.useState<SignatureInput>({
+  const [form, setForm] = React.useState<SignatureInput>(() => ({
     name: "",
     poste: "Commercial",
-    email: "",
+    email: suggestedEmailForPoste("Commercial"),
     phone: "",
-  });
+  }));
+  // L'email reste « auto » tant que l'utilisateur ne saisit pas une adresse perso.
+  const [emailAuto, setEmailAuto] = React.useState(true);
   const [copied, setCopied] = React.useState<Copied>(null);
   const [error, setError] = React.useState<string | null>(null);
   const previewRef = React.useRef<HTMLDivElement>(null);
-
-  const set = (k: keyof SignatureInput) => (e: React.ChangeEvent<HTMLInputElement>) =>
-    setForm((f) => ({ ...f, [k]: e.target.value }));
 
   const html = buildSignatureHtml(form);
 
@@ -33,6 +34,21 @@ export function SignatureGenerator() {
     const t = setTimeout(() => setCopied(null), 2200);
     return () => clearTimeout(t);
   }, [copied]);
+
+  function pickPoste(role: string) {
+    setForm((f) => ({
+      ...f,
+      poste: role,
+      ...(emailAuto ? { email: suggestedEmailForPoste(role) } : {}),
+    }));
+  }
+
+  function onEmailChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const v = e.target.value;
+    const t = v.trim();
+    setEmailAuto(t === "" || SUGGESTED_EMAILS.includes(t));
+    setForm((f) => ({ ...f, email: v }));
+  }
 
   function copyDomSelection(node: HTMLElement | null): boolean {
     if (!node) return false;
@@ -69,7 +85,6 @@ export function SignatureGenerator() {
       }
       throw new Error("no-clipboard-write");
     } catch {
-      // Repli : sélection du rendu + copie navigateur.
       if (copyDomSelection(previewRef.current)) {
         setCopied("rich");
       } else {
@@ -90,19 +105,19 @@ export function SignatureGenerator() {
     }
   }
 
-  const inputCls = "";
+  const set = (k: keyof SignatureInput) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setForm((f) => ({ ...f, [k]: e.target.value }));
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)]">
+    <div className="grid gap-8 lg:grid-cols-[minmax(0,25rem)_minmax(0,1fr)]">
       {/* ── Formulaire ── */}
       <div className="flex flex-col gap-6">
         <div className="rounded-2xl border border-navy/[0.08] bg-surface-primary p-6">
           <h2 className="font-display text-base font-bold text-navy">Coordonnées du collaborateur</h2>
           <p className="mt-1 text-sm text-text-secondary">
-            Renseignez les informations : l'aperçu se met à jour en direct.
+            L'aperçu se met à jour en direct. L'email est proposé selon le poste — modifiable.
           </p>
 
-          {/* Presets de poste */}
           <div className="mt-5">
             <span className="mb-2 block text-xs font-bold uppercase tracking-wide text-text-muted">
               Poste — raccourcis
@@ -112,7 +127,7 @@ export function SignatureGenerator() {
                 <button
                   key={role}
                   type="button"
-                  onClick={() => setForm((f) => ({ ...f, poste: role }))}
+                  onClick={() => pickPoste(role)}
                   className={cn(
                     "rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors",
                     form.poste === role
@@ -128,42 +143,16 @@ export function SignatureGenerator() {
 
           <div className="mt-6 flex flex-col gap-5">
             <Field label="Nom complet" htmlFor="sig-name" required>
-              <Input
-                id="sig-name"
-                value={form.name}
-                onChange={set("name")}
-                placeholder="Ex. Awa Traoré"
-                maxLength={80}
-                className={inputCls}
-              />
+              <Input id="sig-name" value={form.name} onChange={set("name")} placeholder="Ex. Awa Traoré" maxLength={80} />
             </Field>
             <Field label="Poste" htmlFor="sig-poste" required>
-              <Input
-                id="sig-poste"
-                value={form.poste}
-                onChange={set("poste")}
-                placeholder="Ex. Responsable commercial"
-                maxLength={80}
-              />
+              <Input id="sig-poste" value={form.poste} onChange={set("poste")} placeholder="Ex. Responsable commercial" maxLength={80} />
             </Field>
-            <Field label="Email" htmlFor="sig-email">
-              <Input
-                id="sig-email"
-                type="email"
-                value={form.email}
-                onChange={set("email")}
-                placeholder="prenom.nom@digitalaccess.ci"
-                maxLength={160}
-              />
+            <Field label="Email" htmlFor="sig-email" hint="Proposé selon le poste — remplacez par l'email personnel si besoin.">
+              <Input id="sig-email" type="email" value={form.email} onChange={onEmailChange} placeholder="prenom.nom@digitalaccess.ci" maxLength={160} />
             </Field>
             <Field label="Téléphone" htmlFor="sig-phone">
-              <Input
-                id="sig-phone"
-                value={form.phone}
-                onChange={set("phone")}
-                placeholder="+225 07 57 90 88 84"
-                maxLength={40}
-              />
+              <Input id="sig-phone" value={form.phone} onChange={set("phone")} placeholder="+225 07 57 90 88 84" maxLength={40} />
             </Field>
           </div>
         </div>
@@ -185,9 +174,7 @@ export function SignatureGenerator() {
             <button
               type="button"
               onClick={copyHtmlSource}
-              className={cn(
-                "inline-flex flex-1 items-center justify-center gap-2 rounded-lg border border-navy/[0.12] px-4 py-2.5 text-sm font-semibold text-navy transition-colors hover:border-brand-blue-vif/40 hover:text-brand-blue-royal",
-              )}
+              className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg border border-navy/[0.12] px-4 py-2.5 text-sm font-semibold text-navy transition-colors hover:border-brand-blue-vif/40 hover:text-brand-blue-royal"
             >
               {copied === "html" ? (
                 <>
@@ -206,41 +193,40 @@ export function SignatureGenerator() {
             <Info size={15} className="mt-0.5 shrink-0 text-brand-blue-royal" />
             <span>
               <strong className="font-semibold text-navy">« Copier la signature »</strong> copie la version
-              mise en forme (avec le logo) : collez-la directement dans les réglages de signature de{" "}
-              <strong>Gmail</strong> ou <strong>Outlook</strong>. Le bouton <strong>« Code HTML »</strong>{" "}
-              copie le code source (pour un client mail qui demande du HTML).
+              mise en forme (logo compris) : collez-la directement dans les réglages de signature de{" "}
+              <strong>Gmail</strong> ou <strong>Outlook</strong>.
             </span>
           </div>
         </div>
       </div>
 
-      {/* ── Aperçu en direct ── */}
-      <div className="lg:sticky lg:top-6 lg:self-start">
-        <div className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-text-muted">
-          <Sparkles size={14} className="text-brand-blue-vif" />
-          Aperçu en direct
-        </div>
-        <div className="overflow-x-auto rounded-2xl border border-navy/[0.08] bg-white p-7 shadow-sm">
-          {/* Le rendu utilise exactement le HTML qui sera copié. */}
-          <div ref={previewRef} dangerouslySetInnerHTML={{ __html: html }} />
+      {/* ── Aperçus ── */}
+      <div className="flex flex-col gap-7">
+        {/* Desktop */}
+        <div>
+          <div className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-text-muted">
+            <Monitor size={15} className="text-brand-blue-royal" />
+            Aperçu Desktop
+          </div>
+          <div className="overflow-x-auto rounded-2xl border border-navy/[0.08] bg-white p-8 shadow-sm">
+            <div ref={previewRef} dangerouslySetInnerHTML={{ __html: html }} />
+          </div>
         </div>
 
-        {/* Récapitulatif rapide des champs actifs */}
-        <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-          {[
-            { icon: User, label: "Nom", value: form.name || "—" },
-            { icon: Briefcase, label: "Poste", value: form.poste || "—" },
-            { icon: Mail, label: "Email", value: form.email || "—" },
-            { icon: Phone, label: "Téléphone", value: form.phone || "—" },
-          ].map((f) => (
-            <div key={f.label} className="flex items-center gap-2.5 rounded-xl border border-navy/[0.06] bg-surface-primary px-3.5 py-2.5">
-              <f.icon size={15} className="shrink-0 text-text-muted" />
-              <span className="min-w-0">
-                <span className="block text-[11px] font-semibold uppercase tracking-wide text-text-muted">{f.label}</span>
-                <span className="block truncate text-navy">{f.value}</span>
-              </span>
+        {/* Mobile */}
+        <div>
+          <div className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-text-muted">
+            <Smartphone size={15} className="text-brand-blue-royal" />
+            Aperçu Mobile
+          </div>
+          <div className="mx-auto w-full max-w-[380px] rounded-[1.75rem] border-[6px] border-navy/80 bg-white p-4 shadow-lg">
+            <div className="overflow-x-auto">
+              <div dangerouslySetInnerHTML={{ __html: html }} />
             </div>
-          ))}
+          </div>
+          <p className="mx-auto mt-2 max-w-[380px] text-center text-xs text-text-muted">
+            Sur petit écran, les clients mail ajustent la signature à la largeur disponible.
+          </p>
         </div>
       </div>
     </div>
