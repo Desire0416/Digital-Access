@@ -11,6 +11,7 @@ import { getCareerPath } from "@/lib/queries";
 import { getPathEnrollmentState } from "@/lib/learn-queries";
 import { LEVEL_LABEL } from "@/lib/types";
 import { EnrollCTA } from "@/components/EnrollCTA";
+import { DiagnosticTest } from "@/components/DiagnosticTest";
 
 export const dynamic = "force-dynamic";
 
@@ -74,6 +75,11 @@ export default async function CareerPathDetailPage({ params }: { params: Promise
           </div>
         </Container>
       </section>
+
+      {/* Diagnostic IA de maturité numérique */}
+      <Container size="lg" className="mt-8 sm:mt-10">
+        <DiagnosticTest slug={slug} title={p.title} level={p.level} />
+      </Container>
 
       {/* Ce que vous saurez faire */}
       {p.outcomes.length > 0 && (
