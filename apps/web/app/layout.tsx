@@ -4,7 +4,7 @@ import { siteConfig } from "@/lib/site";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { PageTransition } from "@/components/PageTransition";
-import { WhatsAppFab } from "@/components/WhatsAppFab";
+import { ChatBot } from "@/components/ChatBot";
 import { ChromeGate } from "@/components/ChromeGate";
 import { Providers } from "@/components/Providers";
 import { JsonLd } from "@/components/JsonLd";
@@ -107,7 +107,7 @@ export default async function RootLayout({
           </main>
           <ChromeGate>
             <SiteFooter />
-            <WhatsAppFab />
+            <ChatBot />
           </ChromeGate>
         </Providers>
         <Analytics />
