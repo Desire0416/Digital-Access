@@ -49,3 +49,37 @@ export const LEVEL_LABEL: Record<DiagLevel, string> = {
   INTERMEDIATE: "Intermédiaire",
   ADVANCED: "Avancé",
 };
+
+/* ── Diagnostic public d'orientation (recommande une formation du catalogue) ── */
+
+export type FormationType = "career-path" | "short-course";
+
+/** Une formation du catalogue, résumée pour la mise en correspondance IA. */
+export interface CatalogueFormation {
+  type: FormationType;
+  slug: string;
+  title: string;
+  school: string;
+  level: string;
+  target: string; // métier visé ou type de formation courte
+  description: string;
+  skills: string[];
+}
+
+/** Une formation recommandée par l'IA. */
+export interface Recommendation {
+  type: FormationType;
+  slug: string;
+  title: string;
+  school: string;
+  level: string;
+  levelLabel: string;
+  reason: string;
+}
+
+export interface RecommendResult {
+  profileSummary: string;
+  recommendations: Recommendation[];
+  note: string;
+}
+

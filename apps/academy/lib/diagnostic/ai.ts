@@ -1,6 +1,9 @@
 import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
-import type { DiagnosticContext, DiagQuestion, DiagAnswer, DiagResult, DiagLevel } from "./types";
+import type {
+  DiagnosticContext, DiagQuestion, DiagAnswer, DiagResult, DiagLevel,
+  CatalogueFormation, RecommendResult, Recommendation, FormationType,
+} from "./types";
 import { LEVEL_LABEL } from "./types";
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -228,5 +231,121 @@ export async function evaluateDiagnostic(
     gaps: strArr(r.gaps),
     recommendation: String(r.recommendation ?? "").trim().slice(0, 900),
     startingPoint: String(r.startingPoint ?? "").trim().slice(0, 300),
+  };
+}
+
+/* ── 3) Orientation : recommander une formation du catalogue ─────────────── */
+
+const REC_TOOL = {
+  name: "recommander_formations",
+  description: "Recommande les formations du catalogue les plus adaptées au profil.",
+  input_schema: {
+    type: "object" as const,
+    additionalProperties: false,
+    required: ["profileSummary", "recommendations", "note"],
+    properties: {
+      profileSummary: { type: "string", description: "2 phrases décrivant le profil et le besoin." },
+      recommendations: {
+        type: "array",
+        minItems: 1,
+        maxItems: 3,
+        description: "De la plus pertinente à la moins pertinente.",
+        items: {
+          type: "object",
+          additionalProperties: false,
+          required: ["slug", "type", "recommendedLevel", "reason"],
+          properties: {
+            slug: { type: "string", description: "Slug EXACT présent dans le catalogue." },
+            type: { type: "string", enum: ["career-path", "short-course"] },
+            recommendedLevel: { type: "string", enum: ["BEGINNER", "INTERMEDIATE", "ADVANCED"] },
+            reason: { type: "string", description: "2 phrases personnalisées expliquant l'adéquation." },
+          },
+        },
+      },
+      note: { type: "string", description: "Un mot d'encouragement / conseil (1 phrase)." },
+    },
+  },
+};
+
+const REC_SYSTEM = `Tu es conseiller d'orientation d'Access Academy. À partir du PROFIL (réponses au diagnostic + objectif) et du CATALOGUE de formations, recommande la ou les formations les plus adaptées.
+Règles :
+- Utilise UNIQUEMENT des slugs EXACTEMENT présents dans le catalogue fourni. N'invente jamais de formation.
+- 1 à 3 recommandations, la plus pertinente en premier ; privilégie l'adéquation domaine + objectif + niveau.
+- Pour chacune : recommendedLevel (BEGINNER / INTERMEDIATE / ADVANCED) = par où démarrer selon le profil ; reason = 2 phrases personnalisées (vouvoiement).
+- profileSummary = 2 phrases sur le profil/besoin. note = un mot d'encouragement.
+- Si le besoin est flou, choisis une porte d'entrée accessible et rassure. Français, concret, bienveillant.`;
+
+const catalogueBlock = (formations: CatalogueFormation[]) =>
+  formations
+    .map(
+      (f) =>
+        `- slug=${f.slug} | type=${f.type} | « ${f.title} » | École: ${f.school} | Niveau: ${f.level} | Cible: ${f.target} | ${f.description}${f.skills.length ? ` | Compétences: ${f.skills.join(", ")}` : ""}`,
+    )
+    .join("\n");
+
+export async function recommendFormations(
+  formations: CatalogueFormation[],
+  questions: DiagQuestion[],
+  answers: DiagAnswer[],
+  goal?: string,
+): Promise<RecommendResult> {
+  const bySlug = new Map(formations.map((f) => [f.slug, f]));
+  const byId = new Map(answers.map((a) => [a.id, a.choice]));
+  const qa = questions
+    .map((q) => {
+      const c = byId.get(q.id);
+      const chosen = typeof c === "number" && q.options[c] !== undefined ? q.options[c] : "(sans réponse)";
+      return `- ${q.dimension} — ${q.question} → « ${chosen} »`;
+    })
+    .join("\n");
+  const goalLine = goal ? `\n\nOBJECTIF LIBRE DU CANDIDAT : « ${goal.slice(0, 300)} »` : "";
+
+  let resp: Anthropic.Message;
+  try {
+    resp = await client().messages.create({
+      model: MODEL,
+      max_tokens: 1400,
+      system: REC_SYSTEM,
+      tools: [{ ...REC_TOOL, input_schema: REC_TOOL.input_schema as Anthropic.Tool.InputSchema }],
+      tool_choice: { type: "tool", name: "recommander_formations" },
+      messages: [
+        {
+          role: "user",
+          content: `CATALOGUE DES FORMATIONS :\n${catalogueBlock(formations)}\n\nPROFIL (réponses) :\n${qa}${goalLine}\n\nRecommande les formations les plus adaptées.`,
+        },
+      ],
+    });
+  } catch (e) {
+    throw frError(e);
+  }
+  const tool = resp.content.find((c): c is Anthropic.ToolUseBlock => c.type === "tool_use");
+  if (!tool) throw new DiagnosticError("AI_NO_OUTPUT", "Aucune recommandation produite.");
+  const out = tool.input as { profileSummary?: unknown; recommendations?: unknown; note?: unknown };
+
+  const recs: Recommendation[] = (Array.isArray(out.recommendations) ? out.recommendations : [])
+    .map((r): Recommendation | null => {
+      const o = (r ?? {}) as Record<string, unknown>;
+      const f = bySlug.get(String(o.slug));
+      if (!f) return null; // ignore toute formation inventée hors catalogue
+      const lvl = (["BEGINNER", "INTERMEDIATE", "ADVANCED"].includes(String(o.recommendedLevel))
+        ? o.recommendedLevel
+        : f.level) as DiagLevel;
+      return {
+        type: f.type as FormationType,
+        slug: f.slug,
+        title: f.title,
+        school: f.school,
+        level: lvl,
+        levelLabel: LEVEL_LABEL[lvl] ?? String(lvl),
+        reason: String(o.reason ?? "").trim().slice(0, 500),
+      };
+    })
+    .filter((x): x is Recommendation => x !== null)
+    .slice(0, 3);
+
+  return {
+    profileSummary: String(out.profileSummary ?? "").trim().slice(0, 600),
+    recommendations: recs,
+    note: String(out.note ?? "").trim().slice(0, 300),
   };
 }

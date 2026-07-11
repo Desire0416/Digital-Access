@@ -3,6 +3,7 @@ import { AcademyHeader } from "@/components/AcademyHeader";
 import { AcademyFooter } from "@/components/AcademyFooter";
 import { PageTransition } from "@/components/PageTransition";
 import { ImpersonationBanner } from "@/components/admin/ImpersonationBanner";
+import { GlobalDiagnostic } from "@/components/GlobalDiagnostic";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +28,7 @@ export default async function SiteLayout({
         <PageTransition>{children}</PageTransition>
       </main>
       <AcademyFooter />
+      <GlobalDiagnostic />
     </>
   );
 }

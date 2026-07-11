@@ -18,6 +18,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "start", "-w", "web"],
       "port": 3000
+    },
+    {
+      "name": "academy-prod",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "start", "-w", "academy"],
+      "port": 3001
     }
   ]
 }
