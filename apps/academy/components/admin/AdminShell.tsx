@@ -13,6 +13,7 @@ import {
   ClipboardCheck,
   Award,
   Ticket,
+  CreditCard,
   ExternalLink,
   Menu,
   X,
@@ -37,6 +38,7 @@ const NAV: NavItem[] = [
   { label: "Parcours", href: "/admin/parcours", icon: Route },
   { label: "Formations", href: "/admin/formations", icon: BookOpen },
   { label: "Utilisateurs", href: "/admin/utilisateurs", icon: UsersRound },
+  { label: "Paiements", href: "/admin/paiements", icon: CreditCard },
   { label: "Soumissions", href: "/admin/soumissions", icon: ClipboardCheck },
   { label: "Certificats", href: "/admin/certificats", icon: Award },
   { label: "Coupons", href: "/admin/coupons", icon: Ticket },
@@ -49,12 +51,14 @@ function SidebarContent({
   user,
   isActive,
   collapsed,
+  pendingPayments = 0,
   onNavigate,
   onToggleCollapse,
 }: {
   user: { name: string; email: string; isSuperAdmin: boolean };
   isActive: (href: string) => boolean;
   collapsed: boolean;
+  pendingPayments?: number;
   onNavigate?: () => void;
   onToggleCollapse?: () => void;
 }) {
@@ -132,6 +136,15 @@ function SidebarContent({
                 )}
               />
               {!collapsed && item.label}
+              {item.href === "/admin/paiements" && pendingPayments > 0 && (
+                collapsed ? (
+                  <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-warning ring-2 ring-[#0f0f1e]" />
+                ) : (
+                  <span className="ml-auto rounded-full bg-warning px-1.5 py-0.5 text-[10px] font-bold text-[#0f0f1e]">
+                    {pendingPayments}
+                  </span>
+                )
+              )}
             </Link>
           );
         })}
@@ -196,9 +209,11 @@ function SidebarContent({
 export function AdminShell({
   user,
   children,
+  pendingPayments = 0,
 }: {
   user: { name: string; email: string; isSuperAdmin: boolean };
   children: React.ReactNode;
+  pendingPayments?: number;
 }) {
   const pathname = usePathname();
   const [open, setOpen] = React.useState(false);
@@ -251,6 +266,7 @@ export function AdminShell({
           user={user}
           isActive={isActive}
           collapsed={collapsed}
+          pendingPayments={pendingPayments}
           onToggleCollapse={toggleCollapse}
         />
       </aside>
@@ -318,6 +334,7 @@ export function AdminShell({
                 user={user}
                 isActive={isActive}
                 collapsed={false}
+                pendingPayments={pendingPayments}
                 onNavigate={() => setOpen(false)}
               />
             </motion.aside>

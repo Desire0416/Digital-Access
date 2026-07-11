@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { requireRole } from "@/lib/auth-guards";
 import { AdminShell } from "@/components/admin/AdminShell";
+import { getPendingPaymentsCount } from "@/lib/payment-queries";
 
 export const metadata: Metadata = {
   title: "Administration — Digital Access Academy",
@@ -17,5 +18,6 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     email: user.email ?? "",
     isSuperAdmin: user.roles.includes("SUPER_ADMIN"),
   };
-  return <AdminShell user={shellUser}>{children}</AdminShell>;
+  const pendingPayments = await getPendingPaymentsCount();
+  return <AdminShell user={shellUser} pendingPayments={pendingPayments}>{children}</AdminShell>;
 }

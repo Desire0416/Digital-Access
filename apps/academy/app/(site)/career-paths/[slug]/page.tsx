@@ -9,6 +9,7 @@ import { Section, Container, GradientText, Badge, Reveal } from "@da/ui";
 import { currentUser } from "@da/auth/guards";
 import { getCareerPath } from "@/lib/queries";
 import { getPathEnrollmentState } from "@/lib/learn-queries";
+import { getFormationPaymentState } from "@/lib/payment-queries";
 import { LEVEL_LABEL } from "@/lib/types";
 import { EnrollCTA } from "@/components/EnrollCTA";
 import { DiagnosticTest } from "@/components/DiagnosticTest";
@@ -29,7 +30,11 @@ const lessonIcon: Record<string, typeof PlayCircle> = {
 export default async function CareerPathDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const user = await currentUser();
-  const [p, enr] = await Promise.all([getCareerPath(slug), getPathEnrollmentState(slug, user?.id)]);
+  const [p, enr, pay] = await Promise.all([
+    getCareerPath(slug),
+    getPathEnrollmentState(slug, user?.id),
+    getFormationPaymentState(slug, user?.id),
+  ]);
   if (!p) notFound();
   const lessonCount = p.modules.reduce((n, m) => n + m.lessons.length, 0);
 
@@ -69,6 +74,8 @@ export default async function CareerPathDetailPage({ params }: { params: Promise
                 status={enr.status}
                 resumeLessonId={enr.resumeLessonId}
                 firstLessonId={enr.firstLessonId}
+                pending={pay.pending}
+                rejectionReason={pay.rejectionReason}
                 showPreview
               />
             </div>
@@ -213,6 +220,8 @@ export default async function CareerPathDetailPage({ params }: { params: Promise
                 status={enr.status}
                 resumeLessonId={enr.resumeLessonId}
                 firstLessonId={enr.firstLessonId}
+                pending={pay.pending}
+                rejectionReason={pay.rejectionReason}
               />
               <Link href={`/schools/${p.schoolSlug}`} className="inline-flex h-12 items-center gap-2 rounded-lg border border-white/20 px-6 text-[0.95rem] font-semibold text-white transition-colors hover:bg-white/10">
                 Voir l'école
