@@ -68,8 +68,8 @@ function esc(value: string): string {
 /** Une ligne de contact : icône monochrome + contenu. */
 function contactRow(icon: string, content: string): string {
   return `<tr>
-    <td style="padding:3px 9px 3px 0;vertical-align:middle;width:15px;"><img src="${ICONS}/${icon}.png" width="15" height="15" alt="" style="display:block;border:0;" /></td>
-    <td style="padding:3px 0;vertical-align:middle;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.35;color:${GRAY};">${content}</td>
+    <td style="padding:4px 11px 4px 0;vertical-align:middle;width:18px;"><img src="${ICONS}/${icon}.png" width="18" height="18" alt="" style="display:block;border:0;" /></td>
+    <td style="padding:4px 0;vertical-align:middle;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.4;color:${GRAY};">${content}</td>
   </tr>`;
 }
 
@@ -97,11 +97,11 @@ export function buildSignatureHtml(input: SignatureInput): string {
 
   return `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;color:${BLACK};">
   <tr>
-    <td style="padding:0 4px 0 0;vertical-align:middle;">
-      <img src="${SIGNATURE_LOGO_URL}" alt="Digital Access" width="184" style="display:block;width:184px;height:auto;border:0;" />
+    <td style="padding:0;vertical-align:middle;">
+      <img src="${SIGNATURE_LOGO_URL}" alt="Digital Access" width="220" style="display:block;width:220px;height:auto;border:0;" />
     </td>
-    <td style="padding:0 22px;vertical-align:middle;">
-      <table cellpadding="0" cellspacing="0" border="0" role="presentation"><tr><td style="width:2px;height:70px;background:${DIVIDER};font-size:0;line-height:0;">&nbsp;</td></tr></table>
+    <td style="padding:0 14px;vertical-align:middle;">
+      <table cellpadding="0" cellspacing="0" border="0" role="presentation"><tr><td style="width:2px;height:82px;background:${DIVIDER};font-size:0;line-height:0;">&nbsp;</td></tr></table>
     </td>
     <td style="vertical-align:middle;">
       <div style="font-size:19px;font-weight:bold;color:${BLACK};line-height:1.2;">${name}</div>
