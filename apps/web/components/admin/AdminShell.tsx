@@ -22,6 +22,7 @@ import {
   Images,
   Quote,
   UsersRound,
+  Mail,
   ExternalLink,
   Menu,
   X,
@@ -98,6 +99,7 @@ const NAV: NavGroup[] = [
     section: "Administration",
     items: [
       { label: "Utilisateurs", href: "/admin/utilisateurs", icon: UsersRound, visible: adminOnly },
+      { label: "Signatures email", href: "/admin/signatures", icon: Mail, visible: staffAll },
     ],
   },
 ];
