@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Sparkles, X, ArrowRight, ArrowLeft, Check, Target, Compass,
@@ -340,7 +339,14 @@ export function DiagnosticTest({
 
                 {/* RESULT */}
                 {phase === "result" && result && (
-                  <ResultView result={result} slug={slug} formationLevel={level} onRestart={reset} />
+                  <ResultView
+                    result={result}
+                    onRestart={reset}
+                    onStart={() => {
+                      close();
+                      setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 320);
+                    }}
+                  />
                 )}
 
                 {/* ERROR */}
@@ -367,14 +373,12 @@ export function DiagnosticTest({
 
 function ResultView({
   result,
-  slug,
-  formationLevel,
   onRestart,
+  onStart,
 }: {
   result: DiagResult;
-  slug: string;
-  formationLevel: string;
   onRestart: () => void;
+  onStart: () => void;
 }) {
   const st = LEVEL_STYLE[result.recommendedLevel];
   return (
@@ -449,12 +453,13 @@ function ResultView({
 
       {/* CTAs */}
       <div className="mt-5 flex flex-col gap-2.5">
-        <Link
-          href={`/apprendre/${slug}`}
+        <button
+          type="button"
+          onClick={onStart}
           className={cn(buttonClasses({ variant: "primary", size: "lg" }), "w-full")}
         >
-          <GraduationCap size={18} /> Commencer la formation
-        </Link>
+          <GraduationCap size={18} /> M'inscrire à la formation
+        </button>
         <button
           type="button"
           onClick={onRestart}
