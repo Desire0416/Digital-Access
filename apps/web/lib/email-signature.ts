@@ -21,6 +21,8 @@ const GRAY_SOFT = "#6B7280";
 const GRAY_FAINT = "#9CA3AF";
 const DIVIDER = "#CFC3F5"; // violet clair
 const HAIRLINE = "#E5E7EB";
+/* Police universelle (mêmes glyphes partout) : Segoe UI (Windows/Outlook) → Arial → Helvetica. */
+const FONT = "'Segoe UI', Arial, Helvetica, sans-serif";
 
 export interface SignatureInput {
   name: string;
@@ -69,7 +71,7 @@ function esc(value: string): string {
 function contactRow(icon: string, content: string): string {
   return `<tr>
     <td style="padding:4px 11px 4px 0;vertical-align:middle;width:18px;"><img src="${ICONS}/${icon}.png" width="18" height="18" alt="" style="display:block;border:0;" /></td>
-    <td style="padding:4px 0;vertical-align:middle;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.4;color:${GRAY};">${content}</td>
+    <td style="padding:4px 0;vertical-align:middle;font-family:${FONT};font-size:13px;line-height:1.4;color:${GRAY};">${content}</td>
   </tr>`;
 }
 
@@ -95,15 +97,15 @@ export function buildSignatureHtml(input: SignatureInput): string {
     contactRow("pin", `<span style="color:${GRAY_SOFT};">${address}</span>`),
   ].join("");
 
-  return `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;color:${BLACK};">
+  return `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;font-family:${FONT};color:${BLACK};">
   <tr>
     <td style="padding:0;vertical-align:middle;">
-      <img src="${SIGNATURE_LOGO_URL}" alt="Digital Access" width="220" style="display:block;width:220px;height:auto;border:0;" />
+      <img src="${SIGNATURE_LOGO_URL}" alt="Digital Access" width="170" style="display:block;width:170px;height:auto;border:0;" />
     </td>
-    <td style="padding:0 14px;vertical-align:middle;">
-      <table cellpadding="0" cellspacing="0" border="0" role="presentation"><tr><td style="width:2px;height:82px;background:${DIVIDER};font-size:0;line-height:0;">&nbsp;</td></tr></table>
+    <td style="padding:0 12px;vertical-align:middle;">
+      <table cellpadding="0" cellspacing="0" border="0" role="presentation"><tr><td style="width:2px;height:76px;background:${DIVIDER};font-size:0;line-height:0;">&nbsp;</td></tr></table>
     </td>
-    <td style="vertical-align:middle;">
+    <td style="vertical-align:middle;font-family:${FONT};">
       <div style="font-size:19px;font-weight:bold;color:${BLACK};line-height:1.2;">${name}</div>
       <div style="font-size:13px;color:${GRAY_SOFT};margin-top:2px;">${poste}</div>
       <div style="font-size:13px;font-weight:bold;color:${VIOLET};letter-spacing:1.2px;margin-top:7px;">DIGITAL ACCESS</div>
@@ -116,8 +118,8 @@ export function buildSignatureHtml(input: SignatureInput): string {
   <tr>
     <td colspan="3" style="padding:14px 0 0;">
       <div style="border-top:1px solid ${HAIRLINE};padding-top:9px;">
-        <div style="font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:bold;letter-spacing:0.3px;color:${GRAY};">Access Web Solutions <span style="color:${GRAY_FAINT};font-weight:normal;">·</span> <span style="color:${CYAN};">Access Academy</span></div>
-        <div style="font-family:Arial,Helvetica,sans-serif;font-size:10px;color:${GRAY_FAINT};margin-top:2px;">Création de sites web • Plateformes e-learning • IA • Stratégie numérique</div>
+        <div style="font-family:${FONT};font-size:11px;font-weight:bold;letter-spacing:0.3px;color:${GRAY};">Access Web Solutions <span style="color:${GRAY_FAINT};font-weight:normal;">·</span> <span style="color:${CYAN};">Access Academy</span></div>
+        <div style="font-family:${FONT};font-size:10px;color:${GRAY_FAINT};margin-top:2px;">Création de sites web • Plateformes e-learning • IA • Stratégie numérique</div>
       </div>
     </td>
   </tr>
