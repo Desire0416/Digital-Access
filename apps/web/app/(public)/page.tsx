@@ -18,7 +18,7 @@ import { buildMetadata } from "@/lib/seo";
 import { servicePacks, whyChoose, processSteps } from "@/lib/content";
 import { HeroHome } from "@/components/HeroHome";
 import { StatsBand } from "@/components/StatsBand";
-import { ServiceCard } from "@/components/ServiceCard";
+import { ServicePlanCard } from "@/components/ServicePlanCard";
 import { PortfolioCard } from "@/components/PortfolioCard";
 import { TestimonialCard } from "@/components/TestimonialCard";
 import { CTABanner } from "@/components/CTABanner";
@@ -41,7 +41,14 @@ export const metadata = buildMetadata({
 });
 
 export default async function HomePage() {
-  const homeServices = servicePacks.slice(0, 3);
+  // 3 packs vedettes, le « plus choisi » placé au centre (surélevé façon grille tarifaire).
+  const top3 = servicePacks.slice(0, 3);
+  const featuredPack = top3.find((p) => p.featured);
+  const restPacks = top3.filter((p) => !p.featured);
+  const homeServices =
+    featuredPack && restPacks.length === 2
+      ? [restPacks[0], featuredPack, restPacks[1]]
+      : top3;
   const [portfolio, featuredTestimonials] = await Promise.all([
     getPublicPortfolio(),
     getFeaturedTestimonials(3),
@@ -66,10 +73,10 @@ export default async function HomePage() {
             }
             subtitle="Du simple site vitrine à la plateforme e-learning complète, nous vous accompagnons à chaque étape de votre présence numérique."
           />
-          <StaggerGroup className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <StaggerGroup className="mt-14 grid items-stretch gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-8 lg:pt-4">
             {homeServices.map((pack) => (
-              <StaggerItem key={pack.id}>
-                <ServiceCard pack={pack} />
+              <StaggerItem key={pack.id} className="h-full">
+                <ServicePlanCard pack={pack} />
               </StaggerItem>
             ))}
           </StaggerGroup>
