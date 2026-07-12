@@ -11,6 +11,7 @@ import {
   FolderKanban,
   ClipboardCheck,
   Award,
+  Briefcase,
   Heart,
   Settings,
   type LucideIcon,
@@ -30,6 +31,7 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   "/espace/projets": FolderKanban,
   "/espace/evaluations": ClipboardCheck,
   "/espace/certificats": Award,
+  "/espace/portfolio": Briefcase,
   "/espace/favoris": Heart,
   "/espace/parametres": Settings,
 };

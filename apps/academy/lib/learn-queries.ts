@@ -451,6 +451,7 @@ export async function getProjectForLearner(projectId: string, userId: string) {
           feedback: true,
           submittedAt: true,
           reviewedAt: true,
+          isPublic: true,
           createdAt: true,
         },
       },
@@ -489,6 +490,7 @@ export async function getProjectForLearner(projectId: string, userId: string) {
     feedback: s.feedback,
     submittedAt: s.submittedAt,
     reviewedAt: s.reviewedAt,
+    isPublic: s.isPublic,
     createdAt: s.createdAt,
   }));
 

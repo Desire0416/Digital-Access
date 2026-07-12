@@ -19,6 +19,7 @@ import {
   FolderKanban,
   ClipboardCheck,
   Award,
+  Briefcase,
   Heart,
   Settings,
 } from "lucide-react";
@@ -52,6 +53,7 @@ const USER_NAV_ICONS: Record<string, React.ComponentType<{ size?: number | strin
   "/espace/projets": FolderKanban,
   "/espace/evaluations": ClipboardCheck,
   "/espace/certificats": Award,
+  "/espace/portfolio": Briefcase,
   "/espace/favoris": Heart,
   "/espace/parametres": Settings,
 };

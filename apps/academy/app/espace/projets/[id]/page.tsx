@@ -20,6 +20,7 @@ import { getProjectForLearner } from "@/lib/learn-queries";
 import { Markdown } from "@/components/Markdown";
 import { Panel } from "@/components/espace/parts";
 import { SubmissionForm } from "./SubmissionForm";
+import { PublishProjectButton } from "@/components/portfolio/PublishProjectButton";
 import { SUBMISSION_META } from "@/components/submission-meta";
 
 export const metadata: Metadata = { title: "Projet" };
@@ -42,6 +43,10 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
 
   const source = project.course ?? project.careerPath ?? null;
   const isPath = !project.course && !!project.careerPath;
+
+  // Dernière soumission validée → publication au portfolio (§19.5).
+  const approvedSubmission = project.submissions.find((s) => s.status === "APPROVED") ?? null;
+  const approvedIsPublished = approvedSubmission?.isPublic ?? false;
 
   return (
     <div className="space-y-6">
@@ -130,6 +135,9 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                 <CheckCircle2 size={30} className="mx-auto text-success" aria-hidden />
                 <p className="mt-2 font-display text-sm font-bold text-navy">Projet validé</p>
                 <p className="mt-0.5 text-xs text-text-secondary">Félicitations, ce projet est réussi.</p>
+                {approvedSubmission && (
+                  <PublishProjectButton submissionId={approvedSubmission.id} isPublished={approvedIsPublished} />
+                )}
               </div>
             ) : project.awaitingReview ? (
               <div className="rounded-xl border border-info/30 bg-info/5 p-4 text-center">

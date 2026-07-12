@@ -74,6 +74,7 @@ model User {
   courseInstructorships CourseInstructor[]
   orgMemberships        OrganizationMember[]
   auditLogs             AuditLog[]
+  portfolio             Portfolio?
 }
 
 enum TokenType {
@@ -433,12 +434,64 @@ model Submission {
   reviewer      User?            @relation("SubmissionReviewer", fields: [reviewerId], references: [id])
   submittedAt   DateTime?
   reviewedAt    DateTime?
+  isPublic      Boolean          @default(false) // publiée au portfolio (§19.5)
+  publishedAt   DateTime?
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @updatedAt
+
+  portfolioItem PortfolioItem?
 
   @@index([projectId])
   @@index([userId])
   @@index([status])
+}
+
+// ─── Portfolio & employabilité (sections 16.7 / 19.5) ────────────────────────
+// « Pas d'employabilité sans preuve » : un projet VALIDÉ peut être publié au
+// portfolio (PortfolioItem lié à la Submission → jamais dupliqué). Le portfolio
+// public agrège présentation, compétences, projets, certificats, expériences.
+
+model Portfolio {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug      String   @unique // URL publique /portfolio/[slug]
+  isPublic  Boolean  @default(false)
+  headline  String? // intitulé professionnel (ex. « Analyste de données junior »)
+  about     String? // présentation (markdown)
+  tools     String[] @default([]) // outils & technologies maîtrisés
+  links     Json? // { github, linkedin, website, … }
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  items PortfolioItem[]
+
+  @@index([isPublic])
+}
+
+enum PortfolioItemType {
+  PROJECT // issu d'une soumission validée
+  EXPERIENCE // expérience saisie manuellement
+  LINK // réalisation externe
+}
+
+model PortfolioItem {
+  id           String            @id @default(cuid())
+  portfolioId  String
+  portfolio    Portfolio         @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  type         PortfolioItemType @default(PROJECT)
+  title        String
+  description  String?
+  url          String?
+  image        String?
+  skills       String[]          @default([])
+  order        Int               @default(0)
+  // Origine : soumission validée (unique → publication idempotente + trace la preuve).
+  submissionId String?           @unique
+  submission   Submission?       @relation(fields: [submissionId], references: [id], onDelete: SetNull)
+  createdAt    DateTime          @default(now())
+
+  @@index([portfolioId])
 }
 
 // ─── Compétences (section 21) ────────────────────────────────────────────────
