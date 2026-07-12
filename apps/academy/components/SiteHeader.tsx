@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -62,6 +63,30 @@ function isActivePath(pathname: string, href: string): boolean {
   if (href === "/") return pathname === "/";
   return pathname === href || pathname.startsWith(`${href}/`);
 }
+
+/* Navigation du tiroir mobile en SECTIONS titrées (§8). « Accueil » est porté
+   par le logo → absent d'ici. La nav desktop garde `mainNav` (liste à plat). */
+const MOBILE_NAV_GROUPS: { title: string; items: { label: string; href: string }[] }[] = [
+  {
+    title: "Explorer",
+    items: [
+      { label: "Formations", href: "/formations" },
+      { label: "Parcours métiers", href: "/parcours-metiers" },
+      { label: "Écoles", href: "/ecoles" },
+    ],
+  },
+  {
+    title: "Certification & entreprises",
+    items: [
+      { label: "Certifications", href: "/certifications" },
+      { label: "Entreprises", href: "/entreprises" },
+    ],
+  },
+  {
+    title: "L'académie",
+    items: [{ label: "À propos", href: "/a-propos" }],
+  },
+];
 
 /* ─── Champ de recherche (submit → /formations?q=) ─────────────────────── */
 function SearchField({
@@ -249,6 +274,8 @@ export function SiteHeader({ user, notifications }: SiteHeaderProps) {
   const reduce = useReducedMotion();
   const [searchOpen, setSearchOpen] = React.useState(false);
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => setMounted(true), []);
   const admin = !!user && user.roles.some((r) => ADMIN_ROLES.includes(r));
   const reviewer = !!user && user.roles.some((r) => REVIEWER_ROLES.includes(r));
   const instructor = !!user && user.roles.includes("INSTRUCTOR");
@@ -268,6 +295,7 @@ export function SiteHeader({ user, notifications }: SiteHeaderProps) {
   }, [mobileOpen]);
 
   return (
+    <>
     <header
       className={cn(
         "sticky top-0 z-40 border-b transition-all duration-300",
@@ -392,162 +420,179 @@ export function SiteHeader({ user, notifications }: SiteHeaderProps) {
         </div>
       </div>
 
-      {/* ─── Tiroir mobile ─────────────────────────────────────────────── */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <>
-            <motion.div
-              key="overlay"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              onClick={() => setMobileOpen(false)}
-              className="fixed inset-0 z-40 bg-navy/40 backdrop-blur-sm lg:hidden"
-              aria-hidden
-            />
-            <motion.aside
-              key="drawer"
-              role="dialog"
-              aria-modal="true"
-              aria-label="Menu"
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 320, damping: 34 }}
-              className="fixed inset-y-0 right-0 z-50 flex w-[min(20rem,88vw)] flex-col overflow-y-auto bg-surface-primary shadow-2xl lg:hidden"
-            >
-              <div className="flex items-center justify-between border-b border-navy/[0.06] px-4 py-3">
-                <Image
-                  src="/logo-access-academy.png"
-                  alt="Access Academy"
-                  width={140}
-                  height={33}
-                  className="h-8 w-auto"
-                />
-                <button
-                  type="button"
+    </header>
+
+      {/* ─── Tiroir mobile — rendu via un PORTAIL vers <body>, hors du
+          <header>. En état « scrolled » le header porte `backdrop-blur`
+          (backdrop-filter) qui crée un containing-block : un position:fixed
+          descendant se calerait alors sur les ~64px du header au lieu de la
+          fenêtre → le menu « ne se déroulait pas » en milieu de page. ─────── */}
+      {mounted &&
+        createPortal(
+          <AnimatePresence>
+            {mobileOpen && (
+              <>
+                <motion.div
+                  key="overlay"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
                   onClick={() => setMobileOpen(false)}
-                  aria-label="Fermer le menu"
-                  className="grid h-10 w-10 place-items-center rounded-lg text-navy transition-colors hover:bg-navy/[0.05]"
+                  className="fixed inset-0 z-[60] bg-navy/40 backdrop-blur-sm lg:hidden"
+                  aria-hidden
+                />
+                <motion.aside
+                  key="drawer"
+                  role="dialog"
+                  aria-modal="true"
+                  aria-label="Menu"
+                  initial={{ x: "100%" }}
+                  animate={{ x: 0 }}
+                  exit={{ x: "100%" }}
+                  transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 320, damping: 34 }}
+                  className="fixed inset-y-0 right-0 z-[61] flex w-[min(20rem,88vw)] flex-col overflow-y-auto overscroll-contain bg-surface-primary shadow-2xl lg:hidden"
                 >
-                  <X size={20} />
-                </button>
-              </div>
-
-              <div className="border-b border-navy/[0.06] p-4">
-                <SearchField onDone={() => setMobileOpen(false)} />
-              </div>
-
-              <nav aria-label="Navigation principale mobile" className="flex-1 p-3">
-                {mainNav.map((item, i) => {
-                  const active = isActivePath(pathname, item.href);
-                  return (
-                    <motion.div
-                      key={item.href}
-                      initial={reduce ? false : { opacity: 0, x: 16 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.04 * i, duration: 0.25, ease: "easeOut" }}
-                    >
-                      <Link
-                        href={item.href}
-                        aria-current={active ? "page" : undefined}
-                        className={cn(
-                          "flex items-center justify-between rounded-xl px-4 py-3 font-display text-[0.95rem] font-semibold transition-colors",
-                          active
-                            ? "bg-brand-blue-vif/[0.08] text-brand-blue-royal"
-                            : "text-navy hover:bg-navy/[0.04]",
-                        )}
-                      >
-                        {item.label}
-                        {active && <span className="h-1.5 w-1.5 rounded-full bg-gradient-da" aria-hidden />}
-                      </Link>
-                    </motion.div>
-                  );
-                })}
-
-                {user && (
-                  <>
-                    <p className="mt-5 px-4 text-[11px] font-bold uppercase tracking-[0.18em] text-text-muted">
-                      Mon compte
-                    </p>
-                    <div className="mt-1.5">
-                      {userNav.map((item) => {
-                        const Icon = USER_NAV_ICONS[item.href] ?? LayoutDashboard;
-                        return (
-                          <Link
-                            key={item.href}
-                            href={item.href}
-                            className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-navy transition-colors hover:bg-navy/[0.04]"
-                          >
-                            <Icon size={16} className="text-text-muted" aria-hidden />
-                            {item.label}
-                          </Link>
-                        );
-                      })}
-                      {reviewer && (
-                        <Link
-                          href="/correction"
-                          className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold text-brand-blue-royal transition-colors hover:bg-brand-blue-vif/[0.06]"
-                        >
-                          <ClipboardCheck size={16} aria-hidden />
-                          Corrections
-                        </Link>
-                      )}
-                      {instructor && (
-                        <Link
-                          href="/formateur"
-                          className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold text-accent transition-colors hover:bg-accent/[0.06]"
-                        >
-                          <BookOpen size={16} aria-hidden />
-                          Studio formateur
-                        </Link>
-                      )}
-                      {admin && (
-                        <Link
-                          href="/admin"
-                          className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold text-brand-violet transition-colors hover:bg-brand-violet/[0.06]"
-                        >
-                          <ShieldCheck size={16} aria-hidden />
-                          Administration
-                        </Link>
-                      )}
-                    </div>
-                  </>
-                )}
-              </nav>
-
-              <div className="border-t border-navy/[0.06] p-4">
-                {user ? (
-                  <div className="flex items-center gap-3">
-                    <Avatar name={user.name} src={user.avatar ?? undefined} className="h-10 w-10" />
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold text-navy">{user.name}</p>
-                    </div>
+                  {/* En-tête : logo (→ accueil) + fermer */}
+                  <div className="sticky top-0 z-10 flex items-center justify-between border-b border-navy/[0.06] bg-surface-primary px-4 py-3">
+                    <Link href="/" aria-label="Accueil Access Academy" onClick={() => setMobileOpen(false)} className="shrink-0">
+                      <Image src="/logo-access-academy.png" alt="Access Academy" width={140} height={33} className="h-8 w-auto" />
+                    </Link>
                     <button
                       type="button"
-                      onClick={() => void signOut({ callbackUrl: "/" })}
-                      aria-label="Déconnexion"
-                      className="grid h-10 w-10 place-items-center rounded-lg text-error transition-colors hover:bg-error/[0.06]"
+                      onClick={() => setMobileOpen(false)}
+                      aria-label="Fermer le menu"
+                      className="grid h-10 w-10 place-items-center rounded-lg text-navy transition-colors hover:bg-navy/[0.05]"
                     >
-                      <LogOut size={18} />
+                      <X size={20} />
                     </button>
                   </div>
-                ) : (
-                  <div className="grid gap-2.5">
-                    <Link href="/inscription" className={buttonClasses({ className: "w-full" })}>
-                      Commencer
-                    </Link>
-                    <Link href="/connexion" className={buttonClasses({ variant: "outline", className: "w-full" })}>
-                      Se connecter
-                    </Link>
+
+                  {/* Recherche */}
+                  <div className="border-b border-navy/[0.06] p-4">
+                    <SearchField onDone={() => setMobileOpen(false)} />
                   </div>
-                )}
-              </div>
-            </motion.aside>
-          </>
+
+                  {/* Navigation en sections titrées */}
+                  <nav aria-label="Navigation principale mobile" className="flex-1 p-3">
+                    {MOBILE_NAV_GROUPS.map((group) => (
+                      <div key={group.title} className="mb-2">
+                        <p className="px-4 pb-1 pt-2 text-[11px] font-bold uppercase tracking-[0.16em] text-text-muted">
+                          {group.title}
+                        </p>
+                        {group.items.map((item) => {
+                          const active = isActivePath(pathname, item.href);
+                          return (
+                            <Link
+                              key={item.href}
+                              href={item.href}
+                              aria-current={active ? "page" : undefined}
+                              className={cn(
+                                "flex items-center justify-between rounded-xl px-4 py-2.5 font-display text-[0.95rem] font-semibold transition-colors",
+                                active ? "bg-brand-blue-vif/[0.08] text-brand-blue-royal" : "text-navy hover:bg-navy/[0.04]",
+                              )}
+                            >
+                              {item.label}
+                              {active && <span className="h-1.5 w-1.5 rounded-full bg-gradient-da" aria-hidden />}
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    ))}
+
+                    {user && (
+                      <>
+                        <span className="mx-4 my-2 block h-px bg-navy/[0.06]" aria-hidden />
+                        <p className="px-4 pb-1 pt-1 text-[11px] font-bold uppercase tracking-[0.16em] text-text-muted">
+                          Mon espace
+                        </p>
+                        {userNav.map((item) => {
+                          const Icon = USER_NAV_ICONS[item.href] ?? LayoutDashboard;
+                          const active = isActivePath(pathname, item.href);
+                          return (
+                            <Link
+                              key={item.href}
+                              href={item.href}
+                              aria-current={active ? "page" : undefined}
+                              className={cn(
+                                "flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors",
+                                active ? "bg-brand-blue-vif/[0.08] text-brand-blue-royal" : "text-navy hover:bg-navy/[0.04]",
+                              )}
+                            >
+                              <Icon size={16} className={active ? "text-brand-blue-royal" : "text-text-muted"} aria-hidden />
+                              {item.label}
+                            </Link>
+                          );
+                        })}
+                        {reviewer && (
+                          <Link
+                            href="/correction"
+                            className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold text-brand-blue-royal transition-colors hover:bg-brand-blue-vif/[0.06]"
+                          >
+                            <ClipboardCheck size={16} aria-hidden />
+                            Corrections
+                          </Link>
+                        )}
+                        {instructor && (
+                          <Link
+                            href="/formateur"
+                            className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold text-accent transition-colors hover:bg-accent/[0.06]"
+                          >
+                            <BookOpen size={16} aria-hidden />
+                            Studio formateur
+                          </Link>
+                        )}
+                        {admin && (
+                          <Link
+                            href="/admin"
+                            className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold text-brand-violet transition-colors hover:bg-brand-violet/[0.06]"
+                          >
+                            <ShieldCheck size={16} aria-hidden />
+                            Administration
+                          </Link>
+                        )}
+                      </>
+                    )}
+                  </nav>
+
+                  {/* Pied : compte / CTA */}
+                  <div className="sticky bottom-0 border-t border-navy/[0.06] bg-surface-primary p-4">
+                    {user ? (
+                      <div className="flex items-center gap-3">
+                        <Avatar name={user.name} src={user.avatar ?? undefined} className="h-10 w-10" />
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-semibold text-navy">{user.name}</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => void signOut({ callbackUrl: "/" })}
+                          aria-label="Déconnexion"
+                          className="grid h-10 w-10 place-items-center rounded-lg text-error transition-colors hover:bg-error/[0.06]"
+                        >
+                          <LogOut size={18} />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="grid gap-2.5">
+                        <Link href="/inscription" className={buttonClasses({ className: "w-full" })} onClick={() => setMobileOpen(false)}>
+                          Commencer
+                        </Link>
+                        <Link
+                          href="/connexion"
+                          className={buttonClasses({ variant: "outline", className: "w-full" })}
+                          onClick={() => setMobileOpen(false)}
+                        >
+                          Se connecter
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+                </motion.aside>
+              </>
+            )}
+          </AnimatePresence>,
+          document.body,
         )}
-      </AnimatePresence>
-    </header>
+    </>
   );
 }
