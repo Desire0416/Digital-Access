@@ -27,6 +27,11 @@ function certificateNumber(): string {
   return `DA-AC-${new Date().getFullYear()}-${randomBytes(3).toString("hex").toUpperCase()}`;
 }
 
+/** Violation de contrainte d'unicité Prisma (index partiel un-certificat-actif). */
+function isUniqueViolation(e: unknown): boolean {
+  return typeof e === "object" && e !== null && "code" in e && (e as { code?: string }).code === "P2002";
+}
+
 /** Génère numéro + code de vérification garantis uniques en base. */
 async function uniqueIdentifiers(): Promise<{ number: string; verifyCode: string }> {
   for (let attempt = 0; attempt < 5; attempt++) {
@@ -121,20 +126,33 @@ export async function issueCourseCertificate(userId: string, courseId: string): 
   const score = await averageCourseScore(userId, courseId);
   const ids = await uniqueIdentifiers();
 
-  const cert = await prisma.certificate.create({
-    data: {
-      userId,
-      courseId,
-      type: "COURSE",
-      title: course.certificateTitle ?? course.title,
-      number: ids.number,
-      verifyCode: ids.verifyCode,
-      status: "ACTIVE",
-      score,
-      mention: mentionForScore(score),
-      skills: course.skills.map((s) => s.skill.name),
-    },
-  });
+  let cert: Certificate;
+  try {
+    cert = await prisma.certificate.create({
+      data: {
+        userId,
+        courseId,
+        type: "COURSE",
+        title: course.certificateTitle ?? course.title,
+        number: ids.number,
+        verifyCode: ids.verifyCode,
+        status: "ACTIVE",
+        score,
+        mention: mentionForScore(score),
+        skills: course.skills.map((s) => s.skill.name),
+      },
+    });
+  } catch (e) {
+    // Course concurrente : l'index partiel (un seul certificat ACTIF par
+    // userId+courseId+type) a rejeté le doublon → on renvoie l'existant.
+    if (isUniqueViolation(e)) {
+      const again = await prisma.certificate.findFirst({
+        where: { userId, courseId, type: "COURSE", status: "ACTIVE" },
+      });
+      if (again) return again;
+    }
+    throw e;
+  }
 
   await notifyCertificate(userId, cert);
   return cert;
@@ -165,18 +183,29 @@ export async function issueCareerPathCertificate(userId: string, careerPathId: s
   const skills = [...new Set(path.courses.flatMap((c) => c.course.skills.map((s) => s.skill.name)))];
   const ids = await uniqueIdentifiers();
 
-  const cert = await prisma.certificate.create({
-    data: {
-      userId,
-      careerPathId,
-      type: "CAREER_PATH",
-      title: path.certificationTitle ?? `Certification métier — ${path.title}`,
-      number: ids.number,
-      verifyCode: ids.verifyCode,
-      status: "ACTIVE",
-      skills,
-    },
-  });
+  let cert: Certificate;
+  try {
+    cert = await prisma.certificate.create({
+      data: {
+        userId,
+        careerPathId,
+        type: "CAREER_PATH",
+        title: path.certificationTitle ?? `Certification métier — ${path.title}`,
+        number: ids.number,
+        verifyCode: ids.verifyCode,
+        status: "ACTIVE",
+        skills,
+      },
+    });
+  } catch (e) {
+    if (isUniqueViolation(e)) {
+      const again = await prisma.certificate.findFirst({
+        where: { userId, careerPathId, type: "CAREER_PATH", status: "ACTIVE" },
+      });
+      if (again) return again;
+    }
+    throw e;
+  }
 
   await notifyCertificate(userId, cert);
   return cert;

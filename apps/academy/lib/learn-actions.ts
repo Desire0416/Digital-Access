@@ -588,6 +588,16 @@ export async function submitQuiz(assessmentId: string, answers: unknown): Promis
   const passed = score >= assessment.passingScore;
   const attemptNumber = attemptsUsed + 1;
 
+  // On ne dévoile la BONNE réponse (et l'explication) que si l'apprenant a réussi
+  // OU s'il n'a plus de tentative — sinon il pourrait échouer volontairement pour
+  // lire le corrigé puis refaire le quiz à 100 %. On garde toujours « correct »
+  // (savoir quelles questions sont ratées, sans la réponse).
+  const isFinalAttempt = assessment.attemptsAllowed > 0 && attemptNumber >= assessment.attemptsAllowed;
+  const canReveal = passed || isFinalAttempt;
+  const safeCorrections = canReveal
+    ? corrections
+    : corrections.map((c) => ({ ...c, correctAnswer: null, explanation: null }));
+
   await prisma.assessmentAttempt.create({
     data: {
       assessmentId: assessment.id,
@@ -619,7 +629,7 @@ export async function submitQuiz(assessmentId: string, answers: unknown): Promis
     passingScore: assessment.passingScore,
     attemptNumber,
     attemptsRemaining: assessment.attemptsAllowed > 0 ? Math.max(0, assessment.attemptsAllowed - attemptNumber) : null,
-    corrections,
+    corrections: safeCorrections,
     courseProgress,
     courseCompleted,
     certificateIssued,
@@ -747,9 +757,32 @@ export async function reviewSubmission(
     return { ok: false, error: "Cette soumission a déjà été corrigée." };
   }
 
+  // Cloisonnement : un correcteur/formateur NON-admin ne corrige que les
+  // soumissions des formations qu'il encadre (CourseInstructor). L'admin
+  // pédagogique n'est pas restreint.
+  if (!isAdmin(reviewer)) {
+    const proj = submission.project;
+    let allowed = false;
+    if (proj.courseId) {
+      allowed = !!(await prisma.courseInstructor.findFirst({
+        where: { courseId: proj.courseId, userId: reviewer.id },
+        select: { id: true },
+      }));
+    } else if (proj.careerPathId) {
+      // Projet transversal : autorisé s'il encadre au moins une formation du parcours.
+      allowed = !!(await prisma.courseInstructor.findFirst({
+        where: { userId: reviewer.id, course: { careerPaths: { some: { careerPathId: proj.careerPathId } } } },
+        select: { id: true },
+      }));
+    }
+    if (!allowed) return { ok: false, error: "Vous n'encadrez pas la formation liée à cette soumission." };
+  }
+
   const { decision, score, feedback } = parsed.data;
-  if (decision === "APPROVED" && score !== undefined && score < submission.project.minScore) {
-    return { ok: false, error: `Le score (${score}) est inférieur au minimum requis (${submission.project.minScore}) pour approuver.` };
+  // Approuver exige un score qui ATTEINT le minimum du projet (pas de validation
+  // sans note, qui délivrerait un certificat sous le seuil).
+  if (decision === "APPROVED" && (score === undefined || score < submission.project.minScore)) {
+    return { ok: false, error: `Pour approuver, indiquez un score atteignant le minimum requis (${submission.project.minScore}).` };
   }
 
   await prisma.$transaction([

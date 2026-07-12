@@ -212,8 +212,23 @@ export async function submitManualPayment(input: SubmitPaymentInput): Promise<Pa
       },
     });
   } catch (err) {
-    // reference @unique : anti-doublon d'ID de transaction.
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
+      // Deux causes possibles : (a) l'ID de transaction est déjà pris
+      // (reference @unique), ou (b) un paiement PENDING existe déjà pour cette
+      // cible — l'index partiel anti-course a bloqué la double soumission
+      // concurrente (là où la vérification `target.pendingPayment` ci-dessus a
+      // pu passer sur deux requêtes simultanées). On distingue par relecture.
+      const dupPending = await prisma.payment.findFirst({
+        where: {
+          userId: user.id,
+          status: "PENDING",
+          ...(data.type === "formation" ? { courseId: target.id } : { careerPathId: target.id }),
+        },
+        select: { id: true },
+      });
+      if (dupPending) {
+        return { ok: false, error: `Un paiement est déjà en attente de validation pour cet achat. Notre équipe le vérifie ${paymentConfig.reviewDelay}.` };
+      }
       return { ok: false, error: "Cet identifiant de transaction a déjà été utilisé. Vérifiez votre reçu Mobile Money." };
     }
     throw err;
@@ -281,7 +296,48 @@ export async function approvePayment(paymentId: string): Promise<PaymentActionRe
 
   const targetTitle = payment.course?.title ?? payment.careerPath?.title ?? "votre achat";
 
+  let cancelledAcquired = false;
   await prisma.$transaction(async (tx) => {
+    // Anti-double-facturation (règle 40.5) : si la cible a été acquise ENTRE le
+    // dépôt de la preuve et la validation (ex. via un parcours gratuit), on
+    // n'encaisse PAS — statut CANCELLED + audit ; remboursement manuel éventuel.
+    let acquired = false;
+    if (payment.purpose === "COURSE" && payment.courseId) {
+      const e = await tx.enrollment.findUnique({
+        where: { userId_courseId: { userId: payment.userId, courseId: payment.courseId } },
+        select: { status: true },
+      });
+      acquired = !!e && ACQUIRED.includes(e.status);
+    } else if (payment.purpose === "CAREER_PATH" && payment.careerPathId) {
+      const pe = await tx.careerPathEnrollment.findUnique({
+        where: { userId_careerPathId: { userId: payment.userId, careerPathId: payment.careerPathId } },
+        select: { status: true },
+      });
+      acquired = !!pe && ACQUIRED.includes(pe.status);
+    }
+    if (acquired) {
+      cancelledAcquired = true;
+      await tx.payment.update({
+        where: { id: payment.id },
+        data: {
+          status: "CANCELLED",
+          processedById: admin.id,
+          processedAt: new Date(),
+          rejectReason: "Cible déjà acquise avant validation — non encaissé, remboursement à traiter.",
+        },
+      });
+      await tx.auditLog.create({
+        data: {
+          actorId: admin.id,
+          action: "payment.cancel_already_acquired",
+          entity: "Payment",
+          entityId: payment.id,
+          meta: { amount: payment.amount, purpose: payment.purpose, reference: payment.reference, learnerId: payment.userId },
+        },
+      });
+      return;
+    }
+
     await tx.payment.update({
       where: { id: payment.id },
       data: { status: "PAID", processedById: admin.id, processedAt: new Date() },
@@ -369,6 +425,20 @@ export async function approvePayment(paymentId: string): Promise<PaymentActionRe
       },
     });
   });
+
+  if (cancelledAcquired) {
+    await prisma.notification.create({
+      data: {
+        userId: payment.userId,
+        type: "PAYMENT",
+        title: "Paiement non encaissé",
+        message: `Vous aviez déjà accès à « ${targetTitle} ». Votre paiement n'a pas été encaissé ; contactez-nous pour un remboursement si vous avez déjà réglé.`,
+        link: "/espace/formations",
+      },
+    });
+    revalidatePath("/admin/paiements");
+    return { ok: true, message: "Cible déjà acquise — paiement annulé (remboursement éventuel à traiter)." };
+  }
 
   try {
     await sendPaymentApprovedEmail(payment.user.email, {

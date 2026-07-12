@@ -687,6 +687,10 @@ model Certificate {
   revokedReason String?
 
   @@index([userId])
+  // ⚠️ Index partiels d'unicité maintenus HORS Prisma (raw SQL, cf.
+  // packages/academy-db/prisma/partial-indexes.sql) — un seul certificat ACTIF
+  // par (userId, courseId, type) et par (userId, careerPathId, type) :
+  //   "Certificate_active_course_uq", "Certificate_active_path_uq".
 }
 
 // ─── Paiements (section 27, 41.5) ────────────────────────────────────────────
@@ -746,6 +750,10 @@ model Payment {
 
   @@index([userId])
   @@index([status])
+  // ⚠️ Index partiels d'unicité maintenus HORS Prisma (raw SQL, cf.
+  // packages/academy-db/prisma/partial-indexes.sql) — au plus UN paiement
+  // PENDING par (userId, courseId) et par (userId, careerPathId) :
+  //   "Payment_pending_course_uq", "Payment_pending_path_uq".
 }
 
 enum DiscountType {
