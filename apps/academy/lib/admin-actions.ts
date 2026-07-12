@@ -3,7 +3,8 @@
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { prisma, type ContentStatus, type Role, type LessonType, type QuestionType } from "@da/academy-db/client";
-import { requireAdminFresh } from "./guards";
+import { requireAdminFresh, requireCourseEditor, currentUserFresh, isAdmin, hasRole } from "./guards";
+import { createNotification } from "./notify";
 import { revokeCertificate, restoreCertificate } from "./certification";
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -15,6 +16,8 @@ import { revokeCertificate, restoreCertificate } from "./certification";
 export type AdminActionResult = { ok: true; message?: string } | { ok: false; error: string };
 
 const DENIED: AdminActionResult = { ok: false, error: "Accès réservé aux administrateurs." };
+/** Refus lorsque l'acteur n'est ni admin ni formateur propriétaire de la formation (§29.2). */
+const NOT_EDITOR: AdminActionResult = { ok: false, error: "Vous n'êtes pas autorisé à modifier cette formation." };
 
 async function audit(actorId: string, action: string, entity: string, entityId: string | null, meta?: object) {
   try {
@@ -135,8 +138,8 @@ export async function updateCourse(courseId: string, input: UpdateCourseInput): 
   if (!idParsed.success || !parsed.success) {
     return { ok: false, error: parsed.success ? "Formation invalide." : parsed.error.issues[0]?.message ?? "Formulaire invalide." };
   }
-  const admin = await requireAdminFresh();
-  if (!admin) return DENIED;
+  const editor = await requireCourseEditor(idParsed.data);
+  if (!editor) return NOT_EDITOR;
 
   const course = await prisma.course.findUnique({ where: { id: idParsed.data }, select: { id: true, slug: true } });
   if (!course) return { ok: false, error: "Formation introuvable." };
@@ -171,7 +174,7 @@ export async function updateCourse(courseId: string, input: UpdateCourseInput): 
       ...(d.featured !== undefined ? { featured: d.featured } : {}),
     },
   });
-  await audit(admin.id, "course.update", "Course", course.id, { fields: Object.keys(d) });
+  await audit(editor.id, "course.update", "Course", course.id, { fields: Object.keys(d) });
 
   revalidatePath(`/formations/${course.slug}`);
   revalidatePath("/admin/formations");
@@ -561,18 +564,77 @@ async function uniqueSlug(base: string, model: "course" | "careerPath" | "school
 export async function createCourse(title: string): Promise<CreateResult> {
   const parsed = z.string().trim().min(3, "Le titre doit contenir au moins 3 caractères.").max(160).safeParse(title);
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Titre invalide." };
-  const admin = await requireAdminFresh();
-  if (!admin) return { ok: false, error: ACCESS_DENIED };
+  const user = await currentUserFresh();
+  if (!user || !(isAdmin(user) || hasRole(user, ["INSTRUCTOR"]))) return { ok: false, error: "Accès réservé." };
 
   const slug = await uniqueSlug(slugify(parsed.data), "course");
   const course = await prisma.course.create({
     data: { title: parsed.data, slug, description: "" },
     select: { id: true, slug: true },
   });
-  await audit(admin.id, "course.create", "Course", course.id, { title: parsed.data });
+  // Le créateur formateur (non-admin) devient formateur propriétaire de la formation (§29.2).
+  if (!isAdmin(user)) {
+    await prisma.courseInstructor.create({ data: { courseId: course.id, userId: user.id } });
+  }
+  await audit(user.id, "course.create", "Course", course.id, { title: parsed.data });
 
   revalidatePath("/admin/formations");
   return { ok: true, id: course.id, slug: course.slug, message: "Formation créée (brouillon)." };
+}
+
+/* ─── Soumission à validation (§29.2 / §31) ────────────────────────────────────
+   Le formateur propriétaire (ou l'admin) soumet sa formation à la revue. La
+   publication reste ensuite réservée à l'admin (setCourseStatus). ────────────── */
+
+export async function submitCourseForReview(courseId: string): Promise<AdminActionResult> {
+  const idParsed = z.string().min(1).safeParse(courseId);
+  if (!idParsed.success) return { ok: false, error: "Formation invalide." };
+  const editor = await requireCourseEditor(idParsed.data);
+  if (!editor) return NOT_EDITOR;
+
+  const course = await prisma.course.findUnique({
+    where: { id: idParsed.data },
+    select: { id: true, title: true, status: true, _count: { select: { modules: true } } },
+  });
+  if (!course) return { ok: false, error: "Formation introuvable." };
+
+  // Statuts « re-soumettables ». CHANGES_REQUESTED/REJECTED n'existent pas encore
+  // dans l'enum ContentStatus (un rejet ramène la formation en DRAFT) ; on les
+  // liste par string pour rester tolérant à une évolution future du workflow.
+  const submittable: string[] = ["DRAFT", "CHANGES_REQUESTED", "REJECTED"];
+  if (!submittable.includes(course.status)) {
+    return { ok: false, error: "Cette formation ne peut pas être soumise dans son état actuel." };
+  }
+
+  const lessonCount = await prisma.lesson.count({ where: { module: { courseId: course.id } } });
+  if (course._count.modules < 1 || lessonCount < 1) {
+    return { ok: false, error: "Ajoutez au moins un module et une leçon avant de soumettre." };
+  }
+
+  await prisma.course.update({ where: { id: course.id }, data: { status: "REVIEW" } });
+  await audit(editor.id, "course.submit", "Course", course.id, { from: course.status, to: "REVIEW" });
+
+  // Notifie les administrateurs pédagogiques qu'une formation attend validation.
+  const admins = await prisma.user.findMany({
+    where: { roles: { hasSome: ["ACADEMIC_ADMIN", "SUPER_ADMIN"] } },
+    select: { id: true },
+  });
+  await Promise.all(
+    admins.map((a) =>
+      createNotification({
+        userId: a.id,
+        type: "SYSTEM",
+        title: "Formation à valider",
+        message: `« ${course.title} » a été soumise à validation.`,
+        link: `/admin/formations/${courseId}`,
+      }),
+    ),
+  );
+
+  revalidatePath("/admin/formations");
+  revalidatePath("/formateur/formations");
+  revalidatePath(`/formateur/formations/${courseId}`);
+  return { ok: true, message: "Formation soumise à validation." };
 }
 
 /* ─── Modules (§12.1) ──────────────────────────────────────────────────────── */
@@ -588,15 +650,15 @@ export async function createModule(courseId: string, title: string): Promise<Adm
   const idParsed = z.string().min(1).safeParse(courseId);
   const parsed = z.string().trim().min(2).max(160).safeParse(title);
   if (!idParsed.success || !parsed.success) return { ok: false, error: "Titre de module invalide." };
-  const admin = await requireAdminFresh();
-  if (!admin) return DENIED;
+  const editor = await requireCourseEditor(idParsed.data);
+  if (!editor) return NOT_EDITOR;
 
   const course = await prisma.course.findUnique({ where: { id: idParsed.data }, select: { id: true } });
   if (!course) return { ok: false, error: "Formation introuvable." };
 
   const last = await prisma.module.findFirst({ where: { courseId: course.id }, orderBy: { order: "desc" }, select: { order: true } });
   await prisma.module.create({ data: { courseId: course.id, title: parsed.data, order: last ? last.order + 1 : 0 } });
-  await audit(admin.id, "module.create", "Course", course.id);
+  await audit(editor.id, "module.create", "Course", course.id);
 
   revalidatePath("/admin/formations");
   return { ok: true, message: "Module ajouté." };
@@ -606,11 +668,11 @@ export async function updateModule(moduleId: string, input: z.infer<typeof modul
   const idParsed = z.string().min(1).safeParse(moduleId);
   const parsed = moduleSchema.partial().safeParse(input);
   if (!idParsed.success || !parsed.success) return { ok: false, error: parsed.success ? "Module invalide." : parsed.error.issues[0]?.message ?? "Formulaire invalide." };
-  const admin = await requireAdminFresh();
-  if (!admin) return DENIED;
 
-  const mod = await prisma.module.findUnique({ where: { id: idParsed.data }, select: { id: true } });
+  const mod = await prisma.module.findUnique({ where: { id: idParsed.data }, select: { id: true, courseId: true } });
   if (!mod) return { ok: false, error: "Module introuvable." };
+  const editor = await requireCourseEditor(mod.courseId);
+  if (!editor) return NOT_EDITOR;
 
   const d = parsed.data;
   await prisma.module.update({
@@ -622,7 +684,7 @@ export async function updateModule(moduleId: string, input: z.infer<typeof modul
       ...(d.durationMinutes !== undefined ? { durationMinutes: d.durationMinutes } : {}),
     },
   });
-  await audit(admin.id, "module.update", "Module", mod.id);
+  await audit(editor.id, "module.update", "Module", mod.id);
 
   revalidatePath("/admin/formations");
   return { ok: true, message: "Module mis à jour." };
@@ -631,11 +693,14 @@ export async function updateModule(moduleId: string, input: z.infer<typeof modul
 export async function deleteModule(moduleId: string): Promise<AdminActionResult> {
   const parsed = z.string().min(1).safeParse(moduleId);
   if (!parsed.success) return { ok: false, error: "Module invalide." };
-  const admin = await requireAdminFresh();
-  if (!admin) return DENIED;
+
+  const mod = await prisma.module.findUnique({ where: { id: parsed.data }, select: { courseId: true } });
+  if (!mod) return { ok: false, error: "Introuvable." };
+  const editor = await requireCourseEditor(mod.courseId);
+  if (!editor) return NOT_EDITOR;
 
   await prisma.module.delete({ where: { id: parsed.data } }).catch(() => null);
-  await audit(admin.id, "module.delete", "Module", parsed.data);
+  await audit(editor.id, "module.delete", "Module", parsed.data);
   revalidatePath("/admin/formations");
   return { ok: true, message: "Module supprimé." };
 }
@@ -645,8 +710,8 @@ export async function reorderModules(courseId: string, orderedIds: string[]): Pr
     .object({ courseId: z.string().min(1), orderedIds: z.array(z.string().min(1)).min(1).max(200) })
     .safeParse({ courseId, orderedIds });
   if (!parsed.success) return { ok: false, error: "Données invalides." };
-  const admin = await requireAdminFresh();
-  if (!admin) return DENIED;
+  const editor = await requireCourseEditor(parsed.data.courseId);
+  if (!editor) return NOT_EDITOR;
 
   await prisma.$transaction(
     parsed.data.orderedIds.map((id, index) =>
@@ -689,17 +754,17 @@ export async function createLesson(moduleId: string, title: string, lessonType?:
   const idParsed = z.string().min(1).safeParse(moduleId);
   const parsed = z.string().trim().min(2).max(200).safeParse(title);
   if (!idParsed.success || !parsed.success) return { ok: false, error: "Titre de leçon invalide." };
-  const admin = await requireAdminFresh();
-  if (!admin) return DENIED;
 
-  const mod = await prisma.module.findUnique({ where: { id: idParsed.data }, select: { id: true } });
+  const mod = await prisma.module.findUnique({ where: { id: idParsed.data }, select: { id: true, courseId: true } });
   if (!mod) return { ok: false, error: "Module introuvable." };
+  const editor = await requireCourseEditor(mod.courseId);
+  if (!editor) return NOT_EDITOR;
 
   const last = await prisma.lesson.findFirst({ where: { moduleId: mod.id }, orderBy: { order: "desc" }, select: { order: true } });
   await prisma.lesson.create({
     data: { moduleId: mod.id, title: parsed.data, lessonType: lessonType ?? "TEXT", order: last ? last.order + 1 : 0 },
   });
-  await audit(admin.id, "lesson.create", "Module", mod.id);
+  await audit(editor.id, "lesson.create", "Module", mod.id);
 
   revalidatePath("/admin/formations");
   return { ok: true, message: "Leçon ajoutée." };
@@ -709,11 +774,11 @@ export async function updateLesson(lessonId: string, input: z.infer<typeof lesso
   const idParsed = z.string().min(1).safeParse(lessonId);
   const parsed = lessonSchema.partial().safeParse(input);
   if (!idParsed.success || !parsed.success) return { ok: false, error: parsed.success ? "Leçon invalide." : parsed.error.issues[0]?.message ?? "Formulaire invalide." };
-  const admin = await requireAdminFresh();
-  if (!admin) return DENIED;
 
-  const lesson = await prisma.lesson.findUnique({ where: { id: idParsed.data }, select: { id: true } });
+  const lesson = await prisma.lesson.findUnique({ where: { id: idParsed.data }, select: { id: true, module: { select: { courseId: true } } } });
   if (!lesson) return { ok: false, error: "Leçon introuvable." };
+  const editor = await requireCourseEditor(lesson.module.courseId);
+  if (!editor) return NOT_EDITOR;
 
   const d = parsed.data;
   await prisma.lesson.update({
@@ -729,7 +794,7 @@ export async function updateLesson(lessonId: string, input: z.infer<typeof lesso
       ...(d.isRequired !== undefined ? { isRequired: d.isRequired } : {}),
     },
   });
-  await audit(admin.id, "lesson.update", "Lesson", lesson.id);
+  await audit(editor.id, "lesson.update", "Lesson", lesson.id);
 
   revalidatePath("/admin/formations");
   return { ok: true, message: "Leçon mise à jour." };
@@ -738,11 +803,14 @@ export async function updateLesson(lessonId: string, input: z.infer<typeof lesso
 export async function deleteLesson(lessonId: string): Promise<AdminActionResult> {
   const parsed = z.string().min(1).safeParse(lessonId);
   if (!parsed.success) return { ok: false, error: "Leçon invalide." };
-  const admin = await requireAdminFresh();
-  if (!admin) return DENIED;
+
+  const lesson = await prisma.lesson.findUnique({ where: { id: parsed.data }, select: { module: { select: { courseId: true } } } });
+  if (!lesson) return { ok: false, error: "Introuvable." };
+  const editor = await requireCourseEditor(lesson.module.courseId);
+  if (!editor) return NOT_EDITOR;
 
   await prisma.lesson.delete({ where: { id: parsed.data } }).catch(() => null);
-  await audit(admin.id, "lesson.delete", "Lesson", parsed.data);
+  await audit(editor.id, "lesson.delete", "Lesson", parsed.data);
   revalidatePath("/admin/formations");
   return { ok: true, message: "Leçon supprimée." };
 }
@@ -752,8 +820,11 @@ export async function reorderLessons(moduleId: string, orderedIds: string[]): Pr
     .object({ moduleId: z.string().min(1), orderedIds: z.array(z.string().min(1)).min(1).max(300) })
     .safeParse({ moduleId, orderedIds });
   if (!parsed.success) return { ok: false, error: "Données invalides." };
-  const admin = await requireAdminFresh();
-  if (!admin) return DENIED;
+
+  const mod = await prisma.module.findUnique({ where: { id: parsed.data.moduleId }, select: { courseId: true } });
+  if (!mod) return { ok: false, error: "Introuvable." };
+  const editor = await requireCourseEditor(mod.courseId);
+  if (!editor) return NOT_EDITOR;
 
   await prisma.$transaction(
     parsed.data.orderedIds.map((id, index) =>
@@ -779,17 +850,17 @@ export async function createAssessment(moduleId: string, title: string): Promise
   const idParsed = z.string().min(1).safeParse(moduleId);
   const parsed = z.string().trim().min(2).max(200).safeParse(title);
   if (!idParsed.success || !parsed.success) return { ok: false, error: "Titre d'évaluation invalide." };
-  const admin = await requireAdminFresh();
-  if (!admin) return DENIED;
 
   const mod = await prisma.module.findUnique({ where: { id: idParsed.data }, select: { id: true, courseId: true } });
   if (!mod) return { ok: false, error: "Module introuvable." };
+  const editor = await requireCourseEditor(mod.courseId);
+  if (!editor) return NOT_EDITOR;
 
   const last = await prisma.assessment.findFirst({ where: { moduleId: mod.id }, orderBy: { order: "desc" }, select: { order: true } });
   await prisma.assessment.create({
     data: { courseId: mod.courseId, moduleId: mod.id, title: parsed.data, type: "QUIZ", order: last ? last.order + 1 : 0 },
   });
-  await audit(admin.id, "assessment.create", "Module", mod.id);
+  await audit(editor.id, "assessment.create", "Module", mod.id);
 
   revalidatePath("/admin/formations");
   return { ok: true, message: "Évaluation ajoutée." };
@@ -799,11 +870,11 @@ export async function updateAssessment(assessmentId: string, input: z.infer<type
   const idParsed = z.string().min(1).safeParse(assessmentId);
   const parsed = assessmentSchema.partial().safeParse(input);
   if (!idParsed.success || !parsed.success) return { ok: false, error: parsed.success ? "Évaluation invalide." : parsed.error.issues[0]?.message ?? "Formulaire invalide." };
-  const admin = await requireAdminFresh();
-  if (!admin) return DENIED;
 
-  const a = await prisma.assessment.findUnique({ where: { id: idParsed.data }, select: { id: true } });
+  const a = await prisma.assessment.findUnique({ where: { id: idParsed.data }, select: { id: true, courseId: true } });
   if (!a) return { ok: false, error: "Évaluation introuvable." };
+  const editor = await requireCourseEditor(a.courseId);
+  if (!editor) return NOT_EDITOR;
 
   const d = parsed.data;
   await prisma.assessment.update({
@@ -817,7 +888,7 @@ export async function updateAssessment(assessmentId: string, input: z.infer<type
       ...(d.isRequired !== undefined ? { isRequired: d.isRequired } : {}),
     },
   });
-  await audit(admin.id, "assessment.update", "Assessment", a.id);
+  await audit(editor.id, "assessment.update", "Assessment", a.id);
 
   revalidatePath("/admin/formations");
   return { ok: true, message: "Évaluation mise à jour." };
@@ -826,11 +897,14 @@ export async function updateAssessment(assessmentId: string, input: z.infer<type
 export async function deleteAssessment(assessmentId: string): Promise<AdminActionResult> {
   const parsed = z.string().min(1).safeParse(assessmentId);
   if (!parsed.success) return { ok: false, error: "Évaluation invalide." };
-  const admin = await requireAdminFresh();
-  if (!admin) return DENIED;
+
+  const a = await prisma.assessment.findUnique({ where: { id: parsed.data }, select: { courseId: true } });
+  if (!a) return { ok: false, error: "Introuvable." };
+  const editor = await requireCourseEditor(a.courseId);
+  if (!editor) return NOT_EDITOR;
 
   await prisma.assessment.delete({ where: { id: parsed.data } }).catch(() => null);
-  await audit(admin.id, "assessment.delete", "Assessment", parsed.data);
+  await audit(editor.id, "assessment.delete", "Assessment", parsed.data);
   revalidatePath("/admin/formations");
   return { ok: true, message: "Évaluation supprimée." };
 }
@@ -883,15 +957,15 @@ export async function createQuestion(assessmentId: string, input: QuestionInput)
   const idParsed = z.string().min(1).safeParse(assessmentId);
   const parsed = questionSchema.safeParse(input);
   if (!idParsed.success || !parsed.success) return { ok: false, error: parsed.success ? "Évaluation invalide." : parsed.error.issues[0]?.message ?? "Question invalide." };
-  const admin = await requireAdminFresh();
-  if (!admin) return DENIED;
 
-  const a = await prisma.assessment.findUnique({ where: { id: idParsed.data }, select: { id: true } });
+  const a = await prisma.assessment.findUnique({ where: { id: idParsed.data }, select: { id: true, courseId: true } });
   if (!a) return { ok: false, error: "Évaluation introuvable." };
+  const editor = await requireCourseEditor(a.courseId);
+  if (!editor) return NOT_EDITOR;
 
   const last = await prisma.question.findFirst({ where: { assessmentId: a.id }, orderBy: { order: "desc" }, select: { order: true } });
   await prisma.question.create({ data: { assessmentId: a.id, order: last ? last.order + 1 : 0, ...questionData(parsed.data) } });
-  await audit(admin.id, "question.create", "Assessment", a.id);
+  await audit(editor.id, "question.create", "Assessment", a.id);
 
   revalidatePath("/admin/formations");
   return { ok: true, message: "Question ajoutée." };
@@ -901,14 +975,14 @@ export async function updateQuestion(questionId: string, input: QuestionInput): 
   const idParsed = z.string().min(1).safeParse(questionId);
   const parsed = questionSchema.safeParse(input);
   if (!idParsed.success || !parsed.success) return { ok: false, error: parsed.success ? "Question invalide." : parsed.error.issues[0]?.message ?? "Question invalide." };
-  const admin = await requireAdminFresh();
-  if (!admin) return DENIED;
 
-  const q = await prisma.question.findUnique({ where: { id: idParsed.data }, select: { id: true } });
+  const q = await prisma.question.findUnique({ where: { id: idParsed.data }, select: { id: true, assessment: { select: { courseId: true } } } });
   if (!q) return { ok: false, error: "Question introuvable." };
+  const editor = await requireCourseEditor(q.assessment.courseId);
+  if (!editor) return NOT_EDITOR;
 
   await prisma.question.update({ where: { id: q.id }, data: questionData(parsed.data) });
-  await audit(admin.id, "question.update", "Question", q.id);
+  await audit(editor.id, "question.update", "Question", q.id);
 
   revalidatePath("/admin/formations");
   return { ok: true, message: "Question mise à jour." };
@@ -917,11 +991,14 @@ export async function updateQuestion(questionId: string, input: QuestionInput): 
 export async function deleteQuestion(questionId: string): Promise<AdminActionResult> {
   const parsed = z.string().min(1).safeParse(questionId);
   if (!parsed.success) return { ok: false, error: "Question invalide." };
-  const admin = await requireAdminFresh();
-  if (!admin) return DENIED;
+
+  const q = await prisma.question.findUnique({ where: { id: parsed.data }, select: { assessment: { select: { courseId: true } } } });
+  if (!q) return { ok: false, error: "Introuvable." };
+  const editor = await requireCourseEditor(q.assessment.courseId);
+  if (!editor) return NOT_EDITOR;
 
   await prisma.question.delete({ where: { id: parsed.data } }).catch(() => null);
-  await audit(admin.id, "question.delete", "Question", parsed.data);
+  await audit(editor.id, "question.delete", "Question", parsed.data);
   revalidatePath("/admin/formations");
   return { ok: true, message: "Question supprimée." };
 }

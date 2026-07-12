@@ -76,3 +76,19 @@ export async function requireAdminFresh(): Promise<SessionUser | null> {
   if (!user || !isAdmin(user)) return null;
   return user;
 }
+
+/**
+ * Éditeur d'une formation : administrateur OU formateur ASSIGNÉ à cette formation
+ * (jonction CourseInstructor). Relit la base (rôles frais). Utilisé par les
+ * mutations de contenu pour autoriser l'édition scopée à la propriété (§29.2).
+ */
+export async function requireCourseEditor(courseId: string): Promise<SessionUser | null> {
+  const user = await currentUserFresh();
+  if (!user) return null;
+  if (isAdmin(user)) return user;
+  const link = await prisma.courseInstructor.findFirst({
+    where: { courseId, userId: user.id },
+    select: { id: true },
+  });
+  return link ? user : null;
+}

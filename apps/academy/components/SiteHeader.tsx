@@ -109,6 +109,7 @@ function UserMenu({ user }: { user: HeaderUser }) {
   const ref = React.useRef<HTMLDivElement>(null);
   const admin = user.roles.some((r) => ADMIN_ROLES.includes(r));
   const reviewer = user.roles.some((r) => REVIEWER_ROLES.includes(r));
+  const instructor = user.roles.includes("INSTRUCTOR");
 
   React.useEffect(() => {
     if (!open) return;
@@ -191,9 +192,24 @@ function UserMenu({ user }: { user: HeaderUser }) {
                 </>
               )}
 
-              {admin && (
+              {instructor && (
                 <>
                   {!reviewer && <span className="my-1.5 block h-px bg-navy/[0.06]" aria-hidden />}
+                  <Link
+                    href="/formateur"
+                    role="menuitem"
+                    onClick={() => setOpen(false)}
+                    className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-semibold text-accent transition-colors hover:bg-accent/[0.08]"
+                  >
+                    <BookOpen size={15} aria-hidden />
+                    Studio formateur
+                  </Link>
+                </>
+              )}
+
+              {admin && (
+                <>
+                  {!reviewer && !instructor && <span className="my-1.5 block h-px bg-navy/[0.06]" aria-hidden />}
                   <Link
                     href="/admin"
                     role="menuitem"
@@ -233,6 +249,7 @@ export function SiteHeader({ user, notifications }: SiteHeaderProps) {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const admin = !!user && user.roles.some((r) => ADMIN_ROLES.includes(r));
   const reviewer = !!user && user.roles.some((r) => REVIEWER_ROLES.includes(r));
+  const instructor = !!user && user.roles.includes("INSTRUCTOR");
 
   // Ferme le tiroir mobile à chaque navigation.
   React.useEffect(() => {
@@ -473,6 +490,15 @@ export function SiteHeader({ user, notifications }: SiteHeaderProps) {
                         >
                           <ClipboardCheck size={16} aria-hidden />
                           Corrections
+                        </Link>
+                      )}
+                      {instructor && (
+                        <Link
+                          href="/formateur"
+                          className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold text-accent transition-colors hover:bg-accent/[0.06]"
+                        >
+                          <BookOpen size={16} aria-hidden />
+                          Studio formateur
                         </Link>
                       )}
                       {admin && (

@@ -245,9 +245,12 @@ export async function listCertificatesAdmin(filters: { q?: string; status?: stri
 
 /* ─── Fiches d'édition ─────────────────────────────────────────────────────── */
 
-/** Formation complète pour l'éditeur admin (inclut les jonctions). */
-export async function getCourseAdmin(courseId: string) {
-  await guard();
+/**
+ * Requête de formation complète pour l'éditeur — SANS garde. L'APPELANT doit
+ * avoir autorisé l'accès en amont (admin via getCourseAdmin, ou formateur
+ * propriétaire via requireCourseEditor sur la route /formateur).
+ */
+export async function getCourseForEditor(courseId: string) {
   return prisma.course.findUnique({
     where: { id: courseId },
     include: {
@@ -272,6 +275,12 @@ export async function getCourseAdmin(courseId: string) {
       _count: { select: { enrollments: true, reviews: true } },
     },
   });
+}
+
+/** Formation complète pour l'éditeur ADMIN (garde admin en profondeur). */
+export async function getCourseAdmin(courseId: string) {
+  await guard();
+  return getCourseForEditor(courseId);
 }
 
 /** Parcours complet pour le constructeur admin (§30.3). */

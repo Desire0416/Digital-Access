@@ -44,6 +44,7 @@ import {
   deleteQuestion,
   attachCourseToSchool,
   detachCourseFromSchool,
+  submitCourseForReview,
 } from "@/lib/admin-actions";
 import { CONTENT_STATUS_LABEL, CONTENT_STATUS_TONE, StatusPill } from "./ui";
 import { inputClass, textareaClass, FieldLabel, linesToArray, arrayToLines } from "./forms";
@@ -74,22 +75,34 @@ const TABS: { id: Tab; label: string; icon: React.ComponentType<{ size?: number;
 export function CourseBuilder({
   course,
   schools,
+  canManageSchools = true,
+  canPublish = true,
+  backHref = "/admin/formations",
+  backLabel = "Toutes les formations",
 }: {
   course: CourseAdmin;
   schools: { id: string; name: string; color: string }[];
+  /** Le rattachement aux écoles est réservé à l'admin (masqué au formateur). */
+  canManageSchools?: boolean;
+  /** L'admin publie/change le statut ; le formateur soumet à validation (§31). */
+  canPublish?: boolean;
+  /** Lien de retour (admin → /admin/formations ; formateur → /formateur/formations). */
+  backHref?: string;
+  backLabel?: string;
 }) {
   const [tab, setTab] = React.useState<Tab>("fiche");
   const lessonsCount = course.modules.reduce((n, m) => n + m.lessons.length, 0);
+  const visibleTabs = TABS.filter((t) => canManageSchools || t.id !== "rattachements");
 
   return (
     <div className="space-y-6">
       {/* En-tête */}
       <div>
         <Link
-          href="/admin/formations"
+          href={backHref}
           className="mb-3 inline-flex items-center gap-1.5 text-sm font-semibold text-text-secondary transition-colors hover:text-brand-blue-royal"
         >
-          ← Toutes les formations
+          ← {backLabel}
         </Link>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
@@ -117,7 +130,7 @@ export function CourseBuilder({
 
       {/* Onglets */}
       <div className="-mx-1 flex gap-1 overflow-x-auto border-b border-navy/[0.08] px-1">
-        {TABS.map((t) => {
+        {visibleTabs.map((t) => {
           const active = tab === t.id;
           const Icon = t.icon;
           return (
@@ -142,8 +155,10 @@ export function CourseBuilder({
 
       {tab === "fiche" && <FicheTab course={course} />}
       {tab === "programme" && <ProgrammeTab course={course} />}
-      {tab === "rattachements" && <RattachementsTab course={course} schools={schools} />}
-      {tab === "publication" && <PublicationTab course={course} onGoto={setTab} />}
+      {tab === "rattachements" && canManageSchools && <RattachementsTab course={course} schools={schools} />}
+      {tab === "publication" && (
+        <PublicationTab course={course} onGoto={setTab} canManageSchools={canManageSchools} canPublish={canPublish} />
+      )}
     </div>
   );
 }
@@ -908,13 +923,25 @@ const STATUS_HINT: Record<ContentStatus, string> = {
   ARCHIVED: "Archivée — conservée mais retirée.",
 };
 
-function PublicationTab({ course, onGoto }: { course: CourseAdmin; onGoto: (t: Tab) => void }) {
+function PublicationTab({
+  course,
+  onGoto,
+  canManageSchools,
+  canPublish,
+}: {
+  course: CourseAdmin;
+  onGoto: (t: Tab) => void;
+  canManageSchools: boolean;
+  canPublish: boolean;
+}) {
   const { pending, msg, run } = useAdminAction();
   const lessonsCount = course.modules.reduce((n, m) => n + m.lessons.length, 0);
   const hasModule = course.modules.length >= 1;
   const hasLesson = lessonsCount >= 1;
-  const canPublish = hasModule && hasLesson;
+  const ready = hasModule && hasLesson;
   const targets = NEXT_STATUS[course.status] ?? [];
+  // Formateur : une formation en brouillon, à revoir ou refusée peut être (re)soumise.
+  const canSubmit = ["DRAFT", "CHANGES_REQUESTED", "REJECTED"].includes(course.status);
 
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
@@ -925,34 +952,53 @@ function PublicationTab({ course, onGoto }: { course: CourseAdmin; onGoto: (t: T
             Statut actuel : <StatusPill label={CONTENT_STATUS_LABEL[course.status]} tone={CONTENT_STATUS_TONE[course.status]} /> — {STATUS_HINT[course.status]}
           </p>
 
-          <div className="flex flex-wrap items-center gap-2">
-            {targets.length === 0 && <p className="text-sm text-text-muted">Aucune transition disponible.</p>}
-            {targets.map((target) => {
-              const publishing = target === "PUBLISHED";
-              const blocked = publishing && !canPublish;
-              return (
-                <button
-                  key={target}
-                  type="button"
-                  disabled={pending || blocked}
-                  onClick={() => run(() => setCourseStatus(course.id, target))}
-                  title={blocked ? "Publier exige au moins 1 module et 1 leçon." : undefined}
-                  className={cn(
-                    "inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-transform hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-50",
-                    publishing ? "bg-gradient-da text-white shadow-brand" : "border border-navy/10 text-navy hover:border-brand-blue-vif/40",
-                  )}
-                >
-                  <Rocket size={14} />
-                  {target === "REVIEW" && "Soumettre à la revue"}
-                  {target === "APPROVED" && "Approuver"}
-                  {target === "PUBLISHED" && "Publier"}
-                  {target === "SUSPENDED" && "Suspendre"}
-                  {target === "ARCHIVED" && "Archiver"}
-                  {target === "DRAFT" && "Repasser en brouillon"}
-                </button>
-              );
-            })}
-          </div>
+          {canPublish ? (
+            <div className="flex flex-wrap items-center gap-2">
+              {targets.length === 0 && <p className="text-sm text-text-muted">Aucune transition disponible.</p>}
+              {targets.map((target) => {
+                const publishing = target === "PUBLISHED";
+                const blocked = publishing && !ready;
+                return (
+                  <button
+                    key={target}
+                    type="button"
+                    disabled={pending || blocked}
+                    onClick={() => run(() => setCourseStatus(course.id, target))}
+                    title={blocked ? "Publier exige au moins 1 module et 1 leçon." : undefined}
+                    className={cn(
+                      "inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-transform hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-50",
+                      publishing ? "bg-gradient-da text-white shadow-brand" : "border border-navy/10 text-navy hover:border-brand-blue-vif/40",
+                    )}
+                  >
+                    <Rocket size={14} />
+                    {target === "REVIEW" && "Soumettre à la revue"}
+                    {target === "APPROVED" && "Approuver"}
+                    {target === "PUBLISHED" && "Publier"}
+                    {target === "SUSPENDED" && "Suspendre"}
+                    {target === "ARCHIVED" && "Archiver"}
+                    {target === "DRAFT" && "Repasser en brouillon"}
+                  </button>
+                );
+              })}
+            </div>
+          ) : canSubmit ? (
+            <button
+              type="button"
+              disabled={pending || !ready}
+              onClick={() => run(() => submitCourseForReview(course.id))}
+              title={!ready ? "La soumission exige au moins 1 module et 1 leçon." : undefined}
+              className="inline-flex items-center gap-2 rounded-lg bg-gradient-da px-4 py-2 text-sm font-semibold text-white shadow-brand transition-transform hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Rocket size={14} />
+              Soumettre à validation
+            </button>
+          ) : (
+            <p className="text-sm text-text-muted">
+              {course.status === "REVIEW"
+                ? "En attente de validation par l'administration pédagogique."
+                : "Cette formation est gérée par l'administration."}
+            </p>
+          )}
           <div className="mt-3"><Feedback msg={msg} /></div>
         </div>
       </div>
@@ -960,17 +1006,19 @@ function PublicationTab({ course, onGoto }: { course: CourseAdmin; onGoto: (t: T
       {/* Garde-fous */}
       <div className="rounded-2xl border border-navy/[0.07] bg-surface-primary p-5">
         <h2 className="mb-3 font-display text-base font-bold text-navy">
-          <GradientText>Prêt à publier ?</GradientText>
+          <GradientText>{canPublish ? "Prêt à publier ?" : "Prêt à soumettre ?"}</GradientText>
         </h2>
         <ul className="space-y-2.5 text-sm">
           <Check ok={course.title.trim().length >= 3} label="Titre renseigné" />
           <Check ok={hasModule} label="Au moins un module" onFix={() => onGoto("programme")} />
           <Check ok={hasLesson} label="Au moins une leçon" onFix={() => onGoto("programme")} />
-          <Check ok={course.schools.length > 0} label="Rattachée à une école" onFix={() => onGoto("rattachements")} />
+          {canManageSchools && (
+            <Check ok={course.schools.length > 0} label="Rattachée à une école" onFix={() => onGoto("rattachements")} />
+          )}
         </ul>
-        {!canPublish && (
+        {!ready && (
           <p className="mt-4 rounded-lg bg-warning/10 px-3 py-2 text-xs font-medium text-[#b45309]">
-            La publication exige au moins un module et une leçon.
+            {canPublish ? "La publication" : "La soumission"} exige au moins un module et une leçon.
           </p>
         )}
       </div>
