@@ -1,23 +1,24 @@
-import type { Metadata } from "next";
-import { requireRole } from "@/lib/auth-guards";
+import { requireRole } from "@/lib/guards";
+import { countPendingPayments } from "@/lib/admin-queries";
 import { AdminShell } from "@/components/admin/AdminShell";
-import { getPendingPaymentsCount } from "@/lib/payment-queries";
 
-export const metadata: Metadata = {
-  title: "Administration — Digital Access Academy",
-  robots: { index: false, follow: false },
-};
+/* ══════════════════════════════════════════════════════════════════════════
+   Coquille du back-office (cahier §30, §46). Gardée : requireRole redirige
+   tout non-administrateur vers /espace (ou /connexion si déconnecté). Le
+   compteur « paiements en attente » alimente la pastille de la barre latérale.
+   Défense en profondeur : chaque query/mutation revérifie le rôle en base.
+   ══════════════════════════════════════════════════════════════════════════ */
 
-export const dynamic = "force-dynamic";
-
-/** Back-office de pilotage — réservé aux administrateurs / responsables pédagogiques. */
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const user = await requireRole(["ADMIN", "SUPER_ADMIN", "ACADEMIC_MANAGER"], "/admin");
-  const shellUser = {
-    name: user.name ?? user.email ?? "Administrateur",
-    email: user.email ?? "",
-    isSuperAdmin: user.roles.includes("SUPER_ADMIN"),
-  };
-  const pendingPayments = await getPendingPaymentsCount();
-  return <AdminShell user={shellUser} pendingPayments={pendingPayments}>{children}</AdminShell>;
+  const user = await requireRole(["ACADEMIC_ADMIN", "SALES_ADMIN", "SUPER_ADMIN"], "/admin");
+  const pendingPayments = await countPendingPayments();
+
+  return (
+    <AdminShell
+      user={{ name: user.name, email: user.email, avatar: user.avatar, roles: user.roles }}
+      pendingPayments={pendingPayments}
+    >
+      {children}
+    </AdminShell>
+  );
 }

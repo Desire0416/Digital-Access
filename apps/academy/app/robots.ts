@@ -1,15 +1,15 @@
 import type { MetadataRoute } from "next";
-import { academyConfig } from "@/lib/site";
-
-export const dynamic = "force-dynamic";
+import { siteConfig } from "@/lib/site";
 
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: {
-      userAgent: "*",
-      allow: "/",
-      disallow: ["/auth/", "/dashboard/", "/api/", "/courses/*/learn/"],
-    },
-    sitemap: `${academyConfig.url}/sitemap.xml`,
+    rules: [
+      {
+        userAgent: "*",
+        allow: "/",
+        disallow: ["/espace", "/admin", "/api", "/apprendre"],
+      },
+    ],
+    sitemap: `${siteConfig.url}/sitemap.xml`,
   };
 }

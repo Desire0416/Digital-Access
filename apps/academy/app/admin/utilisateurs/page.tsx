@@ -1,273 +1,218 @@
-import { Search, Users, ShieldCheck, MailCheck, MailX, X } from "lucide-react";
-import { getAdminUsers } from "@/lib/admin-queries";
-import { AdminPageHeader, AdminCard, EmptyState, StatusPill, type Tone } from "@/components/admin/ui";
-import { UserRowActions } from "@/components/admin/UserRowActions";
-import { ROLE_LABEL, ROLE_PRIORITY, type Role } from "@/lib/roles";
-import { cn } from "@da/ui";
+import type { Metadata } from "next";
+import { Search, Users } from "lucide-react";
+import { Avatar } from "@da/ui";
+import type { Role } from "@da/academy-db/client";
+import { listUsersAdmin } from "@/lib/admin-queries";
+import { currentUser } from "@/lib/guards";
+import { AdminPageHeader, AdminCard, StatusPill, AdminEmpty } from "@/components/admin/ui";
+import { UserActions } from "./UserActions";
 
-export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "Utilisateurs — Administration" };
 
-/* ══════════════════════════════════════════════════════════════════════════
-   Back-office · Utilisateurs — annuaire des comptes de la plateforme.
-   Recherche server-side (formulaire GET, aucun JS requis) ; gestion des rôles,
-   activation et impersonation déléguées au composant client de chaque ligne.
-   ══════════════════════════════════════════════════════════════════════════ */
-
-/** Teinte de chaque rôle pour les pastilles (les 9 rôles de ROLE_PRIORITY). */
-const ROLE_TONE: Record<Role, Tone> = {
-  SUPER_ADMIN: "red",
-  ADMIN: "amber",
-  ACADEMIC_MANAGER: "violet",
-  INSTRUCTOR: "violet",
-  REVIEWER: "blue",
-  MENTOR: "cyan",
-  COMPANY: "blue",
-  CLIENT: "cyan",
-  LEARNER: "slate",
+const ROLE_LABEL: Record<string, string> = {
+  LEARNER: "Apprenant",
+  INSTRUCTOR: "Formateur",
+  GRADER: "Correcteur",
+  MENTOR: "Mentor",
+  SCHOOL_MANAGER: "Resp. école",
+  PATH_MANAGER: "Resp. parcours",
+  ORG_MANAGER: "Resp. entreprise",
+  ACADEMIC_ADMIN: "Admin pédago.",
+  SALES_ADMIN: "Admin commercial",
+  SUPER_ADMIN: "Super admin",
 };
 
-function roleLabel(role: string): string {
-  return ROLE_LABEL[role as Role] ?? role;
-}
+const ADMIN_ROLES = new Set(["ACADEMIC_ADMIN", "SALES_ADMIN", "SUPER_ADMIN"]);
 
-function roleTone(role: string): Tone {
-  return ROLE_TONE[role as Role] ?? "slate";
-}
+const ROLE_FILTERS: { value: string; label: string }[] = [
+  { value: "", label: "Tous" },
+  { value: "LEARNER", label: "Apprenants" },
+  { value: "INSTRUCTOR", label: "Formateurs" },
+  { value: "GRADER", label: "Correcteurs" },
+  { value: "ACADEMIC_ADMIN", label: "Admins pédago." },
+  { value: "SALES_ADMIN", label: "Admins commerciaux" },
+  { value: "SUPER_ADMIN", label: "Super admins" },
+];
 
-/** Rôles triés par priorité décroissante pour un affichage cohérent. */
-function sortRoles(roles: string[]): string[] {
-  return [...roles].sort(
-    (a, b) => ROLE_PRIORITY.indexOf(a as Role) - ROLE_PRIORITY.indexOf(b as Role),
-  );
-}
+const VALID_ROLES = new Set<Role>([
+  "LEARNER", "INSTRUCTOR", "GRADER", "MENTOR", "SCHOOL_MANAGER",
+  "PATH_MANAGER", "ORG_MANAGER", "ACADEMIC_ADMIN", "SALES_ADMIN", "SUPER_ADMIN",
+]);
 
-function RoleChips({ roles }: { roles: string[] }) {
-  if (roles.length === 0) {
-    return <span className="text-xs text-text-muted">—</span>;
-  }
+const dateFmt = new Intl.DateTimeFormat("fr-FR", { day: "2-digit", month: "short", year: "numeric" });
+
+function RoleChips({ roles }: { roles: Role[] }) {
   return (
-    <div className="flex flex-wrap gap-1.5">
-      {sortRoles(roles).map((r) => (
-        <StatusPill key={r} label={roleLabel(r)} tone={roleTone(r)} dot={false} />
+    <div className="flex flex-wrap gap-1">
+      {roles.map((r) => (
+        <span
+          key={r}
+          className={
+            ADMIN_ROLES.has(r)
+              ? "rounded-full bg-brand-violet/10 px-2 py-0.5 text-[11px] font-semibold text-brand-violet"
+              : "rounded-full bg-navy/[0.06] px-2 py-0.5 text-[11px] font-medium text-text-secondary"
+          }
+        >
+          {ROLE_LABEL[r] ?? r}
+        </span>
       ))}
     </div>
   );
 }
 
-function fmtDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("fr-FR", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
-}
+type SearchParams = Record<string, string | string[] | undefined>;
+const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
 
-export default async function AdminUsersPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ q?: string }>;
-}) {
-  const { q } = await searchParams;
-  const query = (q ?? "").trim();
-  const users = await getAdminUsers(query || undefined);
+export default async function AdminUsersPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
+  const sp = await searchParams;
+  const q = one(sp.q)?.trim() ?? "";
+  const roleParam = one(sp.role) as Role | undefined;
+  const role = roleParam && VALID_ROLES.has(roleParam) ? roleParam : undefined;
+
+  const [me, users] = await Promise.all([currentUser(), listUsersAdmin({ q, role })]);
+  const actorIsSuper = !!me?.roles.includes("SUPER_ADMIN");
 
   return (
-    <>
+    <div className="space-y-6">
       <AdminPageHeader
+        eyebrow="Comptes"
         title="Utilisateurs"
-        description="Annuaire des comptes — pilotez les rôles, l'activation et prenez l'identité d'un utilisateur pour diagnostiquer son espace."
-      >
-        <span className="rounded-full bg-navy/[0.06] px-3 py-1.5 text-sm font-semibold text-text-secondary">
-          {users.length} {users.length > 1 ? "comptes" : "compte"}
-        </span>
-      </AdminPageHeader>
+        description="Recherchez, attribuez des rôles et activez ou désactivez les comptes. Le rôle super administrateur est protégé."
+      />
 
-      {/* Barre de recherche — formulaire GET (pas de client) */}
-      <form method="get" className="mb-6">
-        <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center">
-          <div className="relative flex-1">
-            <Search
-              size={17}
-              className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted"
-            />
-            <input
-              type="search"
-              name="q"
-              defaultValue={query}
-              placeholder="Rechercher par nom ou email…"
-              aria-label="Rechercher un utilisateur"
-              className="w-full rounded-xl border border-navy/[0.1] bg-surface-primary py-2.5 pl-10 pr-4 text-sm text-navy shadow-sm outline-none transition-colors placeholder:text-text-muted focus:border-brand-blue-vif focus:ring-2 focus:ring-brand-blue-vif/20"
-            />
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="submit"
-              className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-da px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90"
-            >
-              <Search size={15} />
-              Rechercher
-            </button>
-            {query && (
+      {/* Recherche + filtre rôle */}
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <form method="GET" role="search" className="relative w-full lg:max-w-sm">
+          {role && <input type="hidden" name="role" value={role} />}
+          <Search size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted" aria-hidden />
+          <input
+            type="search"
+            name="q"
+            defaultValue={q}
+            placeholder="Rechercher par nom ou email…"
+            aria-label="Rechercher un utilisateur"
+            className="h-11 w-full rounded-xl border border-navy/10 bg-surface-primary pl-10 pr-4 text-sm text-navy outline-none transition-colors placeholder:text-text-muted focus:border-brand-blue-vif/60"
+          />
+        </form>
+
+        <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1">
+          {ROLE_FILTERS.map((f) => {
+            const active = (role ?? "") === f.value;
+            const params = new URLSearchParams();
+            if (q) params.set("q", q);
+            if (f.value) params.set("role", f.value);
+            const href = `/admin/utilisateurs${params.toString() ? `?${params}` : ""}`;
+            return (
               <a
-                href="/admin/utilisateurs"
-                className="inline-flex items-center gap-1.5 rounded-xl border border-navy/10 px-4 py-2.5 text-sm font-semibold text-text-secondary transition-colors hover:border-navy/20 hover:text-navy"
+                key={f.value || "all"}
+                href={href}
+                aria-current={active ? "true" : undefined}
+                className={
+                  active
+                    ? "shrink-0 rounded-full bg-gradient-da px-3.5 py-1.5 text-xs font-semibold text-white"
+                    : "shrink-0 rounded-full border border-navy/10 px-3.5 py-1.5 text-xs font-medium text-text-secondary transition-colors hover:border-brand-blue-vif/40 hover:text-navy"
+                }
               >
-                <X size={15} />
-                Effacer
+                {f.label}
               </a>
-            )}
-          </div>
+            );
+          })}
         </div>
-      </form>
+      </div>
 
-      {users.length === 0 ? (
-        <EmptyState
-          icon={<Users size={20} />}
-          title={query ? "Aucun résultat" : "Aucun utilisateur"}
-          description={
-            query
-              ? `Aucun compte ne correspond à « ${query} ». Vérifiez l'orthographe ou effacez la recherche.`
-              : "Les comptes créés sur la plateforme apparaîtront ici."
-          }
-        />
-      ) : (
-        <AdminCard bodyClassName="p-0">
-          {/* Tablette & desktop : tableau */}
-          <div className="hidden overflow-x-auto lg:block">
-            <table className="w-full border-collapse text-sm">
-              <thead>
-                <tr className="border-b border-navy/[0.08] text-left text-xs font-semibold uppercase tracking-wide text-text-muted">
-                  <th className="px-5 py-3.5">Utilisateur</th>
-                  <th className="px-4 py-3.5">Rôles</th>
-                  <th className="px-4 py-3.5">Statut</th>
-                  <th className="px-4 py-3.5 text-center">Inscriptions</th>
-                  <th className="px-4 py-3.5">Inscrit le</th>
-                  <th className="px-5 py-3.5 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((u) => (
-                  <tr
-                    key={u.id}
-                    className="border-b border-navy/[0.05] transition-colors last:border-0 hover:bg-navy/[0.02]"
-                  >
-                    <td className="px-5 py-4">
-                      <div className="flex items-center gap-3">
-                        <Avatar name={u.name} />
-                        <div className="min-w-0">
-                          <p className="truncate font-semibold text-navy">{u.name}</p>
-                          <p className="truncate text-xs text-text-secondary">{u.email}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-4 py-4">
-                      <RoleChips roles={u.roles} />
-                    </td>
-                    <td className="px-4 py-4">
-                      <StatusBadges isActive={u.isActive} emailVerified={u.emailVerified} />
-                    </td>
-                    <td className="px-4 py-4 text-center font-medium text-navy">
-                      {u.enrollmentCount}
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-text-secondary">
-                      {fmtDate(u.createdAt)}
-                    </td>
-                    <td className="px-5 py-4">
-                      <div className="flex justify-end">
-                        <UserRowActions
-                          user={{ id: u.id, name: u.name, roles: u.roles, isActive: u.isActive }}
-                        />
-                      </div>
-                    </td>
+      <p className="text-xs text-text-muted">
+        {users.length} utilisateur{users.length > 1 ? "s" : ""}
+        {q && <> pour « {q} »</>}
+      </p>
+
+      <AdminCard className="overflow-hidden">
+        {users.length === 0 ? (
+          <AdminEmpty
+            icon={<Users size={34} className="text-text-muted opacity-50" />}
+            title="Aucun utilisateur"
+            description={q ? "Aucun résultat pour cette recherche." : "Aucun compte pour ce filtre."}
+          />
+        ) : (
+          <>
+            {/* ─── Tableau (desktop) ──────────────────────────────────────── */}
+            <div className="hidden overflow-x-auto lg:block">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-navy/[0.07] text-left text-xs font-semibold uppercase tracking-wide text-text-muted">
+                    <th className="px-5 py-3 font-semibold">Utilisateur</th>
+                    <th className="px-4 py-3 font-semibold">Rôles</th>
+                    <th className="px-4 py-3 font-semibold">Statut</th>
+                    <th className="px-4 py-3 font-semibold">Activité</th>
+                    <th className="px-4 py-3 font-semibold">Inscrit le</th>
+                    <th className="px-5 py-3 text-right font-semibold">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-navy/[0.05]">
+                  {users.map((u) => (
+                    <tr key={u.id} className="transition-colors hover:bg-surface-secondary/50">
+                      <td className="px-5 py-3">
+                        <div className="flex items-center gap-3">
+                          <Avatar name={u.name} src={u.avatar ?? undefined} className="h-9 w-9 shrink-0" />
+                          <div className="min-w-0">
+                            <p className="truncate font-semibold text-navy">{u.name}</p>
+                            <p className="truncate text-xs text-text-muted">{u.email}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3"><RoleChips roles={u.roles} /></td>
+                      <td className="px-4 py-3">
+                        <StatusPill
+                          label={u.isActive ? "Actif" : "Inactif"}
+                          tone={u.isActive ? "success" : "neutral"}
+                        />
+                      </td>
+                      <td className="px-4 py-3 text-xs text-text-secondary">
+                        {u._count.enrollments} formation{u._count.enrollments > 1 ? "s" : ""}
+                      </td>
+                      <td className="px-4 py-3 text-xs text-text-secondary">{dateFmt.format(u.createdAt)}</td>
+                      <td className="px-5 py-3">
+                        <UserActions
+                          user={{ id: u.id, name: u.name, roles: u.roles, isActive: u.isActive }}
+                          actorIsSuper={actorIsSuper}
+                          isSelf={u.id === me?.id}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-          {/* Mobile & tablette étroite : cartes empilées */}
-          <ul className="divide-y divide-navy/[0.06] lg:hidden">
-            {users.map((u) => (
-              <li key={u.id} className="p-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex min-w-0 items-center gap-3">
-                    <Avatar name={u.name} />
-                    <div className="min-w-0">
+            {/* ─── Cartes (mobile) ────────────────────────────────────────── */}
+            <ul className="divide-y divide-navy/[0.05] lg:hidden">
+              {users.map((u) => (
+                <li key={u.id} className="p-4">
+                  <div className="flex items-start gap-3">
+                    <Avatar name={u.name} src={u.avatar ?? undefined} className="h-10 w-10 shrink-0" />
+                    <div className="min-w-0 flex-1">
                       <p className="truncate font-semibold text-navy">{u.name}</p>
-                      <p className="truncate text-xs text-text-secondary">{u.email}</p>
+                      <p className="truncate text-xs text-text-muted">{u.email}</p>
+                      <div className="mt-2"><RoleChips roles={u.roles} /></div>
+                      <div className="mt-2 flex items-center gap-2 text-xs text-text-secondary">
+                        <StatusPill label={u.isActive ? "Actif" : "Inactif"} tone={u.isActive ? "success" : "neutral"} />
+                        <span>·</span>
+                        <span>{dateFmt.format(u.createdAt)}</span>
+                      </div>
                     </div>
                   </div>
-                  <UserRowActions
-                    user={{ id: u.id, name: u.name, roles: u.roles, isActive: u.isActive }}
-                  />
-                </div>
-
-                <div className="mt-3">
-                  <RoleChips roles={u.roles} />
-                </div>
-
-                <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
-                  <StatusBadges isActive={u.isActive} emailVerified={u.emailVerified} />
-                  <span className="text-xs text-text-secondary">
-                    {u.enrollmentCount} inscription{u.enrollmentCount > 1 ? "s" : ""}
-                  </span>
-                  <span className="text-xs text-text-muted">Inscrit le {fmtDate(u.createdAt)}</span>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </AdminCard>
-      )}
-    </>
-  );
-}
-
-/* ── Sous-composants d'affichage ─────────────────────────────────────────── */
-
-function Avatar({ name }: { name: string }) {
-  const initials = name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((p) => p[0]?.toUpperCase())
-    .join("");
-  return (
-    <span
-      aria-hidden
-      className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gradient-da text-xs font-bold text-white"
-    >
-      {initials || "?"}
-    </span>
-  );
-}
-
-function StatusBadges({
-  isActive,
-  emailVerified,
-}: {
-  isActive: boolean;
-  emailVerified: boolean;
-}) {
-  return (
-    <div className="flex flex-wrap items-center gap-1.5">
-      <span
-        className={cn(
-          "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold",
-          isActive ? "bg-success/10 text-success" : "bg-navy/[0.06] text-text-secondary",
+                  <div className="mt-3">
+                    <UserActions
+                      user={{ id: u.id, name: u.name, roles: u.roles, isActive: u.isActive }}
+                      actorIsSuper={actorIsSuper}
+                      isSelf={u.id === me?.id}
+                    />
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </>
         )}
-      >
-        <ShieldCheck size={12} />
-        {isActive ? "Actif" : "Inactif"}
-      </span>
-      <span
-        className={cn(
-          "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold",
-          emailVerified ? "bg-brand-blue-royal/10 text-brand-blue-royal" : "bg-warning/15 text-[#B45309]",
-        )}
-      >
-        {emailVerified ? <MailCheck size={12} /> : <MailX size={12} />}
-        {emailVerified ? "Email vérifié" : "Non vérifié"}
-      </span>
+      </AdminCard>
     </div>
   );
 }

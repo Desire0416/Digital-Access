@@ -1,159 +1,77 @@
+import type { Metadata } from "next";
 import Link from "next/link";
-import { School, Pencil, Rocket, BookOpen } from "lucide-react";
-import { getAdminSchools } from "@/lib/admin-queries";
-import { AdminPageHeader, AdminCard, EmptyState, StatusPill, COURSE_STATUS } from "@/components/admin/ui";
-import { SchoolCreateForm } from "@/components/admin/SchoolCreateForm";
-import { SchoolStatusToggle } from "@/components/admin/SchoolStatusToggle";
+import { GraduationCap, BookOpen, Route, ChevronRight } from "lucide-react";
+import { listSchoolsAdmin } from "@/lib/admin-queries";
+import { createSchool } from "@/lib/admin-actions";
+import { AdminPageHeader, AdminEmpty } from "@/components/admin/ui";
+import { QuickCreate } from "@/components/admin/QuickCreate";
 
-export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "Écoles — Administration" };
 
-function statusMeta(status: string) {
-  return COURSE_STATUS[status] ?? { label: status, tone: "slate" as const };
-}
-
-function plural(n: number, singular: string, pluralForm = `${singular}s`) {
-  return `${n} ${n > 1 ? pluralForm : singular}`;
-}
-
-export default async function AdminSchoolsPage() {
-  const schools = await getAdminSchools();
+export default async function AdminEcolesPage() {
+  const schools = await listSchoolsAdmin();
 
   return (
-    <>
+    <div className="space-y-6">
       <AdminPageHeader
+        eyebrow="Domaines"
         title="Écoles"
-        description="Les pôles thématiques qui structurent le catalogue — chaque école regroupe des parcours métiers et des formations courtes."
-      >
-        <SchoolCreateForm />
-      </AdminPageHeader>
+        description="Les écoles regroupent formations et parcours par domaine — elles ne dupliquent jamais de contenu. Définissez leur identité et leurs rattachements."
+        actions={
+          <QuickCreate
+            action={createSchool}
+            redirectBase="/admin/ecoles"
+            buttonLabel="Nouvelle école"
+            modalTitle="Créer une école"
+            fieldLabel="Nom de l'école"
+            placeholder="Ex. École Data & IA"
+          />
+        }
+      />
 
       {schools.length === 0 ? (
-        <EmptyState
-          icon={<School size={22} />}
-          title="Aucune école pour le moment"
-          description="Créez votre première école pour commencer à organiser les parcours et les formations du catalogue."
-        >
-          <SchoolCreateForm />
-        </EmptyState>
+        <div className="rounded-2xl border border-navy/[0.07] bg-surface-primary">
+          <AdminEmpty
+            icon={<GraduationCap size={34} className="text-text-muted opacity-50" />}
+            title="Aucune école"
+            description="Créez une école pour organiser vos formations et parcours par domaine."
+          />
+        </div>
       ) : (
-        <>
-          {/* ── Vue tableau (sm et plus) ── */}
-          <AdminCard className="hidden sm:block" bodyClassName="p-0">
-            <div className="overflow-x-auto">
-            <table className="w-full min-w-[640px] text-sm">
-              <thead>
-                <tr className="border-b border-navy/[0.06] text-left text-xs font-semibold uppercase tracking-wide text-text-muted">
-                  <th className="px-5 py-3.5">École</th>
-                  <th className="px-5 py-3.5">Statut</th>
-                  <th className="px-5 py-3.5">Contenu</th>
-                  <th className="px-5 py-3.5 text-center">Ordre</th>
-                  <th className="px-5 py-3.5">Visibilité</th>
-                  <th className="px-5 py-3.5 text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-navy/[0.05]">
-                {schools.map((s) => {
-                  const st = statusMeta(s.status);
-                  return (
-                    <tr key={s.id} className="transition-colors hover:bg-navy/[0.015]">
-                      <td className="px-5 py-4">
-                        <div className="flex items-center gap-3">
-                          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-da text-white">
-                            <School size={16} />
-                          </span>
-                          <div className="min-w-0">
-                            <p className="truncate font-semibold text-navy">{s.name}</p>
-                            <p className="truncate font-mono text-xs text-text-muted">/{s.slug}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-5 py-4">
-                        <StatusPill label={st.label} tone={st.tone} />
-                      </td>
-                      <td className="px-5 py-4">
-                        <div className="flex flex-col gap-1 text-xs text-text-secondary">
-                          <span className="inline-flex items-center gap-1.5">
-                            <Rocket size={13} className="text-brand-blue-royal" />
-                            {plural(s.careerPathCount, "parcours", "parcours")}
-                          </span>
-                          <span className="inline-flex items-center gap-1.5">
-                            <BookOpen size={13} className="text-brand-cyan" />
-                            {plural(s.shortCourseCount, "formation")}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-5 py-4 text-center">
-                        <span className="inline-grid h-7 min-w-7 place-items-center rounded-lg bg-navy/[0.05] px-2 font-mono text-xs font-semibold text-text-secondary">
-                          {s.order}
-                        </span>
-                      </td>
-                      <td className="px-5 py-4">
-                        <SchoolStatusToggle id={s.id} status={s.status} />
-                      </td>
-                      <td className="px-5 py-4 text-right">
-                        <Link
-                          href={`/admin/ecoles/${s.id}`}
-                          className="inline-flex items-center gap-1.5 rounded-lg border border-navy/[0.1] px-3 py-1.5 text-xs font-semibold text-navy transition-colors hover:border-brand-blue-vif/50 hover:text-brand-blue-royal"
-                        >
-                          <Pencil size={13} />
-                          Éditer
-                        </Link>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-            </div>
-          </AdminCard>
-
-          {/* ── Vue cartes empilées (mobile) ── */}
-          <div className="flex flex-col gap-4 sm:hidden">
-            {schools.map((s) => {
-              const st = statusMeta(s.status);
-              return (
-                <div key={s.id} className="rounded-2xl border border-navy/[0.07] bg-surface-primary p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex min-w-0 items-center gap-3">
-                      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-da text-white">
-                        <School size={16} />
-                      </span>
-                      <div className="min-w-0">
-                        <p className="truncate font-semibold text-navy">{s.name}</p>
-                        <p className="truncate font-mono text-xs text-text-muted">/{s.slug}</p>
-                      </div>
-                    </div>
-                    <StatusPill label={st.label} tone={st.tone} />
-                  </div>
-
-                  <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-text-secondary">
-                    <span className="inline-flex items-center gap-1.5">
-                      <Rocket size={13} className="text-brand-blue-royal" />
-                      {plural(s.careerPathCount, "parcours", "parcours")}
-                    </span>
-                    <span className="inline-flex items-center gap-1.5">
-                      <BookOpen size={13} className="text-brand-cyan" />
-                      {plural(s.shortCourseCount, "formation")}
-                    </span>
-                    <span className="text-text-muted">Ordre {s.order}</span>
-                  </div>
-
-                  <div className="mt-4 flex items-center justify-between gap-3">
-                    <SchoolStatusToggle id={s.id} status={s.status} />
-                    <Link
-                      href={`/admin/ecoles/${s.id}`}
-                      className="inline-flex items-center gap-1.5 rounded-lg border border-navy/[0.1] px-3 py-1.5 text-xs font-semibold text-navy transition-colors hover:border-brand-blue-vif/50 hover:text-brand-blue-royal"
-                    >
-                      <Pencil size={13} />
-                      Éditer
-                    </Link>
-                  </div>
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {schools.map((s) => (
+            <Link
+              key={s.id}
+              href={`/admin/ecoles/${s.id}`}
+              className="group relative overflow-hidden rounded-2xl border border-navy/[0.07] bg-surface-primary p-5 shadow-[0_1px_2px_rgba(26,26,46,0.04)] transition-all hover:-translate-y-0.5 hover:shadow-lg"
+            >
+              <span className="absolute inset-x-0 top-0 h-1" style={{ background: s.color }} aria-hidden />
+              <div className="flex items-start gap-3">
+                <span
+                  className="grid h-11 w-11 shrink-0 place-items-center rounded-xl text-white shadow-sm"
+                  style={{ background: s.color }}
+                  aria-hidden
+                >
+                  <GraduationCap size={20} />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-display text-base font-bold text-navy group-hover:text-brand-blue-royal">{s.name}</p>
+                  {s.tagline && <p className="mt-0.5 line-clamp-2 text-xs text-text-secondary">{s.tagline}</p>}
                 </div>
-              );
-            })}
-          </div>
-        </>
+              </div>
+              <div className="mt-4 flex items-center gap-4 text-xs text-text-secondary">
+                <span className="inline-flex items-center gap-1.5">
+                  <BookOpen size={13} className="text-brand-blue-royal" /> {s._count.courses} formation{s._count.courses > 1 ? "s" : ""}
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <Route size={13} className="text-brand-violet" /> {s._count.careerPaths} parcours
+                </span>
+                <ChevronRight size={15} className="ml-auto text-text-muted transition-transform group-hover:translate-x-0.5" />
+              </div>
+            </Link>
+          ))}
+        </div>
       )}
-    </>
+    </div>
   );
 }

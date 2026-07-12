@@ -1,21 +1,43 @@
-export const academyConfig = {
-  name: "Digital Access Academy",
-  tagline: "Apprenez un métier. Réalisez des projets. Construisez votre avenir.",
+/* ══════════════════════════════════════════════════════════════════════════
+   Configuration du site Access Academy — refonte conforme au cahier des
+   charges fonctionnel (racine du repo). Navigation §8, URLs §44.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+export const siteConfig = {
+  name: "Access Academy",
+  legalName: "Digital Access",
+  url: process.env.NEXT_PUBLIC_ACADEMY_URL || "https://academy.digitalaccess.ci",
+  webUrl: process.env.NEXT_PUBLIC_WEB_URL || "https://digitalaccess.ci",
   description:
-    "Digital Access Academy forme aux compétences pratiques du numérique, de l'IA, du marketing, du design, de la data et de l'entrepreneuriat à travers des parcours métiers, des projets concrets, des badges et des certificats vérifiables.",
-  url: "https://academy.digitalaccess.ci",
-  webUrl: "https://digitalaccess.ci",
-  locale: "fr_CI",
-  contact: {
-    email: "contact@digitalaccess.ci",
-    whatsapp: "2250564452692",
-  },
+    "Académie numérique de formation, de certification et de préparation aux métiers. Apprenez une compétence, préparez-vous à un métier, explorez un domaine.",
+  contactEmail: "contact@digitalaccess.ci",
+  whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "+2250564452692",
 } as const;
 
-/**
- * Numéros Mobile Money de Digital Access pour le paiement manuel.
- * ⚠️ À remplacer par les vrais numéros marchands avant le lancement.
- */
+/** Menu principal (cahier §8.1). */
+export const mainNav = [
+  { label: "Accueil", href: "/" },
+  { label: "Formations", href: "/formations" },
+  { label: "Parcours métiers", href: "/parcours-metiers" },
+  { label: "Écoles", href: "/ecoles" },
+  { label: "Certifications", href: "/certifications" },
+  { label: "Entreprises", href: "/entreprises" },
+  { label: "À propos", href: "/a-propos" },
+] as const;
+
+/** Menu utilisateur connecté (cahier §8.3). */
+export const userNav = [
+  { label: "Tableau de bord", href: "/espace" },
+  { label: "Mes formations", href: "/espace/formations" },
+  { label: "Mes parcours", href: "/espace/parcours" },
+  { label: "Mes projets", href: "/espace/projets" },
+  { label: "Mes évaluations", href: "/espace/evaluations" },
+  { label: "Mes certificats", href: "/espace/certificats" },
+  { label: "Mes favoris", href: "/espace/favoris" },
+  { label: "Paramètres", href: "/espace/parametres" },
+] as const;
+
+/** Paiement Mobile Money manuel (numéros réels Digital Access). */
 export const paymentConfig = {
   operators: [
     {
@@ -41,95 +63,41 @@ export const paymentConfig = {
     },
   ],
   holderName: "DIGITAL ACCESS",
-  /** délai annoncé de validation manuelle */
   reviewDelay: "sous 24 h ouvrées",
 } as const;
 
-export type OperatorId = (typeof paymentConfig.operators)[number]["id"];
-
-export interface NavItem {
-  label: string;
-  href: string;
-}
-
-/** Méga-menu « Catalogue » : tout ce qui permet de choisir une formation. */
-export interface CatalogueEntry extends NavItem {
-  desc: string;
-  icon: string;
-}
-export const catalogueMenu = {
-  label: "Catalogue",
-  intro: "Un métier complet, un domaine d'expertise ou un projet concret — trouvez votre voie.",
-  items: [
-    { label: "Parcours métiers", href: "/career-paths", desc: "Se former à un métier complet, preuve à l'appui", icon: "rocket" },
-    { label: "Écoles", href: "/schools", desc: "Huit domaines de compétences numériques", icon: "school" },
-    { label: "Projets", href: "/projets", desc: "Des missions concrètes pour prouver vos compétences", icon: "project" },
-  ] as CatalogueEntry[],
-  secondary: { label: "Formations courtes", href: "/short-courses" },
-} as const;
-
-/** Liens de navigation du header (hors méga-menu Catalogue). */
-export const mainNav: NavItem[] = [
-  { label: "Accueil", href: "/" },
-  { label: "Formation certifiante", href: "/short-courses" },
-];
-
-/** Ancien alias conservé pour compat (plan du site / anciens imports). */
-export const primaryNav: NavItem[] = [
-  { label: "Entreprises", href: "/companies" },
-];
-
-/** Barre « publics » en haut du header (façon Coursera : par audience). */
-export const audienceNav: NavItem[] = [
-  { label: "Apprenants", href: "/" },
-  { label: "Écoles", href: "/schools" },
-  { label: "Entreprises", href: "/companies" },
-];
-
-/** Ancienne navigation à plat (conservée pour compat plan du site). */
-export const visitorNav: NavItem[] = [
-  { label: "Parcours métiers", href: "/career-paths" },
-  { label: "Formations courtes", href: "/short-courses" },
-  { label: "Écoles", href: "/schools" },
-  { label: "Certifications", href: "/certifications" },
-  { label: "Entreprises", href: "/companies" },
-];
-
-export const footerNav: { title: string; items: NavItem[] }[] = [
-  {
-    title: "Se former",
-    items: [
-      { label: "Les écoles", href: "/schools" },
-      { label: "Parcours métiers", href: "/career-paths" },
-      { label: "Formations courtes", href: "/short-courses" },
-      { label: "Certifications & badges", href: "/certifications" },
-    ],
-  },
-  {
-    title: "Academy",
-    items: [
-      { label: "Espace entreprises", href: "/companies" },
-      { label: "Créer un compte", href: "/auth/register" },
-      { label: "Se connecter", href: "/auth/login" },
-    ],
-  },
-  {
-    title: "Digital Access",
-    items: [
-      { label: "Site principal", href: "https://digitalaccess.ci" },
-      { label: "Nos services", href: "https://digitalaccess.ci/services" },
-      { label: "Contact", href: "https://digitalaccess.ci/contact" },
-    ],
-  },
-];
-
-const levelLabels: Record<string, string> = {
+export const LEVEL_LABEL: Record<string, string> = {
   BEGINNER: "Débutant",
   INTERMEDIATE: "Intermédiaire",
   ADVANCED: "Avancé",
   EXPERT: "Expert",
 };
 
-export function levelLabel(level: string): string {
-  return levelLabels[level] ?? level;
+export const LESSON_TYPE_LABEL: Record<string, string> = {
+  VIDEO: "Vidéo",
+  TEXT: "Cours",
+  PDF: "Document",
+  AUDIO: "Audio",
+  PRESENTATION: "Présentation",
+  INTERACTIVE: "Interactif",
+  DEMO: "Démonstration",
+  EXTERNAL_LINK: "Lien",
+  VIRTUAL_CLASS: "Classe virtuelle",
+  CASE_STUDY: "Étude de cas",
+  WORKSHOP: "Atelier",
+  LAB: "Laboratoire",
+};
+
+export const ENROLLMENT_STATUS_LABEL: Record<string, string> = {
+  PENDING: "En attente",
+  ACTIVE: "En cours",
+  PAUSED: "En pause",
+  COMPLETED: "Terminée",
+  FAILED: "Échouée",
+  CANCELLED: "Annulée",
+  EXPIRED: "Expirée",
+};
+
+export function formatFCFA(amount: number): string {
+  return new Intl.NumberFormat("fr-CI", { style: "currency", currency: "XOF", maximumFractionDigits: 0 }).format(amount);
 }

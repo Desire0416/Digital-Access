@@ -1,0 +1,769 @@
+{
+  "modules": [
+    {
+      "n": 1,
+      "title": "Module 1 — Comprendre les données et les bases de données",
+      "durationMinutes": 180,
+      "objectives": [
+        "Expliquer ou appliquer : donnée, information et connaissance.",
+        "Expliquer ou appliquer : données structurées et non structurées.",
+        "Expliquer ou appliquer : limites des fichiers isolés.",
+        "Expliquer ou appliquer : sgbd."
+      ],
+      "cours": "## Objectifs du module\n\n- Expliquer ou appliquer : donnée, information et connaissance.\n- Expliquer ou appliquer : données structurées et non structurées.\n- Expliquer ou appliquer : limites des fichiers isolés.\n- Expliquer ou appliquer : sgbd.\n\n## Cours essentiel\n\n**Donnée, information et connaissance**\n\nUne donnée est une valeur brute. Elle devient information lorsqu’elle est organisée et interprétée dans un contexte.\n\n**Données structurées et non structurées**\n\nLes données structurées suivent un format régulier, par exemple un tableau clients. Les données non structurées comprennent notamment textes libres, images, sons et vidéos.\n\n**Limites des fichiers isolés**\n\nLes fichiers multiples créent des doublons, des incohérences, des difficultés de recherche, de partage et de contrôle des accès.\n\n**SGBD**\n\nUn système de gestion de base de données permet de stocker, organiser, interroger, sécuriser, sauvegarder et restaurer les données.\n\n**Exemples d’usage**\n\nÉcole, banque, commerce, hôpital, plateforme de formation, réservation, administration publique.\n\n## Synthèse\n\nL’apprenant doit être capable de reformuler les notions clés, d’exécuter les opérations étudiées sans assistance permanente et de justifier les choix de structure ou de requête réalisés.",
+      "pratique": "## Travaux pratiques guidés\n\n- Classer dix exemples de données en structurées ou non structurées.\n- Comparer un fichier Excel de clients et une base relationnelle.\n- Identifier trois problèmes de qualité dans un jeu de données fourni.\n\n## Activité notée du module\n\nRéaliser une activité pratique appliquée au contexte d’un centre de formation. Le livrable doit inclure les commandes SQL utilisées, une capture ou un export du résultat, puis une courte explication des choix effectués.\n\n**Barème de l'activité**\n\n| Critère | Points |\n| --- | --- |\n| Critère | Points |\n| Résultat fonctionnel | 40 |\n| Exactitude du SQL | 30 |\n| Respect des consignes | 20 |\n| Présentation | 10 |",
+      "quiz": {
+        "title": "Quiz — Module 1",
+        "passingScore": 60,
+        "questions": [
+          {
+            "question": "Une base de données sert principalement à :",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Décorer des pages web",
+              "Organiser et interroger des données",
+              "Remplacer un ordinateur",
+              "Créer uniquement des images"
+            ],
+            "correctAnswer": 1,
+            "explanation": "Bonne réponse : Organiser et interroger des données"
+          },
+          {
+            "question": "Un fichier CSV est toujours un SGBD.",
+            "type": "TRUE_FALSE",
+            "options": [
+              "Vrai",
+              "Faux"
+            ],
+            "correctAnswer": false,
+            "explanation": "Réponse : Faux"
+          },
+          {
+            "question": "Lequel est un exemple de donnée structurée ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Une vidéo",
+              "Une table de ventes",
+              "Un enregistrement audio",
+              "Une photographie"
+            ],
+            "correctAnswer": 1,
+            "explanation": "Bonne réponse : Une table de ventes"
+          },
+          {
+            "question": "Quel problème est fréquent avec plusieurs fichiers non centralisés ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Meilleure cohérence",
+              "Suppression automatique des doublons",
+              "Versions contradictoires",
+              "Sécurité parfaite"
+            ],
+            "correctAnswer": 2,
+            "explanation": "Bonne réponse : Versions contradictoires"
+          },
+          {
+            "question": "Une base de données peut être utilisée dans une école.",
+            "type": "TRUE_FALSE",
+            "options": [
+              "Vrai",
+              "Faux"
+            ],
+            "correctAnswer": true,
+            "explanation": "Réponse : Vrai"
+          }
+        ]
+      }
+    },
+    {
+      "n": 2,
+      "title": "Module 2 — Le modèle relationnel : tables, colonnes, lignes et clés",
+      "durationMinutes": 240,
+      "objectives": [
+        "Expliquer ou appliquer : table.",
+        "Expliquer ou appliquer : colonne.",
+        "Expliquer ou appliquer : ligne.",
+        "Expliquer ou appliquer : clé primaire."
+      ],
+      "cours": "## Objectifs du module\n\n- Expliquer ou appliquer : table.\n- Expliquer ou appliquer : colonne.\n- Expliquer ou appliquer : ligne.\n- Expliquer ou appliquer : clé primaire.\n\n## Cours essentiel\n\n**Table**\n\nUne table représente un ensemble cohérent d’objets ou de faits, comme les étudiants, les cours ou les inscriptions.\n\n**Colonne**\n\nUne colonne décrit une propriété et possède un type de données, par exemple nom, date_naissance ou prix.\n\n**Ligne**\n\nUne ligne correspond à un enregistrement complet.\n\n**Clé primaire**\n\nElle identifie chaque ligne de manière unique et ne doit ni être dupliquée ni être nulle.\n\n**Clé étrangère**\n\nElle référence la clé primaire d’une autre table et matérialise une relation.\n\n**Cardinalités**\n\nUne relation peut être un-à-un, un-à-plusieurs ou plusieurs-à-plusieurs.\n\n## Synthèse\n\nL’apprenant doit être capable de reformuler les notions clés, d’exécuter les opérations étudiées sans assistance permanente et de justifier les choix de structure ou de requête réalisés.",
+      "pratique": "## Travaux pratiques guidés\n\n- Repérer les entités d’un centre de formation.\n- Proposer les colonnes de tables Apprenant, Formation et Inscription.\n- Dessiner un schéma relationnel simple avec dbdiagram.io.\n\n## Activité notée du module\n\nRéaliser une activité pratique appliquée au contexte d’un centre de formation. Le livrable doit inclure les commandes SQL utilisées, une capture ou un export du résultat, puis une courte explication des choix effectués.\n\n**Barème de l'activité**\n\n| Critère | Points |\n| --- | --- |\n| Critère | Points |\n| Résultat fonctionnel | 40 |\n| Exactitude du SQL | 30 |\n| Respect des consignes | 20 |\n| Présentation | 10 |",
+      "quiz": {
+        "title": "Quiz — Module 2",
+        "passingScore": 60,
+        "questions": [
+          {
+            "question": "Quel élément identifie chaque ligne de manière unique ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Clé étrangère",
+              "Clé primaire",
+              "Vue",
+              "Index"
+            ],
+            "correctAnswer": 1,
+            "explanation": "Bonne réponse : Clé primaire"
+          },
+          {
+            "question": "Une colonne représente :",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Une propriété",
+              "Une base entière",
+              "Un serveur",
+              "Une sauvegarde"
+            ],
+            "correctAnswer": 0,
+            "explanation": "Bonne réponse : Une propriété"
+          },
+          {
+            "question": "Deux lignes peuvent partager la même valeur de clé primaire.",
+            "type": "TRUE_FALSE",
+            "options": [
+              "Vrai",
+              "Faux"
+            ],
+            "correctAnswer": false,
+            "explanation": "Réponse : Faux"
+          },
+          {
+            "question": "La relation entre une formation et plusieurs inscriptions est généralement :",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Un-à-plusieurs",
+              "Un-à-un",
+              "Aucune",
+              "Plusieurs-à-zéro"
+            ],
+            "correctAnswer": 0,
+            "explanation": "Bonne réponse : Un-à-plusieurs"
+          },
+          {
+            "question": "Une clé étrangère sert à :",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Colorer une table",
+              "Relier des tables",
+              "Supprimer le serveur",
+              "Compresser un fichier"
+            ],
+            "correctAnswer": 1,
+            "explanation": "Bonne réponse : Relier des tables"
+          }
+        ]
+      }
+    },
+    {
+      "n": 3,
+      "title": "Module 3 — Installer et prendre en main PostgreSQL",
+      "durationMinutes": 180,
+      "objectives": [
+        "Expliquer ou appliquer : postgresql.",
+        "Expliquer ou appliquer : serveur et client.",
+        "Expliquer ou appliquer : connexion.",
+        "Expliquer ou appliquer : éditeur sql."
+      ],
+      "cours": "## Objectifs du module\n\n- Expliquer ou appliquer : postgresql.\n- Expliquer ou appliquer : serveur et client.\n- Expliquer ou appliquer : connexion.\n- Expliquer ou appliquer : éditeur sql.\n\n## Cours essentiel\n\n**PostgreSQL**\n\nSGBD relationnel open source robuste, conforme aux standards SQL et adapté aux projets professionnels.\n\n**Serveur et client**\n\nLe serveur stocke et traite les données ; un client comme pgAdmin ou DBeaver permet de s’y connecter.\n\n**Connexion**\n\nUne connexion utilise notamment un hôte, un port, une base, un utilisateur et un mot de passe.\n\n**Éditeur SQL**\n\nIl permet d’exécuter des commandes et d’observer les résultats ou messages d’erreur.\n\n## Synthèse\n\nL’apprenant doit être capable de reformuler les notions clés, d’exécuter les opérations étudiées sans assistance permanente et de justifier les choix de structure ou de requête réalisés.",
+      "pratique": "## Travaux pratiques guidés\n\n- Installer PostgreSQL ou utiliser une instance cloud fournie.\n- Créer une base nommée access_academy_db.\n- Ouvrir l’éditeur SQL et exécuter SELECT version();\n\n## Activité notée du module\n\nRéaliser une activité pratique appliquée au contexte d’un centre de formation. Le livrable doit inclure les commandes SQL utilisées, une capture ou un export du résultat, puis une courte explication des choix effectués.\n\n**Barème de l'activité**\n\n| Critère | Points |\n| --- | --- |\n| Critère | Points |\n| Résultat fonctionnel | 40 |\n| Exactitude du SQL | 30 |\n| Respect des consignes | 20 |\n| Présentation | 10 |",
+      "quiz": {
+        "title": "Quiz — Module 3",
+        "passingScore": 60,
+        "questions": [
+          {
+            "question": "PostgreSQL est :",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Un navigateur",
+              "Un SGBD relationnel",
+              "Un logiciel de dessin",
+              "Un tableur"
+            ],
+            "correctAnswer": 1,
+            "explanation": "Bonne réponse : Un SGBD relationnel"
+          },
+          {
+            "question": "Le port par défaut courant de PostgreSQL est :",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "80",
+              "443",
+              "5432",
+              "3306"
+            ],
+            "correctAnswer": 2,
+            "explanation": "Bonne réponse : 5432"
+          },
+          {
+            "question": "pgAdmin est un outil client de gestion PostgreSQL.",
+            "type": "TRUE_FALSE",
+            "options": [
+              "Vrai",
+              "Faux"
+            ],
+            "correctAnswer": true,
+            "explanation": "Réponse : Vrai"
+          },
+          {
+            "question": "Quelle commande vérifie la version du serveur ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "SELECT version();",
+              "SHOW IMAGE;",
+              "PRINT SERVER;",
+              "GET SQL;"
+            ],
+            "correctAnswer": 0,
+            "explanation": "Bonne réponse : SELECT version();"
+          },
+          {
+            "question": "Le mot de passe de base de données doit être partagé publiquement.",
+            "type": "TRUE_FALSE",
+            "options": [
+              "Vrai",
+              "Faux"
+            ],
+            "correctAnswer": false,
+            "explanation": "Réponse : Faux"
+          }
+        ]
+      }
+    },
+    {
+      "n": 4,
+      "title": "Module 4 — Créer les bases, tables et contraintes",
+      "durationMinutes": 300,
+      "objectives": [
+        "Expliquer ou appliquer : create database.",
+        "Expliquer ou appliquer : create table.",
+        "Expliquer ou appliquer : types de données.",
+        "Expliquer ou appliquer : contraintes."
+      ],
+      "cours": "## Objectifs du module\n\n- Expliquer ou appliquer : create database.\n- Expliquer ou appliquer : create table.\n- Expliquer ou appliquer : types de données.\n- Expliquer ou appliquer : contraintes.\n\n## Cours essentiel\n\n**CREATE DATABASE**\n\nCrée une nouvelle base logique.\n\n**CREATE TABLE**\n\nDéfinit une table, ses colonnes, types et contraintes.\n\n**Types de données**\n\nINTEGER pour les entiers, VARCHAR ou TEXT pour le texte, DATE pour les dates, BOOLEAN pour vrai/faux, NUMERIC pour des nombres précis.\n\n**Contraintes**\n\nPRIMARY KEY, NOT NULL, UNIQUE, CHECK et DEFAULT permettent de garantir l’intégrité.\n\n**Évolution du schéma**\n\nALTER TABLE modifie une table ; DROP supprime un objet et doit être utilisé avec prudence.\n\n## Exemple SQL\n\n```sql\nCREATE TABLE apprenants (\nid SERIAL PRIMARY KEY,\nnom VARCHAR(100) NOT NULL,\nprenom VARCHAR(100) NOT NULL,\nemail VARCHAR(150) UNIQUE NOT NULL,\ndate_naissance DATE,\nactif BOOLEAN DEFAULT TRUE\n);\n```\n\n## Synthèse\n\nL’apprenant doit être capable de reformuler les notions clés, d’exécuter les opérations étudiées sans assistance permanente et de justifier les choix de structure ou de requête réalisés.",
+      "pratique": "## Travaux pratiques guidés\n\n- Créer les tables apprenants, formations et inscriptions.\n- Ajouter des contraintes de validité sur le prix et le statut.\n- Modifier la table apprenants pour ajouter telephone.\n\n## Activité notée du module\n\nRéaliser une activité pratique appliquée au contexte d’un centre de formation. Le livrable doit inclure les commandes SQL utilisées, une capture ou un export du résultat, puis une courte explication des choix effectués.\n\n**Barème de l'activité**\n\n| Critère | Points |\n| --- | --- |\n| Critère | Points |\n| Résultat fonctionnel | 40 |\n| Exactitude du SQL | 30 |\n| Respect des consignes | 20 |\n| Présentation | 10 |",
+      "quiz": {
+        "title": "Quiz — Module 4",
+        "passingScore": 60,
+        "questions": [
+          {
+            "question": "Quelle commande crée une table ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "MAKE TABLE",
+              "CREATE TABLE",
+              "NEW TABLE",
+              "BUILD TABLE"
+            ],
+            "correctAnswer": 1,
+            "explanation": "Bonne réponse : CREATE TABLE"
+          },
+          {
+            "question": "Quel type convient à une date de naissance ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "BOOLEAN",
+              "DATE",
+              "TEXT uniquement",
+              "INTEGER"
+            ],
+            "correctAnswer": 1,
+            "explanation": "Bonne réponse : DATE"
+          },
+          {
+            "question": "NOT NULL interdit une valeur absente.",
+            "type": "TRUE_FALSE",
+            "options": [
+              "Vrai",
+              "Faux"
+            ],
+            "correctAnswer": true,
+            "explanation": "Réponse : Vrai"
+          },
+          {
+            "question": "UNIQUE sert à :",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Autoriser tous les doublons",
+              "Interdire les doublons d’une colonne",
+              "Supprimer une table",
+              "Créer une sauvegarde"
+            ],
+            "correctAnswer": 1,
+            "explanation": "Bonne réponse : Interdire les doublons d’une colonne"
+          },
+          {
+            "question": "Quelle commande modifie une table existante ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "ALTER TABLE",
+              "CHANGE DATABASE",
+              "EDIT SQL",
+              "UPDATE STRUCTURE"
+            ],
+            "correctAnswer": 0,
+            "explanation": "Bonne réponse : ALTER TABLE"
+          }
+        ]
+      }
+    },
+    {
+      "n": 5,
+      "title": "Module 5 — Manipuler les données : INSERT, SELECT, UPDATE et DELETE",
+      "durationMinutes": 300,
+      "objectives": [
+        "Expliquer ou appliquer : insert.",
+        "Expliquer ou appliquer : select.",
+        "Expliquer ou appliquer : update.",
+        "Expliquer ou appliquer : delete."
+      ],
+      "cours": "## Objectifs du module\n\n- Expliquer ou appliquer : insert.\n- Expliquer ou appliquer : select.\n- Expliquer ou appliquer : update.\n- Expliquer ou appliquer : delete.\n\n## Cours essentiel\n\n**INSERT**\n\nAjoute une ou plusieurs lignes.\n\n**SELECT**\n\nLit les données et permet de choisir les colonnes à afficher.\n\n**UPDATE**\n\nModifie les lignes correspondant à une condition.\n\n**DELETE**\n\nSupprime les lignes correspondant à une condition.\n\n**Sécurité**\n\nToujours vérifier la clause WHERE avant UPDATE ou DELETE afin d’éviter une modification massive involontaire.\n\n## Exemple SQL\n\n```sql\nINSERT INTO apprenants (nom, prenom, email) VALUES ('Kouadio', 'Awa', 'awa@example.com');\nSELECT nom, prenom, email FROM apprenants;\nUPDATE apprenants SET actif = FALSE WHERE id = 3;\nDELETE FROM apprenants WHERE id = 10;\n```\n\n## Synthèse\n\nL’apprenant doit être capable de reformuler les notions clés, d’exécuter les opérations étudiées sans assistance permanente et de justifier les choix de structure ou de requête réalisés.",
+      "pratique": "## Travaux pratiques guidés\n\n- Insérer au moins dix apprenants et trois formations.\n- Mettre à jour l’adresse électronique d’un apprenant.\n- Supprimer une inscription de test en utilisant sa clé primaire.\n\n## Activité notée du module\n\nRéaliser une activité pratique appliquée au contexte d’un centre de formation. Le livrable doit inclure les commandes SQL utilisées, une capture ou un export du résultat, puis une courte explication des choix effectués.\n\n**Barème de l'activité**\n\n| Critère | Points |\n| --- | --- |\n| Critère | Points |\n| Résultat fonctionnel | 40 |\n| Exactitude du SQL | 30 |\n| Respect des consignes | 20 |\n| Présentation | 10 |",
+      "quiz": {
+        "title": "Quiz — Module 5",
+        "passingScore": 60,
+        "questions": [
+          {
+            "question": "Quelle commande ajoute une ligne ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "INSERT",
+              "SELECT",
+              "DROP",
+              "ALTER"
+            ],
+            "correctAnswer": 0,
+            "explanation": "Bonne réponse : INSERT"
+          },
+          {
+            "question": "Quelle commande consulte les données ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "READ",
+              "SELECT",
+              "OPEN",
+              "DISPLAY"
+            ],
+            "correctAnswer": 1,
+            "explanation": "Bonne réponse : SELECT"
+          },
+          {
+            "question": "UPDATE sans WHERE peut modifier toutes les lignes.",
+            "type": "TRUE_FALSE",
+            "options": [
+              "Vrai",
+              "Faux"
+            ],
+            "correctAnswer": true,
+            "explanation": "Réponse : Vrai"
+          },
+          {
+            "question": "Quelle commande supprime des lignes ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "DELETE",
+              "REMOVE DATABASE",
+              "CUT",
+              "ERASE COLUMN"
+            ],
+            "correctAnswer": 0,
+            "explanation": "Bonne réponse : DELETE"
+          },
+          {
+            "question": "Pour choisir seulement nom et prenom :",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "SELECT *",
+              "SELECT nom, prenom",
+              "SHOW nom + prenom",
+              "READ columns"
+            ],
+            "correctAnswer": 1,
+            "explanation": "Bonne réponse : SELECT nom, prenom"
+          }
+        ]
+      }
+    },
+    {
+      "n": 6,
+      "title": "Module 6 — Filtrer, rechercher et trier les données",
+      "durationMinutes": 240,
+      "objectives": [
+        "Expliquer ou appliquer : where.",
+        "Expliquer ou appliquer : comparaisons.",
+        "Expliquer ou appliquer : conditions logiques.",
+        "Expliquer ou appliquer : like."
+      ],
+      "cours": "## Objectifs du module\n\n- Expliquer ou appliquer : where.\n- Expliquer ou appliquer : comparaisons.\n- Expliquer ou appliquer : conditions logiques.\n- Expliquer ou appliquer : like.\n\n## Cours essentiel\n\n**WHERE**\n\nSélectionne uniquement les lignes répondant à une condition.\n\n**Comparaisons**\n\n=, <>, >, <, >= et <= comparent les valeurs.\n\n**Conditions logiques**\n\nAND exige toutes les conditions, OR au moins une, NOT inverse une condition.\n\n**LIKE**\n\nRecherche un motif textuel ; % représente une suite de caractères.\n\n**IN et BETWEEN**\n\nIN teste une liste de valeurs ; BETWEEN teste un intervalle inclusif.\n\n**ORDER BY**\n\nTrie les résultats en ordre ASC ou DESC.\n\n**NULL**\n\nIS NULL et IS NOT NULL testent l’absence de valeur.\n\n## Exemple SQL\n\n```sql\nSELECT nom, prenom\nFROM apprenants\nWHERE nom LIKE 'K%' AND actif = TRUE\nORDER BY nom ASC, prenom ASC;\n```\n\n## Synthèse\n\nL’apprenant doit être capable de reformuler les notions clés, d’exécuter les opérations étudiées sans assistance permanente et de justifier les choix de structure ou de requête réalisés.",
+      "pratique": "## Travaux pratiques guidés\n\n- Afficher les apprenants dont le nom commence par K.\n- Lister les formations dont le prix est compris entre 20 000 et 100 000 FCFA.\n- Trier les apprenants par nom puis prénom.\n\n## Activité notée du module\n\nRéaliser une activité pratique appliquée au contexte d’un centre de formation. Le livrable doit inclure les commandes SQL utilisées, une capture ou un export du résultat, puis une courte explication des choix effectués.\n\n**Barème de l'activité**\n\n| Critère | Points |\n| --- | --- |\n| Critère | Points |\n| Résultat fonctionnel | 40 |\n| Exactitude du SQL | 30 |\n| Respect des consignes | 20 |\n| Présentation | 10 |",
+      "quiz": {
+        "title": "Quiz — Module 6",
+        "passingScore": 60,
+        "questions": [
+          {
+            "question": "Quelle clause filtre les lignes ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "WHERE",
+              "ORDER BY",
+              "FROM",
+              "AS"
+            ],
+            "correctAnswer": 0,
+            "explanation": "Bonne réponse : WHERE"
+          },
+          {
+            "question": "LIKE avec K% signifie :",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Contient seulement K",
+              "Commence par K",
+              "Finit par K",
+              "N’est pas K"
+            ],
+            "correctAnswer": 1,
+            "explanation": "Bonne réponse : Commence par K"
+          },
+          {
+            "question": "BETWEEN inclut normalement les bornes.",
+            "type": "TRUE_FALSE",
+            "options": [
+              "Vrai",
+              "Faux"
+            ],
+            "correctAnswer": true,
+            "explanation": "Réponse : Vrai"
+          },
+          {
+            "question": "Pour tester une valeur absente :",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "= NULL",
+              "IS NULL",
+              "NULL = TRUE",
+              "EMPTY"
+            ],
+            "correctAnswer": 1,
+            "explanation": "Bonne réponse : IS NULL"
+          },
+          {
+            "question": "DESC indique un tri :",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Aléatoire",
+              "Décroissant",
+              "Croissant",
+              "Sans ordre"
+            ],
+            "correctAnswer": 1,
+            "explanation": "Bonne réponse : Décroissant"
+          }
+        ]
+      }
+    },
+    {
+      "n": 7,
+      "title": "Module 7 — Calculer et regrouper avec les fonctions d’agrégation",
+      "durationMinutes": 240,
+      "objectives": [
+        "Expliquer ou appliquer : count.",
+        "Expliquer ou appliquer : sum.",
+        "Expliquer ou appliquer : avg.",
+        "Expliquer ou appliquer : min et max."
+      ],
+      "cours": "## Objectifs du module\n\n- Expliquer ou appliquer : count.\n- Expliquer ou appliquer : sum.\n- Expliquer ou appliquer : avg.\n- Expliquer ou appliquer : min et max.\n\n## Cours essentiel\n\n**COUNT**\n\nCompte les lignes ou valeurs non nulles.\n\n**SUM**\n\nAdditionne des valeurs numériques.\n\n**AVG**\n\nCalcule une moyenne.\n\n**MIN et MAX**\n\nRetournent respectivement la plus petite et la plus grande valeur.\n\n**GROUP BY**\n\nCrée des groupes avant agrégation.\n\n**HAVING**\n\nFiltre les groupes après agrégation, contrairement à WHERE qui filtre les lignes avant regroupement.\n\n## Exemple SQL\n\n```sql\nSELECT formation_id, COUNT(*) AS total_inscriptions\nFROM inscriptions\nGROUP BY formation_id\nHAVING COUNT(*) >= 2;\n```\n\n## Synthèse\n\nL’apprenant doit être capable de reformuler les notions clés, d’exécuter les opérations étudiées sans assistance permanente et de justifier les choix de structure ou de requête réalisés.",
+      "pratique": "## Travaux pratiques guidés\n\n- Compter le nombre total d’apprenants.\n- Calculer le prix moyen des formations.\n- Afficher le nombre d’inscriptions par formation.\n\n## Activité notée du module\n\nRéaliser une activité pratique appliquée au contexte d’un centre de formation. Le livrable doit inclure les commandes SQL utilisées, une capture ou un export du résultat, puis une courte explication des choix effectués.\n\n**Barème de l'activité**\n\n| Critère | Points |\n| --- | --- |\n| Critère | Points |\n| Résultat fonctionnel | 40 |\n| Exactitude du SQL | 30 |\n| Respect des consignes | 20 |\n| Présentation | 10 |",
+      "quiz": {
+        "title": "Quiz — Module 7",
+        "passingScore": 60,
+        "questions": [
+          {
+            "question": "Quelle fonction compte les lignes ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "COUNT",
+              "SUM",
+              "AVG",
+              "MAX"
+            ],
+            "correctAnswer": 0,
+            "explanation": "Bonne réponse : COUNT"
+          },
+          {
+            "question": "GROUP BY sert à :",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Supprimer des tables",
+              "Former des groupes",
+              "Créer un utilisateur",
+              "Exporter un fichier"
+            ],
+            "correctAnswer": 1,
+            "explanation": "Bonne réponse : Former des groupes"
+          },
+          {
+            "question": "HAVING peut filtrer un résultat agrégé.",
+            "type": "TRUE_FALSE",
+            "options": [
+              "Vrai",
+              "Faux"
+            ],
+            "correctAnswer": true,
+            "explanation": "Réponse : Vrai"
+          },
+          {
+            "question": "Quelle fonction calcule la moyenne ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "MEAN",
+              "AVG",
+              "MID",
+              "COUNT"
+            ],
+            "correctAnswer": 1,
+            "explanation": "Bonne réponse : AVG"
+          },
+          {
+            "question": "Pour obtenir le prix le plus élevé :",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "MIN(prix)",
+              "MAX(prix)",
+              "SUM(prix)",
+              "TOP(prix)"
+            ],
+            "correctAnswer": 1,
+            "explanation": "Bonne réponse : MAX(prix)"
+          }
+        ]
+      }
+    },
+    {
+      "n": 8,
+      "title": "Module 8 — Relier les tables avec les jointures",
+      "durationMinutes": 240,
+      "objectives": [
+        "Expliquer ou appliquer : principe.",
+        "Expliquer ou appliquer : inner join.",
+        "Expliquer ou appliquer : left join.",
+        "Expliquer ou appliquer : alias."
+      ],
+      "cours": "## Objectifs du module\n\n- Expliquer ou appliquer : principe.\n- Expliquer ou appliquer : inner join.\n- Expliquer ou appliquer : left join.\n- Expliquer ou appliquer : alias.\n\n## Cours essentiel\n\n**Principe**\n\nUne jointure combine des lignes provenant de plusieurs tables à partir de colonnes liées.\n\n**INNER JOIN**\n\nRetourne les correspondances présentes dans les deux tables.\n\n**LEFT JOIN**\n\nRetourne toutes les lignes de la table de gauche, même sans correspondance.\n\n**Alias**\n\nLes alias rendent les requêtes plus courtes et lisibles.\n\n**Ambiguïté**\n\nPréfixer les colonnes par l’alias de table lorsque plusieurs tables contiennent le même nom de colonne.\n\n## Exemple SQL\n\n```sql\nSELECT a.nom, a.prenom, f.titre\nFROM inscriptions i\nINNER JOIN apprenants a ON a.id = i.apprenant_id\nINNER JOIN formations f ON f.id = i.formation_id;\n```\n\n## Synthèse\n\nL’apprenant doit être capable de reformuler les notions clés, d’exécuter les opérations étudiées sans assistance permanente et de justifier les choix de structure ou de requête réalisés.",
+      "pratique": "## Travaux pratiques guidés\n\n- Afficher chaque inscription avec le nom de l’apprenant et le titre de la formation.\n- Lister toutes les formations, y compris celles sans inscription.\n- Identifier les apprenants n’ayant aucune inscription.\n\n## Activité notée du module\n\nRéaliser une activité pratique appliquée au contexte d’un centre de formation. Le livrable doit inclure les commandes SQL utilisées, une capture ou un export du résultat, puis une courte explication des choix effectués.\n\n**Barème de l'activité**\n\n| Critère | Points |\n| --- | --- |\n| Critère | Points |\n| Résultat fonctionnel | 40 |\n| Exactitude du SQL | 30 |\n| Respect des consignes | 20 |\n| Présentation | 10 |",
+      "quiz": {
+        "title": "Quiz — Module 8",
+        "passingScore": 60,
+        "questions": [
+          {
+            "question": "Une jointure sert à :",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Combiner des tables",
+              "Installer PostgreSQL",
+              "Créer une image",
+              "Changer un mot de passe"
+            ],
+            "correctAnswer": 0,
+            "explanation": "Bonne réponse : Combiner des tables"
+          },
+          {
+            "question": "INNER JOIN retourne :",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Toutes les lignes de gauche seulement",
+              "Les correspondances",
+              "Aucune ligne",
+              "Toujours tous les enregistrements"
+            ],
+            "correctAnswer": 1,
+            "explanation": "Bonne réponse : Les correspondances"
+          },
+          {
+            "question": "LEFT JOIN conserve :",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Toutes les lignes de la table de gauche",
+              "Seulement les lignes nulles",
+              "Uniquement la table de droite",
+              "Aucune clé"
+            ],
+            "correctAnswer": 0,
+            "explanation": "Bonne réponse : Toutes les lignes de la table de gauche"
+          },
+          {
+            "question": "Les alias peuvent améliorer la lisibilité.",
+            "type": "TRUE_FALSE",
+            "options": [
+              "Vrai",
+              "Faux"
+            ],
+            "correctAnswer": true,
+            "explanation": "Réponse : Vrai"
+          },
+          {
+            "question": "La condition de jointure se place généralement après :",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "ON",
+              "ORDER",
+              "GROUP",
+              "VALUES"
+            ],
+            "correctAnswer": 0,
+            "explanation": "Bonne réponse : ON"
+          }
+        ]
+      }
+    },
+    {
+      "n": 9,
+      "title": "Module 9 — Importer, exporter et contrôler la qualité des données",
+      "durationMinutes": 240,
+      "objectives": [
+        "Expliquer ou appliquer : csv.",
+        "Expliquer ou appliquer : import.",
+        "Expliquer ou appliquer : export.",
+        "Expliquer ou appliquer : qualité."
+      ],
+      "cours": "## Objectifs du module\n\n- Expliquer ou appliquer : csv.\n- Expliquer ou appliquer : import.\n- Expliquer ou appliquer : export.\n- Expliquer ou appliquer : qualité.\n\n## Cours essentiel\n\n**CSV**\n\nFormat texte tabulaire dont les valeurs sont séparées par un délimiteur.\n\n**Import**\n\nAvant l’import, vérifier l’encodage, le séparateur, l’ordre des colonnes et les types.\n\n**Export**\n\nPermet de partager ou sauvegarder un résultat dans un format réutilisable.\n\n**Qualité**\n\nExactitude, complétude, cohérence, unicité, validité et actualité.\n\n**Nettoyage**\n\nRepérer les doublons, valeurs manquantes, formats incohérents et données hors domaine.\n\n## Synthèse\n\nL’apprenant doit être capable de reformuler les notions clés, d’exécuter les opérations étudiées sans assistance permanente et de justifier les choix de structure ou de requête réalisés.",
+      "pratique": "## Travaux pratiques guidés\n\n- Importer un fichier CSV de 20 apprenants.\n- Détecter les doublons d’adresse électronique.\n- Exporter la liste triée des apprenants dans un nouveau CSV.\n\n## Activité notée du module\n\nRéaliser une activité pratique appliquée au contexte d’un centre de formation. Le livrable doit inclure les commandes SQL utilisées, une capture ou un export du résultat, puis une courte explication des choix effectués.\n\n**Barème de l'activité**\n\n| Critère | Points |\n| --- | --- |\n| Critère | Points |\n| Résultat fonctionnel | 40 |\n| Exactitude du SQL | 30 |\n| Respect des consignes | 20 |\n| Présentation | 10 |",
+      "quiz": {
+        "title": "Quiz — Module 9",
+        "passingScore": 60,
+        "questions": [
+          {
+            "question": "CSV signifie généralement :",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Comma-Separated Values",
+              "Central SQL Version",
+              "Computer Saved View",
+              "Column System Value"
+            ],
+            "correctAnswer": 0,
+            "explanation": "Bonne réponse : Comma-Separated Values"
+          },
+          {
+            "question": "Il faut vérifier l’encodage avant un import.",
+            "type": "TRUE_FALSE",
+            "options": [
+              "Vrai",
+              "Faux"
+            ],
+            "correctAnswer": true,
+            "explanation": "Réponse : Vrai"
+          },
+          {
+            "question": "Une adresse email dupliquée viole surtout :",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "L’unicité",
+              "La couleur",
+              "Le volume",
+              "La vitesse"
+            ],
+            "correctAnswer": 0,
+            "explanation": "Bonne réponse : L’unicité"
+          },
+          {
+            "question": "Quelle dimension concerne les champs vides ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Complétude",
+              "Décoration",
+              "Compression",
+              "Navigation"
+            ],
+            "correctAnswer": 0,
+            "explanation": "Bonne réponse : Complétude"
+          },
+          {
+            "question": "Un export peut servir à partager des résultats.",
+            "type": "TRUE_FALSE",
+            "options": [
+              "Vrai",
+              "Faux"
+            ],
+            "correctAnswer": true,
+            "explanation": "Réponse : Vrai"
+          }
+        ]
+      }
+    },
+    {
+      "n": 10,
+      "title": "Module 10 — Concevoir, documenter et présenter une base simple",
+      "durationMinutes": 240,
+      "objectives": [
+        "Expliquer ou appliquer : analyse.",
+        "Expliquer ou appliquer : dictionnaire de données.",
+        "Expliquer ou appliquer : schéma relationnel.",
+        "Expliquer ou appliquer : jeu de tests."
+      ],
+      "cours": "## Objectifs du module\n\n- Expliquer ou appliquer : analyse.\n- Expliquer ou appliquer : dictionnaire de données.\n- Expliquer ou appliquer : schéma relationnel.\n- Expliquer ou appliquer : jeu de tests.\n\n## Cours essentiel\n\n**Analyse**\n\nIdentifier les acteurs, objets, événements, règles de gestion et rapports attendus.\n\n**Dictionnaire de données**\n\nDocumente chaque champ : nom, sens, type, contraintes et exemple.\n\n**Schéma relationnel**\n\nMontre les tables, clés et relations.\n\n**Jeu de tests**\n\nLes données de test doivent couvrir les cas normaux et quelques cas limites.\n\n**Documentation**\n\nInclure installation, structure, requêtes principales et limites.\n\n**Présentation**\n\nExpliquer le besoin, la solution, une démonstration et les perspectives.\n\n## Synthèse\n\nL’apprenant doit être capable de reformuler les notions clés, d’exécuter les opérations étudiées sans assistance permanente et de justifier les choix de structure ou de requête réalisés.",
+      "pratique": "## Travaux pratiques guidés\n\n- Rédiger cinq règles de gestion pour le projet final.\n- Produire un dictionnaire de données.\n- Préparer une démonstration de cinq minutes.\n\n## Activité notée du module\n\nRéaliser une activité pratique appliquée au contexte d’un centre de formation. Le livrable doit inclure les commandes SQL utilisées, une capture ou un export du résultat, puis une courte explication des choix effectués.\n\n**Barème de l'activité**\n\n| Critère | Points |\n| --- | --- |\n| Critère | Points |\n| Résultat fonctionnel | 40 |\n| Exactitude du SQL | 30 |\n| Respect des consignes | 20 |\n| Présentation | 10 |",
+      "quiz": {
+        "title": "Quiz — Module 10",
+        "passingScore": 60,
+        "questions": [
+          {
+            "question": "Le dictionnaire de données décrit :",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Les champs et leurs règles",
+              "Uniquement les couleurs",
+              "Les utilisateurs du réseau",
+              "Le prix d’un ordinateur"
+            ],
+            "correctAnswer": 0,
+            "explanation": "Bonne réponse : Les champs et leurs règles"
+          },
+          {
+            "question": "Une règle de gestion exprime :",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Une contrainte métier",
+              "Un mot de passe",
+              "Un format d’image",
+              "Une publicité"
+            ],
+            "correctAnswer": 0,
+            "explanation": "Bonne réponse : Une contrainte métier"
+          },
+          {
+            "question": "La documentation facilite la maintenance.",
+            "type": "TRUE_FALSE",
+            "options": [
+              "Vrai",
+              "Faux"
+            ],
+            "correctAnswer": true,
+            "explanation": "Réponse : Vrai"
+          },
+          {
+            "question": "Les données de test doivent :",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Couvrir plusieurs cas",
+              "Toujours être vides",
+              "Être secrètes sans raison",
+              "Supprimer le schéma"
+            ],
+            "correctAnswer": 0,
+            "explanation": "Bonne réponse : Couvrir plusieurs cas"
+          },
+          {
+            "question": "Une démonstration efficace présente :",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Le besoin et la solution",
+              "Uniquement le logo",
+              "Des informations sans lien",
+              "Aucun résultat"
+            ],
+            "correctAnswer": 0,
+            "explanation": "Bonne réponse : Le besoin et la solution"
+          }
+        ]
+      }
+    }
+  ],
+  "warnings": []
+}

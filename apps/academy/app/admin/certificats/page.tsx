@@ -1,207 +1,163 @@
-import Link from "next/link";
-import { Award, ExternalLink, FileText, ShieldCheck, ShieldX } from "lucide-react";
-import { getAdminCertificates } from "@/lib/admin-queries";
+import type { Metadata } from "next";
+import { Search, Award, Hash } from "lucide-react";
+import type { CertificateStatus } from "@da/academy-db/client";
+import { listCertificatesAdmin } from "@/lib/admin-queries";
 import {
   AdminPageHeader,
   AdminCard,
-  EmptyState,
-  StatCard,
   StatusPill,
-  type Tone,
+  AdminEmpty,
+  CERTIFICATE_STATUS_LABEL,
+  CERTIFICATE_STATUS_TONE,
 } from "@/components/admin/ui";
-import { CERTIFICATE_TYPE_LABEL, CERTIFICATE_MENTION_LABEL } from "@/lib/learn-labels";
-import { CertificateActions } from "@/components/admin/CertificateActions";
-import { cn } from "@da/ui";
+import { CertificateActions } from "./CertificateActions";
 
-export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "Certificats — Administration" };
 
-/* Statut d'un certificat → libellé + ton de pastille. */
-const CERTIFICATE_STATUS: Record<string, { label: string; tone: Tone }> = {
-  ACTIVE: { label: "Actif", tone: "green" },
-  REVOKED: { label: "Révoqué", tone: "red" },
-  SUSPENDED: { label: "Suspendu", tone: "amber" },
+const TYPE_LABEL: Record<string, string> = {
+  PARTICIPATION: "Participation",
+  COURSE: "Formation",
+  SPECIALIZATION: "Spécialisation",
+  EXPERTISE: "Expertise",
+  CAREER_PATH: "Parcours métier",
+  SKILL_BADGE: "Badge",
 };
 
-function statusMeta(status: string): { label: string; tone: Tone } {
-  return CERTIFICATE_STATUS[status] ?? { label: status, tone: "slate" };
-}
+const STATUS_FILTERS: { value: string; label: string }[] = [
+  { value: "", label: "Tous" },
+  { value: "ACTIVE", label: "Actifs" },
+  { value: "REVOKED", label: "Révoqués" },
+  { value: "SUSPENDED", label: "Suspendus" },
+  { value: "EXPIRED", label: "Expirés" },
+];
 
-function typeLabel(type: string): string {
-  return CERTIFICATE_TYPE_LABEL[type] ?? type;
-}
+const VALID_STATUSES = new Set<CertificateStatus>(["ACTIVE", "SUSPENDED", "REVOKED", "EXPIRED", "REPLACED"]);
 
-function mentionLabel(mention: string | null): string {
-  if (!mention) return "—";
-  return CERTIFICATE_MENTION_LABEL[mention] ?? mention;
-}
+const dateFmt = new Intl.DateTimeFormat("fr-FR", { day: "2-digit", month: "short", year: "numeric" });
 
-function scoreLabel(score: number | null): string {
-  return score === null ? "—" : `${score} %`;
-}
+type SearchParams = Record<string, string | string[] | undefined>;
+const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
 
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("fr-FR", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
-}
+export default async function AdminCertificatesPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
+  const sp = await searchParams;
+  const q = one(sp.q)?.trim() ?? "";
+  const statusParam = one(sp.status) as CertificateStatus | undefined;
+  const status = statusParam && VALID_STATUSES.has(statusParam) ? statusParam : undefined;
 
-export default async function AdminCertificatesPage() {
-  const certificates = await getAdminCertificates();
-
-  const total = certificates.length;
-  const activeCount = certificates.filter((c) => c.status === "ACTIVE").length;
-  const revokedCount = certificates.filter((c) => c.status === "REVOKED").length;
+  const certificates = await listCertificatesAdmin({ q, status });
 
   return (
-    <>
+    <div className="space-y-6">
       <AdminPageHeader
+        eyebrow="Certification"
         title="Certificats"
-        description="Registre des certificats délivrés par l'Academy. Vérifiez leur authenticité, téléchargez le PDF ou révoquez un certificat compromis."
-      >
-        <span className="rounded-full bg-navy/[0.06] px-3 py-1.5 text-sm font-semibold text-text-secondary">
-          {total} certificat{total > 1 ? "s" : ""}
-        </span>
-      </AdminPageHeader>
+        description="Consultez les certificats délivrés. Toute révocation exige un motif et est tracée au journal d'audit ; un certificat révoqué peut être restauré."
+      />
 
-      {/* KPI */}
-      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <StatCard icon={<Award size={18} />} label="Certificats délivrés" value={total} tone="violet" />
-        <StatCard icon={<ShieldCheck size={18} />} label="Actifs" value={activeCount} tone="green" />
-        <StatCard icon={<ShieldX size={18} />} label="Révoqués" value={revokedCount} tone="red" />
+      {/* Recherche + filtres */}
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <form method="GET" role="search" className="relative w-full lg:max-w-sm">
+          {status && <input type="hidden" name="status" value={status} />}
+          <Search size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted" aria-hidden />
+          <input
+            type="search"
+            name="q"
+            defaultValue={q}
+            placeholder="Numéro, code, titre ou apprenant…"
+            aria-label="Rechercher un certificat"
+            className="h-11 w-full rounded-xl border border-navy/10 bg-surface-primary pl-10 pr-4 text-sm text-navy outline-none transition-colors placeholder:text-text-muted focus:border-brand-blue-vif/60"
+          />
+        </form>
+
+        <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1">
+          {STATUS_FILTERS.map((f) => {
+            const active = (status ?? "") === f.value;
+            const params = new URLSearchParams();
+            if (q) params.set("q", q);
+            if (f.value) params.set("status", f.value);
+            const href = `/admin/certificats${params.toString() ? `?${params}` : ""}`;
+            return (
+              <a
+                key={f.value || "all"}
+                href={href}
+                aria-current={active ? "true" : undefined}
+                className={
+                  active
+                    ? "shrink-0 rounded-full bg-gradient-da px-3.5 py-1.5 text-xs font-semibold text-white"
+                    : "shrink-0 rounded-full border border-navy/10 px-3.5 py-1.5 text-xs font-medium text-text-secondary transition-colors hover:border-brand-blue-vif/40 hover:text-navy"
+                }
+              >
+                {f.label}
+              </a>
+            );
+          })}
+        </div>
       </div>
 
-      {total === 0 ? (
-        <EmptyState
-          icon={<Award size={20} />}
-          title="Aucun certificat délivré"
-          description="Les certificats obtenus par les apprenants à l'issue de leurs formations et parcours apparaîtront ici."
-        />
-      ) : (
-        <AdminCard bodyClassName="p-0">
-          {/* Tablette & desktop : tableau */}
-          <div className="hidden overflow-x-auto lg:block">
-            <table className="w-full border-collapse text-sm">
-              <thead>
-                <tr className="border-b border-navy/[0.08] text-left text-xs font-semibold uppercase tracking-wide text-text-muted">
-                  <th className="px-5 py-3.5">Apprenant</th>
-                  <th className="px-4 py-3.5">Formation</th>
-                  <th className="px-4 py-3.5">Numéro</th>
-                  <th className="px-4 py-3.5">Type</th>
-                  <th className="px-4 py-3.5">Mention</th>
-                  <th className="px-4 py-3.5 text-right">Score</th>
-                  <th className="px-4 py-3.5">Statut</th>
-                  <th className="px-4 py-3.5">Délivré le</th>
-                  <th className="px-5 py-3.5 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {certificates.map((c) => {
-                  const meta = statusMeta(c.status);
-                  return (
-                    <tr
-                      key={c.id}
-                      className="border-b border-navy/[0.05] transition-colors last:border-0 hover:bg-navy/[0.02]"
-                    >
-                      <td className="px-5 py-4">
-                        <span className="font-semibold text-navy">{c.learnerName}</span>
-                      </td>
-                      <td className="px-4 py-4 text-text-secondary">{c.courseTitle}</td>
-                      <td className="px-4 py-4">
-                        <span className="font-mono text-xs text-text-secondary">
-                          {c.certificateNumber}
-                        </span>
-                      </td>
-                      <td className="px-4 py-4 text-text-secondary">{typeLabel(c.certificateType)}</td>
-                      <td className="px-4 py-4 text-text-secondary">{mentionLabel(c.mention)}</td>
-                      <td className="px-4 py-4 text-right font-medium text-navy">
-                        {scoreLabel(c.finalScore)}
-                      </td>
-                      <td className="px-4 py-4">
-                        <StatusPill label={meta.label} tone={meta.tone} />
-                      </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-text-secondary">
-                        {formatDate(c.issuedAt)}
-                      </td>
-                      <td className="px-5 py-4">
-                        <div className="flex items-center justify-end gap-2">
-                          <RowLinks number={c.certificateNumber} id={c.id} />
-                          <CertificateActions id={c.id} status={c.status} />
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+      <p className="text-xs text-text-muted">
+        {certificates.length} certificat{certificates.length > 1 ? "s" : ""}
+        {q && <> pour « {q} »</>}
+      </p>
 
-          {/* Mobile & tablette : cartes empilées */}
-          <ul className="divide-y divide-navy/[0.06] lg:hidden">
-            {certificates.map((c) => {
-              const meta = statusMeta(c.status);
-              return (
-                <li key={c.id} className="p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <h3 className="truncate font-semibold text-navy">{c.courseTitle}</h3>
-                      <p className="mt-0.5 truncate text-xs text-text-secondary">{c.learnerName}</p>
-                    </div>
-                    <StatusPill label={meta.label} tone={meta.tone} />
-                  </div>
-
-                  <p className="mt-2 font-mono text-xs text-text-muted">{c.certificateNumber}</p>
-
-                  <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
-                    <Meta label="Type" value={typeLabel(c.certificateType)} />
-                    <Meta label="Mention" value={mentionLabel(c.mention)} />
-                    <Meta label="Score" value={scoreLabel(c.finalScore)} />
-                    <Meta label="Délivré le" value={formatDate(c.issuedAt)} />
-                  </dl>
-
-                  <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-                    <RowLinks number={c.certificateNumber} id={c.id} />
-                    <CertificateActions id={c.id} status={c.status} />
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
+      {certificates.length === 0 ? (
+        <AdminCard>
+          <AdminEmpty
+            icon={<Award size={34} className="text-text-muted opacity-50" />}
+            title="Aucun certificat"
+            description={q ? "Aucun résultat pour cette recherche." : "Les certificats délivrés apparaîtront ici."}
+          />
         </AdminCard>
+      ) : (
+        <div className="space-y-3">
+          {certificates.map((c) => {
+            const target = c.course?.title ?? c.careerPath?.title ?? null;
+            return (
+              <AdminCard key={c.id} className="p-4">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gradient-da text-white shadow-sm" aria-hidden>
+                    <Award size={20} />
+                  </span>
+
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="truncate font-display text-sm font-bold text-navy">{c.title}</p>
+                      <span className="rounded-md bg-navy/[0.05] px-1.5 py-0.5 text-[11px] font-semibold text-text-secondary">
+                        {TYPE_LABEL[c.type] ?? c.type}
+                      </span>
+                      {c.mention && (
+                        <span className="rounded-md bg-accent/10 px-1.5 py-0.5 text-[11px] font-semibold text-accent">{c.mention}</span>
+                      )}
+                    </div>
+                    <p className="mt-0.5 truncate text-xs text-text-secondary">
+                      {c.user.name} · <span className="text-text-muted">{c.user.email}</span>
+                    </p>
+                    <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-text-muted">
+                      <span className="inline-flex items-center gap-1 font-mono"><Hash size={11} />{c.number}</span>
+                      <span>Code : {c.verifyCode}</span>
+                      {target && <span className="truncate">· {target}</span>}
+                      <span>· Délivré le {dateFmt.format(c.issuedAt)}</span>
+                      {typeof c.score === "number" && <span>· {c.score}/100</span>}
+                    </div>
+                    {c.status === "REVOKED" && c.revokedReason && (
+                      <p className="mt-1.5 rounded-lg bg-error/[0.05] px-2.5 py-1.5 text-xs text-error">
+                        Révoqué{c.revokedAt ? ` le ${dateFmt.format(c.revokedAt)}` : ""} — motif : {c.revokedReason}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="flex shrink-0 items-center justify-between gap-3 sm:flex-col sm:items-end">
+                    <StatusPill
+                      label={CERTIFICATE_STATUS_LABEL[c.status] ?? c.status}
+                      tone={CERTIFICATE_STATUS_TONE[c.status] ?? "neutral"}
+                    />
+                    <CertificateActions certificateId={c.id} status={c.status} title={c.title} />
+                  </div>
+                </div>
+              </AdminCard>
+            );
+          })}
+        </div>
       )}
-    </>
-  );
-}
-
-/* Liens externes « Vérifier » (page publique) et « PDF » (endpoint API). */
-function RowLinks({ number, id }: { number: string; id: string }) {
-  const linkClass =
-    "inline-flex items-center justify-center gap-1.5 rounded-lg border border-navy/10 px-2.5 py-1.5 text-xs font-semibold text-navy transition-colors hover:border-brand-blue-vif/50 hover:text-brand-blue-royal";
-  return (
-    <div className="flex items-center gap-2">
-      <Link
-        href={`/verify/${number}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={linkClass}
-      >
-        <ExternalLink size={13} />
-        Vérifier
-      </Link>
-      <Link href={`/api/certificates/${id}`} target="_blank" rel="noopener noreferrer" className={linkClass}>
-        <FileText size={13} />
-        PDF
-      </Link>
-    </div>
-  );
-}
-
-function Meta({ label, value }: { label: string; value: string }) {
-  return (
-    <div className={cn("flex justify-between gap-2")}>
-      <dt className="text-text-muted">{label}</dt>
-      <dd className="truncate font-medium text-navy">{value}</dd>
     </div>
   );
 }

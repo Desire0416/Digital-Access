@@ -1,0 +1,1631 @@
+{
+  "path": {
+    "title": "Conception, administration et exploitation des bases de données SQL",
+    "level": "INTERMEDIATE",
+    "targetJob": "Concepteur et gestionnaire de bases de données SQL",
+    "shortDescription": "Formation professionnelle certifiante pour concevoir, administrer et sécuriser des bases de données relationnelles PostgreSQL, jusqu'à leur connexion à une application moderne.",
+    "longDescription": "Ce parcours de 70 heures forme des professionnels capables d'analyser un besoin métier, de modéliser et normaliser une base relationnelle, d'écrire des requêtes SQL avancées, d'administrer PostgreSQL et de sécuriser les accès. Les apprenants apprennent à assurer la sauvegarde et la restauration des données, à prévenir les injections SQL, puis à connecter la base à une application moderne via Prisma et Neon. Le parcours combine cours, laboratoires guidés, un devoir intermédiaire, un examen pratique et un projet professionnel certifiant. La certification est délivrée sous conditions de moyenne générale et de validation du projet.",
+    "duration": "70 heures",
+    "estimatedHours": 70,
+    "prerequisites": [
+      "Maîtriser SELECT, INSERT, UPDATE et DELETE",
+      "Comprendre tables, clés primaires, clés étrangères et jointures simples",
+      "Savoir installer un logiciel et manipuler des fichiers",
+      "Avoir validé le niveau débutant ou réussir le test de positionnement"
+    ],
+    "objectives": [
+      "Analyser un besoin métier et formaliser des règles de gestion",
+      "Modéliser des données via MCD, MLD et schéma physique",
+      "Normaliser une base relationnelle jusqu'à la 3FN",
+      "Maîtriser jointures et sous-requêtes SQL avancées",
+      "Exploiter les fonctions SQL avancées et fonctions de fenêtre",
+      "Créer vues, séquences et index performants",
+      "Comprendre les transactions, ACID et la concurrence",
+      "Administrer PostgreSQL : rôles, droits et schémas",
+      "Sauvegarder, restaurer, importer et exporter des données",
+      "Sécuriser les données et prévenir les injections SQL",
+      "Connecter PostgreSQL à une application avec Prisma",
+      "Réaliser un projet professionnel certifiant"
+    ],
+    "outcomes": [
+      "Produire MCD, MLD, schéma physique et dictionnaire de données",
+      "Normaliser une base jusqu'à la troisième forme normale",
+      "Écrire jointures, sous-requêtes, fonctions de fenêtre et rapports SQL",
+      "Créer vues, index et transactions robustes",
+      "Administrer rôles, droits, sauvegardes et restaurations PostgreSQL",
+      "Prévenir les injections SQL et protéger les données sensibles",
+      "Connecter PostgreSQL à une API avec Prisma et Neon",
+      "Documenter et soutenir un projet de base de données professionnel"
+    ],
+    "tools": [
+      "PostgreSQL",
+      "pgAdmin",
+      "DBeaver",
+      "dbdiagram.io",
+      "Prisma ORM",
+      "Neon",
+      "Git",
+      "GitHub"
+    ],
+    "certificateTitle": "Certificat professionnel Access Academy – Concepteur et gestionnaire de bases de données SQL",
+    "schoolSlug": "data",
+    "schoolName": "École de Données & Analyse",
+    "slug": "conception-administration-et-exploitation-des-bases-de-donnees-sql",
+    "price": 0,
+    "featured": false,
+    "publish": false
+  },
+  "modules": [
+    {
+      "title": "Module 1 — Analyser un besoin métier et formaliser les règles de gestion",
+      "summary": "Ce module pose les bases de l'analyse d'un besoin métier : recueil des besoins, glossaire et dictionnaire de données, règles de gestion et délimitation du périmètre fonctionnel avec ses données sensibles.",
+      "objectives": [
+        "Recueillir les besoins auprès des utilisateurs et distinguer objectifs, processus, acteurs et données.",
+        "Construire un glossaire métier et un dictionnaire de données.",
+        "Formuler des règles de gestion testables, non ambiguës et indépendantes de la technologie.",
+        "Délimiter le périmètre fonctionnel et repérer les données sensibles."
+      ],
+      "estimatedDuration": 300,
+      "lessons": [
+        {
+          "title": "1.1 Recueillir les besoins auprès des utilisateurs et distinguer objectifs, processus, acteurs et données",
+          "type": "TEXT",
+          "content": "## Objectif\n\nRecueillir les besoins auprès des utilisateurs et distinguer objectifs, processus, acteurs et données.\n\n## Points clés\n\n- Identifier les **objectifs** métier poursuivis par le commanditaire.\n- Cartographier les **processus** impliqués dans le besoin exprimé.\n- Repérer les **acteurs** (utilisateurs, rôles) concernés par le système.\n- Distinguer clairement ces éléments des **données** manipulées.\n\n> Cette distinction (objectifs / processus / acteurs / données) est la première étape de toute analyse de besoin métier."
+        },
+        {
+          "title": "1.2 Construire un glossaire métier et un dictionnaire de données",
+          "type": "TEXT",
+          "content": "## Objectif\n\nConstruire un glossaire métier et un dictionnaire de données.\n\n## Points clés\n\n- Le **glossaire métier** rassemble les termes utilisés par les utilisateurs et en donne une définition partagée et non ambiguë.\n- Le **dictionnaire de données** formalise, pour chaque donnée manipulée : sa définition, son type et ses règles associées.\n\n> Ces deux livrables sont indispensables pour éviter les malentendus entre les équipes techniques et métier."
+        },
+        {
+          "title": "1.3 Formuler des règles de gestion testables, non ambiguës et indépendantes de la technologie",
+          "type": "TEXT",
+          "content": "## Objectif\n\nFormuler des règles de gestion testables, non ambiguës et indépendantes de la technologie.\n\n## Points clés\n\n- Une règle de gestion doit être **testable** : on doit pouvoir vérifier objectivement si elle est respectée ou non.\n- Elle doit être **non ambiguë** : une seule interprétation possible.\n- Elle doit rester **indépendante de la technologie** : elle décrit le métier, pas une implémentation particulière."
+        },
+        {
+          "title": "1.4 Délimiter le périmètre fonctionnel et repérer les données sensibles",
+          "type": "TEXT",
+          "content": "## Objectif\n\nDélimiter le périmètre fonctionnel et repérer les données sensibles.\n\n## Points clés\n\n- Définir clairement ce qui est **dans le périmètre** fonctionnel et ce qui n'y est pas.\n- Identifier les **données sensibles** dès l'analyse du besoin, afin d'anticiper les enjeux de confidentialité.\n- Le principe du **moindre privilège** doit guider l'attribution des droits sur ces données."
+        },
+        {
+          "title": "Étude de cas : plateforme de formation",
+          "type": "EXERCISE",
+          "content": "## Contexte\n\nÉtude de cas : plateforme de formation avec apprenants, cours, cohortes, paiements et certificats.\n\n## Travail attendu\n\n1. Produire **12 règles de gestion numérotées**.\n2. Produire un **dictionnaire d'au moins 20 données**.\n3. Identifier les **incohérences** et les **questions à poser au commanditaire**.\n\n## Critères de réussite\n\n- Résultat techniquement correct et reproductible.\n- Justification claire des choix effectués.\n- Scripts lisibles, commentés et exempts de données sensibles.\n- Score minimal recommandé : 60 %."
+        },
+        {
+          "title": "Évaluation intégrée au module",
+          "type": "RESOURCE",
+          "content": "## Barème\n\n| Type | Production attendue | Points |\n|---|---|---|\n| Quiz | 10 questions | 20 pts |\n| Livrable | Dictionnaire de données et règles de gestion | 60 pts |\n| Étude de cas | Analyse des risques de qualité et confidentialité | 20 pts |\n\n## Critères de réussite\n\n- Résultat techniquement correct et reproductible.\n- Justification claire des choix effectués.\n- Scripts lisibles, commentés et exempts de données sensibles.\n- Score minimal recommandé : 60 %."
+        }
+      ],
+      "quiz": {
+        "title": "Quiz — Module 1 — Analyser un besoin métier et formaliser les règles de gestion",
+        "passingScore": 60,
+        "questions": [
+          {
+            "question": "Quel livrable formalise la définition, le type et les règles de chaque donnée ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Le dictionnaire de données",
+              "Le glossaire métier",
+              "Le cahier des charges",
+              "Le schéma d'architecture technique"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Le dictionnaire de données formalise la définition, le type et les règles de chaque donnée."
+          },
+          {
+            "question": "Quelle contrainte garantit l'unicité logique d'un enregistrement ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Une clé primaire ou une contrainte UNIQUE appropriée",
+              "Une clé étrangère",
+              "Un index non unique",
+              "Une contrainte NOT NULL"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Une clé primaire ou une contrainte UNIQUE appropriée garantit l'unicité logique d'un enregistrement."
+          },
+          {
+            "question": "Pourquoi tester les scripts dans un environnement distinct ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Pour éviter d'altérer les données de production et valider la reproductibilité",
+              "Pour accélérer l'exécution des requêtes",
+              "Pour éviter de documenter le code",
+              "Pour réduire les coûts de licence"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Tester dans un environnement distinct permet d'éviter d'altérer les données de production et de valider la reproductibilité."
+          },
+          {
+            "question": "Quel principe doit guider l'attribution des droits ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Le principe du moindre privilège",
+              "Le principe d'accès total par défaut",
+              "Le principe de partage libre des identifiants",
+              "Le principe de délégation automatique"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Le principe du moindre privilège doit guider l'attribution des droits."
+          },
+          {
+            "question": "Que doit contenir une preuve de validation ?",
+            "type": "MULTIPLE_CHOICE",
+            "options": [
+              "La requête ou procédure utilisée",
+              "Le résultat obtenu",
+              "Une courte interprétation",
+              "Le mot de passe de l'administrateur"
+            ],
+            "correctIndexes": [
+              0,
+              1,
+              2
+            ],
+            "explanation": "Une preuve de validation doit contenir la requête ou procédure, le résultat obtenu et une courte interprétation."
+          },
+          {
+            "question": "Une règle de gestion doit être indépendante de la technologie utilisée pour l'implémenter.",
+            "type": "TRUE_FALSE",
+            "options": [
+              "Vrai",
+              "Faux"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Les règles de gestion formulées doivent être testables, non ambiguës et indépendantes de la technologie."
+          },
+          {
+            "question": "Le glossaire métier et le dictionnaire de données sont deux livrables distincts à produire lors de l'analyse du besoin.",
+            "type": "TRUE_FALSE",
+            "options": [
+              "Vrai",
+              "Faux"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Le module demande explicitement de construire un glossaire métier et un dictionnaire de données."
+          }
+        ]
+      }
+    },
+    {
+      "title": "Module 2 — Modéliser les données : MCD, MLD et schéma physique",
+      "summary": "Ce module apprend à construire un MCD, à le transformer en MLD puis en schéma physique PostgreSQL, tout en documentant les choix de modélisation.",
+      "objectives": [
+        "Identifier entités, attributs, identifiants et associations.",
+        "Déterminer les cardinalités minimales et maximales.",
+        "Transformer un modèle conceptuel en modèle logique relationnel.",
+        "Traduire le MLD en tables PostgreSQL avec types et contraintes adaptés.",
+        "Documenter les choix de modélisation."
+      ],
+      "estimatedDuration": 420,
+      "lessons": [
+        {
+          "title": "2.1 Identifier entités, attributs, identifiants et associations",
+          "type": "TEXT",
+          "content": "## Objectif\nIdentifier entités, attributs, identifiants et associations.\n\n## Points clés\n- Une **entité** représente un objet métier significatif à modéliser (ex. Client, Réservation).\n- Un **attribut** décrit une propriété de l'entité (ex. nom, date de naissance).\n- Un **identifiant** (ou clé) permet de distinguer de façon unique chaque occurrence d'une entité.\n- Une **association** relie deux ou plusieurs entités entre elles et peut elle-même porter des attributs.\n\n> Ce socle de vocabulaire est indispensable avant de passer à l'étape des cardinalités et à la construction du MCD."
+        },
+        {
+          "title": "2.2 Déterminer les cardinalités minimales et maximales",
+          "type": "TEXT",
+          "content": "## Objectif\nDéterminer les cardinalités minimales et maximales.\n\n## Points clés\n- La **cardinalité minimale** indique le nombre minimal de participations d'une entité à une association (0 ou 1).\n- La **cardinalité maximale** indique le nombre maximal de participations (1 ou N).\n- Les combinaisons courantes sont : (0,1), (1,1), (0,N), (1,N).\n- Les cardinalités déterminent directement la façon dont l'association sera traduite lors du passage au modèle logique (clé étrangère simple ou table d'association)."
+        },
+        {
+          "title": "2.3 Transformer un modèle conceptuel en modèle logique relationnel",
+          "type": "TEXT",
+          "content": "## Objectif\nTransformer un modèle conceptuel en modèle logique relationnel.\n\n## Points clés\n- Chaque entité du MCD devient une **table** du MLD.\n- Chaque attribut devient une **colonne**.\n- L'identifiant de l'entité devient la **clé primaire** de la table.\n- Une association de cardinalité maximale N d'un côté et 1 de l'autre se traduit par l'ajout d'une **clé étrangère**.\n- Une association plusieurs-à-plusieurs (N,N) se traduit par une **table d'association** dédiée, contenant les clés étrangères des deux entités reliées."
+        },
+        {
+          "title": "2.4 Traduire le MLD en tables PostgreSQL avec types et contraintes adaptés",
+          "type": "TEXT",
+          "content": "## Objectif\nTraduire le MLD en tables PostgreSQL avec types et contraintes adaptés.\n\n## Points clés\n- Chaque table du MLD est créée via une instruction `CREATE TABLE`.\n- Il convient de choisir des **types de données** adaptés (ex. `INTEGER`, `VARCHAR`, `DATE`, `NUMERIC`).\n- Les contraintes d'intégrité doivent être posées : clé primaire, clé étrangère, `UNIQUE`, `NOT NULL`.\n- Une **clé primaire** ou une contrainte `UNIQUE` appropriée garantit l'unicité logique d'un enregistrement.\n\n```sql\nCREATE TABLE client (\n  id_client SERIAL PRIMARY KEY,\n  nom VARCHAR(100) NOT NULL,\n  email VARCHAR(150) UNIQUE\n);\n```"
+        },
+        {
+          "title": "2.5 Documenter les choix de modélisation",
+          "type": "TEXT",
+          "content": "## Objectif\nDocumenter les choix de modélisation.\n\n## Points clés\n- Le **dictionnaire de données** est le livrable qui formalise la définition, le type et les règles de chaque donnée.\n- La documentation doit justifier clairement les choix effectués lors de la conception (structure, cardinalités, contraintes).\n- Il est recommandé de tester les scripts dans un environnement distinct de la production, afin d'éviter d'altérer les données réelles et de valider la reproductibilité du travail.\n- L'attribution des droits d'accès doit être guidée par le **principe du moindre privilège**.\n- Une preuve de validation doit contenir : la requête ou procédure exécutée, le résultat obtenu et une courte interprétation."
+        },
+        {
+          "title": "Activités et travaux pratiques",
+          "type": "EXERCISE",
+          "content": "## Activités à réaliser\n- Concevoir le **MCD** d'un système de réservation.\n- Transformer une relation **plusieurs-à-plusieurs** en table d'association.\n- Réaliser le diagramme avec **dbdiagram.io** ou **DBeaver**.\n\n## Évaluation intégrée au module\n\n| Type | Production attendue | Barème |\n|---|---|---|\n| Quiz | Cardinalités et transformation relationnelle | 20 pts |\n| TP noté | MCD + MLD complet | 60 pts |\n| Justification | Note de conception | 20 pts |\n\n## Critères de réussite\n- Résultat techniquement correct et reproductible.\n- Justification claire des choix effectués.\n- Scripts lisibles, commentés et exempts de données sensibles.\n- Score minimal recommandé : 60 %."
+        }
+      ],
+      "quiz": {
+        "title": "Quiz — Module 2 — Modéliser les données : MCD, MLD et schéma physique",
+        "passingScore": 60,
+        "questions": [
+          {
+            "question": "Quel livrable formalise la définition, le type et les règles de chaque donnée ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Le dictionnaire de données",
+              "Le diagramme de Gantt",
+              "Le cahier des charges fonctionnel",
+              "Le schéma d'architecture réseau"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Corrigé indicatif du document : Le dictionnaire de données."
+          },
+          {
+            "question": "Quelle contrainte garantit l'unicité logique d'un enregistrement ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Une clé primaire ou une contrainte UNIQUE appropriée",
+              "Une contrainte NOT NULL",
+              "Un index simple non unique",
+              "Une contrainte CHECK"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Corrigé indicatif du document : Une clé primaire ou une contrainte UNIQUE appropriée."
+          },
+          {
+            "question": "Pourquoi tester les scripts dans un environnement distinct de la production ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Pour éviter d'altérer les données de production et valider la reproductibilité",
+              "Pour accélérer l'exécution des requêtes",
+              "Pour réduire le coût de la licence PostgreSQL",
+              "Pour éviter d'écrire de la documentation"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Corrigé indicatif du document : Pour éviter d'altérer les données de production et valider la reproductibilité."
+          },
+          {
+            "question": "Quel principe doit guider l'attribution des droits d'accès ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Le principe du moindre privilège",
+              "Le principe de l'accès total par défaut",
+              "Le principe de la délégation systématique",
+              "Le principe du partage libre des mots de passe"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Corrigé indicatif du document : Le principe du moindre privilège."
+          },
+          {
+            "question": "Que doit contenir une preuve de validation ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "La requête ou procédure, le résultat obtenu et une courte interprétation",
+              "Uniquement le résultat obtenu, sans contexte",
+              "Une capture d'écran du code source uniquement",
+              "Le nom de l'auteur et la date de rendu seulement"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Corrigé indicatif du document : La requête ou procédure, le résultat obtenu et une courte interprétation."
+          },
+          {
+            "question": "Une association de cardinalité plusieurs-à-plusieurs (N,N) se traduit en MLD par une table d'association dédiée.",
+            "type": "TRUE_FALSE",
+            "options": [
+              "Vrai",
+              "Faux"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "D'après le document, une association N,N se traduit par une table d'association contenant les clés étrangères des deux entités."
+          }
+        ]
+      }
+    },
+    {
+      "title": "Module 3 — Normaliser une base relationnelle",
+      "summary": "Ce module explique comment appliquer les formes normales (1FN, 2FN, 3FN) pour éliminer redondances et anomalies, tout en apprenant à dénormaliser de manière contrôlée lorsque le besoin le justifie.",
+      "objectives": [
+        "Comprendre les dépendances fonctionnelles, les clés candidates et les anomalies de mise à jour.",
+        "Appliquer les première, deuxième et troisième formes normales (1FN, 2FN, 3FN).",
+        "Détecter les redondances et les dépendances transitives dans un schéma relationnel.",
+        "Dénormaliser de manière contrôlée pour répondre à un besoin justifié."
+      ],
+      "estimatedDuration": 300,
+      "lessons": [
+        {
+          "title": "3.1 Dépendances fonctionnelles, clés candidates et anomalies de mise à jour",
+          "type": "TEXT",
+          "content": "## Objectif\nComprendre les dépendances fonctionnelles, les clés candidates et les anomalies de mise à jour.\n\n## Points clés\n- Une **dépendance fonctionnelle** exprime qu'un attribut (ou groupe d'attributs) détermine la valeur d'un autre attribut.\n- Une **clé candidate** est un ensemble minimal d'attributs permettant d'identifier de façon unique chaque enregistrement.\n- Les **anomalies de mise à jour** apparaissent lorsqu'une même information est répétée à plusieurs endroits : elles se déclinent en anomalies d'insertion, de suppression et de modification.\n\n> Ces notions constituent le socle théorique nécessaire pour comprendre pourquoi et comment normaliser une base de données."
+        },
+        {
+          "title": "3.2 Appliquer les première, deuxième et troisième formes normales",
+          "type": "TEXT",
+          "content": "## Objectif\nAppliquer les première, deuxième et troisième formes normales (1FN, 2FN, 3FN).\n\n## Points clés\n- **1FN** : chaque attribut doit contenir une valeur atomique (pas de listes ni de groupes répétitifs).\n- **2FN** : la table doit être en 1FN et chaque attribut non-clé doit dépendre de l'intégralité de la clé primaire (pas de dépendance partielle).\n- **3FN** : la table doit être en 2FN et ne contenir aucune dépendance transitive entre attributs non-clés.\n\n> L'application successive de ces trois formes normales permet d'éliminer progressivement les redondances et les risques d'anomalies."
+        },
+        {
+          "title": "3.3 Détecter redondances et dépendances transitives",
+          "type": "TEXT",
+          "content": "## Objectif\nDétecter redondances et dépendances transitives.\n\n## Points clés\n- Une **redondance** correspond à une information dupliquée inutilement dans plusieurs lignes ou tables.\n- Une **dépendance transitive** existe lorsqu'un attribut non-clé dépend d'un autre attribut non-clé, qui lui-même dépend de la clé primaire.\n- Détecter ces situations est une étape indispensable avant de décider d'une décomposition en 3FN."
+        },
+        {
+          "title": "3.4 Dénormaliser de manière contrôlée pour un besoin justifié",
+          "type": "TEXT",
+          "content": "## Objectif\nDénormaliser de manière contrôlée pour un besoin justifié.\n\n## Points clés\n- La dénormalisation consiste à réintroduire volontairement de la redondance, généralement pour des raisons de performance (ex. reporting, tableaux de bord).\n- Cette démarche doit rester **contrôlée** : elle se justifie par un besoin précis et documenté, jamais par défaut.\n- Chaque choix de dénormalisation doit être argumenté en pesant le gain de performance face au risque d'incohérence des données."
+        },
+        {
+          "title": "TP — Normaliser et comparer une base commandes/clients/produits",
+          "type": "EXERCISE",
+          "content": "## Activités et travaux pratiques\n\n1. **Normaliser** une table unique contenant commandes, clients et produits (application de 1FN, 2FN, 3FN).\n2. **Comparer avant/après** : identifier les doublons, les risques d'anomalies et le coût induit par les jointures supplémentaires.\n3. **Proposer une dénormalisation limitée** pour un tableau de bord, en justifiant le choix effectué.\n\n## Critères de réussite\n- Résultat techniquement correct et reproductible.\n- Justification claire des choix effectués.\n- Scripts lisibles, commentés et exempts de données sensibles.\n\n## Barème indicatif\n| Type | Production attendue | Points |\n|---|---|---|\n| Quiz | Formes normales | 20 pts |\n| Exercice | Décomposition jusqu'en 3FN | 60 pts |\n| Argumentation | Dénormalisation contrôlée | 20 pts |\n\n**Score minimal recommandé : 60 %.**"
+        }
+      ],
+      "quiz": {
+        "title": "Quiz — Module 3 — Normaliser une base relationnelle",
+        "passingScore": 60,
+        "questions": [
+          {
+            "question": "Quel livrable formalise la définition, le type et les règles de chaque donnée ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Le dictionnaire de données",
+              "Le schéma entité-association",
+              "Le cahier des charges fonctionnel",
+              "Le journal des transactions"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Le corrigé indique que c'est le dictionnaire de données qui formalise la définition, le type et les règles de chaque donnée."
+          },
+          {
+            "question": "Quelle contrainte garantit l'unicité logique d'un enregistrement ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Une clé primaire ou une contrainte UNIQUE appropriée",
+              "Une clé étrangère",
+              "Un index non unique",
+              "Une contrainte CHECK"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Le corrigé précise qu'une clé primaire ou une contrainte UNIQUE appropriée garantit l'unicité logique d'un enregistrement."
+          },
+          {
+            "question": "Pourquoi tester les scripts dans un environnement distinct de la production ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Pour éviter d'altérer les données de production et valider la reproductibilité",
+              "Pour accélérer l'exécution des requêtes",
+              "Pour réduire la taille de la base de données",
+              "Pour éviter de documenter les scripts"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Le corrigé indique que tester dans un environnement distinct permet d'éviter d'altérer les données de production et de valider la reproductibilité."
+          },
+          {
+            "question": "Quel principe doit guider l'attribution des droits d'accès ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Le principe du moindre privilège",
+              "Le principe d'accès total par défaut",
+              "Le principe de partage libre des mots de passe",
+              "Le principe de délégation automatique des droits"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Le corrigé indique que le principe du moindre privilège doit guider l'attribution des droits."
+          },
+          {
+            "question": "Que doit contenir une preuve de validation ?",
+            "type": "MULTIPLE_CHOICE",
+            "options": [
+              "La requête ou procédure utilisée",
+              "Le résultat obtenu",
+              "Une courte interprétation",
+              "Un export complet et brut de toute la base de données"
+            ],
+            "correctIndexes": [
+              0,
+              1,
+              2
+            ],
+            "explanation": "Le corrigé précise qu'une preuve de validation doit contenir la requête/procédure, le résultat obtenu et une courte interprétation."
+          },
+          {
+            "question": "La 1FN exige que chaque attribut contienne une valeur atomique, sans liste ni groupe répétitif.",
+            "type": "TRUE_FALSE",
+            "options": [
+              "Vrai",
+              "Faux"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "C'est la définition de la première forme normale présentée dans le module."
+          },
+          {
+            "question": "La dénormalisation doit être appliquée systématiquement à toutes les tables pour améliorer les performances, sans besoin de justification particulière.",
+            "type": "TRUE_FALSE",
+            "options": [
+              "Vrai",
+              "Faux"
+            ],
+            "correctIndexes": [
+              1
+            ],
+            "explanation": "Le module précise que la dénormalisation doit rester contrôlée et se justifier par un besoin précis et documenté, jamais par défaut."
+          }
+        ]
+      }
+    },
+    {
+      "title": "Module 4 — Maîtriser les jointures et les sous-requêtes",
+      "summary": "Ce module apprend à maîtriser les différents types de jointures et les sous-requêtes SQL pour produire des résultats fiables et sans doublons.",
+      "objectives": [
+        "Utiliser INNER, LEFT, RIGHT et FULL JOIN selon le résultat attendu.",
+        "Effectuer des jointures multiples et des auto-jointures.",
+        "Écrire des sous-requêtes scalaires, tabulaires et corrélées.",
+        "Utiliser EXISTS, NOT EXISTS, IN et les opérateurs d'ensemble.",
+        "Éviter les doublons involontaires et contrôler la cardinalité des résultats."
+      ],
+      "estimatedDuration": 420,
+      "lessons": [
+        {
+          "title": "4.1 Utiliser INNER, LEFT, RIGHT et FULL JOIN selon le résultat attendu",
+          "type": "TEXT",
+          "content": "## Objectif\nUtiliser INNER, LEFT, RIGHT et FULL JOIN selon le résultat attendu.\n\n## Points clés\n- **INNER JOIN** : ne conserve que les lignes correspondant dans les deux tables.\n- **LEFT JOIN** : conserve toutes les lignes de la table de gauche, même sans correspondance à droite.\n- **RIGHT JOIN** : conserve toutes les lignes de la table de droite, même sans correspondance à gauche.\n- **FULL JOIN** : conserve toutes les lignes des deux tables, avec ou sans correspondance.\n\n> Le choix du type de jointure dépend du résultat métier attendu (ex. inclure ou non les enregistrements sans correspondance)."
+        },
+        {
+          "title": "4.2 Effectuer des jointures multiples et des auto-jointures",
+          "type": "TEXT",
+          "content": "## Objectif\nEffectuer des jointures multiples et des auto-jointures.\n\n## Points clés\n- Une requête peut combiner **plusieurs jointures** successives pour relier plus de deux tables.\n- Une **auto-jointure** consiste à joindre une table avec elle-même, utile pour comparer des lignes entre elles (ex. hiérarchie, doublons)."
+        },
+        {
+          "title": "4.3 Écrire des sous-requêtes scalaires, tabulaires et corrélées",
+          "type": "TEXT",
+          "content": "## Objectif\nÉcrire des sous-requêtes scalaires, tabulaires et corrélées.\n\n## Points clés\n- **Sous-requête scalaire** : retourne une seule valeur.\n- **Sous-requête tabulaire** : retourne un ensemble de lignes/colonnes, utilisable comme une table.\n- **Sous-requête corrélée** : fait référence à une colonne de la requête externe, et est réévaluée pour chaque ligne."
+        },
+        {
+          "title": "4.4 Utiliser EXISTS, NOT EXISTS, IN et les opérateurs d'ensemble",
+          "type": "TEXT",
+          "content": "## Objectif\nUtiliser EXISTS, NOT EXISTS, IN et les opérateurs d'ensemble.\n\n## Points clés\n- **EXISTS / NOT EXISTS** : teste l'existence (ou l'absence) de lignes correspondantes dans une sous-requête.\n- **IN** : teste l'appartenance d'une valeur à un ensemble de résultats.\n- **Opérateurs d'ensemble** (ex. UNION, INTERSECT, EXCEPT selon SGBD) : combinent les résultats de plusieurs requêtes."
+        },
+        {
+          "title": "4.5 Éviter les doublons involontaires et contrôler la cardinalité des résultats",
+          "type": "TEXT",
+          "content": "## Objectif\nÉviter les doublons involontaires et contrôler la cardinalité des résultats.\n\n## Points clés\n- Les jointures multiples peuvent générer des **doublons involontaires** si la cardinalité des relations n'est pas maîtrisée.\n- Il est essentiel de **vérifier la cardinalité** (1-1, 1-N, N-N) avant d'écrire une jointure.\n- Utiliser des clauses comme GROUP BY, DISTINCT ou des sous-requêtes EXISTS permet de contrôler le nombre de lignes retournées."
+        },
+        {
+          "title": "Exemple SQL : formations avec au moins 5 inscriptions",
+          "type": "RESOURCE",
+          "content": "## Exemple de référence\n\n```sql\nSELECT f.titre, COUNT(i.id) AS nombre_inscriptions\nFROM formations f\nLEFT JOIN inscriptions i ON i.formation_id = f.id\nGROUP BY f.id, f.titre\nHAVING COUNT(i.id) >= 5\nORDER BY nombre_inscriptions DESC;\n```\n\nCet exemple illustre l'usage d'un LEFT JOIN combiné à un GROUP BY et un HAVING pour filtrer les formations selon leur nombre d'inscriptions."
+        },
+        {
+          "title": "Activités et travaux pratiques",
+          "type": "EXERCISE",
+          "content": "## Activités et travaux pratiques\n\n1. Lister les apprenants sans inscription avec **LEFT JOIN**.\n2. Comparer une solution avec **JOIN** et une solution avec **EXISTS**.\n3. Produire un rapport croisant **utilisateurs, commandes et paiements**.\n\n## Évaluation intégrée au module\n\n| Type | Production attendue | Barème |\n|---|---|---|\n| Quiz | Jointures et sous-requêtes | 20 pts |\n| Laboratoire SQL | 12 requêtes graduées | 60 pts |\n| Débogage | Corriger 4 requêtes erronées | 20 pts |\n\n## Critères de réussite\n- Résultat techniquement correct et reproductible.\n- Justification claire des choix effectués.\n- Scripts lisibles, commentés et exempts de données sensibles.\n\n**Score minimal recommandé : 60 %.**"
+        }
+      ],
+      "quiz": {
+        "title": "Quiz — Module 4 — Maîtriser les jointures et les sous-requêtes",
+        "passingScore": 60,
+        "questions": [
+          {
+            "question": "Quel livrable formalise la définition, le type et les règles de chaque donnée ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Le dictionnaire de données",
+              "Le schéma de jointure",
+              "Le plan d'exécution de la requête",
+              "Le journal des transactions"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Le document indique que le dictionnaire de données formalise la définition, le type et les règles de chaque donnée."
+          },
+          {
+            "question": "Quelle contrainte garantit l'unicité logique d'un enregistrement ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Une clé étrangère",
+              "Une clé primaire ou une contrainte UNIQUE appropriée",
+              "Un index simple sur une colonne",
+              "Une contrainte CHECK"
+            ],
+            "correctIndexes": [
+              1
+            ],
+            "explanation": "Le corrigé indique qu'une clé primaire ou une contrainte UNIQUE appropriée garantit l'unicité logique d'un enregistrement."
+          },
+          {
+            "question": "Pourquoi tester les scripts dans un environnement distinct de la production ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Pour accélérer l'exécution des requêtes",
+              "Pour éviter d'altérer les données de production et valider la reproductibilité",
+              "Pour éviter de payer une licence supplémentaire",
+              "Pour masquer les erreurs de syntaxe"
+            ],
+            "correctIndexes": [
+              1
+            ],
+            "explanation": "Le document précise que tester dans un environnement distinct évite d'altérer les données de production et permet de valider la reproductibilité."
+          },
+          {
+            "question": "Quel principe doit guider l'attribution des droits ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Le principe du moindre privilège",
+              "Le principe d'accès total par défaut",
+              "Le principe de partage libre des mots de passe",
+              "Le principe de délégation automatique"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Le corrigé indique que l'attribution des droits doit suivre le principe du moindre privilège."
+          },
+          {
+            "question": "Que doit contenir une preuve de validation ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Uniquement le nom de l'auteur du script",
+              "La requête ou procédure, le résultat obtenu et une courte interprétation",
+              "Un capture d'écran de l'environnement de production",
+              "La liste des utilisateurs ayant accès à la base"
+            ],
+            "correctIndexes": [
+              1
+            ],
+            "explanation": "Le document précise que la preuve de validation doit contenir la requête ou procédure, le résultat obtenu et une courte interprétation."
+          },
+          {
+            "question": "Un LEFT JOIN conserve toutes les lignes de la table de gauche, même sans correspondance à droite.",
+            "type": "TRUE_FALSE",
+            "options": [
+              "Vrai",
+              "Faux"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "C'est la définition même du LEFT JOIN présentée dans le module."
+          },
+          {
+            "question": "Une sous-requête corrélée retourne toujours une seule valeur fixe, indépendamment de la requête externe.",
+            "type": "TRUE_FALSE",
+            "options": [
+              "Vrai",
+              "Faux"
+            ],
+            "correctIndexes": [
+              1
+            ],
+            "explanation": "Une sous-requête corrélée fait référence à une colonne de la requête externe et est réévaluée pour chaque ligne, contrairement à une sous-requête scalaire simple."
+          }
+        ]
+      }
+    },
+    {
+      "title": "Module 5 — Exploiter les fonctions SQL avancées",
+      "summary": "Ce module permet de maîtriser les fonctions SQL avancées : manipulation de types de données, expressions conditionnelles, agrégations multi-dimensionnelles et fonctions fenêtrées.",
+      "objectives": [
+        "Manipuler chaînes, nombres, dates et valeurs NULL.",
+        "Construire des expressions CASE et utiliser COALESCE.",
+        "Maîtriser GROUP BY et HAVING sur plusieurs dimensions.",
+        "Utiliser ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD et agrégations fenêtrées."
+      ],
+      "estimatedDuration": 360,
+      "lessons": [
+        {
+          "title": "5.1 Manipuler chaînes, nombres, dates et valeurs NULL",
+          "type": "TEXT",
+          "content": "## Objectif\nManipuler chaînes, nombres, dates et valeurs NULL.\n\n## Points clés\n- Les fonctions SQL avancées permettent de transformer et normaliser les données directement dans les requêtes.\n- La manipulation concerne quatre grands types de données :\n  - **Chaînes de caractères** (texte)\n  - **Nombres** (valeurs numériques)\n  - **Dates** (temporalité)\n  - **Valeurs NULL** (absence de valeur)\n\n> Ce socle est indispensable pour construire des expressions conditionnelles et des agrégations fiables dans les leçons suivantes."
+        },
+        {
+          "title": "5.2 Construire des expressions CASE et utiliser COALESCE",
+          "type": "TEXT",
+          "content": "## Objectif\nConstruire des expressions CASE et utiliser COALESCE.\n\n## Points clés\n- L'expression **CASE** permet d'introduire une logique conditionnelle directement dans une requête SQL (segmentation, catégorisation, etc.).\n- La fonction **COALESCE** permet de gérer les valeurs NULL en retournant la première valeur non nulle d'une liste.\n\n```sql\nSELECT\n  nom,\n  CASE\n    WHEN score >= 80 THEN 'Excellent'\n    WHEN score >= 50 THEN 'Moyen'\n    ELSE 'Faible'\n  END AS categorie,\n  COALESCE(email, 'non renseigné') AS contact\nFROM apprenants;\n```"
+        },
+        {
+          "title": "5.3 Maîtriser GROUP BY et HAVING sur plusieurs dimensions",
+          "type": "TEXT",
+          "content": "## Objectif\nMaîtriser GROUP BY et HAVING sur plusieurs dimensions.\n\n## Points clés\n- **GROUP BY** permet d'agréger des données selon une ou plusieurs colonnes (dimensions).\n- **HAVING** permet de filtrer les résultats après agrégation, contrairement à WHERE qui filtre avant.\n- La combinaison de plusieurs dimensions dans GROUP BY permet des analyses croisées plus fines."
+        },
+        {
+          "title": "5.4 Utiliser ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD et agrégations fenêtrées",
+          "type": "TEXT",
+          "content": "## Objectif\nUtiliser ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD et agrégations fenêtrées.\n\n## Points clés\n- **ROW_NUMBER()** : attribue un numéro unique et séquentiel à chaque ligne.\n- **RANK()** : attribue un rang, avec égalités possibles (des sauts de rang apparaissent après un ex-aequo).\n- **DENSE_RANK()** : attribue un rang sans saut après un ex-aequo.\n- **LAG()** : accède à la valeur de la ligne précédente.\n- **LEAD()** : accède à la valeur de la ligne suivante.\n- Les **agrégations fenêtrées** permettent de calculer des totaux ou moyennes tout en conservant le détail de chaque ligne."
+        },
+        {
+          "title": "Travaux pratiques — Fonctions SQL avancées",
+          "type": "EXERCISE",
+          "content": "## Activités et travaux pratiques\n\n1. **Classer les apprenants par score dans chaque cohorte.**\n   - Utiliser une fonction de fenêtrage (RANK ou DENSE_RANK) partitionnée par cohorte.\n2. **Calculer l'évolution mensuelle des inscriptions avec LAG.**\n   - Comparer chaque mois au mois précédent grâce à LAG().\n3. **Créer une segmentation commerciale avec CASE.**\n   - Construire une catégorisation des clients ou apprenants selon des seuils définis.\n\n## Évaluation intégrée au module\n\n| Type | Production attendue | Barème |\n|---|---|---|\n| Quiz | Fonctions et fenêtres | 20 pts |\n| TP noté | Tableau de bord SQL | 60 pts |\n| Interprétation | Commentaire des résultats | 20 pts |\n\n## Critères de réussite\n- Résultat techniquement correct et reproductible.\n- Justification claire des choix effectués.\n- Scripts lisibles, commentés et exempts de données sensibles.\n- Score minimal recommandé : 60 %."
+        }
+      ],
+      "quiz": {
+        "title": "Quiz — Module 5 — Exploiter les fonctions SQL avancées",
+        "passingScore": 60,
+        "questions": [
+          {
+            "question": "Quel livrable formalise la définition, le type et les règles de chaque donnée ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Le dictionnaire de données",
+              "Le cahier des charges fonctionnel",
+              "Le schéma d'architecture réseau",
+              "Le manuel utilisateur"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Le document indique que le dictionnaire de données formalise la définition, le type et les règles de chaque donnée."
+          },
+          {
+            "question": "Quelle contrainte garantit l'unicité logique d'un enregistrement ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Une clé étrangère",
+              "Une clé primaire ou une contrainte UNIQUE appropriée",
+              "Un index non-clustered",
+              "Un déclencheur (trigger)"
+            ],
+            "correctIndexes": [
+              1
+            ],
+            "explanation": "Le corrigé indicatif précise qu'une clé primaire ou une contrainte UNIQUE appropriée garantit l'unicité logique."
+          },
+          {
+            "question": "Pourquoi tester les scripts dans un environnement distinct ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Pour éviter d'altérer les données de production et valider la reproductibilité",
+              "Pour accélérer l'exécution des requêtes",
+              "Pour réduire les coûts de licence",
+              "Pour éviter d'utiliser des sauvegardes"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Le document précise que tester dans un environnement distinct évite d'altérer les données de production et permet de valider la reproductibilité."
+          },
+          {
+            "question": "Quel principe doit guider l'attribution des droits ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Le principe du moindre privilège",
+              "Le principe d'accès libre pour tous",
+              "Le principe de la délégation totale",
+              "Le principe du partage systématique des mots de passe"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Le corrigé indicatif est le principe du moindre privilège."
+          },
+          {
+            "question": "Que doit contenir une preuve de validation ?",
+            "type": "MULTIPLE_CHOICE",
+            "options": [
+              "La requête ou procédure",
+              "Le résultat obtenu",
+              "Une courte interprétation",
+              "Une capture d'écran du poste de travail complet"
+            ],
+            "correctIndexes": [
+              0,
+              1,
+              2
+            ],
+            "explanation": "Le document précise qu'une preuve de validation doit contenir la requête ou procédure, le résultat obtenu et une courte interprétation."
+          },
+          {
+            "question": "RANK() attribue un rang sans jamais créer de saut après un ex-aequo.",
+            "type": "TRUE_FALSE",
+            "options": [
+              "Vrai",
+              "Faux"
+            ],
+            "correctIndexes": [
+              1
+            ],
+            "explanation": "C'est DENSE_RANK() qui évite les sauts de rang après un ex-aequo ; RANK() en produit."
+          }
+        ]
+      }
+    },
+    {
+      "title": "Module 6 — Créer des vues, séquences et index",
+      "summary": "Ce module apprend à créer des vues (simples et matérialisées), des séquences/identity et des index adaptés, tout en évaluant leur impact sur les performances.",
+      "objectives": [
+        "Créer des vues simples et sécurisées.",
+        "Comprendre les vues matérialisées et leur rafraîchissement.",
+        "Utiliser séquences et colonnes identity.",
+        "Créer des index simples, composés, uniques, partiels et fonctionnels.",
+        "Évaluer le compromis entre vitesse de lecture et coût d'écriture."
+      ],
+      "estimatedDuration": 300,
+      "lessons": [
+        {
+          "title": "6.1 Créer des vues simples et sécurisées",
+          "type": "TEXT",
+          "content": "## Objectif\nCréer des vues simples et sécurisées.\n\n## Points clés\n- Une vue permet de présenter un sous-ensemble de données issu d'une ou plusieurs tables.\n- La sécurisation d'une vue passe notamment par la restriction des colonnes exposées et l'exclusion des données sensibles.\n- Elle sert de base pour des livrables de reporting sans exposer l'ensemble des données."
+        },
+        {
+          "title": "6.2 Comprendre les vues matérialisées et leur rafraîchissement",
+          "type": "TEXT",
+          "content": "## Objectif\nComprendre les vues matérialisées et leur rafraîchissement.\n\n## Points clés\n- Une vue matérialisée stocke physiquement le résultat d'une requête, contrairement à une vue simple qui est recalculée à chaque appel.\n- Le rafraîchissement permet de synchroniser la vue matérialisée avec les données sources au fil du temps."
+        },
+        {
+          "title": "6.3 Utiliser séquences et colonnes identity",
+          "type": "TEXT",
+          "content": "## Objectif\nUtiliser séquences et colonnes identity.\n\n## Points clés\n- Les séquences génèrent des valeurs numériques uniques, souvent utilisées pour des clés primaires.\n- Les colonnes identity automatisent l'incrémentation des valeurs lors de l'insertion de nouvelles lignes."
+        },
+        {
+          "title": "6.4 Créer des index simples, composés, uniques, partiels et fonctionnels",
+          "type": "TEXT",
+          "content": "## Objectif\nCréer des index simples, composés, uniques, partiels et fonctionnels.\n\n## Types d'index abordés\n- **Index simple** : porte sur une seule colonne.\n- **Index composé** : porte sur plusieurs colonnes.\n- **Index unique** : garantit l'unicité des valeurs indexées.\n- **Index partiel** : ne couvre qu'un sous-ensemble de lignes selon une condition.\n- **Index fonctionnel** : basé sur le résultat d'une expression ou d'une fonction plutôt que sur une colonne brute."
+        },
+        {
+          "title": "6.5 Évaluer le compromis entre vitesse de lecture et coût d'écriture",
+          "type": "TEXT",
+          "content": "## Objectif\nÉvaluer le compromis entre vitesse de lecture et coût d'écriture.\n\n## Points clés\n- Les index accélèrent les opérations de lecture (SELECT) mais alourdissent les opérations d'écriture (INSERT, UPDATE, DELETE), car chaque index doit être maintenu à jour.\n- Ce compromis doit guider le choix et le nombre d'index créés sur une table."
+        },
+        {
+          "title": "Activités et travaux pratiques",
+          "type": "EXERCISE",
+          "content": "## Activités attendues\n1. Créer une vue de reporting sans données sensibles.\n2. Proposer trois index et justifier l'ordre des colonnes.\n3. Comparer les temps et plans d'exécution avant/après indexation.\n\n## Critères de réussite\n- Résultat techniquement correct et reproductible.\n- Justification claire des choix effectués.\n- Scripts lisibles, commentés et exempts de données sensibles."
+        },
+        {
+          "title": "Évaluation intégrée au module",
+          "type": "RESOURCE",
+          "content": "## Barème\n\n| Type | Production attendue | Points |\n|---|---|---|\n| Quiz | Vues et index | 20 pts |\n| TP | Vue + stratégie d'indexation | 60 pts |\n| Analyse | Rapport comparatif | 20 pts |\n\n**Score minimal recommandé : 60 %.**\n\n## Critères de réussite\n- Résultat techniquement correct et reproductible.\n- Justification claire des choix effectués.\n- Scripts lisibles, commentés et exempts de données sensibles."
+        }
+      ],
+      "quiz": {
+        "title": "Quiz — Module 6 — Créer des vues, séquences et index",
+        "passingScore": 60,
+        "questions": [
+          {
+            "question": "Quel livrable formalise la définition, le type et les règles de chaque donnée ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Le dictionnaire de données",
+              "Le schéma d'index",
+              "La vue matérialisée",
+              "Le plan d'exécution"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Le dictionnaire de données formalise la définition, le type et les règles de chaque donnée."
+          },
+          {
+            "question": "Quelle contrainte garantit l'unicité logique d'un enregistrement ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Une contrainte CHECK",
+              "Une clé primaire ou une contrainte UNIQUE appropriée",
+              "Un index fonctionnel",
+              "Une séquence auto-incrémentée"
+            ],
+            "correctIndexes": [
+              1
+            ],
+            "explanation": "Une clé primaire ou une contrainte UNIQUE appropriée garantit l'unicité logique d'un enregistrement."
+          },
+          {
+            "question": "Pourquoi tester les scripts dans un environnement distinct ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Pour accélérer l'exécution des requêtes",
+              "Pour éviter d'altérer les données de production et valider la reproductibilité",
+              "Pour réduire le coût de licence",
+              "Pour générer automatiquement des index"
+            ],
+            "correctIndexes": [
+              1
+            ],
+            "explanation": "Tester dans un environnement distinct évite d'altérer les données de production et permet de valider la reproductibilité."
+          },
+          {
+            "question": "Quel principe doit guider l'attribution des droits ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Le principe du moindre privilège",
+              "Le principe de l'accès total par défaut",
+              "Le principe de duplication des droits",
+              "Le principe de partage libre des accès"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "L'attribution des droits doit suivre le principe du moindre privilège."
+          },
+          {
+            "question": "Que doit contenir une preuve de validation ?",
+            "type": "MULTIPLE_CHOICE",
+            "options": [
+              "La requête ou procédure exécutée",
+              "Le résultat obtenu",
+              "Une courte interprétation",
+              "Le mot de passe de l'administrateur"
+            ],
+            "correctIndexes": [
+              0,
+              1,
+              2
+            ],
+            "explanation": "Une preuve de validation doit contenir la requête ou procédure, le résultat obtenu et une courte interprétation."
+          },
+          {
+            "question": "Un index accélère les lectures mais alourdit les écritures.",
+            "type": "TRUE_FALSE",
+            "options": [
+              "Vrai",
+              "Faux"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Les index accélèrent les opérations de lecture mais alourdissent les opérations d'écriture car ils doivent être maintenus à jour."
+          }
+        ]
+      }
+    },
+    {
+      "title": "Module 7 — Comprendre les transactions, ACID et la concurrence",
+      "summary": "Ce module explique les principes ACID, la gestion des transactions et de la concurrence pour permettre de choisir un niveau d'isolation adapté et d'implémenter des opérations métier atomiques et fiables.",
+      "objectives": [
+        "Expliquer atomicité, cohérence, isolation et durabilité (ACID).",
+        "Utiliser BEGIN, COMMIT, ROLLBACK et SAVEPOINT.",
+        "Comprendre verrous, lectures concurrentes et anomalies transactionnelles.",
+        "Choisir un niveau d'isolation adapté au cas métier.",
+        "Mettre en œuvre une opération métier atomique."
+      ],
+      "estimatedDuration": 300,
+      "lessons": [
+        {
+          "title": "7.1 Atomicité, cohérence, isolation et durabilité (ACID)",
+          "type": "TEXT",
+          "content": "## Objectif\nExpliquer atomicité, cohérence, isolation et durabilité.\n\n## Les 4 propriétés ACID\n\n- **Atomicité** : une transaction s'exécute entièrement ou pas du tout.\n- **Cohérence** : la base passe d'un état valide à un autre état valide.\n- **Isolation** : les transactions concurrentes n'interfèrent pas entre elles de façon incontrôlée.\n- **Durabilité** : une fois validée (COMMIT), une transaction est conservée même en cas de panne.\n\nCes quatre propriétés constituent le socle de la fiabilité des transactions dans un SGBD."
+        },
+        {
+          "title": "7.2 BEGIN, COMMIT, ROLLBACK et SAVEPOINT",
+          "type": "TEXT",
+          "content": "## Objectif\nUtiliser BEGIN, COMMIT, ROLLBACK et SAVEPOINT.\n\n## Commandes clés\n\n- **BEGIN** : démarre une transaction.\n- **COMMIT** : valide définitivement les changements de la transaction.\n- **ROLLBACK** : annule les changements de la transaction en cours.\n- **SAVEPOINT** : crée un point de sauvegarde intermédiaire permettant un retour partiel sans annuler toute la transaction.\n\n## Exemple transactionnel\n\n```sql\nBEGIN;\nUPDATE comptes SET solde = solde - 50000 WHERE id = 1;\nUPDATE comptes SET solde = solde + 50000 WHERE id = 2;\n-- Contrôler les résultats avant validation\nCOMMIT;\n```"
+        },
+        {
+          "title": "7.3 Verrous, lectures concurrentes et anomalies transactionnelles",
+          "type": "TEXT",
+          "content": "## Objectif\nComprendre verrous, lectures concurrentes et anomalies transactionnelles.\n\n## Notions abordées\n\n- Les **verrous** contrôlent l'accès concurrent aux données.\n- Les **lectures concurrentes** peuvent générer des anomalies si l'isolation n'est pas maîtrisée.\n\n## Anomalies transactionnelles à identifier\n\n- **Dirty read** (lecture sale)\n- **Non-repeatable read** (lecture non répétable)\n- **Phantom read** (lecture fantôme)"
+        },
+        {
+          "title": "7.4 Choisir un niveau d'isolation adapté au cas métier",
+          "type": "TEXT",
+          "content": "## Objectif\nChoisir un niveau d'isolation adapté au cas métier.\n\n## Contenu\n\nLe choix du niveau d'isolation dépend du compromis nécessaire entre cohérence stricte des données et performance/concurrence. Ce choix doit être argumenté en fonction du cas métier traité."
+        },
+        {
+          "title": "7.5 Mettre en œuvre une opération métier atomique",
+          "type": "TEXT",
+          "content": "## Objectif\nMettre en œuvre une opération métier atomique.\n\n## Contenu\n\nUne opération métier (ex. transfert de solde entre deux comptes) doit être encapsulée dans une transaction afin de garantir qu'elle s'applique intégralement ou pas du tout, conformément au principe d'atomicité."
+        },
+        {
+          "title": "TP — Scénarios transactionnels",
+          "type": "EXERCISE",
+          "content": "## Activités et travaux pratiques\n\n1. **Simuler un transfert de solde avec rollback.**\n2. **Tester deux sessions concurrentes.**\n3. **Identifier dirty read, non-repeatable read et phantom read.**\n\n## Exemple de base pour le transfert\n\n```sql\nBEGIN;\nUPDATE comptes SET solde = solde - 50000 WHERE id = 1;\nUPDATE comptes SET solde = solde + 50000 WHERE id = 2;\n-- Contrôler les résultats avant validation\nCOMMIT;\n```\n\n## Critères de réussite\n\n- Résultat techniquement correct et reproductible.\n- Justification claire des choix effectués.\n- Scripts lisibles, commentés et exempts de données sensibles.\n- Score minimal recommandé : 60 %."
+        },
+        {
+          "title": "Évaluation intégrée au module",
+          "type": "RESOURCE",
+          "content": "## Évaluation intégrée au module\n\n| Type | Production attendue | Barème |\n|---|---|---|\n| Quiz | Transactions et isolation | 20 pts |\n| TP | Scénarios transactionnels | 60 pts |\n| Étude de cas | Choix d'isolation argumenté | 20 pts |\n\n## Critères de réussite\n\n- Résultat techniquement correct et reproductible.\n- Justification claire des choix effectués.\n- Scripts lisibles, commentés et exempts de données sensibles.\n- Score minimal recommandé : 60 %."
+        }
+      ],
+      "quiz": {
+        "title": "Quiz — Module 7 — Comprendre les transactions, ACID et la concurrence",
+        "passingScore": 60,
+        "questions": [
+          {
+            "question": "Quel livrable formalise la définition, le type et les règles de chaque donnée ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Le dictionnaire de données",
+              "Le journal des transactions",
+              "Le schéma de verrouillage",
+              "Le plan de sauvegarde"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Le corrigé indique que c'est le dictionnaire de données qui formalise la définition, le type et les règles de chaque donnée."
+          },
+          {
+            "question": "Quelle contrainte garantit l'unicité logique d'un enregistrement ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Une contrainte CHECK",
+              "Une clé étrangère",
+              "Une clé primaire ou une contrainte UNIQUE appropriée",
+              "Un index non unique"
+            ],
+            "correctIndexes": [
+              2
+            ],
+            "explanation": "Le corrigé précise qu'une clé primaire ou une contrainte UNIQUE appropriée garantit l'unicité logique d'un enregistrement."
+          },
+          {
+            "question": "Pourquoi tester les scripts dans un environnement distinct ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Pour accélérer l'exécution des requêtes",
+              "Pour éviter d'altérer les données de production et valider la reproductibilité",
+              "Pour réduire les coûts de licence",
+              "Pour permettre plusieurs administrateurs simultanés"
+            ],
+            "correctIndexes": [
+              1
+            ],
+            "explanation": "Le corrigé indique que c'est pour éviter d'altérer les données de production et valider la reproductibilité."
+          },
+          {
+            "question": "Quel principe doit guider l'attribution des droits ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Le principe d'accès total par défaut",
+              "Le principe du moindre privilège",
+              "Le principe de délégation automatique",
+              "Le principe de partage libre des mots de passe"
+            ],
+            "correctIndexes": [
+              1
+            ],
+            "explanation": "Le corrigé indique que le principe du moindre privilège doit guider l'attribution des droits."
+          },
+          {
+            "question": "Que doit contenir une preuve de validation ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Uniquement le nom de l'auteur du script",
+              "La requête ou procédure, le résultat obtenu et une courte interprétation",
+              "Un simple message de confirmation sans détail",
+              "La liste complète des utilisateurs de la base"
+            ],
+            "correctIndexes": [
+              1
+            ],
+            "explanation": "Le corrigé précise qu'une preuve de validation doit contenir la requête ou procédure, le résultat obtenu et une courte interprétation."
+          },
+          {
+            "question": "L'atomicité garantit qu'une transaction s'exécute entièrement ou pas du tout.",
+            "type": "TRUE_FALSE",
+            "options": [
+              "Vrai",
+              "Faux"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "C'est la définition même de l'atomicité présentée dans le module."
+          },
+          {
+            "question": "Parmi les anomalies transactionnelles suivantes, lesquelles sont explicitement citées dans le module ?",
+            "type": "MULTIPLE_CHOICE",
+            "options": [
+              "Dirty read",
+              "Non-repeatable read",
+              "Phantom read",
+              "Deadlock permanent"
+            ],
+            "correctIndexes": [
+              0,
+              1,
+              2
+            ],
+            "explanation": "Le module cite explicitement dirty read, non-repeatable read et phantom read comme anomalies à identifier."
+          }
+        ]
+      }
+    },
+    {
+      "title": "Module 8 — Administrer PostgreSQL : rôles, droits et schémas",
+      "summary": "Ce module vous apprend à administrer la sécurité d'un cluster PostgreSQL en maîtrisant rôles, privilèges et organisation par schémas.",
+      "objectives": [
+        "Comprendre les notions de cluster, base, schéma, relation et session.",
+        "Créer des utilisateurs, des rôles de groupe et des politiques d'accès.",
+        "Accorder et révoquer des privilèges avec GRANT et REVOKE.",
+        "Configurer les droits par défaut selon le principe du moindre privilège.",
+        "Séparer les objets par schéma et contrôler le search_path."
+      ],
+      "estimatedDuration": 360,
+      "lessons": [
+        {
+          "title": "8.1 Comprendre cluster, base, schéma, relation et session",
+          "type": "TEXT",
+          "content": "## Objectif\nComprendre les notions de cluster, base, schéma, relation et session dans PostgreSQL.\n\n## Points clés\n- **Cluster** : instance PostgreSQL pouvant héberger plusieurs bases de données.\n- **Base de données** : conteneur logique isolé au sein du cluster.\n- **Schéma** : espace de noms à l'intérieur d'une base, permettant de regrouper des objets (tables, vues, fonctions).\n- **Relation** : terme technique désignant une table (ou vue) dans le modèle relationnel.\n- **Session** : connexion active d'un utilisateur au cluster, associée à un rôle et à des droits."
+        },
+        {
+          "title": "8.2 Créer utilisateurs, rôles de groupe et politiques d'accès",
+          "type": "TEXT",
+          "content": "## Objectif\nCréer des utilisateurs, des rôles de groupe et définir des politiques d'accès.\n\n## Points clés\n- Un **utilisateur** est un rôle disposant du droit `LOGIN`.\n- Un **rôle de groupe** permet de regrouper des droits communs à plusieurs utilisateurs.\n- Les **politiques d'accès** définissent qui peut faire quoi, sur quels objets.\n\n## Exemple\n```sql\nCREATE ROLE analyste LOGIN PASSWORD 'mot_de_passe_a_remplacer';\n```"
+        },
+        {
+          "title": "8.3 Accorder et révoquer des privilèges avec GRANT et REVOKE",
+          "type": "TEXT",
+          "content": "## Objectif\nAccorder et révoquer des privilèges avec les commandes `GRANT` et `REVOKE`.\n\n## Points clés\n- `GRANT` attribue un privilège (CONNECT, USAGE, SELECT, etc.) à un rôle.\n- `REVOKE` retire un privilège précédemment accordé.\n\n## Exemple de gestion des privilèges\n```sql\nCREATE ROLE analyste LOGIN PASSWORD 'mot_de_passe_a_remplacer';\nGRANT CONNECT ON DATABASE academy_db TO analyste;\nGRANT USAGE ON SCHEMA reporting TO analyste;\nGRANT SELECT ON ALL TABLES IN SCHEMA reporting TO analyste;\n```"
+        },
+        {
+          "title": "8.4 Configurer les droits par défaut et le principe du moindre privilège",
+          "type": "TEXT",
+          "content": "## Objectif\nConfigurer les droits par défaut et appliquer le principe du moindre privilège.\n\n## Points clés\n- Le **principe du moindre privilège** consiste à n'accorder que les droits strictement nécessaires à chaque rôle.\n- Les **droits par défaut** permettent d'appliquer automatiquement des privilèges aux nouveaux objets créés dans un schéma."
+        },
+        {
+          "title": "8.5 Séparer les objets par schéma et contrôler le search_path",
+          "type": "TEXT",
+          "content": "## Objectif\nSéparer les objets par schéma et contrôler le `search_path`.\n\n## Points clés\n- Organiser les objets (tables, vues) dans des **schémas dédiés** (ex. `reporting`) permet de cloisonner les accès.\n- Le **search_path** détermine l'ordre de recherche des schémas lors de la résolution des noms d'objets non qualifiés.\n- Restreindre l'accès à un schéma via `GRANT USAGE ON SCHEMA` sans donner accès aux tables sources garantit une lecture limitée (ex. via une vue)."
+        },
+        {
+          "title": "TP — Créer les rôles et sécuriser les accès",
+          "type": "EXERCISE",
+          "content": "## Activités et travaux pratiques\n1. Créer les rôles `admin_app`, `formateur` et `analyste`.\n2. Autoriser l'analyste à lire une vue sans lire les tables sources.\n3. Tester les accès et documenter la matrice des habilitations.\n\n## Exemple de script de départ\n```sql\nCREATE ROLE analyste LOGIN PASSWORD 'mot_de_passe_a_remplacer';\nGRANT CONNECT ON DATABASE academy_db TO analyste;\nGRANT USAGE ON SCHEMA reporting TO analyste;\nGRANT SELECT ON ALL TABLES IN SCHEMA reporting TO analyste;\n```\n\n## Critères de réussite\n- Résultat techniquement correct et reproductible.\n- Justification claire des choix effectués.\n- Scripts lisibles, commentés et exempts de données sensibles.\n- Score minimal recommandé : 60 %."
+        },
+        {
+          "title": "Évaluation intégrée au module",
+          "type": "RESOURCE",
+          "content": "## Barème\n\n| Type | Production attendue | Barème |\n|---|---|---|\n| Quiz | Rôles et privilèges | 20 pts |\n| TP noté | Matrice et scripts de sécurité | 60 pts |\n| Audit | Test des permissions | 20 pts |\n\n## Critères de réussite\n- Résultat techniquement correct et reproductible.\n- Justification claire des choix effectués.\n- Scripts lisibles, commentés et exempts de données sensibles.\n- Score minimal recommandé : 60 %."
+        }
+      ],
+      "quiz": {
+        "title": "Quiz — Module 8 — Administrer PostgreSQL : rôles, droits et schémas",
+        "passingScore": 60,
+        "questions": [
+          {
+            "question": "Quel livrable formalise la définition, le type et les règles de chaque donnée ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Le dictionnaire de données",
+              "Le schéma de la base de données",
+              "Le fichier de configuration postgresql.conf",
+              "La matrice des habilitations"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Le corrigé indique que le dictionnaire de données formalise la définition, le type et les règles de chaque donnée."
+          },
+          {
+            "question": "Quelle contrainte garantit l'unicité logique d'un enregistrement ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Une contrainte CHECK",
+              "Une clé primaire ou une contrainte UNIQUE appropriée",
+              "Une clé étrangère",
+              "Un index B-Tree"
+            ],
+            "correctIndexes": [
+              1
+            ],
+            "explanation": "Le corrigé précise qu'une clé primaire ou une contrainte UNIQUE appropriée garantit l'unicité logique."
+          },
+          {
+            "question": "Pourquoi tester les scripts dans un environnement distinct de la production ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Pour éviter d'altérer les données de production et valider la reproductibilité",
+              "Pour accélérer l'exécution des requêtes",
+              "Pour réduire la taille du script SQL",
+              "Pour éviter de créer des rôles supplémentaires"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Le corrigé indique que tester ailleurs qu'en production permet d'éviter d'altérer les données et de valider la reproductibilité."
+          },
+          {
+            "question": "Quel principe doit guider l'attribution des droits aux rôles ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Le principe du moindre privilège",
+              "Le principe d'accès maximal par défaut",
+              "Le principe de duplication des rôles",
+              "Le principe de suppression automatique des droits"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Le document indique que le principe du moindre privilège doit guider l'attribution des droits."
+          },
+          {
+            "question": "Que doit contenir une preuve de validation ?",
+            "type": "MULTIPLE_CHOICE",
+            "options": [
+              "La requête ou procédure utilisée",
+              "Le résultat obtenu",
+              "Une courte interprétation",
+              "Le mot de passe de l'administrateur"
+            ],
+            "correctIndexes": [
+              0,
+              1,
+              2
+            ],
+            "explanation": "Le corrigé précise qu'une preuve de validation doit contenir la requête/procédure, le résultat obtenu et une courte interprétation."
+          },
+          {
+            "question": "La commande GRANT USAGE ON SCHEMA reporting TO analyste; donne-t-elle automatiquement le droit de lire les tables du schéma ?",
+            "type": "TRUE_FALSE",
+            "options": [
+              "Vrai",
+              "Faux"
+            ],
+            "correctIndexes": [
+              1
+            ],
+            "explanation": "USAGE permet seulement d'accéder au schéma ; il faut en plus un GRANT SELECT sur les tables pour pouvoir les lire."
+          }
+        ]
+      }
+    },
+    {
+      "title": "Module 9 — Sauvegarder, restaurer, importer et exporter",
+      "summary": "Ce module présente les méthodes de sauvegarde, restauration, import et export de bases PostgreSQL, ainsi que la construction et le test d'une politique de sauvegarde documentée.",
+      "objectives": [
+        "Différencier sauvegarde logique et physique.",
+        "Utiliser pg_dump, pg_restore et psql.",
+        "Construire une politique de sauvegarde adaptée au contexte.",
+        "Importer et exporter des fichiers CSV de manière fiable.",
+        "Tester la restauration et documenter la procédure."
+      ],
+      "estimatedDuration": 300,
+      "lessons": [
+        {
+          "title": "9.1 Différencier sauvegarde logique et physique",
+          "type": "TEXT",
+          "content": "## Objectif\nDifférencier sauvegarde logique et physique.\n\n## Contenu\n- La **sauvegarde logique** consiste à exporter les données sous forme de commandes SQL ou de formats structurés (ex. dump SQL), indépendamment du moteur de stockage physique.\n- La **sauvegarde physique** consiste à copier directement les fichiers de données du système de gestion de base de données (fichiers disque, répertoires internes).\n- Comprendre cette distinction permet de choisir la méthode adaptée selon le besoin (portabilité, taille, rapidité de restauration)."
+        },
+        {
+          "title": "9.2 Utiliser pg_dump, pg_restore et psql",
+          "type": "TEXT",
+          "content": "## Objectif\nUtiliser pg_dump, pg_restore et psql.\n\n## Contenu\n- **pg_dump** : outil permettant de réaliser une sauvegarde logique d'une base PostgreSQL.\n- **pg_restore** : outil permettant de restaurer une base à partir d'une sauvegarde réalisée avec pg_dump (notamment au format custom).\n- **psql** : client en ligne de commande permettant d'exécuter des scripts SQL et d'interagir avec la base, y compris pour des restaurations au format texte/SQL."
+        },
+        {
+          "title": "9.3 Construire une politique de sauvegarde adaptée au contexte",
+          "type": "TEXT",
+          "content": "## Objectif\nConstruire une politique de sauvegarde adaptée au contexte.\n\n## Contenu\n- Une politique de sauvegarde doit être adaptée au contexte de l'organisation : fréquence, volumétrie, criticité des données, contraintes de restauration.\n- Elle doit définir clairement les modalités de sauvegarde (logique/physique), la fréquence et les responsabilités associées."
+        },
+        {
+          "title": "9.4 Importer et exporter des fichiers CSV de manière fiable",
+          "type": "TEXT",
+          "content": "## Objectif\nImporter et exporter des fichiers CSV de manière fiable.\n\n## Contenu\n- L'import et l'export de fichiers CSV doivent être réalisés de façon fiable, en anticipant les erreurs possibles (types de données incorrects, doublons).\n- Une vigilance particulière doit être portée à la validation des données lors de l'import."
+        },
+        {
+          "title": "9.5 Tester la restauration et documenter la procédure",
+          "type": "TEXT",
+          "content": "## Objectif\nTester la restauration et documenter la procédure.\n\n## Contenu\n- Toute sauvegarde doit être **testée par une restauration effective**, idéalement dans un environnement distinct de la production.\n- La procédure de restauration doit être **documentée** dans une fiche opératoire claire et reproductible."
+        },
+        {
+          "title": "Activités et travaux pratiques",
+          "type": "EXERCISE",
+          "content": "## Activités et travaux pratiques\n\n1. **Sauvegarder** une base au format custom (avec pg_dump).\n2. **Restaurer** cette sauvegarde dans une base distincte, puis **vérifier les volumes** de données restaurées.\n3. **Importer un CSV** comportant volontairement des erreurs de types et des doublons, et gérer ces anomalies.\n\n## Critères de réussite\n- Résultat techniquement correct et reproductible.\n- Justification claire des choix effectués.\n- Scripts lisibles, commentés et exempts de données sensibles.\n\n## Score minimal recommandé\n60 %"
+        },
+        {
+          "title": "Évaluation intégrée au module",
+          "type": "RESOURCE",
+          "content": "## Évaluation intégrée au module\n\n| Type | Production attendue | Barème |\n|---|---|---|\n| Quiz | Sauvegarde et restauration | 20 pts |\n| TP | Backup + restauration vérifiée | 60 pts |\n| Procédure | Fiche opératoire | 20 pts |\n\n### Critères de réussite\n- Résultat techniquement correct et reproductible.\n- Justification claire des choix effectués.\n- Scripts lisibles, commentés et exempts de données sensibles.\n\n### Score minimal recommandé\n60 %"
+        }
+      ],
+      "quiz": {
+        "title": "Quiz — Module 9 — Sauvegarder, restaurer, importer et exporter",
+        "passingScore": 60,
+        "questions": [
+          {
+            "question": "Quel livrable formalise la définition, le type et les règles de chaque donnée ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Le dictionnaire de données",
+              "Le schéma de restauration",
+              "Le fichier de log du serveur",
+              "Le script de sauvegarde"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Le corrigé indique que c'est le dictionnaire de données qui formalise la définition, le type et les règles de chaque donnée."
+          },
+          {
+            "question": "Quelle contrainte garantit l'unicité logique d'un enregistrement ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Une clé étrangère",
+              "Une clé primaire ou une contrainte UNIQUE appropriée",
+              "Un index secondaire",
+              "Une contrainte NOT NULL"
+            ],
+            "correctIndexes": [
+              1
+            ],
+            "explanation": "Le corrigé précise qu'une clé primaire ou une contrainte UNIQUE garantit l'unicité logique d'un enregistrement."
+          },
+          {
+            "question": "Pourquoi tester les scripts dans un environnement distinct ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Pour accélérer le traitement des requêtes",
+              "Pour éviter d'altérer les données de production et valider la reproductibilité",
+              "Pour réduire la taille des sauvegardes",
+              "Pour contourner les droits d'accès"
+            ],
+            "correctIndexes": [
+              1
+            ],
+            "explanation": "Le corrigé indique que tester dans un environnement distinct évite d'altérer la production et permet de valider la reproductibilité."
+          },
+          {
+            "question": "Quel principe doit guider l'attribution des droits ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Le principe du moindre privilège",
+              "Le principe d'accès total par défaut",
+              "Le principe de partage libre des mots de passe",
+              "Le principe de délégation automatique"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Le corrigé indique que le principe du moindre privilège doit guider l'attribution des droits."
+          },
+          {
+            "question": "Que doit contenir une preuve de validation ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Uniquement le nom de l'auteur du script",
+              "La requête ou procédure, le résultat obtenu et une courte interprétation",
+              "Un simple message de confirmation",
+              "Le temps d'exécution uniquement"
+            ],
+            "correctIndexes": [
+              1
+            ],
+            "explanation": "Le corrigé précise qu'une preuve de validation doit contenir la requête ou procédure, le résultat obtenu et une courte interprétation."
+          }
+        ]
+      }
+    },
+    {
+      "title": "Module 10 — Sécuriser les données et prévenir les injections SQL",
+      "summary": "Ce module présente les fondamentaux de la sécurisation des données : moindre privilège, chiffrement, prévention des injections SQL, classification des données et traçabilité.",
+      "objectives": [
+        "Appliquer le moindre privilège, la séparation des environnements et la gestion des secrets.",
+        "Comprendre hachage, chiffrement en transit et chiffrement au repos.",
+        "Prévenir l'injection SQL par requêtes paramétrées.",
+        "Classer les données selon leur sensibilité.",
+        "Mettre en place journalisation et bonnes pratiques de traçabilité."
+      ],
+      "estimatedDuration": 300,
+      "lessons": [
+        {
+          "title": "10.1 Moindre privilège, séparation des environnements et gestion des secrets",
+          "type": "TEXT",
+          "content": "## Objectif\nAppliquer le moindre privilège, la séparation des environnements et la gestion des secrets.\n\n## Points clés\n- **Principe du moindre privilège** : chaque utilisateur ou service ne doit disposer que des droits strictement nécessaires à ses tâches.\n- **Séparation des environnements** : distinguer développement, test/pré-production et production afin d'éviter tout impact sur les données réelles lors des tests.\n- **Gestion des secrets** : les identifiants, mots de passe et clés d'accès doivent être protégés et ne jamais être exposés dans le code ou les scripts."
+        },
+        {
+          "title": "10.2 Hachage, chiffrement en transit et chiffrement au repos",
+          "type": "TEXT",
+          "content": "## Objectif\nComprendre hachage, chiffrement en transit et chiffrement au repos.\n\n## Points clés\n- **Hachage** : transformation irréversible utilisée notamment pour la protection des mots de passe.\n- **Chiffrement en transit** : protection des données lors de leur transmission sur le réseau.\n- **Chiffrement au repos** : protection des données stockées."
+        },
+        {
+          "title": "10.3 Prévenir l'injection SQL par requêtes paramétrées",
+          "type": "TEXT",
+          "content": "## Objectif\nPrévenir l'injection SQL par requêtes paramétrées.\n\n## Point clé\nL'utilisation de requêtes paramétrées permet d'empêcher qu'une entrée utilisateur ne soit interprétée comme du code SQL, ce qui constitue la principale mesure de prévention contre l'injection SQL."
+        },
+        {
+          "title": "10.4 Classer les données selon leur sensibilité",
+          "type": "TEXT",
+          "content": "## Objectif\nClasser les données selon leur sensibilité.\n\n## Point clé\nLa classification des données permet d'adapter le niveau de protection (accès, chiffrement, journalisation) à leur degré de sensibilité (données publiques, internes, confidentielles, sensibles)."
+        },
+        {
+          "title": "10.5 Journalisation et traçabilité",
+          "type": "TEXT",
+          "content": "## Objectif\nMettre en place journalisation et bonnes pratiques de traçabilité.\n\n## Point clé\nLa journalisation des actions (accès, modifications, erreurs) permet d'assurer la traçabilité des opérations et de faciliter la détection d'incidents de sécurité."
+        },
+        {
+          "title": "TP — Corriger un exemple de requête vulnérable",
+          "type": "EXERCISE",
+          "content": "## Consigne\nÀ partir d'un exemple de requête SQL vulnérable à l'injection, corrigez-la en appliquant le principe des requêtes paramétrées vu en 10.3.\n\n## Attendu\n- Identification de la faille dans la requête initiale.\n- Version corrigée utilisant des paramètres.\n- Script lisible, commenté et exempt de données sensibles."
+        },
+        {
+          "title": "TP — Concevoir une politique de mots de passe et secrets",
+          "type": "EXERCISE",
+          "content": "## Consigne\nÉlaborer une politique de gestion des mots de passe et des secrets, en s'appuyant sur les notions de moindre privilège et de gestion des secrets (10.1) et de hachage/chiffrement (10.2).\n\n## Attendu\n- Règles de complexité et de renouvellement des mots de passe.\n- Modalités de stockage sécurisé des secrets.\n- Justification des choix effectués."
+        },
+        {
+          "title": "TP — Élaborer une checklist de mise en production",
+          "type": "EXERCISE",
+          "content": "## Consigne\nConcevoir une checklist des vérifications de sécurité à effectuer avant une mise en production, intégrant les notions vues dans le module (privilèges, chiffrement, prévention des injections, classification, journalisation).\n\n## Attendu\n- Liste structurée et priorisée des points de contrôle.\n- Résultat reproductible et techniquement correct."
+        },
+        {
+          "title": "Évaluation intégrée — Audit et plan d'action",
+          "type": "EXERCISE",
+          "content": "## Évaluations du module\n\n| Type | Production attendue | Barème |\n|---|---|---|\n| Quiz | Sécurité SQL | 20 pts |\n| Audit | Analyse d'une application vulnérable | 50 pts |\n| Plan d'action | Mesures priorisées | 30 pts |\n\n## Critères de réussite\n- Résultat techniquement correct et reproductible.\n- Justification claire des choix effectués.\n- Scripts lisibles, commentés et exempts de données sensibles.\n\n**Score minimal recommandé : 60 %.**"
+        }
+      ],
+      "quiz": {
+        "title": "Quiz — Module 10 — Sécuriser les données et prévenir les injections SQL",
+        "passingScore": 60,
+        "questions": [
+          {
+            "question": "Quel livrable formalise la définition, le type et les règles de chaque donnée ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Le dictionnaire de données",
+              "Le plan d'action",
+              "Le cahier des charges",
+              "Le schéma de journalisation"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Le dictionnaire de données formalise la définition, le type et les règles de chaque donnée, comme indiqué dans le corrigé du document."
+          },
+          {
+            "question": "Quelle contrainte garantit l'unicité logique d'un enregistrement ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Une clé primaire ou une contrainte UNIQUE appropriée",
+              "Une clé étrangère",
+              "Un index simple non unique",
+              "Une contrainte CHECK"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Une clé primaire ou une contrainte UNIQUE appropriée garantit l'unicité logique d'un enregistrement."
+          },
+          {
+            "question": "Pourquoi tester les scripts dans un environnement distinct de la production ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Pour éviter d'altérer les données de production et valider la reproductibilité",
+              "Pour accélérer l'exécution des requêtes",
+              "Pour réduire les coûts de licence",
+              "Pour éviter d'avoir à documenter le code"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Le document précise que tester dans un environnement distinct permet d'éviter d'altérer les données de production et de valider la reproductibilité."
+          },
+          {
+            "question": "Quel principe doit guider l'attribution des droits d'accès ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Le principe du moindre privilège",
+              "Le principe de l'accès maximal par défaut",
+              "Le principe de partage libre des identifiants",
+              "Le principe de l'accès administrateur unique"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Le principe du moindre privilège doit guider l'attribution des droits, selon le corrigé du document."
+          },
+          {
+            "question": "Que doit contenir une preuve de validation ?",
+            "type": "MULTIPLE_CHOICE",
+            "options": [
+              "La requête ou procédure utilisée",
+              "Le résultat obtenu",
+              "Une courte interprétation",
+              "Le mot de passe de l'administrateur"
+            ],
+            "correctIndexes": [
+              0,
+              1,
+              2
+            ],
+            "explanation": "Selon le document, une preuve de validation doit contenir la requête ou procédure, le résultat obtenu et une courte interprétation."
+          },
+          {
+            "question": "La séparation des environnements de développement, test et production fait partie des bonnes pratiques de sécurité présentées dans le module.",
+            "type": "TRUE_FALSE",
+            "options": [
+              "Vrai",
+              "Faux"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Le module 10.1 mentionne explicitement la séparation des environnements comme bonne pratique."
+          }
+        ]
+      }
+    },
+    {
+      "title": "Module 11 — Connecter PostgreSQL à une application avec Prisma",
+      "summary": "Ce module apprend à connecter une application à PostgreSQL via l'ORM Prisma, de la configuration de la connexion jusqu'aux opérations CRUD, relations et gestion des erreurs dans une API.",
+      "objectives": [
+        "Comprendre l'architecture navigateur, API, ORM et base de données.",
+        "Configurer une chaîne de connexion avec variables d'environnement.",
+        "Définir un schéma Prisma et exécuter des migrations.",
+        "Réaliser CRUD, relations, filtres et transactions depuis une API.",
+        "Gérer les erreurs et valider les entrées."
+      ],
+      "estimatedDuration": 420,
+      "lessons": [
+        {
+          "title": "11.1 Comprendre l'architecture navigateur, API, ORM et base de données",
+          "type": "TEXT",
+          "content": "## Objectif\nComprendre l'architecture navigateur, API, ORM et base de données.\n\n## Contenu\n- Une application web moderne s'organise généralement en plusieurs couches communicantes :\n  - Le **navigateur** (client) qui envoie des requêtes.\n  - L'**API** qui reçoit ces requêtes et orchestre la logique métier.\n  - L'**ORM** (Object-Relational Mapping), ici Prisma, qui traduit des appels applicatifs en requêtes SQL.\n  - La **base de données** PostgreSQL qui stocke et restitue les données.\n- Cette architecture permet de séparer les responsabilités : présentation, logique applicative, accès aux données et persistance."
+        },
+        {
+          "title": "11.2 Configurer une chaîne de connexion avec variables d'environnement",
+          "type": "TEXT",
+          "content": "## Objectif\nConfigurer une chaîne de connexion avec variables d'environnement.\n\n## Contenu\n- La connexion à PostgreSQL se configure via une **chaîne de connexion**.\n- Il est recommandé d'utiliser des **variables d'environnement** pour stocker ces informations sensibles (hôte, utilisateur, mot de passe, base de données) plutôt que de les écrire en dur dans le code.\n- Cette pratique évite d'exposer des données sensibles dans les scripts partagés ou versionnés."
+        },
+        {
+          "title": "11.3 Définir un schéma Prisma et exécuter des migrations",
+          "type": "TEXT",
+          "content": "## Objectif\nDéfinir un schéma Prisma et exécuter des migrations.\n\n## Contenu\n- Le **schéma Prisma** décrit les modèles de données de l'application (équivalents des tables) et leurs relations.\n- Les **migrations** permettent de faire évoluer la structure de la base de données de manière contrôlée et traçable, à partir de ce schéma.\n- Cette étape assure la cohérence entre le modèle applicatif et la structure réelle de la base PostgreSQL."
+        },
+        {
+          "title": "11.4 Réaliser CRUD, relations, filtres et transactions depuis une API",
+          "type": "TEXT",
+          "content": "## Objectif\nRéaliser CRUD, relations, filtres et transactions depuis une API.\n\n## Contenu\n- Depuis l'API, Prisma permet de réaliser les opérations **CRUD** (Create, Read, Update, Delete) sur les données.\n- Il est possible de gérer des **relations** entre entités (ex. formations et sessions).\n- Des **filtres** permettent de cibler des sous-ensembles de données selon des critères précis.\n- Les **transactions** garantissent qu'un ensemble d'opérations s'exécute de manière atomique (tout ou rien)."
+        },
+        {
+          "title": "11.5 Gérer les erreurs et valider les entrées",
+          "type": "TEXT",
+          "content": "## Objectif\nGérer les erreurs et valider les entrées.\n\n## Contenu\n- Une API robuste doit **gérer les erreurs** de manière explicite (erreurs de connexion, contraintes violées, données invalides).\n- La **validation des entrées** avant traitement permet d'éviter d'envoyer des données incorrectes à la base de données.\n- Ces bonnes pratiques renforcent la fiabilité et la sécurité de l'application."
+        },
+        {
+          "title": "TP — Créer une API de gestion de formations reliée à PostgreSQL",
+          "type": "EXERCISE",
+          "content": "## Activités et travaux pratiques\n\n1. **Créer une API simple de gestion de formations** utilisant Prisma pour interagir avec PostgreSQL.\n2. **Déployer la base sur Neon PostgreSQL** (hébergement cloud PostgreSQL).\n3. **Tester les endpoints** de l'API et **vérifier les contraintes** définies côté base de données (clés primaires, contraintes d'unicité, etc.).\n\n## Livrables attendus\n- Une API fonctionnelle reliée à PostgreSQL.\n- Un README technique documentant la démarche.\n\n## Critères de réussite\n- Résultat techniquement correct et reproductible.\n- Justification claire des choix effectués.\n- Scripts lisibles, commentés et exempts de données sensibles.\n- Score minimal recommandé : 60 %."
+        },
+        {
+          "title": "Barème d'évaluation du module",
+          "type": "RESOURCE",
+          "content": "## Évaluation intégrée au module\n\n| Type | Production attendue | Barème |\n|---|---|---|\n| Quiz | ORM, migrations et connexions | 20 pts |\n| TP noté | API fonctionnelle reliée à PostgreSQL | 60 pts |\n| Documentation | README technique | 20 pts |\n\n## Critères de réussite\n- Résultat techniquement correct et reproductible.\n- Justification claire des choix effectués.\n- Scripts lisibles, commentés et exempts de données sensibles.\n- Score minimal recommandé : 60 %."
+        }
+      ],
+      "quiz": {
+        "title": "Quiz — Module 11 — Connecter PostgreSQL à une application avec Prisma",
+        "passingScore": 60,
+        "questions": [
+          {
+            "question": "Quel livrable formalise la définition, le type et les règles de chaque donnée ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Le dictionnaire de données",
+              "Le schéma Prisma uniquement",
+              "La chaîne de connexion",
+              "Le README technique"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Le corrigé indique que c'est le dictionnaire de données qui formalise ces éléments."
+          },
+          {
+            "question": "Quelle contrainte garantit l'unicité logique d'un enregistrement ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Une clé primaire ou une contrainte UNIQUE appropriée",
+              "Une clé étrangère",
+              "Un index simple sur la table",
+              "Une variable d'environnement"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Le corrigé précise qu'une clé primaire ou une contrainte UNIQUE garantit l'unicité logique."
+          },
+          {
+            "question": "Pourquoi tester les scripts dans un environnement distinct de la production ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Pour éviter d'altérer les données de production et valider la reproductibilité",
+              "Pour accélérer l'exécution des requêtes",
+              "Pour réduire le coût de l'hébergement",
+              "Pour éviter d'écrire de la documentation"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Le corrigé indique que cela évite d'altérer la production et permet de valider la reproductibilité."
+          },
+          {
+            "question": "Quel principe doit guider l'attribution des droits d'accès à la base de données ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "Le principe du moindre privilège",
+              "Le principe d'accès total par défaut",
+              "Le principe de partage libre des identifiants",
+              "Le principe de duplication des comptes administrateurs"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Le corrigé indique que c'est le principe du moindre privilège qui doit guider l'attribution des droits."
+          },
+          {
+            "question": "Que doit contenir une preuve de validation d'un test ou d'une requête ?",
+            "type": "SINGLE_CHOICE",
+            "options": [
+              "La requête ou procédure, le résultat obtenu et une courte interprétation",
+              "Uniquement le code source sans résultat",
+              "Uniquement une capture d'écran de l'interface",
+              "Le nom de l'auteur et la date, sans détail technique"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Le corrigé précise que la preuve doit inclure la requête/procédure, le résultat et une interprétation."
+          },
+          {
+            "question": "Prisma permet de gérer des transactions afin de garantir qu'un ensemble d'opérations s'exécute de manière atomique.",
+            "type": "TRUE_FALSE",
+            "options": [
+              "Vrai",
+              "Faux"
+            ],
+            "correctIndexes": [
+              0
+            ],
+            "explanation": "Le document précise que les transactions garantissent l'exécution atomique d'un ensemble d'opérations."
+          }
+        ]
+      }
+    },
+    {
+      "title": "Module 12 — Projet professionnel certifiant",
+      "summary": "Ce module de synthèse invite l'apprenant à concevoir, sécuriser, documenter et défendre une base de données complète pour un projet professionnel certifiant, validé par un devoir intermédiaire, un projet et un examen final pratique.",
+      "objectives": [
+        "Mobiliser l'analyse, la modélisation, le SQL avancé, l'administration, la sécurité et la sauvegarde acquis dans le parcours",
+        "Produire une base de données exploitable, documentée et testée",
+        "Présenter les choix techniques et défendre la solution lors d'une soutenance"
+      ],
+      "estimatedDuration": 420,
+      "lessons": [
+        {
+          "title": "Module 12 — Projet professionnel certifiant",
+          "type": "TEXT",
+          "content": "## Module 12 — Projet professionnel certifiant\n\n_Contenu à compléter._"
+        }
+      ],
+      "quiz": null
+    },
+    {
+      "title": "Évaluation, projet & certification",
+      "summary": "Ce module présente le cadre général de l'évaluation, du projet et de la certification, en attendant le détail complet du contenu source.",
+      "objectives": [
+        "Comprendre les modalités d'évaluation du parcours de formation",
+        "Identifier les attendus du projet à réaliser",
+        "Connaître les conditions d'obtention de la certification"
+      ],
+      "lessons": [
+        {
+          "title": "Introduction : Évaluation, projet & certification",
+          "type": "TEXT",
+          "content": "## Contexte\n\nCe module porte sur l'**évaluation**, le **projet** et la **certification** liés à la formation.\n\n> Le texte détaillé de ce module n'a pas pu être isolé dans le document source. Cette leçon d'introduction se limite donc au cadrage général annoncé par le titre, sans ajout de contenu technique non vérifié.\n\n## Points attendus (à préciser par le formateur)\n\n- Les modalités d'évaluation (quiz, contrôle continu, etc.)\n- Le projet à réaliser (consignes, livrables, critères)\n- Les conditions d'obtention de la certification\n\n*Le contenu détaillé de ces points sera complété dès que le document source correspondant sera disponible.*"
+        }
+      ],
+      "quiz": null
+    }
+  ]
+}

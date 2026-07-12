@@ -1,0 +1,26 @@
+{
+  "name": "@da/academy-db",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Base de données DÉDIÉE d'Access Academy (Neon séparée du web) — schéma conforme au cahier des charges fonctionnel.",
+  "exports": {
+    "./client": {
+      "types": "./client.d.ts",
+      "default": "./client.js"
+    }
+  },
+  "scripts": {
+    "postinstall": "prisma generate",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:seed": "tsx prisma/seed.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.0",
+    "bcryptjs": "^2.4.3"
+  },
+  "devDependencies": {
+    "prisma": "^6.19.0",
+    "tsx": "^4.19.0"
+  }
+}

@@ -1,0 +1,995 @@
+"use client";
+
+import * as React from "react";
+import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  FileText,
+  ListTree,
+  Link2,
+  Rocket,
+  ChevronDown,
+  ChevronUp,
+  Plus,
+  Eye,
+  BookOpen,
+  ClipboardList,
+  HelpCircle,
+  CheckCircle2,
+  AlertTriangle,
+  Star,
+} from "lucide-react";
+import { cn, GradientText } from "@da/ui";
+import type { ContentStatus } from "@da/academy-db/client";
+import type { getCourseAdmin } from "@/lib/admin-queries";
+import { LESSON_TYPE_LABEL, LEVEL_LABEL, formatFCFA } from "@/lib/site";
+import { Select } from "@/components/Select";
+import { ImageUpload } from "@/components/ImageUpload";
+import {
+  updateCourse,
+  setCourseStatus,
+  createModule,
+  updateModule,
+  deleteModule,
+  reorderModules,
+  createLesson,
+  updateLesson,
+  deleteLesson,
+  reorderLessons,
+  createAssessment,
+  updateAssessment,
+  deleteAssessment,
+  createQuestion,
+  updateQuestion,
+  deleteQuestion,
+  attachCourseToSchool,
+  detachCourseFromSchool,
+} from "@/lib/admin-actions";
+import { CONTENT_STATUS_LABEL, CONTENT_STATUS_TONE, StatusPill } from "./ui";
+import { inputClass, textareaClass, FieldLabel, linesToArray, arrayToLines } from "./forms";
+import { useAdminAction, Feedback, SaveButton, DeleteButton } from "./action-hooks";
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Constructeur de formation (§30.2, §11-12, §18). Onglets : Fiche · Programme ·
+   Rattachements · Publication. Toute mutation passe par une Server Action
+   gardée (requireAdminFresh). Le scoring reste 100 % serveur : ici on n'édite
+   que l'énoncé et l'encodage de la bonne réponse (§5).
+   ══════════════════════════════════════════════════════════════════════════ */
+
+type CourseAdmin = NonNullable<Awaited<ReturnType<typeof getCourseAdmin>>>;
+type ModuleT = CourseAdmin["modules"][number];
+type LessonT = ModuleT["lessons"][number];
+type AssessmentT = ModuleT["assessments"][number];
+type QuestionT = AssessmentT["questions"][number];
+
+type Tab = "fiche" | "programme" | "rattachements" | "publication";
+
+const TABS: { id: Tab; label: string; icon: React.ComponentType<{ size?: number; className?: string }> }[] = [
+  { id: "fiche", label: "Fiche", icon: FileText },
+  { id: "programme", label: "Programme", icon: ListTree },
+  { id: "rattachements", label: "Rattachements", icon: Link2 },
+  { id: "publication", label: "Publication", icon: Rocket },
+];
+
+export function CourseBuilder({
+  course,
+  schools,
+}: {
+  course: CourseAdmin;
+  schools: { id: string; name: string; color: string }[];
+}) {
+  const [tab, setTab] = React.useState<Tab>("fiche");
+  const lessonsCount = course.modules.reduce((n, m) => n + m.lessons.length, 0);
+
+  return (
+    <div className="space-y-6">
+      {/* En-tête */}
+      <div>
+        <Link
+          href="/admin/formations"
+          className="mb-3 inline-flex items-center gap-1.5 text-sm font-semibold text-text-secondary transition-colors hover:text-brand-blue-royal"
+        >
+          ← Toutes les formations
+        </Link>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <h1 className="font-display text-2xl font-extrabold tracking-tight text-navy sm:text-[1.7rem]">
+                {course.title}
+              </h1>
+              <StatusPill label={CONTENT_STATUS_LABEL[course.status]} tone={CONTENT_STATUS_TONE[course.status]} />
+            </div>
+            <p className="mt-1 text-sm text-text-muted">
+              /{course.slug} · {course.modules.length} module{course.modules.length > 1 ? "s" : ""} · {lessonsCount} leçon
+              {lessonsCount > 1 ? "s" : ""}
+            </p>
+          </div>
+          <Link
+            href={`/formations/${course.slug}`}
+            target="_blank"
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-navy/10 px-3.5 py-2 text-sm font-semibold text-navy transition-colors hover:border-brand-blue-vif/40 hover:text-brand-blue-royal"
+          >
+            <Eye size={15} />
+            Aperçu public
+          </Link>
+        </div>
+      </div>
+
+      {/* Onglets */}
+      <div className="-mx-1 flex gap-1 overflow-x-auto border-b border-navy/[0.08] px-1">
+        {TABS.map((t) => {
+          const active = tab === t.id;
+          const Icon = t.icon;
+          return (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => setTab(t.id)}
+              className={cn(
+                "relative inline-flex shrink-0 items-center gap-2 px-4 py-2.5 text-sm font-semibold transition-colors",
+                active ? "text-brand-blue-royal" : "text-text-secondary hover:text-navy",
+              )}
+            >
+              <Icon size={16} />
+              {t.label}
+              {active && (
+                <motion.span layoutId="course-tab-underline" className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-gradient-da" />
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {tab === "fiche" && <FicheTab course={course} />}
+      {tab === "programme" && <ProgrammeTab course={course} />}
+      {tab === "rattachements" && <RattachementsTab course={course} schools={schools} />}
+      {tab === "publication" && <PublicationTab course={course} onGoto={setTab} />}
+    </div>
+  );
+}
+
+/* ─────────────────────────── Onglet FICHE (§11.1) ─────────────────────────── */
+
+function FicheTab({ course }: { course: CourseAdmin }) {
+  const { pending, msg, run } = useAdminAction();
+  const [title, setTitle] = React.useState(course.title);
+  const [slug, setSlug] = React.useState(course.slug);
+  const [subtitle, setSubtitle] = React.useState(course.subtitle ?? "");
+  const [description, setDescription] = React.useState(course.description ?? "");
+  const [objectives, setObjectives] = React.useState(arrayToLines(course.objectives));
+  const [audience, setAudience] = React.useState(arrayToLines(course.targetAudience));
+  const [prereq, setPrereq] = React.useState(arrayToLines(course.prerequisitesText));
+  const [tools, setTools] = React.useState(arrayToLines(course.tools));
+  const [level, setLevel] = React.useState(course.level);
+  const [durationHours, setDurationHours] = React.useState(course.durationHours?.toString() ?? "");
+  const [price, setPrice] = React.useState(course.price.toString());
+  const [cover, setCover] = React.useState<string | null>(course.coverImage ?? null);
+  const [certificateTitle, setCertificateTitle] = React.useState(course.certificateTitle ?? "");
+  const [unlockMode, setUnlockMode] = React.useState(course.unlockMode);
+
+  function save() {
+    run(() =>
+      updateCourse(course.id, {
+        title,
+        slug,
+        subtitle,
+        description,
+        objectives: linesToArray(objectives),
+        targetAudience: linesToArray(audience),
+        prerequisitesText: linesToArray(prereq),
+        tools: linesToArray(tools),
+        level,
+        durationHours: durationHours.trim() ? Number(durationHours) : null,
+        price: price.trim() ? Number(price) : 0,
+        coverImage: cover ?? "",
+        certificateTitle,
+        unlockMode,
+      }),
+    );
+  }
+
+  return (
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <div className="space-y-5">
+        <div className="rounded-2xl border border-navy/[0.07] bg-surface-primary p-5">
+          <h2 className="mb-4 font-display text-base font-bold text-navy">Identité</h2>
+          <div className="space-y-4">
+            <FieldLabel label="Titre" required>
+              <input value={title} onChange={(e) => setTitle(e.target.value)} className={inputClass} />
+            </FieldLabel>
+            <FieldLabel label="Slug (URL)" hint="Minuscules, chiffres et tirets. Modifier l'URL publique de la formation.">
+              <input value={slug} onChange={(e) => setSlug(e.target.value)} className={inputClass} />
+            </FieldLabel>
+            <FieldLabel label="Sous-titre">
+              <input value={subtitle} onChange={(e) => setSubtitle(e.target.value)} className={inputClass} placeholder="Une phrase d'accroche" />
+            </FieldLabel>
+            <FieldLabel label="Description" hint="Markdown accepté (mise en forme de la fiche publique).">
+              <textarea value={description} onChange={(e) => setDescription(e.target.value)} className={cn(textareaClass, "min-h-[140px]")} />
+            </FieldLabel>
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-navy/[0.07] bg-surface-primary p-5">
+          <h2 className="mb-4 font-display text-base font-bold text-navy">Contenu de la fiche</h2>
+          <div className="space-y-4">
+            <FieldLabel label="Objectifs pédagogiques" hint="Une ligne par objectif.">
+              <textarea value={objectives} onChange={(e) => setObjectives(e.target.value)} className={textareaClass} placeholder={"Maîtriser…\nSavoir…"} />
+            </FieldLabel>
+            <FieldLabel label="Public visé" hint="Une ligne par profil.">
+              <textarea value={audience} onChange={(e) => setAudience(e.target.value)} className={textareaClass} />
+            </FieldLabel>
+            <FieldLabel label="Prérequis (affichage libre)" hint="Une ligne par prérequis.">
+              <textarea value={prereq} onChange={(e) => setPrereq(e.target.value)} className={textareaClass} />
+            </FieldLabel>
+            <FieldLabel label="Outils & technologies" hint="Une ligne par outil.">
+              <textarea value={tools} onChange={(e) => setTools(e.target.value)} className={textareaClass} />
+            </FieldLabel>
+          </div>
+        </div>
+      </div>
+
+      {/* Colonne latérale */}
+      <div className="space-y-5">
+        <div className="rounded-2xl border border-navy/[0.07] bg-surface-primary p-5">
+          <h2 className="mb-4 font-display text-base font-bold text-navy">Image de couverture</h2>
+          <ImageUpload value={cover} onChange={setCover} folder="courses" aspect="16 / 9" />
+        </div>
+
+        <div className="rounded-2xl border border-navy/[0.07] bg-surface-primary p-5">
+          <h2 className="mb-4 font-display text-base font-bold text-navy">Paramètres</h2>
+          <div className="space-y-4">
+            <FieldLabel label="Niveau">
+              <Select
+                value={level}
+                onChange={(v) => setLevel(v as typeof level)}
+                options={(["BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"] as const).map((l) => ({ value: l, label: LEVEL_LABEL[l] }))}
+              />
+            </FieldLabel>
+            <FieldLabel label="Durée estimée (heures)">
+              <input type="number" min={0} value={durationHours} onChange={(e) => setDurationHours(e.target.value)} className={inputClass} />
+            </FieldLabel>
+            <FieldLabel label="Prix (FCFA)" hint="0 = gratuit.">
+              <input type="number" min={0} value={price} onChange={(e) => setPrice(e.target.value)} className={inputClass} />
+            </FieldLabel>
+            <FieldLabel label="Déverrouillage des leçons">
+              <Select
+                value={unlockMode}
+                onChange={(v) => setUnlockMode(v as typeof unlockMode)}
+                options={[
+                  { value: "FREE", label: "Libre (toutes accessibles)" },
+                  { value: "SEQUENTIAL", label: "Séquentiel (l'une après l'autre)" },
+                ]}
+              />
+            </FieldLabel>
+            <FieldLabel label="Intitulé du certificat" hint="Titre porté par le certificat délivré.">
+              <input value={certificateTitle} onChange={(e) => setCertificateTitle(e.target.value)} className={inputClass} placeholder={course.title} />
+            </FieldLabel>
+          </div>
+        </div>
+      </div>
+
+      {/* Barre d'enregistrement */}
+      <div className="lg:col-span-2">
+        <div className="sticky bottom-4 flex items-center justify-end gap-3 rounded-xl border border-navy/[0.07] bg-surface-primary/95 px-4 py-3 shadow-lg backdrop-blur">
+          <Feedback msg={msg} />
+          <SaveButton pending={pending} onClick={save}>
+            Enregistrer la fiche
+          </SaveButton>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ──────────────────────── Onglet PROGRAMME (§12, §18) ─────────────────────── */
+
+function ProgrammeTab({ course }: { course: CourseAdmin }) {
+  const { pending, msg, run } = useAdminAction();
+  const modules = course.modules;
+
+  function addModule() {
+    run(() => createModule(course.id, "Nouveau module"));
+  }
+
+  function move(index: number, dir: -1 | 1) {
+    const next = [...modules];
+    const target = index + dir;
+    if (target < 0 || target >= next.length) return;
+    [next[index], next[target]] = [next[target], next[index]];
+    run(() => reorderModules(course.id, next.map((m) => m.id)), { silent: true });
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <h2 className="font-display text-base font-bold text-navy">Programme</h2>
+          <p className="text-sm text-text-secondary">Organisez les modules, leçons et évaluations. Glissez l'ordre avec les flèches.</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Feedback msg={msg} />
+          <button
+            type="button"
+            onClick={addModule}
+            disabled={pending}
+            className="inline-flex items-center gap-2 rounded-lg bg-gradient-da px-3.5 py-2 text-sm font-semibold text-white transition-transform hover:scale-[1.02] disabled:opacity-60"
+          >
+            <Plus size={15} /> Module
+          </button>
+        </div>
+      </div>
+
+      {modules.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-navy/15 bg-surface-secondary/40 px-6 py-12 text-center">
+          <span className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-gradient-da text-white shadow-brand">
+            <ListTree size={22} />
+          </span>
+          <p className="mt-4 font-display font-bold text-navy">Aucun module</p>
+          <p className="mt-1 text-sm text-text-secondary">Ajoutez un premier module pour bâtir le programme.</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {modules.map((m, i) => (
+            <ModuleEditor
+              key={m.id}
+              module={m}
+              index={i}
+              total={modules.length}
+              onMove={(dir) => move(i, dir)}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ModuleEditor({
+  module,
+  index,
+  total,
+  onMove,
+}: {
+  module: ModuleT;
+  index: number;
+  total: number;
+  onMove: (dir: -1 | 1) => void;
+}) {
+  const [open, setOpen] = React.useState(index === 0);
+  const [tab, setTab] = React.useState<"lessons" | "quizzes">("lessons");
+  const { pending, msg, run } = useAdminAction();
+  const [title, setTitle] = React.useState(module.title);
+  const [objectives, setObjectives] = React.useState(arrayToLines(module.objectives));
+
+  return (
+    <div className="overflow-hidden rounded-2xl border border-navy/[0.08] bg-surface-primary">
+      {/* En-tête accordéon */}
+      <div className="flex items-center gap-2 px-3 py-3 sm:px-4">
+        <div className="flex shrink-0 flex-col">
+          <button type="button" onClick={() => onMove(-1)} disabled={index === 0} className="text-text-muted transition-colors hover:text-brand-blue-royal disabled:opacity-30" aria-label="Monter">
+            <ChevronUp size={15} />
+          </button>
+          <button type="button" onClick={() => onMove(1)} disabled={index === total - 1} className="text-text-muted transition-colors hover:text-brand-blue-royal disabled:opacity-30" aria-label="Descendre">
+            <ChevronDown size={15} />
+          </button>
+        </div>
+        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-brand-blue-vif/10 font-display text-sm font-bold text-brand-blue-royal">
+          {index + 1}
+        </span>
+        <button type="button" onClick={() => setOpen((v) => !v)} className="min-w-0 flex-1 text-left">
+          <p className="truncate font-semibold text-navy">{module.title}</p>
+          <p className="truncate text-xs text-text-muted">
+            {module.lessons.length} leçon{module.lessons.length > 1 ? "s" : ""} · {module.assessments.length} évaluation{module.assessments.length > 1 ? "s" : ""}
+          </p>
+        </button>
+        <button type="button" onClick={() => setOpen((v) => !v)} className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-text-muted transition-colors hover:bg-navy/[0.04]" aria-label={open ? "Replier" : "Déplier"}>
+          {open ? <ChevronUp size={17} /> : <ChevronDown size={17} />}
+        </button>
+      </div>
+
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
+            <div className="space-y-4 border-t border-navy/[0.06] bg-surface-secondary/30 p-4">
+              {/* Champs du module */}
+              <div className="grid gap-3 sm:grid-cols-2">
+                <FieldLabel label="Titre du module">
+                  <input value={title} onChange={(e) => setTitle(e.target.value)} className={inputClass} />
+                </FieldLabel>
+                <FieldLabel label="Objectifs du module" hint="Une ligne par objectif.">
+                  <textarea value={objectives} onChange={(e) => setObjectives(e.target.value)} className={cn(textareaClass, "min-h-[64px]")} />
+                </FieldLabel>
+              </div>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <SaveButton pending={pending} onClick={() => run(() => updateModule(module.id, { title, objectives: linesToArray(objectives) }))}>
+                    Enregistrer le module
+                  </SaveButton>
+                  <Feedback msg={msg} />
+                </div>
+                <DeleteButton pending={pending} label="Supprimer le module" onConfirm={() => run(() => deleteModule(module.id))} />
+              </div>
+
+              {/* Sous-onglets Leçons / Évaluations */}
+              <div className="flex gap-1 rounded-xl bg-navy/[0.04] p-1">
+                {(["lessons", "quizzes"] as const).map((t) => (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() => setTab(t)}
+                    className={cn(
+                      "inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors",
+                      tab === t ? "bg-surface-primary text-brand-blue-royal shadow-sm" : "text-text-secondary hover:text-navy",
+                    )}
+                  >
+                    {t === "lessons" ? <BookOpen size={13} /> : <ClipboardList size={13} />}
+                    {t === "lessons" ? "Leçons" : "Évaluations"}
+                  </button>
+                ))}
+              </div>
+
+              {tab === "lessons" ? <LessonsSection module={module} /> : <AssessmentsSection module={module} />}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function LessonsSection({ module }: { module: ModuleT }) {
+  const { pending, run } = useAdminAction();
+  const lessons = module.lessons;
+
+  function move(index: number, dir: -1 | 1) {
+    const next = [...lessons];
+    const target = index + dir;
+    if (target < 0 || target >= next.length) return;
+    [next[index], next[target]] = [next[target], next[index]];
+    run(() => reorderLessons(module.id, next.map((l) => l.id)), { silent: true });
+  }
+
+  return (
+    <div className="space-y-2.5">
+      {lessons.map((l, i) => (
+        <LessonEditor key={l.id} lesson={l} index={i} total={lessons.length} onMove={(dir) => move(i, dir)} />
+      ))}
+      <button
+        type="button"
+        onClick={() => run(() => createLesson(module.id, "Nouvelle leçon"))}
+        disabled={pending}
+        className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-navy/15 py-2.5 text-sm font-semibold text-text-secondary transition-colors hover:border-brand-blue-vif/40 hover:text-brand-blue-royal disabled:opacity-60"
+      >
+        <Plus size={15} /> Ajouter une leçon
+      </button>
+    </div>
+  );
+}
+
+function LessonEditor({ lesson, index, total, onMove }: { lesson: LessonT; index: number; total: number; onMove: (dir: -1 | 1) => void }) {
+  const [open, setOpen] = React.useState(false);
+  const { pending, msg, run } = useAdminAction();
+  const [title, setTitle] = React.useState(lesson.title);
+  const [lessonType, setLessonType] = React.useState(lesson.lessonType);
+  const [content, setContent] = React.useState(lesson.content ?? "");
+  const [videoUrl, setVideoUrl] = React.useState(lesson.videoUrl ?? "");
+  const [duration, setDuration] = React.useState(lesson.durationMinutes?.toString() ?? "");
+  const [isPreview, setIsPreview] = React.useState(lesson.isPreview);
+  const [isRequired, setIsRequired] = React.useState(lesson.isRequired);
+
+  function save() {
+    run(() =>
+      updateLesson(lesson.id, {
+        title,
+        lessonType,
+        content,
+        videoUrl: videoUrl.trim() ? videoUrl : "",
+        durationMinutes: duration.trim() ? Number(duration) : null,
+        isPreview,
+        isRequired,
+      }),
+    );
+  }
+
+  return (
+    <div className="rounded-xl border border-navy/[0.08] bg-surface-primary">
+      <div className="flex items-center gap-2 px-2.5 py-2">
+        <div className="flex shrink-0 flex-col">
+          <button type="button" onClick={() => onMove(-1)} disabled={index === 0} className="text-text-muted hover:text-brand-blue-royal disabled:opacity-30" aria-label="Monter"><ChevronUp size={13} /></button>
+          <button type="button" onClick={() => onMove(1)} disabled={index === total - 1} className="text-text-muted hover:text-brand-blue-royal disabled:opacity-30" aria-label="Descendre"><ChevronDown size={13} /></button>
+        </div>
+        <button type="button" onClick={() => setOpen((v) => !v)} className="flex min-w-0 flex-1 items-center gap-2 text-left">
+          <span className="rounded-md bg-navy/[0.05] px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-text-secondary">
+            {LESSON_TYPE_LABEL[lessonType] ?? lessonType}
+          </span>
+          <span className="truncate text-sm font-medium text-navy">{lesson.title}</span>
+          {lesson.isPreview && <Eye size={12} className="shrink-0 text-brand-blue-royal" />}
+        </button>
+        <button type="button" onClick={() => setOpen((v) => !v)} className="grid h-7 w-7 shrink-0 place-items-center rounded-md text-text-muted hover:bg-navy/[0.04]" aria-label={open ? "Replier" : "Déplier"}>
+          {open ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
+        </button>
+      </div>
+
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.18 }} className="overflow-hidden">
+            <div className="space-y-3 border-t border-navy/[0.06] p-3">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <FieldLabel label="Titre">
+                  <input value={title} onChange={(e) => setTitle(e.target.value)} className={inputClass} />
+                </FieldLabel>
+                <FieldLabel label="Type de leçon">
+                  <Select
+                    value={lessonType}
+                    onChange={(v) => setLessonType(v as typeof lessonType)}
+                    options={Object.keys(LESSON_TYPE_LABEL).map((k) => ({ value: k, label: LESSON_TYPE_LABEL[k] }))}
+                  />
+                </FieldLabel>
+              </div>
+              <FieldLabel label="URL vidéo" hint="YouTube ou Vimeo — utilisé si le type est Vidéo.">
+                <input value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} className={inputClass} placeholder="https://www.youtube.com/watch?v=…" />
+              </FieldLabel>
+              <FieldLabel label="Contenu (markdown)">
+                <textarea value={content} onChange={(e) => setContent(e.target.value)} className={cn(textareaClass, "min-h-[120px] font-mono text-xs")} />
+              </FieldLabel>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <FieldLabel label="Durée (minutes)">
+                  <input type="number" min={0} value={duration} onChange={(e) => setDuration(e.target.value)} className={inputClass} />
+                </FieldLabel>
+                <div className="flex flex-col justify-end gap-2 pb-1">
+                  <ToggleRow label="Aperçu gratuit" checked={isPreview} onChange={setIsPreview} />
+                  <ToggleRow label="Obligatoire (compte dans la progression)" checked={isRequired} onChange={setIsRequired} />
+                </div>
+              </div>
+              <div className="flex items-center justify-between gap-2 pt-1">
+                <div className="flex items-center gap-2">
+                  <SaveButton pending={pending} onClick={save}>Enregistrer</SaveButton>
+                  <Feedback msg={msg} />
+                </div>
+                <DeleteButton pending={pending} compact label="Supprimer la leçon" onConfirm={() => run(() => deleteLesson(lesson.id))} />
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function AssessmentsSection({ module }: { module: ModuleT }) {
+  const { pending, run } = useAdminAction();
+  return (
+    <div className="space-y-2.5">
+      {module.assessments.map((a) => (
+        <AssessmentEditor key={a.id} assessment={a} />
+      ))}
+      <button
+        type="button"
+        onClick={() => run(() => createAssessment(module.id, "Nouvelle évaluation"))}
+        disabled={pending}
+        className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-navy/15 py-2.5 text-sm font-semibold text-text-secondary transition-colors hover:border-brand-blue-vif/40 hover:text-brand-blue-royal disabled:opacity-60"
+      >
+        <Plus size={15} /> Ajouter une évaluation
+      </button>
+    </div>
+  );
+}
+
+function AssessmentEditor({ assessment }: { assessment: AssessmentT }) {
+  const [open, setOpen] = React.useState(false);
+  const { pending, msg, run } = useAdminAction();
+  const [title, setTitle] = React.useState(assessment.title);
+  const [passingScore, setPassingScore] = React.useState(assessment.passingScore.toString());
+  const [attempts, setAttempts] = React.useState(assessment.attemptsAllowed.toString());
+
+  return (
+    <div className="rounded-xl border border-brand-violet/15 bg-brand-violet/[0.03]">
+      <div className="flex items-center gap-2 px-3 py-2.5">
+        <ClipboardList size={16} className="shrink-0 text-brand-violet" />
+        <button type="button" onClick={() => setOpen((v) => !v)} className="flex min-w-0 flex-1 items-center gap-2 text-left">
+          <span className="truncate text-sm font-semibold text-navy">{assessment.title}</span>
+          <span className="rounded-full bg-brand-violet/10 px-2 py-0.5 text-[10px] font-semibold text-brand-violet">
+            {assessment._count.questions} question{assessment._count.questions > 1 ? "s" : ""}
+          </span>
+        </button>
+        <button type="button" onClick={() => setOpen((v) => !v)} className="grid h-7 w-7 shrink-0 place-items-center rounded-md text-text-muted hover:bg-navy/[0.04]" aria-label={open ? "Replier" : "Déplier"}>
+          {open ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
+        </button>
+      </div>
+
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.18 }} className="overflow-hidden">
+            <div className="space-y-3 border-t border-brand-violet/10 p-3">
+              <div className="grid gap-3 sm:grid-cols-3">
+                <FieldLabel label="Titre" className="sm:col-span-3">
+                  <input value={title} onChange={(e) => setTitle(e.target.value)} className={inputClass} />
+                </FieldLabel>
+                <FieldLabel label="Seuil de réussite (%)">
+                  <input type="number" min={0} max={100} value={passingScore} onChange={(e) => setPassingScore(e.target.value)} className={inputClass} />
+                </FieldLabel>
+                <FieldLabel label="Tentatives" hint="0 = illimité.">
+                  <input type="number" min={0} value={attempts} onChange={(e) => setAttempts(e.target.value)} className={inputClass} />
+                </FieldLabel>
+                <div className="flex items-end">
+                  <SaveButton pending={pending} onClick={() => run(() => updateAssessment(assessment.id, { title, passingScore: Number(passingScore) || 0, attemptsAllowed: Number(attempts) || 0 }))}>
+                    Enregistrer
+                  </SaveButton>
+                </div>
+              </div>
+              <Feedback msg={msg} />
+
+              {/* Questions */}
+              <div className="space-y-2 border-t border-brand-violet/10 pt-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-text-muted">Questions</p>
+                {assessment.questions.map((q, i) => (
+                  <QuestionEditor key={q.id} question={q} index={i} />
+                ))}
+                <AddQuestionButton assessmentId={assessment.id} />
+              </div>
+
+              <div className="flex justify-end border-t border-brand-violet/10 pt-3">
+                <DeleteButton pending={pending} label="Supprimer l'évaluation" onConfirm={() => run(() => deleteAssessment(assessment.id))} />
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function AddQuestionButton({ assessmentId }: { assessmentId: string }) {
+  const { pending, run } = useAdminAction();
+  return (
+    <button
+      type="button"
+      onClick={() => run(() => createQuestion(assessmentId, { type: "SINGLE_CHOICE", question: "Nouvelle question", options: ["Option 1", "Option 2"], correctAnswer: 0 }))}
+      disabled={pending}
+      className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-brand-violet/25 py-2 text-xs font-semibold text-brand-violet transition-colors hover:bg-brand-violet/[0.06] disabled:opacity-60"
+    >
+      <Plus size={13} /> Ajouter une question
+    </button>
+  );
+}
+
+type QType = "SINGLE_CHOICE" | "MULTIPLE_CHOICE" | "TRUE_FALSE";
+
+function QuestionEditor({ question, index }: { question: QuestionT; index: number }) {
+  const { pending, msg, run } = useAdminAction();
+  const initialType = (["SINGLE_CHOICE", "MULTIPLE_CHOICE", "TRUE_FALSE"].includes(question.type) ? question.type : "SINGLE_CHOICE") as QType;
+  const [type, setType] = React.useState<QType>(initialType);
+  const [text, setText] = React.useState(question.question);
+  const [options, setOptions] = React.useState<string[]>(() => {
+    const o = question.options as unknown as string[] | null;
+    return Array.isArray(o) && o.length ? o : ["Option 1", "Option 2"];
+  });
+  const [single, setSingle] = React.useState<number>(() => (typeof question.correctAnswer === "number" ? (question.correctAnswer as number) : 0));
+  const [multi, setMulti] = React.useState<number[]>(() => (Array.isArray(question.correctAnswer) ? (question.correctAnswer as number[]) : []));
+  const [tf, setTf] = React.useState<boolean>(() => question.correctAnswer === true);
+  const [explanation, setExplanation] = React.useState(question.explanation ?? "");
+  const [points, setPoints] = React.useState(question.points.toString());
+
+  function setOption(i: number, v: string) {
+    setOptions((prev) => prev.map((o, idx) => (idx === i ? v : o)));
+  }
+  function removeOption(i: number) {
+    setOptions((prev) => prev.filter((_, idx) => idx !== i));
+    setSingle((s) => (s === i ? 0 : s > i ? s - 1 : s));
+    setMulti((m) => m.filter((x) => x !== i).map((x) => (x > i ? x - 1 : x)));
+  }
+
+  function save() {
+    const base = { question: text, explanation, points: Number(points) || 1 };
+    const input =
+      type === "TRUE_FALSE"
+        ? { type, correctAnswer: tf, ...base }
+        : type === "SINGLE_CHOICE"
+          ? { type, options, correctAnswer: single, ...base }
+          : { type, options, correctAnswer: multi, ...base };
+    run(() => updateQuestion(question.id, input));
+  }
+
+  return (
+    <div className="rounded-lg border border-navy/[0.08] bg-surface-primary p-3">
+      <div className="mb-2 flex items-center gap-2">
+        <span className="grid h-6 w-6 shrink-0 place-items-center rounded-md bg-brand-violet/10 text-xs font-bold text-brand-violet">{index + 1}</span>
+        <HelpCircle size={14} className="text-text-muted" />
+        <div className="ml-auto w-40">
+          <Select
+            value={type}
+            onChange={(v) => setType(v as QType)}
+            options={[
+              { value: "SINGLE_CHOICE", label: "Choix unique" },
+              { value: "MULTIPLE_CHOICE", label: "Choix multiple" },
+              { value: "TRUE_FALSE", label: "Vrai / Faux" },
+            ]}
+            buttonClassName="py-1.5 text-xs"
+          />
+        </div>
+      </div>
+
+      <textarea value={text} onChange={(e) => setText(e.target.value)} className={cn(textareaClass, "min-h-[52px]")} placeholder="Énoncé de la question" />
+
+      {type === "TRUE_FALSE" ? (
+        <div className="mt-2 flex gap-2">
+          {[true, false].map((val) => (
+            <button
+              key={String(val)}
+              type="button"
+              onClick={() => setTf(val)}
+              className={cn(
+                "flex-1 rounded-lg border px-3 py-2 text-sm font-semibold transition-colors",
+                tf === val ? "border-success/40 bg-success/10 text-success" : "border-navy/10 text-text-secondary hover:border-navy/20",
+              )}
+            >
+              {val ? "Vrai" : "Faux"}
+            </button>
+          ))}
+        </div>
+      ) : (
+        <div className="mt-2 space-y-2">
+          {options.map((opt, i) => {
+            const correct = type === "SINGLE_CHOICE" ? single === i : multi.includes(i);
+            return (
+              <div key={i} className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (type === "SINGLE_CHOICE") setSingle(i);
+                    else setMulti((m) => (m.includes(i) ? m.filter((x) => x !== i) : [...m, i]));
+                  }}
+                  aria-label="Marquer comme bonne réponse"
+                  className={cn(
+                    "grid h-6 w-6 shrink-0 place-items-center border transition-colors",
+                    type === "SINGLE_CHOICE" ? "rounded-full" : "rounded-md",
+                    correct ? "border-transparent bg-success text-white" : "border-navy/20 text-transparent hover:border-success/40",
+                  )}
+                >
+                  <CheckCircle2 size={13} />
+                </button>
+                <input value={opt} onChange={(e) => setOption(i, e.target.value)} className={cn(inputClass, "py-1.5")} />
+                <button type="button" onClick={() => removeOption(i)} disabled={options.length <= 2} className="shrink-0 text-text-muted transition-colors hover:text-error disabled:opacity-30" aria-label="Retirer l'option">
+                  <span className="text-lg leading-none">×</span>
+                </button>
+              </div>
+            );
+          })}
+          <button
+            type="button"
+            onClick={() => setOptions((prev) => [...prev, `Option ${prev.length + 1}`])}
+            disabled={options.length >= 12}
+            className="text-xs font-semibold text-brand-blue-royal transition-colors hover:text-brand-violet disabled:opacity-40"
+          >
+            + Ajouter une option
+          </button>
+        </div>
+      )}
+
+      <div className="mt-2 grid gap-2 sm:grid-cols-[1fr_auto]">
+        <input value={explanation} onChange={(e) => setExplanation(e.target.value)} className={cn(inputClass, "py-1.5")} placeholder="Explication (optionnelle)" />
+        <input type="number" min={1} value={points} onChange={(e) => setPoints(e.target.value)} className={cn(inputClass, "w-20 py-1.5")} aria-label="Points" title="Points" />
+      </div>
+
+      <div className="mt-2 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <SaveButton pending={pending} onClick={save} className="px-3 py-1.5 text-xs">Enregistrer</SaveButton>
+          <Feedback msg={msg} />
+        </div>
+        <DeleteButton pending={pending} compact label="Supprimer" onConfirm={() => run(() => deleteQuestion(question.id))} />
+      </div>
+    </div>
+  );
+}
+
+function ToggleRow({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <button type="button" onClick={() => onChange(!checked)} className="flex items-center gap-2.5 text-left">
+      <span className={cn("relative h-5 w-9 shrink-0 rounded-full transition-colors", checked ? "bg-gradient-da" : "bg-navy/15")}>
+        <span className={cn("absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition-all", checked ? "left-[18px]" : "left-0.5")} />
+      </span>
+      <span className="text-xs font-medium text-navy">{label}</span>
+    </button>
+  );
+}
+
+/* ──────────────────── Onglet RATTACHEMENTS (§14, §43.1) ───────────────────── */
+
+function RattachementsTab({ course, schools }: { course: CourseAdmin; schools: { id: string; name: string; color: string }[] }) {
+  const { pending, msg, run } = useAdminAction();
+  const attached = new Map(course.schools.map((sc) => [sc.school.id, sc]));
+
+  function toggle(schoolId: string) {
+    if (attached.has(schoolId)) run(() => detachCourseFromSchool(schoolId, course.id));
+    else run(() => attachCourseToSchool({ schoolId, courseId: course.id }));
+  }
+  function setPrimary(schoolId: string) {
+    run(() => attachCourseToSchool({ schoolId, courseId: course.id, isPrimary: true }));
+  }
+
+  return (
+    <div className="grid gap-6 lg:grid-cols-2">
+      <div className="rounded-2xl border border-navy/[0.07] bg-surface-primary p-5">
+        <div className="mb-1 flex items-center justify-between">
+          <h2 className="font-display text-base font-bold text-navy">Écoles</h2>
+          <Feedback msg={msg} />
+        </div>
+        <p className="mb-4 text-sm text-text-secondary">
+          Rattachez cette formation à une ou plusieurs écoles. Une seule peut être <strong>principale</strong> (elle porte l'identité affichée).
+        </p>
+        {schools.length === 0 ? (
+          <p className="text-sm text-text-muted">Aucune école. Créez-en d'abord dans la section Écoles.</p>
+        ) : (
+          <div className="space-y-2">
+            {schools.map((s) => {
+              const link = attached.get(s.id);
+              const isAttached = !!link;
+              const isPrimary = link?.isPrimary ?? false;
+              return (
+                <div key={s.id} className={cn("flex items-center gap-3 rounded-xl border p-3 transition-colors", isAttached ? "border-brand-blue-vif/30 bg-brand-blue-vif/[0.04]" : "border-navy/[0.08]")}>
+                  <button
+                    type="button"
+                    onClick={() => toggle(s.id)}
+                    disabled={pending}
+                    aria-label={isAttached ? "Détacher" : "Rattacher"}
+                    className={cn("grid h-6 w-6 shrink-0 place-items-center rounded-md border transition-colors", isAttached ? "border-transparent bg-gradient-da text-white" : "border-navy/20 text-transparent")}
+                  >
+                    <CheckCircle2 size={14} />
+                  </button>
+                  <span className="h-6 w-1.5 shrink-0 rounded-full" style={{ background: s.color }} aria-hidden />
+                  <span className="min-w-0 flex-1 truncate text-sm font-semibold text-navy">{s.name}</span>
+                  {isAttached && (
+                    <button
+                      type="button"
+                      onClick={() => setPrimary(s.id)}
+                      disabled={pending || isPrimary}
+                      className={cn(
+                        "inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold transition-colors",
+                        isPrimary ? "bg-gradient-da text-white" : "border border-navy/10 text-text-secondary hover:border-brand-blue-vif/40 hover:text-brand-blue-royal",
+                      )}
+                    >
+                      <Star size={11} className={isPrimary ? "fill-white" : ""} />
+                      {isPrimary ? "Principale" : "Définir principale"}
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      <div className="rounded-2xl border border-navy/[0.07] bg-surface-primary p-5">
+        <h2 className="mb-1 font-display text-base font-bold text-navy">Parcours d'appartenance</h2>
+        <p className="mb-4 text-sm text-text-secondary">
+          Parcours métiers qui réutilisent cette formation (lecture seule — la composition se gère depuis chaque parcours).
+        </p>
+        {course.careerPaths.length === 0 ? (
+          <p className="text-sm text-text-muted">Cette formation n'est utilisée dans aucun parcours pour l'instant.</p>
+        ) : (
+          <ul className="space-y-2">
+            {course.careerPaths.map((cp) => (
+              <li key={cp.careerPath.id}>
+                <Link
+                  href={`/admin/parcours/${cp.careerPath.id}`}
+                  className="flex items-center gap-2 rounded-xl border border-navy/[0.08] p-3 text-sm font-semibold text-navy transition-colors hover:border-brand-violet/30 hover:text-brand-violet"
+                >
+                  <Link2 size={14} className="text-brand-violet" />
+                  <span className="truncate">{cp.careerPath.title}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ──────────────────── Onglet PUBLICATION (workflow §31) ───────────────────── */
+
+const NEXT_STATUS: Record<ContentStatus, ContentStatus[]> = {
+  DRAFT: ["REVIEW", "ARCHIVED"],
+  REVIEW: ["APPROVED", "DRAFT"],
+  APPROVED: ["PUBLISHED", "DRAFT"],
+  SCHEDULED: ["PUBLISHED", "DRAFT"],
+  PUBLISHED: ["SUSPENDED", "ARCHIVED"],
+  SUSPENDED: ["PUBLISHED", "ARCHIVED"],
+  ARCHIVED: ["DRAFT"],
+};
+
+const STATUS_HINT: Record<ContentStatus, string> = {
+  DRAFT: "Brouillon en cours de rédaction. Invisible du catalogue.",
+  REVIEW: "Soumise à la relecture pédagogique.",
+  APPROVED: "Validée, prête à être publiée.",
+  SCHEDULED: "Publication programmée.",
+  PUBLISHED: "Visible et accessible au catalogue.",
+  SUSPENDED: "Temporairement retirée du catalogue.",
+  ARCHIVED: "Archivée — conservée mais retirée.",
+};
+
+function PublicationTab({ course, onGoto }: { course: CourseAdmin; onGoto: (t: Tab) => void }) {
+  const { pending, msg, run } = useAdminAction();
+  const lessonsCount = course.modules.reduce((n, m) => n + m.lessons.length, 0);
+  const hasModule = course.modules.length >= 1;
+  const hasLesson = lessonsCount >= 1;
+  const canPublish = hasModule && hasLesson;
+  const targets = NEXT_STATUS[course.status] ?? [];
+
+  return (
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <div className="space-y-5">
+        <div className="rounded-2xl border border-navy/[0.07] bg-surface-primary p-5">
+          <h2 className="mb-1 font-display text-base font-bold text-navy">Statut de publication</h2>
+          <p className="mb-4 text-sm text-text-secondary">
+            Statut actuel : <StatusPill label={CONTENT_STATUS_LABEL[course.status]} tone={CONTENT_STATUS_TONE[course.status]} /> — {STATUS_HINT[course.status]}
+          </p>
+
+          <div className="flex flex-wrap items-center gap-2">
+            {targets.length === 0 && <p className="text-sm text-text-muted">Aucune transition disponible.</p>}
+            {targets.map((target) => {
+              const publishing = target === "PUBLISHED";
+              const blocked = publishing && !canPublish;
+              return (
+                <button
+                  key={target}
+                  type="button"
+                  disabled={pending || blocked}
+                  onClick={() => run(() => setCourseStatus(course.id, target))}
+                  title={blocked ? "Publier exige au moins 1 module et 1 leçon." : undefined}
+                  className={cn(
+                    "inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-transform hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-50",
+                    publishing ? "bg-gradient-da text-white shadow-brand" : "border border-navy/10 text-navy hover:border-brand-blue-vif/40",
+                  )}
+                >
+                  <Rocket size={14} />
+                  {target === "REVIEW" && "Soumettre à la revue"}
+                  {target === "APPROVED" && "Approuver"}
+                  {target === "PUBLISHED" && "Publier"}
+                  {target === "SUSPENDED" && "Suspendre"}
+                  {target === "ARCHIVED" && "Archiver"}
+                  {target === "DRAFT" && "Repasser en brouillon"}
+                </button>
+              );
+            })}
+          </div>
+          <div className="mt-3"><Feedback msg={msg} /></div>
+        </div>
+      </div>
+
+      {/* Garde-fous */}
+      <div className="rounded-2xl border border-navy/[0.07] bg-surface-primary p-5">
+        <h2 className="mb-3 font-display text-base font-bold text-navy">
+          <GradientText>Prêt à publier ?</GradientText>
+        </h2>
+        <ul className="space-y-2.5 text-sm">
+          <Check ok={course.title.trim().length >= 3} label="Titre renseigné" />
+          <Check ok={hasModule} label="Au moins un module" onFix={() => onGoto("programme")} />
+          <Check ok={hasLesson} label="Au moins une leçon" onFix={() => onGoto("programme")} />
+          <Check ok={course.schools.length > 0} label="Rattachée à une école" onFix={() => onGoto("rattachements")} />
+        </ul>
+        {!canPublish && (
+          <p className="mt-4 rounded-lg bg-warning/10 px-3 py-2 text-xs font-medium text-[#b45309]">
+            La publication exige au moins un module et une leçon.
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function Check({ ok, label, onFix }: { ok: boolean; label: string; onFix?: () => void }) {
+  return (
+    <li className="flex items-center gap-2.5">
+      <span className={cn("grid h-5 w-5 shrink-0 place-items-center rounded-full", ok ? "bg-success/15 text-success" : "bg-warning/15 text-[#b45309]")}>
+        {ok ? <CheckCircle2 size={13} /> : <AlertTriangle size={12} />}
+      </span>
+      <span className={cn("flex-1 text-sm", ok ? "text-navy" : "text-text-secondary")}>{label}</span>
+      {!ok && onFix && (
+        <button type="button" onClick={onFix} className="text-xs font-semibold text-brand-blue-royal hover:text-brand-violet">
+          Compléter
+        </button>
+      )}
+    </li>
+  );
+}

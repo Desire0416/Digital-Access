@@ -40,3 +40,7 @@ next-env.d.ts
 
 # Vercel
 .vercel
+
+
+# Prisma client généré (academy — base dédiée)
+packages/academy-db/generated/

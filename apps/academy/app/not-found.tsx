@@ -1,43 +1,46 @@
 import Link from "next/link";
-import { Home, BookOpen } from "lucide-react";
-import { Container, Monogram, buttonClasses, GradientText } from "@da/ui";
+import { buttonClasses, Monogram, GradientText } from "@da/ui";
+
+/* ══════════════════════════════════════════════════════════════════════════
+   404 brandée Access Academy — monogramme DA, halo dégradé, liens de reprise.
+   ══════════════════════════════════════════════════════════════════════════ */
 
 export default function NotFound() {
   return (
-    <section className="relative isolate grid min-h-[80vh] place-items-center overflow-hidden py-24">
-      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 bg-grid opacity-60" />
-      <div
+    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-surface-primary px-6 text-center">
+      {/* Décor */}
+      <span
+        className="pointer-events-none absolute left-1/2 top-1/3 h-80 w-80 -translate-x-1/2 rounded-full bg-gradient-da opacity-[0.07] blur-3xl"
         aria-hidden
-        className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[30rem] w-[30rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-da opacity-10 blur-3xl"
       />
-      <Container>
-        <div className="mx-auto max-w-lg text-center">
-          <div className="relative mx-auto mb-8 inline-flex">
-            <Monogram size={96} />
-            <span className="absolute inset-0 -z-10 animate-pulse-ring rounded-full bg-brand-blue-vif/20" />
-          </div>
-          <p className="font-display text-7xl font-extrabold tracking-tight">
-            <GradientText>404</GradientText>
-          </p>
-          <h1 className="mt-4 font-display text-2xl font-bold text-navy">
-            Ce cours n'est pas au programme
-          </h1>
-          <p className="mt-3 text-text-secondary">
-            La page que vous cherchez n'existe pas ou a été déplacée. Le
-            catalogue, lui, est bien là.
-          </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <Link href="/courses" className={buttonClasses({ variant: "primary", size: "lg" })}>
-              <BookOpen size={18} />
-              Explorer le catalogue
-            </Link>
-            <Link href="/" className={buttonClasses({ variant: "outline", size: "lg" })}>
-              <Home size={18} />
-              Accueil
-            </Link>
-          </div>
+      <span className="pointer-events-none absolute inset-0 bg-grid opacity-40" aria-hidden />
+
+      <div className="relative">
+        <div className="mx-auto mb-6 grid place-items-center">
+          <Monogram size={72} className="animate-float" />
         </div>
-      </Container>
-    </section>
+
+        <p className="font-display text-[5.5rem] font-extrabold leading-none tracking-tight text-navy sm:text-[7rem]">
+          4<GradientText>0</GradientText>4
+        </p>
+
+        <h1 className="mt-4 font-display text-xl font-bold text-navy sm:text-2xl">
+          Cette page n&apos;existe pas — ou plus.
+        </h1>
+        <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-text-secondary sm:text-base">
+          Le lien que vous avez suivi est peut-être obsolète. Reprenez votre apprentissage depuis
+          l&apos;accueil ou explorez le catalogue de formations.
+        </p>
+
+        <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <Link href="/" className={buttonClasses()}>
+            Retour à l&apos;accueil
+          </Link>
+          <Link href="/formations" className={buttonClasses({ variant: "outline" })}>
+            Voir les formations
+          </Link>
+        </div>
+      </div>
+    </div>
   );
 }

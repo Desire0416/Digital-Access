@@ -1,10 +1,15 @@
-@import "tailwindcss";
+/* Détection automatique des sources DÉSACTIVÉE (source(none)) : sur Windows,
+   le scan large de Tailwind v4 remonte jusqu'à la jonction protégée
+   C:\Users\…\Application Data et fait échouer le build (EPERM). On liste donc
+   explicitement les répertoires à scanner. */
+@import "tailwindcss" source(none);
 
 /* Thème Digital Access partagé (tokens, utilitaires, animations, base) */
 @import "../../../packages/ui/src/theme.css";
 
-/* Typographie riche pour le contenu des cours (chapitres TEXT en markdown) */
-@plugin "@tailwindcss/typography";
-
-/* Scanne les composants du design system partagé */
+/* Sources explicites */
 @source "../../../packages/ui/src";
+@source "./";
+@source "../components";
+
+@plugin "@tailwindcss/typography";

@@ -1,0 +1,857 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// ACCESS ACADEMY — Base de données DÉDIÉE (Neon, séparée de la base du web).
+// Schéma conforme au cahier des charges fonctionnel (sections 41, 42, 43).
+//
+// PRINCIPE CENTRAL (règles métier 40.1 → 40.8) :
+//   La FORMATION (Course) est la brique pédagogique unique, créée UNE SEULE
+//   fois. Elle est réutilisée — jamais dupliquée — via des JONCTIONS :
+//     · SchoolCourse      → une formation appartient à plusieurs écoles
+//     · CareerPathCourse  → un parcours ASSEMBLE des formations existantes
+//     · SchoolCareerPath  → une école regroupe des parcours existants
+//   Une formation validée reste acquise (reconnaissance dans tout parcours)
+//   et n'est jamais facturée deux fois (déduction du prix du parcours).
+// ═══════════════════════════════════════════════════════════════════════════
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/client"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("ACADEMY_DATABASE_URL")
+  directUrl = env("ACADEMY_DATABASE_URL_UNPOOLED")
+}
+
+// ─── Utilisateurs & rôles (section 7) ────────────────────────────────────────
+
+enum Role {
+  LEARNER // apprenant
+  INSTRUCTOR // formateur
+  GRADER // correcteur
+  MENTOR // mentor / tuteur
+  SCHOOL_MANAGER // responsable d'école
+  PATH_MANAGER // responsable de parcours
+  ORG_MANAGER // responsable entreprise
+  ACADEMIC_ADMIN // administrateur pédagogique
+  SALES_ADMIN // administrateur commercial
+  SUPER_ADMIN
+}
+
+model User {
+  id              String    @id @default(cuid())
+  firstName       String?
+  lastName        String?
+  name            String // nom d'affichage
+  email           String    @unique
+  password        String? // null pour OAuth seul
+  avatar          String?
+  bio             String?
+  country         String?
+  phone           String?
+  objective       String? // onboarding 15.4
+  experienceLevel String? // onboarding 15.4
+  roles           Role[]   @default([LEARNER])
+  emailVerified   DateTime?
+  isActive        Boolean   @default(false)
+  lastActiveAt    DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  tokens                VerificationToken[]
+  enrollments           Enrollment[]
+  pathEnrollments       CareerPathEnrollment[]
+  lessonProgress        LessonProgress[]
+  attempts              AssessmentAttempt[]
+  submissions           Submission[]
+  reviewedSubmissions   Submission[]           @relation("SubmissionReviewer")
+  certificates          Certificate[]
+  payments              Payment[]
+  processedPayments     Payment[]              @relation("PaymentProcessor")
+  reviews               Review[]
+  favorites             Favorite[]
+  notifications         Notification[]
+  courseInstructorships CourseInstructor[]
+  orgMemberships        OrganizationMember[]
+  auditLogs             AuditLog[]
+}
+
+enum TokenType {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+}
+
+model VerificationToken {
+  id        String    @id @default(cuid())
+  token     String    @unique
+  type      TokenType
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+// ─── Statuts de contenu (section 41.1) ───────────────────────────────────────
+
+enum ContentStatus {
+  DRAFT
+  REVIEW
+  APPROVED
+  SCHEDULED
+  PUBLISHED
+  SUSPENDED
+  ARCHIVED
+}
+
+enum CourseLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
+// ─── École (section 14) — regroupe, ne duplique jamais ───────────────────────
+
+model School {
+  id          String        @id @default(cuid())
+  name        String
+  slug        String        @unique
+  tagline     String?
+  description String
+  coverImage  String?
+  icon        String        @default("graduation-cap")
+  color       String        @default("#5b3fa8")
+  order       Int           @default(0)
+  status      ContentStatus @default(PUBLISHED)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  courses     SchoolCourse[]
+  careerPaths SchoolCareerPath[]
+}
+
+// ─── Formation (sections 10-12) — LA brique centrale, unique ────────────────
+
+enum UnlockMode {
+  FREE // libre
+  SEQUENTIAL // séquentiel
+}
+
+model Course {
+  id                String        @id @default(cuid())
+  title             String
+  slug              String        @unique
+  subtitle          String?
+  description       String // markdown
+  objectives        String[]      @default([])
+  targetAudience    String[]      @default([])
+  prerequisitesText String[]      @default([]) // affichage libre (11.2)
+  tools             String[]      @default([])
+  level             CourseLevel   @default(BEGINNER)
+  language          String        @default("fr")
+  durationHours     Int?
+  price             Int           @default(0) // FCFA
+  coverImage        String?
+  promoVideoUrl     String?
+  certificateTitle  String?
+  unlockMode        UnlockMode    @default(FREE)
+  featured          Boolean       @default(false)
+  status            ContentStatus @default(DRAFT)
+  publishedAt       DateTime?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  modules       Module[]
+  assessments   Assessment[]
+  projects      Project[]
+  resources     Resource[]
+  skills        CourseSkill[]
+  instructors   CourseInstructor[]
+  schools       SchoolCourse[]
+  careerPaths   CareerPathCourse[]
+  enrollments   Enrollment[]
+  reviews       Review[]
+  certificates  Certificate[]
+  favorites     Favorite[]
+  payments      Payment[]
+  // prérequis structurés (22.1) : cette formation exige d'autres formations
+  requires      CoursePrerequisite[] @relation("CourseRequires")
+  requiredBy    CoursePrerequisite[] @relation("CourseRequiredBy")
+}
+
+/// Prérequis structuré : `course` exige la validation de `requiresCourse`.
+model CoursePrerequisite {
+  id               String @id @default(cuid())
+  courseId         String
+  course           Course @relation("CourseRequires", fields: [courseId], references: [id], onDelete: Cascade)
+  requiresCourseId String
+  requiresCourse   Course @relation("CourseRequiredBy", fields: [requiresCourseId], references: [id], onDelete: Cascade)
+
+  @@unique([courseId, requiresCourseId])
+}
+
+model CourseInstructor {
+  id        String  @id @default(cuid())
+  courseId  String
+  course    Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  roleLabel String  @default("Formateur") // Formateur principal, Tuteur…
+  order     Int     @default(0)
+
+  @@unique([courseId, userId])
+}
+
+model Module {
+  id              String        @id @default(cuid())
+  courseId        String
+  course          Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title           String
+  description     String?
+  objectives      String[]      @default([])
+  order           Int           @default(0)
+  durationMinutes Int?
+  status          ContentStatus @default(PUBLISHED)
+
+  lessons     Lesson[]
+  assessments Assessment[]
+
+  @@index([courseId])
+}
+
+// Types de leçons (12.2)
+enum LessonType {
+  VIDEO
+  TEXT
+  PDF
+  AUDIO
+  PRESENTATION
+  INTERACTIVE
+  DEMO
+  EXTERNAL_LINK
+  VIRTUAL_CLASS
+  CASE_STUDY
+  WORKSHOP
+  LAB
+}
+
+model Lesson {
+  id              String        @id @default(cuid())
+  moduleId        String
+  module          Module        @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  title           String
+  lessonType      LessonType    @default(TEXT)
+  content         String? // markdown
+  videoUrl        String?
+  externalUrl     String?
+  durationMinutes Int?
+  order           Int           @default(0)
+  isPreview       Boolean       @default(false)
+  isRequired      Boolean       @default(true) // progression = activités obligatoires (règle 40.10)
+  status          ContentStatus @default(PUBLISHED)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  resources Resource[]
+  progress  LessonProgress[]
+
+  @@index([moduleId])
+}
+
+// Types de ressources (12.3)
+enum ResourceType {
+  PDF
+  DOC
+  SHEET
+  SLIDES
+  ZIP
+  CODE
+  IMAGE
+  AUDIO
+  VIDEO
+  LINK
+  TEMPLATE
+  DATASET
+}
+
+model Resource {
+  id       String       @id @default(cuid())
+  lessonId String?
+  lesson   Lesson?      @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  courseId String?
+  course   Course?      @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title    String
+  kind     ResourceType @default(LINK)
+  url      String
+  order    Int          @default(0)
+
+  @@index([lessonId])
+  @@index([courseId])
+}
+
+// ─── Évaluations (section 18) ────────────────────────────────────────────────
+
+enum AssessmentType {
+  QUIZ // correction automatique
+  ASSIGNMENT // devoir / dépôt — correction manuelle
+  EXAM // examen
+}
+
+model Assessment {
+  id               String         @id @default(cuid())
+  courseId         String
+  course           Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  moduleId         String?
+  module           Module?        @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  title            String
+  description      String?
+  type             AssessmentType @default(QUIZ)
+  passingScore     Int            @default(60)
+  attemptsAllowed  Int            @default(0) // 0 = illimité
+  durationMinutes  Int?
+  shuffleQuestions Boolean        @default(false)
+  weight           Int            @default(1) // pondération dans la note finale
+  isRequired       Boolean        @default(true)
+  order            Int            @default(0)
+  status           ContentStatus  @default(PUBLISHED)
+
+  questions Question[]
+  attempts  AssessmentAttempt[]
+
+  @@index([courseId])
+  @@index([moduleId])
+}
+
+enum QuestionType {
+  SINGLE_CHOICE
+  MULTIPLE_CHOICE
+  TRUE_FALSE
+  SHORT_ANSWER
+  LONG_ANSWER
+  MATCHING
+  ORDERING
+}
+
+model Question {
+  id            String       @id @default(cuid())
+  assessmentId  String
+  assessment    Assessment   @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  type          QuestionType @default(SINGLE_CHOICE)
+  question      String
+  options       Json?
+  correctAnswer Json? // SINGLE_CHOICE=index · MULTIPLE_CHOICE=index[] · TRUE_FALSE=bool(true=Vrai)
+  explanation   String?
+  points        Int          @default(1)
+  order         Int          @default(0)
+
+  @@index([assessmentId])
+}
+
+// Statuts d'évaluation (41.3)
+enum AttemptStatus {
+  IN_PROGRESS
+  SUBMITTED
+  GRADED
+  PASSED
+  FAILED
+  RETAKE_REQUIRED
+}
+
+model AssessmentAttempt {
+  id            String        @id @default(cuid())
+  assessmentId  String
+  assessment    Assessment    @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  attemptNumber Int           @default(1)
+  answers       Json?
+  score         Int?
+  passed        Boolean?
+  status        AttemptStatus @default(SUBMITTED)
+  feedback      String?
+  startedAt     DateTime      @default(now())
+  submittedAt   DateTime?
+  gradedAt      DateTime?
+  gradedById    String?
+
+  @@index([assessmentId])
+  @@index([userId])
+}
+
+// ─── Projets (section 19) ────────────────────────────────────────────────────
+
+model Project {
+  id           String        @id @default(cuid())
+  courseId     String?
+  course       Course?       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  careerPathId String? // projet transversal de parcours (13.8)
+  careerPath   CareerPath?   @relation(fields: [careerPathId], references: [id], onDelete: Cascade)
+  title        String
+  context      String // markdown
+  objectives   String[]      @default([])
+  deliverables String[]      @default([])
+  rubric       String? // grille d'évaluation (markdown)
+  minScore     Int           @default(60)
+  maxAttempts  Int           @default(2)
+  isRequired   Boolean       @default(true)
+  order        Int           @default(0)
+  status       ContentStatus @default(PUBLISHED)
+
+  submissions Submission[]
+
+  @@index([courseId])
+  @@index([careerPathId])
+}
+
+// Statuts de projet (41.4)
+enum SubmissionStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  CHANGES_REQUESTED
+  APPROVED
+  REJECTED
+}
+
+model Submission {
+  id            String           @id @default(cuid())
+  projectId     String
+  project       Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  attemptNumber Int              @default(1)
+  content       String? // texte de présentation
+  links         Json? // liens (GitHub, vidéo, portfolio…)
+  files         Json? // fichiers déposés (URLs Blob)
+  status        SubmissionStatus @default(DRAFT)
+  score         Int?
+  feedback      String?
+  reviewerId    String?
+  reviewer      User?            @relation("SubmissionReviewer", fields: [reviewerId], references: [id])
+  submittedAt   DateTime?
+  reviewedAt    DateTime?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  @@index([projectId])
+  @@index([userId])
+  @@index([status])
+}
+
+// ─── Compétences (section 21) ────────────────────────────────────────────────
+
+enum SkillLevel {
+  DISCOVERY
+  BEGINNER
+  OPERATIONAL
+  ADVANCED
+  EXPERT
+}
+
+model Skill {
+  id          String  @id @default(cuid())
+  name        String
+  slug        String  @unique
+  domain      String?
+  description String?
+
+  courses CourseSkill[]
+}
+
+model CourseSkill {
+  courseId    String
+  course      Course     @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  skillId     String
+  skill       Skill      @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  targetLevel SkillLevel @default(OPERATIONAL)
+  isPrimary   Boolean    @default(false)
+
+  @@id([courseId, skillId])
+  @@index([skillId])
+}
+
+// ─── Parcours métier (section 13) — ASSEMBLE des formations existantes ──────
+
+model CareerPath {
+  id                 String        @id @default(cuid())
+  title              String
+  slug               String        @unique
+  targetJob          String
+  description        String // markdown
+  missions           String[]      @default([])
+  outcomes           String[]      @default([])
+  entryLevel         CourseLevel   @default(BEGINNER)
+  exitLevel          CourseLevel   @default(ADVANCED)
+  duration           String? // libellé, ex. « 9 mois »
+  rhythm             String? // ex. « 10 h / semaine »
+  price              Int           @default(0) // FCFA — prix plein, avant déduction des acquis
+  certificationTitle String?
+  coverImage         String?
+  featured           Boolean       @default(false)
+  status             ContentStatus @default(DRAFT)
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  phases       CareerPathPhase[]
+  courses      CareerPathCourse[]
+  schools      SchoolCareerPath[]
+  enrollments  CareerPathEnrollment[]
+  projects     Project[] // projet(s) transversal(aux)
+  certificates Certificate[]
+  favorites    Favorite[]
+  payments     Payment[]
+}
+
+model CareerPathPhase {
+  id           String     @id @default(cuid())
+  careerPathId String
+  careerPath   CareerPath @relation(fields: [careerPathId], references: [id], onDelete: Cascade)
+  title        String // ex. Fondations, Spécialisation… (13.5)
+  description  String?
+  order        Int        @default(0)
+
+  courses CareerPathCourse[]
+
+  @@index([careerPathId])
+}
+
+/// JONCTION CRITIQUE (43.2) : composition d'un parcours à partir de formations
+/// existantes — position, phase, obligatoire/optionnelle, prérequis interne.
+model CareerPathCourse {
+  id                   String           @id @default(cuid())
+  careerPathId         String
+  careerPath           CareerPath       @relation(fields: [careerPathId], references: [id], onDelete: Cascade)
+  courseId             String
+  course               Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  phaseId              String?
+  phase                CareerPathPhase? @relation(fields: [phaseId], references: [id], onDelete: SetNull)
+  position             Int              @default(0)
+  isRequired           Boolean          @default(true)
+  prerequisiteCourseId String? // formation à valider avant celle-ci, dans CE parcours
+  creditValue          Int?
+
+  @@unique([careerPathId, courseId])
+  @@index([courseId])
+}
+
+/// JONCTION (43.1) : rattachement école ↔ formation, avec rattachement principal.
+model SchoolCourse {
+  id         String  @id @default(cuid())
+  schoolId   String
+  school     School  @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  courseId   String
+  course     Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  isPrimary  Boolean @default(false)
+  isFeatured Boolean @default(false)
+  position   Int     @default(0)
+
+  @@unique([schoolId, courseId])
+  @@index([courseId])
+}
+
+/// JONCTION (43.3) : rattachement école ↔ parcours.
+model SchoolCareerPath {
+  id           String     @id @default(cuid())
+  schoolId     String
+  school       School     @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  careerPathId String
+  careerPath   CareerPath @relation(fields: [careerPathId], references: [id], onDelete: Cascade)
+  isPrimary    Boolean    @default(false)
+  position     Int        @default(0)
+
+  @@unique([schoolId, careerPathId])
+  @@index([careerPathId])
+}
+
+// ─── Inscriptions & progression (sections 16, 41.2) ─────────────────────────
+
+enum EnrollmentStatus {
+  PENDING // en attente (ex. paiement à valider)
+  ACTIVE
+  PAUSED
+  COMPLETED
+  FAILED
+  CANCELLED
+  EXPIRED
+}
+
+enum EnrollmentOrigin {
+  DIRECT
+  CAREER_PATH
+  ORGANIZATION
+}
+
+enum AccessType {
+  PAID
+  FREE
+  COUPON
+  EQUIVALENCE
+  ORGANIZATION
+  MANUAL
+}
+
+/// RÈGLE 40.6 : une formation apparaît UNE SEULE fois par apprenant, même si
+/// elle appartient à plusieurs parcours → @@unique(userId, courseId).
+model Enrollment {
+  id          String           @id @default(cuid())
+  userId      String
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId    String
+  course      Course           @relation(fields: [courseId], references: [id])
+  status      EnrollmentStatus @default(ACTIVE)
+  origin      EnrollmentOrigin @default(DIRECT)
+  accessType  AccessType       @default(PAID)
+  progress    Int              @default(0) // % — calculé sur les activités obligatoires
+  enrolledAt  DateTime         @default(now())
+  startedAt   DateTime?
+  completedAt DateTime?
+  expiresAt   DateTime?
+
+  lessonProgress LessonProgress[]
+
+  @@unique([userId, courseId])
+  @@index([courseId])
+  @@index([status])
+}
+
+model CareerPathEnrollment {
+  id           String           @id @default(cuid())
+  userId       String
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  careerPathId String
+  careerPath   CareerPath       @relation(fields: [careerPathId], references: [id])
+  status       EnrollmentStatus @default(ACTIVE)
+  progress     Int              @default(0)
+  enrolledAt   DateTime         @default(now())
+  completedAt  DateTime?
+
+  @@unique([userId, careerPathId])
+  @@index([careerPathId])
+}
+
+model LessonProgress {
+  id           String     @id @default(cuid())
+  userId       String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lessonId     String
+  lesson       Lesson     @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  enrollmentId String
+  enrollment   Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  completedAt  DateTime   @default(now())
+
+  @@unique([userId, lessonId])
+  @@index([enrollmentId])
+}
+
+// ─── Certificats (section 20, 41.6) ─────────────────────────────────────────
+
+enum CertificateType {
+  PARTICIPATION
+  COURSE
+  SPECIALIZATION
+  EXPERTISE
+  CAREER_PATH
+  SKILL_BADGE
+}
+
+enum CertificateStatus {
+  ACTIVE
+  SUSPENDED
+  REVOKED
+  EXPIRED
+  REPLACED
+}
+
+model Certificate {
+  id            String            @id @default(cuid())
+  userId        String
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId      String?
+  course        Course?           @relation(fields: [courseId], references: [id])
+  careerPathId  String?
+  careerPath    CareerPath?       @relation(fields: [careerPathId], references: [id])
+  type          CertificateType   @default(COURSE)
+  title         String
+  number        String            @unique // ex. DA-2026-XXXXXX
+  verifyCode    String            @unique // code public de vérification
+  status        CertificateStatus @default(ACTIVE)
+  score         Int?
+  mention       String? // Bien, Très bien…
+  skills        String[]          @default([]) // instantané des compétences
+  issuedAt      DateTime          @default(now())
+  expiresAt     DateTime?
+  revokedAt     DateTime?
+  revokedReason String?
+
+  @@index([userId])
+}
+
+// ─── Paiements (section 27, 41.5) ────────────────────────────────────────────
+
+enum PaymentStatus {
+  PENDING
+  PARTIAL
+  PAID
+  FAILED
+  CANCELLED
+  REFUNDED
+  EXPIRED
+}
+
+enum PaymentProvider {
+  MOBILE_MONEY
+  CARD
+  TRANSFER
+  MANUAL
+  COUPON
+  ORGANIZATION
+}
+
+enum PaymentPurpose {
+  COURSE
+  CAREER_PATH
+  COHORT
+  CERTIFICATION
+  OTHER
+}
+
+model Payment {
+  id            String          @id @default(cuid())
+  userId        String
+  user          User            @relation(fields: [userId], references: [id])
+  amount        Int // FCFA
+  currency      String          @default("XOF")
+  provider      PaymentProvider @default(MOBILE_MONEY)
+  status        PaymentStatus   @default(PENDING)
+  purpose       PaymentPurpose  @default(COURSE)
+  courseId      String?
+  course        Course?         @relation(fields: [courseId], references: [id])
+  careerPathId  String?
+  careerPath    CareerPath?     @relation(fields: [careerPathId], references: [id])
+  reference     String?         @unique // ID de transaction Mobile Money (anti-doublon)
+  operator      String? // ORANGE / MTN / WAVE
+  payerPhone    String?
+  proofUrl      String? // capture de la preuve
+  rejectReason  String?
+  metadata      Json?
+  couponCode    String?
+  processedById String?
+  processedBy   User?           @relation("PaymentProcessor", fields: [processedById], references: [id])
+  processedAt   DateTime?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}
+
+enum DiscountType {
+  PERCENT
+  FIXED
+}
+
+model Coupon {
+  id           String       @id @default(cuid())
+  code         String       @unique
+  discountType DiscountType @default(PERCENT)
+  value        Int
+  maxUses      Int?
+  usedCount    Int          @default(0)
+  expiresAt    DateTime?
+  active       Boolean      @default(true)
+  createdAt    DateTime     @default(now())
+}
+
+// ─── Avis, favoris, notifications (sections 11.10, 16.8, 26) ────────────────
+
+enum ModerationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Review {
+  id        String           @id @default(cuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId  String
+  course    Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  rating    Int // 1..5
+  comment   String?
+  status    ModerationStatus @default(APPROVED)
+  createdAt DateTime         @default(now())
+
+  @@unique([userId, courseId]) // un seul avis par utilisateur (11.10)
+  @@index([courseId])
+}
+
+model Favorite {
+  id           String      @id @default(cuid())
+  userId       String
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId     String?
+  course       Course?     @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  careerPathId String?
+  careerPath   CareerPath? @relation(fields: [careerPathId], references: [id], onDelete: Cascade)
+  createdAt    DateTime    @default(now())
+
+  @@index([userId])
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String    @default("SYSTEM")
+  title     String
+  message   String
+  link      String?
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId, readAt])
+}
+
+// ─── Entreprises (section 28) — socle minimal, développé en Phase 3 ─────────
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  email     String?
+  phone     String?
+  createdAt DateTime @default(now())
+
+  members OrganizationMember[]
+}
+
+model OrganizationMember {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isManager      Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+
+  @@unique([organizationId, userId])
+}
+
+// ─── Journal d'audit (sections 30.1, 46) ─────────────────────────────────────
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String?
+  actor     User?    @relation(fields: [actorId], references: [id])
+  action    String // ex. certificate.revoke, grade.update, payment.approve
+  entity    String
+  entityId  String?
+  meta      Json?
+  createdAt DateTime @default(now())
+
+  @@index([entity, entityId])
+  @@index([actorId])
+}

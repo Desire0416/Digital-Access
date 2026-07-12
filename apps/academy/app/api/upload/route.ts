@@ -1,52 +1,61 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { put } from "@vercel/blob";
-import { currentUser } from "@da/auth/guards";
+import { currentUser } from "@/lib/guards";
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Upload d'image → Vercel Blob. Auth requise. Image uniquement, 5 Mo max,
+   dossier strictement validé ([a-z0-9-]). Renvoie { url }.
+   ══════════════════════════════════════════════════════════════════════════ */
 
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
 
-const MAX_BYTES = 5 * 1024 * 1024; // 5 Mo
+const MAX_SIZE = 5 * 1024 * 1024; // 5 Mo
+const ALLOWED_TYPES = new Set(["image/png", "image/jpeg", "image/webp", "image/gif", "image/svg+xml"]);
+const FOLDER_RE = /^[a-z0-9-]{1,40}$/;
 
-/** Upload d'image vers Vercel Blob (utilisateur authentifié). Renvoie { url }. */
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   const user = await currentUser();
   if (!user) {
-    return NextResponse.json({ error: "Connectez-vous pour envoyer un fichier." }, { status: 401 });
+    return NextResponse.json({ error: "Authentification requise." }, { status: 401 });
   }
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    return NextResponse.json(
-      { error: "Le stockage d'images n'est pas configuré (BLOB_READ_WRITE_TOKEN)." },
-      { status: 503 },
-    );
+
+  let form: FormData;
+  try {
+    form = await req.formData();
+  } catch {
+    return NextResponse.json({ error: "Requête invalide." }, { status: 400 });
   }
+
+  const file = form.get("file");
+  if (!(file instanceof File)) {
+    return NextResponse.json({ error: "Aucun fichier reçu." }, { status: 400 });
+  }
+  if (!file.type.startsWith("image/") || !ALLOWED_TYPES.has(file.type)) {
+    return NextResponse.json({ error: "Seules les images sont acceptées (PNG, JPG, WebP)." }, { status: 400 });
+  }
+  if (file.size === 0 || file.size > MAX_SIZE) {
+    return NextResponse.json({ error: "Image trop lourde (5 Mo maximum)." }, { status: 400 });
+  }
+
+  const rawFolder = form.get("folder");
+  const folder = typeof rawFolder === "string" && FOLDER_RE.test(rawFolder) ? rawFolder : "uploads";
+
+  // Nom de fichier assaini (le suffixe aléatoire évite toute collision).
+  const safeName =
+    file.name
+      .toLowerCase()
+      .replace(/[^a-z0-9.-]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 80) || "image";
 
   try {
-    const form = await req.formData();
-    const file = form.get("file");
-    if (!(file instanceof File)) {
-      return NextResponse.json({ error: "Aucun fichier reçu." }, { status: 400 });
-    }
-    if (!file.type.startsWith("image/")) {
-      return NextResponse.json({ error: "Le fichier doit être une image." }, { status: 400 });
-    }
-    if (file.size > MAX_BYTES) {
-      return NextResponse.json({ error: "Image trop lourde (5 Mo maximum)." }, { status: 400 });
-    }
-
-    const rawFolder = String(form.get("folder") ?? "uploads");
-    const folder = /^[a-z0-9-]{1,32}$/.test(rawFolder) ? rawFolder : "uploads";
-    const ext =
-      (file.name.split(".").pop() ?? "").toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
-
-    const blob = await put(`${folder}/image.${ext}`, file, {
+    const blob = await put(`academy/${folder}/${safeName}`, file, {
       access: "public",
       addRandomSuffix: true,
       contentType: file.type,
     });
-
     return NextResponse.json({ url: blob.url });
-  } catch (e) {
-    console.error("[upload] error:", e);
+  } catch {
     return NextResponse.json({ error: "Échec de l'envoi. Réessayez." }, { status: 500 });
   }
 }

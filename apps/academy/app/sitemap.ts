@@ -1,40 +1,80 @@
 import type { MetadataRoute } from "next";
-import { prisma } from "@da/db/client";
-import { academyConfig } from "@/lib/site";
+import { prisma } from "@da/academy-db/client";
+import { siteConfig } from "@/lib/site";
 
-export const dynamic = "force-dynamic";
+/* ══════════════════════════════════════════════════════════════════════════
+   Sitemap — routes publiques statiques + contenus PUBLISHED depuis la base
+   (formations, parcours métiers, écoles). URLs françaises du cahier §44.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+const STATIC_ROUTES: Array<{ path: string; priority: number }> = [
+  { path: "", priority: 1 },
+  { path: "/formations", priority: 0.9 },
+  { path: "/parcours-metiers", priority: 0.9 },
+  { path: "/ecoles", priority: 0.8 },
+  { path: "/certifications", priority: 0.7 },
+  { path: "/certificats/verifier", priority: 0.5 },
+  { path: "/entreprises", priority: 0.6 },
+  { path: "/a-propos", priority: 0.5 },
+  { path: "/contact", priority: 0.5 },
+  { path: "/connexion", priority: 0.3 },
+  { path: "/inscription", priority: 0.4 },
+];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = academyConfig.url;
+  const base = siteConfig.url;
   const now = new Date();
 
-  const staticRoutes: MetadataRoute.Sitemap = [
-    "",
-    "/schools",
-    "/career-paths",
-    "/short-courses",
-    "/certifications",
-    "/companies",
-  ].map((route) => ({
-    url: `${base}${route}`,
+  const entries: MetadataRoute.Sitemap = STATIC_ROUTES.map(({ path, priority }) => ({
+    url: `${base}${path}`,
     lastModified: now,
-    changeFrequency: "weekly" as const,
-    priority: route === "" ? 1 : 0.8,
+    changeFrequency: "weekly",
+    priority,
   }));
 
   try {
-    const [schools, paths, courses] = await Promise.all([
-      prisma.school.findMany({ where: { status: "PUBLISHED" }, select: { slug: true, updatedAt: true } }),
-      prisma.careerPath.findMany({ where: { status: "PUBLISHED" }, select: { slug: true, updatedAt: true } }),
-      prisma.shortCourse.findMany({ where: { status: "PUBLISHED" }, select: { slug: true, updatedAt: true } }),
+    const [courses, paths, schools] = await Promise.all([
+      prisma.course.findMany({
+        where: { status: "PUBLISHED" },
+        select: { slug: true, updatedAt: true },
+      }),
+      prisma.careerPath.findMany({
+        where: { status: "PUBLISHED" },
+        select: { slug: true, updatedAt: true },
+      }),
+      prisma.school.findMany({
+        where: { status: "PUBLISHED" },
+        select: { slug: true, updatedAt: true },
+      }),
     ]);
-    return [
-      ...staticRoutes,
-      ...schools.map((s) => ({ url: `${base}/schools/${s.slug}`, lastModified: s.updatedAt, changeFrequency: "monthly" as const, priority: 0.7 })),
-      ...paths.map((p) => ({ url: `${base}/career-paths/${p.slug}`, lastModified: p.updatedAt, changeFrequency: "weekly" as const, priority: 0.8 })),
-      ...courses.map((c) => ({ url: `${base}/short-courses/${c.slug}`, lastModified: c.updatedAt, changeFrequency: "weekly" as const, priority: 0.6 })),
-    ];
+
+    for (const c of courses) {
+      entries.push({
+        url: `${base}/formations/${c.slug}`,
+        lastModified: c.updatedAt,
+        changeFrequency: "weekly",
+        priority: 0.8,
+      });
+    }
+    for (const p of paths) {
+      entries.push({
+        url: `${base}/parcours-metiers/${p.slug}`,
+        lastModified: p.updatedAt,
+        changeFrequency: "weekly",
+        priority: 0.8,
+      });
+    }
+    for (const s of schools) {
+      entries.push({
+        url: `${base}/ecoles/${s.slug}`,
+        lastModified: s.updatedAt,
+        changeFrequency: "monthly",
+        priority: 0.6,
+      });
+    }
   } catch {
-    return staticRoutes;
+    // Base indisponible au moment du build : on sert au moins les routes statiques.
   }
+
+  return entries;
 }

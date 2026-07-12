@@ -1,37 +1,24 @@
-import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
-import { getSchoolForEdit } from "@/lib/admin-queries";
-import { AdminPageHeader, StatusPill, COURSE_STATUS } from "@/components/admin/ui";
-import { SchoolEditForm } from "@/components/admin/SchoolEditForm";
+import { getSchoolAdmin, listCoursesForPicker, listCareerPathsForPicker } from "@/lib/admin-queries";
+import { SchoolEditor } from "@/components/admin/SchoolEditor";
 
-export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "Édition d'école — Administration" };
 
-export default async function AdminSchoolEditPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function AdminSchoolEditorPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const school = await getSchoolForEdit(id);
+  const [school, courses, paths] = await Promise.all([
+    getSchoolAdmin(id),
+    listCoursesForPicker(),
+    listCareerPathsForPicker(),
+  ]);
   if (!school) notFound();
 
-  const st = COURSE_STATUS[school.status] ?? { label: school.status, tone: "slate" as const };
-
   return (
-    <>
-      <Link
-        href="/admin/ecoles"
-        className="mb-5 inline-flex items-center gap-1.5 text-sm font-semibold text-text-secondary transition-colors hover:text-brand-blue-royal"
-      >
-        <ArrowLeft size={16} />
-        Retour aux écoles
-      </Link>
-
-      <AdminPageHeader
-        title={school.name}
-        description={<span className="font-mono text-xs">/{school.slug}</span>}
-      >
-        <StatusPill label={st.label} tone={st.tone} />
-      </AdminPageHeader>
-
-      <SchoolEditForm school={school} />
-    </>
+    <SchoolEditor
+      school={school}
+      courses={courses.map((c) => ({ id: c.id, title: c.title, slug: c.slug, level: c.level, status: c.status }))}
+      paths={paths.map((p) => ({ id: p.id, title: p.title, slug: p.slug, targetJob: p.targetJob, status: p.status }))}
+    />
   );
 }

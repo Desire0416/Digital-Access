@@ -2,112 +2,100 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { signOut } from "next-auth/react";
 import {
   LayoutDashboard,
-  GraduationCap,
-  Route,
   BookOpen,
-  UsersRound,
-  ClipboardCheck,
-  Award,
-  Ticket,
+  Route,
+  GraduationCap,
+  Users,
   CreditCard,
-  FileUp,
-  ExternalLink,
+  Award,
+  Globe,
+  LogOut,
   Menu,
   X,
   PanelLeftClose,
   PanelLeftOpen,
-  type LucideIcon,
 } from "lucide-react";
-import { Monogram, Avatar, cn } from "@da/ui";
-import { LogoutButton } from "@/components/LogoutButton";
-import { ViewAsMenu } from "@/components/admin/ViewAsMenu";
+import { cn, Avatar } from "@da/ui";
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Coquille du back-office Access Academy (cahier §30). Barre latérale sombre
+   rétractable (état mémorisé en localStorage), tiroir sur mobile. Indicateur
+   actif = filet dégradé signature partagé (layoutId). Profil + déconnexion en
+   pied. Gardé en amont par app/admin/layout.tsx (requireRole).
+   ══════════════════════════════════════════════════════════════════════════ */
+
+export interface AdminShellUser {
+  name: string;
+  email: string;
+  avatar: string | null;
+  roles: string[];
+}
 
 interface NavItem {
   label: string;
   href: string;
-  icon: LucideIcon;
+  icon: React.ComponentType<{ size?: number | string; className?: string }>;
+  badge?: number;
   exact?: boolean;
 }
 
-const NAV: NavItem[] = [
-  { label: "Dashboard", href: "/admin", icon: LayoutDashboard, exact: true },
-  { label: "Écoles", href: "/admin/ecoles", icon: GraduationCap },
-  { label: "Parcours", href: "/admin/parcours", icon: Route },
-  { label: "Formations", href: "/admin/formations", icon: BookOpen },
-  { label: "Importer (IA)", href: "/admin/import-formation", icon: FileUp },
-  { label: "Utilisateurs", href: "/admin/utilisateurs", icon: UsersRound },
-  { label: "Paiements", href: "/admin/paiements", icon: CreditCard },
-  { label: "Soumissions", href: "/admin/soumissions", icon: ClipboardCheck },
-  { label: "Certificats", href: "/admin/certificats", icon: Award },
-  { label: "Coupons", href: "/admin/coupons", icon: Ticket },
-];
+const ROLE_LABEL: Record<string, string> = {
+  SUPER_ADMIN: "Super administrateur",
+  ACADEMIC_ADMIN: "Admin pédagogique",
+  SALES_ADMIN: "Admin commercial",
+};
 
-const STORAGE_KEY = "academy-admin-sidebar-collapsed";
+const COLLAPSE_KEY = "da-admin-sidebar-collapsed";
 
-/** Contenu de la barre latérale (partagé desktop fixe / tiroir mobile). */
+function isActive(pathname: string, item: NavItem): boolean {
+  if (item.exact) return pathname === item.href;
+  return pathname === item.href || pathname.startsWith(`${item.href}/`);
+}
+
+/* ─── Contenu de la barre latérale (partagé desktop / tiroir) ──────────────── */
 function SidebarContent({
+  items,
   user,
-  isActive,
   collapsed,
-  pendingPayments = 0,
   onNavigate,
-  onToggleCollapse,
 }: {
-  user: { name: string; email: string; isSuperAdmin: boolean };
-  isActive: (href: string) => boolean;
+  items: NavItem[];
+  user: AdminShellUser;
   collapsed: boolean;
-  pendingPayments?: number;
   onNavigate?: () => void;
-  onToggleCollapse?: () => void;
 }) {
+  const pathname = usePathname();
+  const reduce = useReducedMotion();
+  const roleLabel = ROLE_LABEL[user.roles.find((r) => ROLE_LABEL[r]) ?? ""] ?? "Administration";
+
   return (
-    <div className="flex h-full flex-col bg-[#0f0f1e] text-white">
-      {/* Marque + bouton replier */}
-      <div
-        className={cn(
-          "flex items-center py-6",
-          collapsed ? "flex-col gap-4 px-3" : "justify-between gap-2 px-5",
-        )}
-      >
-        <div className="flex items-center gap-3">
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-da">
-            <Monogram variant="white" size={24} />
+    <div className="flex h-full flex-col">
+      {/* Marque */}
+      <div className={cn("flex h-16 shrink-0 items-center border-b border-white/[0.06]", collapsed ? "justify-center px-2" : "px-5")}>
+        <Link href="/admin" onClick={onNavigate} className="flex items-center gap-2.5" aria-label="Administration Access Academy">
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-da text-sm font-black text-white shadow-lg">
+            DA
           </span>
           {!collapsed && (
-            <div className="leading-tight">
-              <p className="font-display text-sm font-extrabold">Access Academy</p>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-cyan">
-                Back-office
-              </p>
-            </div>
+            <span className="min-w-0">
+              <span className="block truncate font-display text-sm font-bold text-white">Access Academy</span>
+              <span className="block text-[10px] font-semibold uppercase tracking-[0.16em] text-brand-cyan">Back-office</span>
+            </span>
           )}
-        </div>
-        {onToggleCollapse && (
-          <button
-            type="button"
-            onClick={onToggleCollapse}
-            aria-label={collapsed ? "Déplier la barre latérale" : "Replier la barre latérale"}
-            title={collapsed ? "Déplier" : "Replier"}
-            className="hidden h-8 w-8 shrink-0 place-items-center rounded-lg text-white/50 transition-colors hover:bg-white/[0.08] hover:text-white lg:grid"
-          >
-            {collapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
-          </button>
-        )}
+        </Link>
       </div>
 
       {/* Navigation */}
-      <nav
-        className={cn(
-          "flex-1 space-y-1 overflow-y-auto overflow-x-hidden py-2",
-          collapsed ? "px-2.5" : "px-3",
-        )}
-      >
-        {NAV.map((item) => {
-          const active = isActive(item.href);
+      <nav className="flex-1 space-y-1 overflow-y-auto px-2.5 py-4" aria-label="Navigation administration">
+        {items.map((item) => {
+          const active = isActive(pathname, item);
+          const Icon = item.icon;
           return (
             <Link
               key={item.href}
@@ -116,124 +104,122 @@ function SidebarContent({
               aria-current={active ? "page" : undefined}
               title={collapsed ? item.label : undefined}
               className={cn(
-                "group relative flex items-center rounded-xl text-sm font-medium transition-colors",
-                collapsed ? "justify-center px-0 py-3" : "gap-3 px-3.5 py-2.5",
-                active
-                  ? "bg-white/10 text-white"
-                  : "text-white/60 hover:bg-white/[0.06] hover:text-white",
+                "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
+                collapsed && "justify-center px-0",
+                active ? "text-white" : "text-white/55 hover:bg-white/[0.06] hover:text-white",
               )}
             >
               {active && (
                 <motion.span
-                  layoutId="academy-admin-nav-active"
-                  className="absolute inset-y-1.5 left-0 w-1 rounded-full bg-gradient-to-b from-brand-violet to-brand-cyan"
-                  transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                  layoutId="admin-active-bg"
+                  transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 380, damping: 32 }}
+                  className="absolute inset-0 rounded-xl bg-gradient-da opacity-95 shadow-lg"
+                  aria-hidden
                 />
               )}
-              <item.icon
-                size={18}
-                className={cn(
-                  "shrink-0",
-                  active ? "text-brand-cyan" : "text-white/50 group-hover:text-white/80",
-                )}
-              />
-              {!collapsed && item.label}
-              {item.href === "/admin/paiements" && pendingPayments > 0 && (
-                collapsed ? (
-                  <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-warning ring-2 ring-[#0f0f1e]" />
-                ) : (
-                  <span className="ml-auto rounded-full bg-warning px-1.5 py-0.5 text-[10px] font-bold text-[#0f0f1e]">
-                    {pendingPayments}
-                  </span>
-                )
-              )}
+              <span className="relative z-10 flex items-center gap-3">
+                <Icon size={18} className="shrink-0" />
+                {!collapsed && <span className="relative">{item.label}</span>}
+              </span>
+              {!collapsed && item.badge ? (
+                <span
+                  className={cn(
+                    "relative z-10 ml-auto grid min-w-5 place-items-center rounded-full px-1.5 py-0.5 text-[11px] font-bold",
+                    active ? "bg-white/25 text-white" : "bg-warning text-navy",
+                  )}
+                >
+                  {item.badge}
+                </span>
+              ) : collapsed && item.badge ? (
+                <span className="absolute right-1.5 top-1.5 z-10 h-2 w-2 rounded-full bg-warning ring-2 ring-[#0f0f1e]" aria-hidden />
+              ) : null}
             </Link>
           );
         })}
-      </nav>
 
-      {/* Voir en tant que rôle (mode aperçu admin) */}
-      {!collapsed && (
-        <div className="px-3 pb-1 pt-2">
-          <ViewAsMenu />
-        </div>
-      )}
+        <span className="my-3 block h-px bg-white/[0.06]" aria-hidden />
 
-      {/* Retour au site */}
-      <div className={cn("pb-2", collapsed ? "px-2.5" : "px-3")}>
         <Link
           href="/"
           onClick={onNavigate}
-          title={collapsed ? "Voir la plateforme" : undefined}
+          title={collapsed ? "Voir le site" : undefined}
           className={cn(
-            "flex items-center rounded-xl text-sm font-medium text-white/50 transition-colors hover:bg-white/[0.06] hover:text-white",
-            collapsed ? "justify-center px-0 py-3" : "gap-2 px-3.5 py-2.5",
+            "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-white/55 transition-colors hover:bg-white/[0.06] hover:text-white",
+            collapsed && "justify-center px-0",
           )}
         >
-          <ExternalLink size={16} className="shrink-0" />
-          {!collapsed && "Voir la plateforme"}
+          <Globe size={18} className="shrink-0" />
+          {!collapsed && "Voir le site"}
         </Link>
-      </div>
+      </nav>
 
-      {/* Utilisateur — cliquable vers le profil */}
-      <div className="border-t border-white/10 p-3">
-        <Link
-          href="/profil"
-          onClick={onNavigate}
-          title="Voir et modifier mon profil"
-          className={cn(
-            "flex items-center rounded-xl transition-colors hover:bg-white/[0.06]",
-            collapsed ? "justify-center px-0 py-2" : "gap-3 px-2 py-2",
-          )}
-        >
-          <Avatar name={user.name} className="h-9 w-9 shrink-0 text-xs" />
+      {/* Profil + déconnexion */}
+      <div className="shrink-0 border-t border-white/[0.06] p-3">
+        <div className={cn("flex items-center gap-2.5", collapsed && "flex-col gap-2")}>
+          <Avatar name={user.name} src={user.avatar ?? undefined} className="h-9 w-9 shrink-0 ring-2 ring-white/10" />
           {!collapsed && (
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-semibold text-white">{user.name}</p>
-              <p className="truncate text-xs text-white/50">
-                {user.isSuperAdmin ? "Super Admin" : "Administrateur"} · Profil
-              </p>
+              <p className="truncate text-[11px] text-brand-cyan">{roleLabel}</p>
             </div>
           )}
-        </Link>
-        {!collapsed && (
-          <LogoutButton
-            variant="ghost"
-            size="sm"
-            className="mt-1 w-full justify-center text-white/70 hover:bg-white/[0.06] hover:text-white"
-          />
-        )}
+          <button
+            type="button"
+            onClick={() => void signOut({ callbackUrl: "/" })}
+            aria-label="Déconnexion"
+            title="Déconnexion"
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-lg text-white/50 transition-colors hover:bg-error/20 hover:text-error"
+          >
+            <LogOut size={17} />
+          </button>
+        </div>
       </div>
     </div>
   );
 }
 
+/* ─── Coquille principale ──────────────────────────────────────────────────── */
 export function AdminShell({
   user,
+  pendingPayments,
   children,
-  pendingPayments = 0,
 }: {
-  user: { name: string; email: string; isSuperAdmin: boolean };
+  user: AdminShellUser;
+  pendingPayments: number;
   children: React.ReactNode;
-  pendingPayments?: number;
 }) {
   const pathname = usePathname();
-  const [open, setOpen] = React.useState(false);
+  const reduce = useReducedMotion();
   const [collapsed, setCollapsed] = React.useState(false);
+  const [mobileOpen, setMobileOpen] = React.useState(false);
 
-  // Persistance du repli de la sidebar.
+  const items: NavItem[] = React.useMemo(
+    () => [
+      { label: "Tableau de bord", href: "/admin", icon: LayoutDashboard, exact: true },
+      { label: "Formations", href: "/admin/formations", icon: BookOpen },
+      { label: "Parcours", href: "/admin/parcours", icon: Route },
+      { label: "Écoles", href: "/admin/ecoles", icon: GraduationCap },
+      { label: "Utilisateurs", href: "/admin/utilisateurs", icon: Users },
+      { label: "Paiements", href: "/admin/paiements", icon: CreditCard, badge: pendingPayments || undefined },
+      { label: "Certificats", href: "/admin/certificats", icon: Award },
+    ],
+    [pendingPayments],
+  );
+
+  // Restaure l'état replié depuis localStorage.
   React.useEffect(() => {
     try {
-      setCollapsed(window.localStorage.getItem(STORAGE_KEY) === "1");
+      setCollapsed(localStorage.getItem(COLLAPSE_KEY) === "1");
     } catch {
-      /* ignore */
+      /* pas de localStorage : par défaut déplié */
     }
   }, []);
+
   const toggleCollapse = React.useCallback(() => {
-    setCollapsed((c) => {
-      const next = !c;
+    setCollapsed((v) => {
+      const next = !v;
       try {
-        window.localStorage.setItem(STORAGE_KEY, next ? "1" : "0");
+        localStorage.setItem(COLLAPSE_KEY, next ? "1" : "0");
       } catch {
         /* ignore */
       }
@@ -241,108 +227,99 @@ export function AdminShell({
     });
   }, []);
 
-  const isActive = React.useCallback(
-    (href: string) =>
-      href === "/admin" ? pathname === "/admin" : pathname === href || pathname.startsWith(href + "/"),
-    [pathname],
-  );
-
+  // Ferme le tiroir mobile à chaque navigation.
   React.useEffect(() => {
-    setOpen(false);
+    setMobileOpen(false);
   }, [pathname]);
 
-  const current = NAV.find((n) => isActive(n.href));
+  // Verrouille le scroll du corps quand le tiroir est ouvert.
+  React.useEffect(() => {
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileOpen]);
 
-  /* Région autonome en 100dvh avec défilement interne : insensible aux
-     transformes d'ancêtres (PageTransition), donc pas de sticky/fixed cassé. */
   return (
-    <div className="relative flex h-[100dvh] overflow-hidden bg-surface-secondary">
-      {/* Sidebar — desktop (largeur animée) */}
+    <div className="min-h-screen bg-surface-secondary/60">
+      {/* ─── Barre latérale desktop ─────────────────────────────────────── */}
       <aside
         className={cn(
-          "hidden shrink-0 transition-[width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] lg:block",
+          "fixed inset-y-0 left-0 z-30 hidden bg-[#0f0f1e] transition-[width] duration-300 lg:block",
           collapsed ? "w-[76px]" : "w-64",
         )}
       >
-        <SidebarContent
-          user={user}
-          isActive={isActive}
-          collapsed={collapsed}
-          pendingPayments={pendingPayments}
-          onToggleCollapse={toggleCollapse}
-        />
+        <SidebarContent items={items} user={user} collapsed={collapsed} />
+        {/* Poignée de repli */}
+        <button
+          type="button"
+          onClick={toggleCollapse}
+          aria-label={collapsed ? "Déplier la barre latérale" : "Replier la barre latérale"}
+          className="absolute -right-3 top-20 grid h-6 w-6 place-items-center rounded-full border border-navy/10 bg-surface-primary text-text-secondary shadow-md transition-colors hover:text-brand-blue-royal"
+        >
+          {collapsed ? <PanelLeftOpen size={13} /> : <PanelLeftClose size={13} />}
+        </button>
       </aside>
 
-      {/* Colonne droite */}
-      <div className="flex min-w-0 flex-1 flex-col">
-        {/* Barre supérieure — mobile */}
-        <header className="flex h-16 shrink-0 items-center justify-between border-b border-navy/[0.06] bg-surface-primary px-4 lg:hidden">
-          <Link href="/admin" className="flex items-center gap-2">
-            <Monogram size={30} />
-            <span className="font-display text-sm font-extrabold text-navy">
-              {current?.label ?? "Admin"}
-            </span>
-          </Link>
-          <button
-            type="button"
-            onClick={() => setOpen(true)}
-            aria-label="Ouvrir le menu"
-            aria-expanded={open}
-            className="grid h-10 w-10 place-items-center rounded-lg text-navy transition-colors hover:bg-navy/5"
-          >
-            <Menu size={22} />
-          </button>
-        </header>
-
-        {/* Contenu défilant */}
-        <main className="flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-10 lg:py-10">{children}</div>
-        </main>
+      {/* ─── Barre supérieure mobile ────────────────────────────────────── */}
+      <div className="sticky top-0 z-20 flex h-14 items-center gap-3 border-b border-navy/[0.07] bg-surface-primary/90 px-4 backdrop-blur-xl lg:hidden">
+        <button
+          type="button"
+          onClick={() => setMobileOpen(true)}
+          aria-label="Ouvrir le menu d'administration"
+          className="grid h-10 w-10 place-items-center rounded-lg text-navy transition-colors hover:bg-navy/[0.05]"
+        >
+          <Menu size={22} />
+        </button>
+        <Link href="/admin" className="flex items-center gap-2">
+          <span className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-da text-xs font-black text-white">DA</span>
+          <span className="font-display text-sm font-bold text-navy">Back-office</span>
+        </Link>
       </div>
 
-      {/* Tiroir — mobile (superposition dans la région, pas de fixed) */}
+      {/* ─── Tiroir mobile ──────────────────────────────────────────────── */}
       <AnimatePresence>
-        {open && (
+        {mobileOpen && (
           <>
-            <motion.button
-              key="admin-scrim"
-              type="button"
-              aria-label="Fermer le menu"
-              tabIndex={-1}
+            <motion.div
+              key="admin-overlay"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              onClick={() => setOpen(false)}
-              className="absolute inset-0 z-40 bg-navy/50 backdrop-blur-sm lg:hidden"
+              onClick={() => setMobileOpen(false)}
+              className="fixed inset-0 z-40 bg-navy/50 backdrop-blur-sm lg:hidden"
+              aria-hidden
             />
             <motion.aside
               key="admin-drawer"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Menu d'administration"
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
-              transition={{ type: "spring", stiffness: 360, damping: 38 }}
-              className="absolute inset-y-0 left-0 z-50 w-[17rem] max-w-[85%] shadow-2xl lg:hidden"
+              transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 320, damping: 34 }}
+              className="fixed inset-y-0 left-0 z-50 w-[min(17rem,86vw)] bg-[#0f0f1e] shadow-2xl lg:hidden"
             >
               <button
                 type="button"
+                onClick={() => setMobileOpen(false)}
                 aria-label="Fermer le menu"
-                onClick={() => setOpen(false)}
-                className="absolute right-3 top-4 z-10 grid h-9 w-9 place-items-center rounded-lg text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+                className="absolute right-3 top-4 z-10 grid h-9 w-9 place-items-center rounded-lg text-white/60 transition-colors hover:bg-white/10 hover:text-white"
               >
-                <X size={20} />
+                <X size={18} />
               </button>
-              <SidebarContent
-                user={user}
-                isActive={isActive}
-                collapsed={false}
-                pendingPayments={pendingPayments}
-                onNavigate={() => setOpen(false)}
-              />
+              <SidebarContent items={items} user={user} collapsed={false} onNavigate={() => setMobileOpen(false)} />
             </motion.aside>
           </>
         )}
       </AnimatePresence>
+
+      {/* ─── Contenu ────────────────────────────────────────────────────── */}
+      <div className={cn("transition-[padding] duration-300", collapsed ? "lg:pl-[76px]" : "lg:pl-64")}>
+        <main className="mx-auto max-w-[1400px] px-4 py-6 sm:px-6 sm:py-8 lg:px-10 lg:py-10">{children}</main>
+      </div>
     </div>
   );
 }
