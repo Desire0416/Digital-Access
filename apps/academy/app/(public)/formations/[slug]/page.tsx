@@ -225,7 +225,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
 
       {/* ══════════════════ Corps + colonne d'achat ══════════════════ */}
       <Container className="relative">
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-12">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-12">
           {/* ── Colonne d'achat (sticky) ── */}
           <aside className="order-1 lg:order-2">
             <div className="lg:sticky lg:top-24">

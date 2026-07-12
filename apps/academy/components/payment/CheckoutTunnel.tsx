@@ -270,7 +270,7 @@ export function CheckoutTunnel({ type, slug, amount, title }: CheckoutTunnelProp
                         }
                       }}
                       placeholder="EX. BOURSE2026"
-                      className="h-10 flex-1 rounded-lg border border-navy/10 bg-surface-primary px-3 font-mono text-sm uppercase tracking-wide text-navy outline-none transition-colors placeholder:font-sans placeholder:normal-case placeholder:tracking-normal placeholder:text-text-muted focus:border-brand-blue-vif/60"
+                      className="h-10 min-w-0 flex-1 rounded-lg border border-navy/10 bg-surface-primary px-3 font-mono text-sm uppercase tracking-wide text-navy outline-none transition-colors placeholder:font-sans placeholder:normal-case placeholder:tracking-normal placeholder:text-text-muted focus:border-brand-blue-vif/60"
                     />
                     <button
                       type="button"

@@ -226,7 +226,7 @@ export default async function CareerPathDetailPage({ params }: { params: Promise
 
       {/* ══════════════════ Corps + colonne d'inscription ══════════════════ */}
       <Container className="relative">
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-12">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-12">
           {/* ── Colonne d'inscription (sticky) ── */}
           <aside className="order-1 lg:order-2">
             <div className="lg:sticky lg:top-24">

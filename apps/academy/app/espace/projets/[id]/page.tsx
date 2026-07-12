@@ -83,7 +83,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
         {/* ── Consignes ── */}
         <div className="space-y-6">
           <Panel title={<span className="inline-flex items-center gap-2"><ClipboardList size={16} className="text-brand-blue-royal" aria-hidden />Contexte &amp; consignes</span>}>

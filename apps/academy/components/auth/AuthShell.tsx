@@ -39,7 +39,7 @@ export function AuthShell({ title, subtitle, children, footer, aside }: AuthShel
   const panel = aside ?? DEFAULT_ASIDE;
 
   return (
-    <div className="grid min-h-[calc(100vh-4rem)] w-full lg:grid-cols-[1.05fr_1fr]">
+    <div className="grid grid-cols-1 min-h-[calc(100vh-4rem)] w-full lg:grid-cols-[1.05fr_1fr]">
       {/* Colonne visuelle — dégradé signature, masquée en mobile */}
       <aside className="relative hidden overflow-hidden bg-gradient-da px-12 py-16 lg:flex lg:flex-col lg:justify-between">
         {/* Formes géométriques abstraites */}

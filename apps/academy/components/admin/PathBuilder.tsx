@@ -186,7 +186,7 @@ function PathFiche({ path }: { path: PathAdmin }) {
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
       <div className="space-y-5">
         <div className="rounded-2xl border border-navy/[0.07] bg-surface-primary p-5">
           <h2 className="mb-4 font-display text-base font-bold text-navy">Métier & présentation</h2>
@@ -312,7 +312,7 @@ function PhaseEditor({ phase, index, total, onMove }: { phase: PhaseT; index: nu
     <div className="rounded-2xl border border-navy/[0.08] bg-surface-primary p-4">
       <div className="flex items-start gap-3">
         <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-brand-violet/10 font-display text-sm font-bold text-brand-violet">{index + 1}</span>
-        <div className="grid flex-1 gap-3 sm:grid-cols-[1fr_1.5fr]">
+        <div className="grid grid-cols-1 flex-1 gap-3 sm:grid-cols-[1fr_1.5fr]">
           <FieldLabel label="Titre">
             <input value={title} onChange={(e) => setTitle(e.target.value)} className={inputClass} />
           </FieldLabel>
@@ -353,7 +353,7 @@ function CompositionTab({ path, catalogue }: { path: PathAdmin; catalogue: Catal
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
       {/* Colonne de composition */}
       <div className="space-y-3">
         <div className="rounded-xl border border-brand-blue-vif/20 bg-brand-blue-vif/[0.04] px-4 py-3 text-sm text-brand-blue-royal">

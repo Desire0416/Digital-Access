@@ -215,7 +215,7 @@ export default async function PaiementPage({
             Paiement sécurisé Mobile Money
           </h1>
 
-          <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,380px)_minmax(0,1fr)]">
+          <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,380px)_minmax(0,1fr)]">
             <div className="lg:sticky lg:top-24 lg:self-start">{recap}</div>
             <div>{panel}</div>
           </div>

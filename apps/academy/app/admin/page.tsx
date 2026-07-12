@@ -70,7 +70,7 @@ export default async function AdminDashboardPage() {
         />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         {/* ─── Derniers paiements ─────────────────────────────────────────── */}
         <AdminCard>
           <div className="flex items-center justify-between border-b border-navy/[0.06] px-5 py-4">

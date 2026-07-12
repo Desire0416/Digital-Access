@@ -89,7 +89,7 @@ export default async function CorrectionDetailPage({ params }: { params: Promise
         </div>
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
         {/* ── Colonne gauche : consignes + soumission + historique ── */}
         <div className="space-y-6">
           <Panel

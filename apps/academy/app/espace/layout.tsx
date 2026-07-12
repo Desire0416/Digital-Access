@@ -26,7 +26,7 @@ export default async function EspaceLayout({ children }: { children: React.React
 
       <main className="flex-1 bg-surface-secondary/40">
         <Container className="py-6 sm:py-8 lg:py-10">
-          <div className="grid gap-6 lg:grid-cols-[248px_minmax(0,1fr)] lg:gap-8">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-[248px_minmax(0,1fr)] lg:gap-8">
             <EspaceNav
               items={userNav}
               user={{ name: user.name, email: user.email, avatar: user.avatar }}

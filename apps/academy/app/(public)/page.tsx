@@ -482,7 +482,7 @@ export default async function HomePage() {
       {/* ═══════════════════════ CERTIFICATIONS §9.8 ═══════════════════════ */}
       <Section tone="muted" spacing="md">
         <Container>
-          <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+          <div className="grid grid-cols-1 gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
             <Reveal>
               <SectionHeading
                 eyebrow="Reconnaissance"
