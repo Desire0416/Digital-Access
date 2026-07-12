@@ -280,6 +280,25 @@ export function SiteHeader({ user, notifications }: SiteHeaderProps) {
   const reviewer = !!user && user.roles.some((r) => REVIEWER_ROLES.includes(r));
   const instructor = !!user && user.roles.includes("INSTRUCTOR");
 
+  // Accordéon du tiroir mobile : sections repliables. La section contenant la
+  // page active est ouverte par défaut (et rouverte à chaque navigation).
+  const activeSection = React.useMemo(() => {
+    const g = MOBILE_NAV_GROUPS.find((grp) => grp.items.some((it) => isActivePath(pathname, it.href)));
+    if (g) return g.title;
+    if (/^\/(espace|correction|formateur|admin)/.test(pathname)) return "Mon espace";
+    return "Explorer";
+  }, [pathname]);
+  const [openSections, setOpenSections] = React.useState<Set<string>>(() => new Set([activeSection]));
+  React.useEffect(() => setOpenSections(new Set([activeSection])), [activeSection]);
+  const toggleSection = React.useCallback((title: string) => {
+    setOpenSections((prev) => {
+      const next = new Set(prev);
+      if (next.has(title)) next.delete(title);
+      else next.add(title);
+      return next;
+    });
+  }, []);
+
   // Ferme le tiroir mobile à chaque navigation.
   React.useEffect(() => {
     setMobileOpen(false);
@@ -473,85 +492,143 @@ export function SiteHeader({ user, notifications }: SiteHeaderProps) {
                     <SearchField onDone={() => setMobileOpen(false)} />
                   </div>
 
-                  {/* Navigation en sections titrées */}
-                  <nav aria-label="Navigation principale mobile" className="flex-1 p-3">
-                    {MOBILE_NAV_GROUPS.map((group) => (
-                      <div key={group.title} className="mb-2">
-                        <p className="px-4 pb-1 pt-2 text-[11px] font-bold uppercase tracking-[0.16em] text-text-muted">
-                          {group.title}
-                        </p>
-                        {group.items.map((item) => {
-                          const active = isActivePath(pathname, item.href);
-                          return (
-                            <Link
-                              key={item.href}
-                              href={item.href}
-                              aria-current={active ? "page" : undefined}
-                              className={cn(
-                                "flex items-center justify-between rounded-xl px-4 py-2.5 font-display text-[0.95rem] font-semibold transition-colors",
-                                active ? "bg-brand-blue-vif/[0.08] text-brand-blue-royal" : "text-navy hover:bg-navy/[0.04]",
-                              )}
-                            >
-                              {item.label}
-                              {active && <span className="h-1.5 w-1.5 rounded-full bg-gradient-da" aria-hidden />}
-                            </Link>
-                          );
-                        })}
-                      </div>
-                    ))}
+                  {/* Navigation en accordéon — chaque section se replie/déplie.
+                      La section de la page active est ouverte par défaut. */}
+                  <nav aria-label="Navigation principale mobile" className="flex-1 p-2">
+                    {MOBILE_NAV_GROUPS.map((group) => {
+                      const open = openSections.has(group.title);
+                      return (
+                        <div key={group.title} className="border-b border-navy/[0.05] last:border-b-0">
+                          <button
+                            type="button"
+                            onClick={() => toggleSection(group.title)}
+                            aria-expanded={open}
+                            className="flex w-full items-center justify-between rounded-lg px-3 py-3 text-left transition-colors hover:bg-navy/[0.03]"
+                          >
+                            <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-text-muted">
+                              {group.title}
+                            </span>
+                            <ChevronDown
+                              size={16}
+                              className={cn("shrink-0 text-text-muted transition-transform duration-200", open && "rotate-180")}
+                              aria-hidden
+                            />
+                          </button>
+                          <AnimatePresence initial={false}>
+                            {open && (
+                              <motion.div
+                                initial={reduce ? false : { height: 0, opacity: 0 }}
+                                animate={{ height: "auto", opacity: 1 }}
+                                exit={reduce ? { opacity: 0 } : { height: 0, opacity: 0 }}
+                                transition={{ duration: 0.22, ease: "easeInOut" }}
+                                className="overflow-hidden"
+                              >
+                                <div className="pb-1.5">
+                                  {group.items.map((item) => {
+                                    const active = isActivePath(pathname, item.href);
+                                    return (
+                                      <Link
+                                        key={item.href}
+                                        href={item.href}
+                                        aria-current={active ? "page" : undefined}
+                                        className={cn(
+                                          "flex items-center justify-between rounded-xl px-4 py-2.5 font-display text-[0.95rem] font-semibold transition-colors",
+                                          active ? "bg-brand-blue-vif/[0.08] text-brand-blue-royal" : "text-navy hover:bg-navy/[0.04]",
+                                        )}
+                                      >
+                                        {item.label}
+                                        {active && <span className="h-1.5 w-1.5 rounded-full bg-gradient-da" aria-hidden />}
+                                      </Link>
+                                    );
+                                  })}
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
+                      );
+                    })}
 
                     {user && (
-                      <>
-                        <span className="mx-4 my-2 block h-px bg-navy/[0.06]" aria-hidden />
-                        <p className="px-4 pb-1 pt-1 text-[11px] font-bold uppercase tracking-[0.16em] text-text-muted">
-                          Mon espace
-                        </p>
-                        {userNav.map((item) => {
-                          const Icon = USER_NAV_ICONS[item.href] ?? LayoutDashboard;
-                          const active = isActivePath(pathname, item.href);
-                          return (
-                            <Link
-                              key={item.href}
-                              href={item.href}
-                              aria-current={active ? "page" : undefined}
-                              className={cn(
-                                "flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors",
-                                active ? "bg-brand-blue-vif/[0.08] text-brand-blue-royal" : "text-navy hover:bg-navy/[0.04]",
-                              )}
+                      <div className="border-t border-navy/[0.05]">
+                        <button
+                          type="button"
+                          onClick={() => toggleSection("Mon espace")}
+                          aria-expanded={openSections.has("Mon espace")}
+                          className="flex w-full items-center justify-between rounded-lg px-3 py-3 text-left transition-colors hover:bg-navy/[0.03]"
+                        >
+                          <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-text-muted">
+                            Mon espace
+                          </span>
+                          <ChevronDown
+                            size={16}
+                            className={cn(
+                              "shrink-0 text-text-muted transition-transform duration-200",
+                              openSections.has("Mon espace") && "rotate-180",
+                            )}
+                            aria-hidden
+                          />
+                        </button>
+                        <AnimatePresence initial={false}>
+                          {openSections.has("Mon espace") && (
+                            <motion.div
+                              initial={reduce ? false : { height: 0, opacity: 0 }}
+                              animate={{ height: "auto", opacity: 1 }}
+                              exit={reduce ? { opacity: 0 } : { height: 0, opacity: 0 }}
+                              transition={{ duration: 0.22, ease: "easeInOut" }}
+                              className="overflow-hidden"
                             >
-                              <Icon size={16} className={active ? "text-brand-blue-royal" : "text-text-muted"} aria-hidden />
-                              {item.label}
-                            </Link>
-                          );
-                        })}
-                        {reviewer && (
-                          <Link
-                            href="/correction"
-                            className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold text-brand-blue-royal transition-colors hover:bg-brand-blue-vif/[0.06]"
-                          >
-                            <ClipboardCheck size={16} aria-hidden />
-                            Corrections
-                          </Link>
-                        )}
-                        {instructor && (
-                          <Link
-                            href="/formateur"
-                            className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold text-accent transition-colors hover:bg-accent/[0.06]"
-                          >
-                            <BookOpen size={16} aria-hidden />
-                            Studio formateur
-                          </Link>
-                        )}
-                        {admin && (
-                          <Link
-                            href="/admin"
-                            className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold text-brand-violet transition-colors hover:bg-brand-violet/[0.06]"
-                          >
-                            <ShieldCheck size={16} aria-hidden />
-                            Administration
-                          </Link>
-                        )}
-                      </>
+                              <div className="pb-1.5">
+                                {userNav.map((item) => {
+                                  const Icon = USER_NAV_ICONS[item.href] ?? LayoutDashboard;
+                                  const active = isActivePath(pathname, item.href);
+                                  return (
+                                    <Link
+                                      key={item.href}
+                                      href={item.href}
+                                      aria-current={active ? "page" : undefined}
+                                      className={cn(
+                                        "flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors",
+                                        active ? "bg-brand-blue-vif/[0.08] text-brand-blue-royal" : "text-navy hover:bg-navy/[0.04]",
+                                      )}
+                                    >
+                                      <Icon size={16} className={active ? "text-brand-blue-royal" : "text-text-muted"} aria-hidden />
+                                      {item.label}
+                                    </Link>
+                                  );
+                                })}
+                                {reviewer && (
+                                  <Link
+                                    href="/correction"
+                                    className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold text-brand-blue-royal transition-colors hover:bg-brand-blue-vif/[0.06]"
+                                  >
+                                    <ClipboardCheck size={16} aria-hidden />
+                                    Corrections
+                                  </Link>
+                                )}
+                                {instructor && (
+                                  <Link
+                                    href="/formateur"
+                                    className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold text-accent transition-colors hover:bg-accent/[0.06]"
+                                  >
+                                    <BookOpen size={16} aria-hidden />
+                                    Studio formateur
+                                  </Link>
+                                )}
+                                {admin && (
+                                  <Link
+                                    href="/admin"
+                                    className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold text-brand-violet transition-colors hover:bg-brand-violet/[0.06]"
+                                  >
+                                    <ShieldCheck size={16} aria-hidden />
+                                    Administration
+                                  </Link>
+                                )}
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
                     )}
                   </nav>
 
