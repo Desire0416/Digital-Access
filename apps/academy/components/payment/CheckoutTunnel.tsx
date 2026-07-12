@@ -13,11 +13,13 @@ import {
   Smartphone,
   Hash,
   Sparkles,
+  Ticket,
+  X,
 } from "lucide-react";
 import { Button, Field, Input, cn } from "@da/ui";
 import { ImageUpload } from "@/components/ImageUpload";
 import { paymentConfig, formatFCFA } from "@/lib/site";
-import { submitManualPayment } from "@/lib/payments";
+import { submitManualPayment, previewCoupon } from "@/lib/payments";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Tunnel de paiement Mobile Money MANUEL (cahier §27).
@@ -74,9 +76,36 @@ export function CheckoutTunnel({ type, slug, amount, title }: CheckoutTunnelProp
   const [error, setError] = React.useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = React.useState<{ phone?: string; ref?: string; proof?: string }>({});
   const [submitting, setSubmitting] = React.useState(false);
+  // Coupon — l'aperçu (previewCoupon) recalcule le montant CÔTÉ SERVEUR ; le
+  // montant réellement facturé est re-vérifié à la soumission (submitManualPayment).
+  const [couponInput, setCouponInput] = React.useState("");
+  const [appliedCoupon, setAppliedCoupon] = React.useState<{ code: string; discount: number; finalAmount: number } | null>(null);
+  const [couponError, setCouponError] = React.useState<string | null>(null);
+  const [couponLoading, setCouponLoading] = React.useState(false);
 
   const selected = paymentConfig.operators.find((o) => o.id === operator) ?? null;
-  const amountLabel = formatFCFA(amount);
+  const effectiveAmount = appliedCoupon ? appliedCoupon.finalAmount : amount;
+  const amountLabel = formatFCFA(effectiveAmount);
+
+  async function applyCoupon() {
+    const code = couponInput.trim();
+    if (!code) return;
+    setCouponError(null);
+    setCouponLoading(true);
+    const res = await previewCoupon(type, slug, code);
+    setCouponLoading(false);
+    if (res.ok) {
+      setAppliedCoupon({ code: res.code, discount: res.discount, finalAmount: res.finalAmount });
+    } else {
+      setAppliedCoupon(null);
+      setCouponError(res.error);
+    }
+  }
+  function removeCoupon() {
+    setAppliedCoupon(null);
+    setCouponInput("");
+    setCouponError(null);
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -96,6 +125,7 @@ export function CheckoutTunnel({ type, slug, amount, title }: CheckoutTunnelProp
       reference: reference.trim(),
       payerPhone: payerPhone.trim(),
       proofUrl,
+      couponCode: appliedCoupon?.code,
     });
     setSubmitting(false);
 
@@ -194,6 +224,67 @@ export function CheckoutTunnel({ type, slug, amount, title }: CheckoutTunnelProp
             <p className="mt-1 text-sm text-text-secondary">
               Effectuez le transfert du montant exact vers le numéro Digital Access indiqué, puis passez à l'étape suivante.
             </p>
+
+            {/* Code promo (facultatif) — remise revérifiée côté serveur */}
+            <div className="mt-5 rounded-xl border border-navy/[0.08] bg-surface-secondary/50 p-4">
+              {appliedCoupon ? (
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2.5">
+                    <span className="grid h-9 w-9 place-items-center rounded-lg bg-success/10 text-success">
+                      <Ticket size={17} />
+                    </span>
+                    <div>
+                      <p className="text-sm font-semibold text-navy">
+                        Code « {appliedCoupon.code} » appliqué
+                      </p>
+                      <p className="text-xs font-medium text-success">− {formatFCFA(appliedCoupon.discount)} de remise</p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={removeCoupon}
+                    className="inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-semibold text-text-secondary transition-colors hover:bg-error/[0.06] hover:text-error"
+                  >
+                    <X size={13} />
+                    Retirer
+                  </button>
+                </div>
+              ) : (
+                <div>
+                  <label htmlFor="coupon" className="flex items-center gap-1.5 text-xs font-semibold text-navy">
+                    <Ticket size={14} className="text-brand-blue-vif" />
+                    Vous avez un code promo ?
+                  </label>
+                  <div className="mt-2 flex gap-2">
+                    <input
+                      id="coupon"
+                      value={couponInput}
+                      onChange={(e) => {
+                        setCouponInput(e.target.value.toUpperCase());
+                        setCouponError(null);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          void applyCoupon();
+                        }
+                      }}
+                      placeholder="EX. BOURSE2026"
+                      className="h-10 flex-1 rounded-lg border border-navy/10 bg-surface-primary px-3 font-mono text-sm uppercase tracking-wide text-navy outline-none transition-colors placeholder:font-sans placeholder:normal-case placeholder:tracking-normal placeholder:text-text-muted focus:border-brand-blue-vif/60"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => void applyCoupon()}
+                      disabled={couponLoading || !couponInput.trim()}
+                      className="inline-flex h-10 shrink-0 items-center rounded-lg border-2 border-navy/15 px-4 text-sm font-semibold text-navy transition-colors hover:border-brand-blue-vif/60 hover:text-brand-blue-royal disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {couponLoading ? "…" : "Appliquer"}
+                    </button>
+                  </div>
+                  {couponError && <p className="mt-1.5 text-xs font-medium text-error">{couponError}</p>}
+                </div>
+              )}
+            </div>
 
             <div className="mt-5 grid gap-3 sm:grid-cols-3">
               {paymentConfig.operators.map((op) => {

@@ -8,7 +8,6 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { signOut } from "next-auth/react";
 import {
   Search,
-  Bell,
   Menu,
   X,
   LogOut,
@@ -25,6 +24,7 @@ import {
 } from "lucide-react";
 import { cn, buttonClasses, Avatar, useScrolled } from "@da/ui";
 import { mainNav, userNav } from "@/lib/site";
+import { NotificationBell, type NotificationItem } from "@/components/NotificationBell";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Header public Access Academy — sticky, brandé DA (cahier §8).
@@ -39,9 +39,11 @@ export interface HeaderUser {
 
 export interface SiteHeaderProps {
   user: HeaderUser | null;
+  notifications?: { items: NotificationItem[]; unreadCount: number } | null;
 }
 
 const ADMIN_ROLES = ["ACADEMIC_ADMIN", "SALES_ADMIN", "SUPER_ADMIN"];
+const REVIEWER_ROLES = ["GRADER", "INSTRUCTOR", "ACADEMIC_ADMIN", "SALES_ADMIN", "SUPER_ADMIN"];
 
 const USER_NAV_ICONS: Record<string, React.ComponentType<{ size?: number | string; className?: string }>> = {
   "/espace": LayoutDashboard,
@@ -79,7 +81,7 @@ function SearchField({
       onSubmit={(e) => {
         e.preventDefault();
         const query = q.trim();
-        router.push(query ? `/formations?q=${encodeURIComponent(query)}` : "/formations");
+        router.push(query ? `/recherche?q=${encodeURIComponent(query)}` : "/recherche");
         onDone?.();
       }}
     >
@@ -93,8 +95,8 @@ function SearchField({
         value={q}
         onChange={(e) => setQ(e.target.value)}
         autoFocus={autoFocus}
-        placeholder="Rechercher une formation…"
-        aria-label="Rechercher une formation"
+        placeholder="Rechercher une formation, un parcours…"
+        aria-label="Rechercher sur Access Academy"
         className="h-10 w-full rounded-full border border-navy/10 bg-surface-secondary pl-10 pr-4 text-sm text-navy outline-none transition-colors placeholder:text-text-muted focus:border-brand-blue-vif/60 focus:bg-surface-primary"
       />
     </form>
@@ -106,6 +108,7 @@ function UserMenu({ user }: { user: HeaderUser }) {
   const [open, setOpen] = React.useState(false);
   const ref = React.useRef<HTMLDivElement>(null);
   const admin = user.roles.some((r) => ADMIN_ROLES.includes(r));
+  const reviewer = user.roles.some((r) => REVIEWER_ROLES.includes(r));
 
   React.useEffect(() => {
     if (!open) return;
@@ -173,9 +176,24 @@ function UserMenu({ user }: { user: HeaderUser }) {
                 );
               })}
 
-              {admin && (
+              {reviewer && (
                 <>
                   <span className="my-1.5 block h-px bg-navy/[0.06]" aria-hidden />
+                  <Link
+                    href="/correction"
+                    role="menuitem"
+                    onClick={() => setOpen(false)}
+                    className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-semibold text-brand-blue-royal transition-colors hover:bg-brand-blue-vif/[0.07]"
+                  >
+                    <ClipboardCheck size={15} aria-hidden />
+                    Corrections
+                  </Link>
+                </>
+              )}
+
+              {admin && (
+                <>
+                  {!reviewer && <span className="my-1.5 block h-px bg-navy/[0.06]" aria-hidden />}
                   <Link
                     href="/admin"
                     role="menuitem"
@@ -207,13 +225,14 @@ function UserMenu({ user }: { user: HeaderUser }) {
 }
 
 /* ─── Header principal ─────────────────────────────────────────────────── */
-export function SiteHeader({ user }: SiteHeaderProps) {
+export function SiteHeader({ user, notifications }: SiteHeaderProps) {
   const pathname = usePathname();
   const scrolled = useScrolled(8);
   const reduce = useReducedMotion();
   const [searchOpen, setSearchOpen] = React.useState(false);
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const admin = !!user && user.roles.some((r) => ADMIN_ROLES.includes(r));
+  const reviewer = !!user && user.roles.some((r) => REVIEWER_ROLES.includes(r));
 
   // Ferme le tiroir mobile à chaque navigation.
   React.useEffect(() => {
@@ -317,18 +336,10 @@ export function SiteHeader({ user }: SiteHeaderProps) {
 
           {user ? (
             <>
-              {/* Cloche notifications (placeholder → espace) */}
-              <Link
-                href="/espace"
-                aria-label="Notifications"
-                className="relative hidden h-10 w-10 place-items-center rounded-full text-text-secondary transition-colors hover:bg-navy/[0.05] hover:text-navy sm:grid"
-              >
-                <Bell size={18} />
-                <span
-                  className="absolute right-2.5 top-2.5 h-1.5 w-1.5 rounded-full bg-gradient-da"
-                  aria-hidden
-                />
-              </Link>
+              {/* Cloche notifications — panneau réel (backend §26) */}
+              {notifications && (
+                <NotificationBell initialItems={notifications.items} initialUnread={notifications.unreadCount} />
+              )}
               <div className="hidden lg:block">
                 <UserMenu user={user} />
               </div>
@@ -455,6 +466,15 @@ export function SiteHeader({ user }: SiteHeaderProps) {
                           </Link>
                         );
                       })}
+                      {reviewer && (
+                        <Link
+                          href="/correction"
+                          className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold text-brand-blue-royal transition-colors hover:bg-brand-blue-vif/[0.06]"
+                        >
+                          <ClipboardCheck size={16} aria-hidden />
+                          Corrections
+                        </Link>
+                      )}
                       {admin && (
                         <Link
                           href="/admin"

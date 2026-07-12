@@ -637,10 +637,12 @@ export async function searchAll(q: string): Promise<SearchResult[]> {
         OR: [
           { title: { contains: query, mode: "insensitive" } },
           { subtitle: { contains: query, mode: "insensitive" } },
+          // Trouvé aussi par le nom d'une compétence enseignée (§32).
+          { skills: { some: { skill: { name: { contains: query, mode: "insensitive" } } } } },
         ],
       },
       select: { title: true, subtitle: true, slug: true, coverImage: true },
-      take: 5,
+      take: 8,
     }),
     prisma.careerPath.findMany({
       where: {

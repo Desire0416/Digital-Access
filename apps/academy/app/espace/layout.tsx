@@ -1,4 +1,5 @@
 import { requireUser } from "@/lib/guards";
+import { getMyNotifications } from "@/lib/notify";
 import { userNav } from "@/lib/site";
 import { Container } from "@da/ui";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -14,10 +15,14 @@ import { EspaceNav } from "@/components/espace/EspaceNav";
 
 export default async function EspaceLayout({ children }: { children: React.ReactNode }) {
   const user = await requireUser("/espace");
+  const notif = await getMyNotifications(user.id, { take: 8 });
 
   return (
     <div className="flex min-h-screen flex-col">
-      <SiteHeader user={{ name: user.name, avatar: user.avatar, roles: user.roles }} />
+      <SiteHeader
+        user={{ name: user.name, avatar: user.avatar, roles: user.roles }}
+        notifications={{ items: notif.notifications, unreadCount: notif.unreadCount }}
+      />
 
       <main className="flex-1 bg-surface-secondary/40">
         <Container className="py-6 sm:py-8 lg:py-10">

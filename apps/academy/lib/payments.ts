@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { prisma, Prisma, type EnrollmentStatus } from "@da/academy-db/client";
 import { currentUser, requireAdminFresh } from "./guards";
 import { ACQUIRED_STATUSES, computeCareerPathPricing, type CareerPathPricing } from "./pricing";
+import { validateCoupon, consumeCoupon } from "./coupons";
 import { createNotification } from "./notify";
 import { siteConfig, paymentConfig, formatFCFA } from "./site";
 import { sendPaymentSubmittedEmail, sendPaymentApprovedEmail, sendPaymentRejectedEmail } from "@da/email";
@@ -18,6 +19,9 @@ import { sendPaymentSubmittedEmail, sendPaymentApprovedEmail, sendPaymentRejecte
    ══════════════════════════════════════════════════════════════════════════ */
 
 const ACQUIRED: EnrollmentStatus[] = [...ACQUIRED_STATUSES];
+
+/** Marqueur interne : bascule d'approbation perdue (course concurrente). */
+const APPROVAL_RACE = "__PAYMENT_ALREADY_PROCESSED__";
 
 export type PaymentActionResult = { ok: true; message?: string } | { ok: false; error: string };
 
@@ -163,6 +167,7 @@ const submitPaymentSchema = z.object({
     .max(64),
   payerPhone: z.string().trim().min(8, "Numéro de téléphone invalide.").max(30),
   proofUrl: z.string().url("La capture de preuve est obligatoire."),
+  couponCode: z.string().trim().max(40).optional(),
 });
 
 export type SubmitPaymentInput = z.input<typeof submitPaymentSchema>;
@@ -191,11 +196,25 @@ export async function submitManualPayment(input: SubmitPaymentInput): Promise<Pa
     return { ok: false, error: "Cet achat est gratuit pour vous : utilisez le bouton d'inscription directe." };
   }
 
+  // Coupon éventuel — remise recalculée et revérifiée CÔTÉ SERVEUR (jamais la
+  // valeur venue du client). Un code invalide/expiré fait échouer le dépôt.
+  let amount = target.amount;
+  let couponCode: string | null = null;
+  if (data.couponCode) {
+    const v = await validateCoupon(data.couponCode, target.amount);
+    if (!v.ok) return { ok: false, error: v.error };
+    amount = v.finalAmount;
+    couponCode = v.code;
+    if (amount <= 0) {
+      return { ok: false, error: "Ce code couvre la totalité du montant. Contactez-nous pour activer votre accès." };
+    }
+  }
+
   try {
     await prisma.payment.create({
       data: {
         userId: user.id,
-        amount: target.amount,
+        amount,
         currency: "XOF",
         provider: "MOBILE_MONEY",
         status: "PENDING", // ⚠️ INVARIANT : aucune inscription ici.
@@ -206,6 +225,7 @@ export async function submitManualPayment(input: SubmitPaymentInput): Promise<Pa
         operator: data.operator,
         payerPhone: data.payerPhone,
         proofUrl: data.proofUrl,
+        couponCode,
         ...(target.pricing
           ? { metadata: { fullPrice: target.pricing.fullPrice, deduction: target.pricing.deduction, acquiredCourseIds: target.pricing.acquiredCourses.map((c) => c.id) } }
           : {}),
@@ -238,7 +258,7 @@ export async function submitManualPayment(input: SubmitPaymentInput): Promise<Pa
     userId: user.id,
     type: "PAYMENT",
     title: "Preuve de paiement reçue",
-    message: `Votre paiement pour « ${target.title} » est en cours de vérification (${formatFCFA(target.amount)}).`,
+    message: `Votre paiement pour « ${target.title} » est en cours de vérification (${formatFCFA(amount)}).`,
     link: "/espace/formations",
   });
 
@@ -247,7 +267,7 @@ export async function submitManualPayment(input: SubmitPaymentInput): Promise<Pa
       learnerName: user.name,
       learnerEmail: user.email,
       courseTitle: target.title,
-      amountLabel: formatFCFA(target.amount),
+      amountLabel: formatFCFA(amount),
       operator: data.operator,
       payerPhone: data.payerPhone,
       transactionId: data.reference,
@@ -262,6 +282,26 @@ export async function submitManualPayment(input: SubmitPaymentInput): Promise<Pa
     ok: true,
     message: `Preuve envoyée ! Notre équipe valide votre paiement ${paymentConfig.reviewDelay}. Vous serez notifié(e) dès l'ouverture de l'accès.`,
   };
+}
+
+/* ─── Aperçu d'un code promo au checkout (montant recalculé côté serveur) ───── */
+
+export async function previewCoupon(
+  type: "formation" | "parcours",
+  slug: string,
+  code: string,
+): Promise<
+  | { ok: true; code: string; discount: number; finalAmount: number; baseAmount: number }
+  | { ok: false; error: string }
+> {
+  const info = await getCheckoutInfo(type, slug);
+  if (!info.ok) return { ok: false, error: info.error };
+  const base = info.data.amount;
+  if (base <= 0) return { ok: false, error: "Aucun montant à réduire pour cet achat." };
+
+  const v = await validateCoupon(code, base);
+  if (!v.ok) return { ok: false, error: v.error };
+  return { ok: true, code: v.code, discount: v.discount, finalAmount: v.finalAmount, baseAmount: base };
 }
 
 /* ─── Approbation admin → SEULE source de création des inscriptions ────────── */
@@ -281,6 +321,7 @@ export async function approvePayment(paymentId: string): Promise<PaymentActionRe
       purpose: true,
       amount: true,
       reference: true,
+      couponCode: true,
       userId: true,
       user: { select: { name: true, email: true } },
       courseId: true,
@@ -297,7 +338,8 @@ export async function approvePayment(paymentId: string): Promise<PaymentActionRe
   const targetTitle = payment.course?.title ?? payment.careerPath?.title ?? "votre achat";
 
   let cancelledAcquired = false;
-  await prisma.$transaction(async (tx) => {
+  try {
+    await prisma.$transaction(async (tx) => {
     // Anti-double-facturation (règle 40.5) : si la cible a été acquise ENTRE le
     // dépôt de la preuve et la validation (ex. via un parcours gratuit), on
     // n'encaisse PAS — statut CANCELLED + audit ; remboursement manuel éventuel.
@@ -317,8 +359,8 @@ export async function approvePayment(paymentId: string): Promise<PaymentActionRe
     }
     if (acquired) {
       cancelledAcquired = true;
-      await tx.payment.update({
-        where: { id: payment.id },
+      const flip = await tx.payment.updateMany({
+        where: { id: payment.id, status: "PENDING" },
         data: {
           status: "CANCELLED",
           processedById: admin.id,
@@ -326,6 +368,7 @@ export async function approvePayment(paymentId: string): Promise<PaymentActionRe
           rejectReason: "Cible déjà acquise avant validation — non encaissé, remboursement à traiter.",
         },
       });
+      if (flip.count === 0) throw new Error(APPROVAL_RACE);
       await tx.auditLog.create({
         data: {
           actorId: admin.id,
@@ -338,10 +381,14 @@ export async function approvePayment(paymentId: string): Promise<PaymentActionRe
       return;
     }
 
-    await tx.payment.update({
-      where: { id: payment.id },
+    // Bascule idempotente : passe à PAID seulement si le paiement est ENCORE
+    // PENDING (protège d'un double-clic / deux admins → double consommation de
+    // coupon + notifications/audit dupliqués).
+    const paidFlip = await tx.payment.updateMany({
+      where: { id: payment.id, status: "PENDING" },
       data: { status: "PAID", processedById: admin.id, processedAt: new Date() },
     });
+    if (paidFlip.count === 0) throw new Error(APPROVAL_RACE);
 
     if (payment.purpose === "COURSE" && payment.courseId) {
       const existing = await tx.enrollment.findUnique({
@@ -424,7 +471,15 @@ export async function approvePayment(paymentId: string): Promise<PaymentActionRe
         meta: { amount: payment.amount, purpose: payment.purpose, reference: payment.reference, learnerId: payment.userId },
       },
     });
-  });
+    });
+  } catch (e) {
+    // Course d'approbation concurrente : un autre traitement a déjà pris ce
+    // paiement — rien n'a été encaissé/consommé une seconde fois.
+    if (e instanceof Error && e.message === APPROVAL_RACE) {
+      return { ok: false, error: "Ce paiement a déjà été traité." };
+    }
+    throw e;
+  }
 
   if (cancelledAcquired) {
     await prisma.notification.create({
@@ -439,6 +494,9 @@ export async function approvePayment(paymentId: string): Promise<PaymentActionRe
     revalidatePath("/admin/paiements");
     return { ok: true, message: "Cible déjà acquise — paiement annulé (remboursement éventuel à traiter)." };
   }
+
+  // Coupon éventuel : consommé UNIQUEMENT à l'approbation (accès réellement ouvert).
+  if (payment.couponCode) await consumeCoupon(payment.couponCode);
 
   try {
     await sendPaymentApprovedEmail(payment.user.email, {

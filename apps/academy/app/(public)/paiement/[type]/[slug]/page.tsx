@@ -115,6 +115,9 @@ export default async function PaiementPage({
               </span>
             </div>
           )}
+          <p className="mt-2.5 text-[11px] leading-snug text-text-muted">
+            Un éventuel code promo se saisit à l&apos;étape de paiement ; le montant final est alors recalculé dans le tunnel.
+          </p>
         </div>
 
         <ul className="mt-4 space-y-2 text-xs text-text-secondary">
