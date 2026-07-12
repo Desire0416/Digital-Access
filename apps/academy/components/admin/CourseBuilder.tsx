@@ -20,6 +20,8 @@ import {
   Star,
   ArrowUp,
   ArrowDown,
+  Target,
+  X,
 } from "lucide-react";
 import { cn, GradientText } from "@da/ui";
 import type { ContentStatus } from "@da/academy-db/client";
@@ -49,6 +51,7 @@ import {
   submitCourseForReview,
   type QuestionInput,
 } from "@/lib/admin-actions";
+import { setCourseSkill, removeCourseSkill } from "@/lib/skill-actions";
 import { CONTENT_STATUS_LABEL, CONTENT_STATUS_TONE, StatusPill } from "./ui";
 import { inputClass, textareaClass, FieldLabel, linesToArray, arrayToLines } from "./forms";
 import { useAdminAction, Feedback, SaveButton, DeleteButton } from "./action-hooks";
@@ -66,18 +69,31 @@ type LessonT = ModuleT["lessons"][number];
 type AssessmentT = ModuleT["assessments"][number];
 type QuestionT = AssessmentT["questions"][number];
 
-type Tab = "fiche" | "programme" | "rattachements" | "publication";
+type Tab = "fiche" | "programme" | "competences" | "rattachements" | "publication";
 
 const TABS: { id: Tab; label: string; icon: React.ComponentType<{ size?: number; className?: string }> }[] = [
   { id: "fiche", label: "Fiche", icon: FileText },
   { id: "programme", label: "Programme", icon: ListTree },
+  { id: "competences", label: "Compétences", icon: Target },
   { id: "rattachements", label: "Rattachements", icon: Link2 },
   { id: "publication", label: "Publication", icon: Rocket },
 ];
 
+/* Niveaux CourseSkill (enum SkillLevel) — libellés côté client. */
+const SKILL_LEVELS = ["DISCOVERY", "BEGINNER", "OPERATIONAL", "ADVANCED", "EXPERT"] as const;
+const SKILL_LEVEL_LABEL: Record<(typeof SKILL_LEVELS)[number], string> = {
+  DISCOVERY: "Découverte",
+  BEGINNER: "Débutant",
+  OPERATIONAL: "Opérationnel",
+  ADVANCED: "Avancé",
+  EXPERT: "Expert",
+};
+export type SkillPickerOption = { id: string; name: string; slug: string; domain: string | null };
+
 export function CourseBuilder({
   course,
   schools,
+  skillOptions = [],
   canManageSchools = true,
   canPublish = true,
   backHref = "/admin/formations",
@@ -85,6 +101,8 @@ export function CourseBuilder({
 }: {
   course: CourseAdmin;
   schools: { id: string; name: string; color: string }[];
+  /** Référentiel complet des compétences (pour l'onglet Compétences). */
+  skillOptions?: SkillPickerOption[];
   /** Le rattachement aux écoles est réservé à l'admin (masqué au formateur). */
   canManageSchools?: boolean;
   /** L'admin publie/change le statut ; le formateur soumet à validation (§31). */
@@ -158,6 +176,7 @@ export function CourseBuilder({
 
       {tab === "fiche" && <FicheTab course={course} />}
       {tab === "programme" && <ProgrammeTab course={course} />}
+      {tab === "competences" && <CompetencesTab course={course} skillOptions={skillOptions} isAdmin={canManageSchools} />}
       {tab === "rattachements" && canManageSchools && <RattachementsTab course={course} schools={schools} />}
       {tab === "publication" && (
         <PublicationTab course={course} onGoto={setTab} canManageSchools={canManageSchools} canPublish={canPublish} />
@@ -1073,6 +1092,135 @@ function ToggleRow({ label, checked, onChange }: { label: string; checked: boole
 }
 
 /* ──────────────────── Onglet RATTACHEMENTS (§14, §43.1) ───────────────────── */
+
+/* ──────────────────── Onglet COMPÉTENCES (§21) ───────────────────────────── */
+
+function CompetencesTab({
+  course,
+  skillOptions,
+  isAdmin,
+}: {
+  course: CourseAdmin;
+  skillOptions: SkillPickerOption[];
+  isAdmin: boolean;
+}) {
+  const { pending, msg, run } = useAdminAction();
+  const attached = course.skills;
+  const attachedIds = new Set(attached.map((s) => s.skillId));
+  const available = skillOptions.filter((o) => !attachedIds.has(o.id));
+  const [pick, setPick] = React.useState("");
+
+  return (
+    <div className="max-w-2xl space-y-5">
+      <div>
+        <h2 className="font-display text-lg font-bold text-navy">Compétences visées</h2>
+        <p className="mt-1 text-sm text-text-secondary">
+          Rattachez des compétences du référentiel à cette formation, avec le niveau visé. Les compétences{" "}
+          <strong>primaires</strong> sont mises en avant sur la fiche ; une formation validée les crédite au passeport
+          de l&apos;apprenant.
+        </p>
+      </div>
+
+      {/* Ajouter une compétence */}
+      <div className="flex flex-col gap-2 rounded-xl border border-navy/[0.08] bg-surface-secondary/40 p-3 sm:flex-row sm:items-end">
+        <div className="min-w-0 flex-1">
+          <p className="mb-1 text-xs font-semibold text-navy">Ajouter une compétence</p>
+          <Select
+            value={pick}
+            onChange={setPick}
+            options={[
+              { value: "", label: available.length ? "Choisir une compétence…" : "Toutes rattachées (ou référentiel vide)" },
+              ...available.map((o) => ({ value: o.id, label: o.domain ? `${o.name} · ${o.domain}` : o.name })),
+            ]}
+            buttonClassName="py-2"
+          />
+        </div>
+        <button
+          type="button"
+          disabled={pending || !pick}
+          onClick={() => {
+            const id = pick;
+            setPick("");
+            run(() => setCourseSkill(course.id, id, "OPERATIONAL", false));
+          }}
+          className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg bg-gradient-da px-4 py-2 text-sm font-semibold text-white shadow-brand transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <Plus size={15} /> Rattacher
+        </button>
+      </div>
+
+      {available.length === 0 && attached.length === 0 && (
+        <p className="text-xs text-text-muted">
+          {isAdmin ? (
+            <>
+              Le référentiel est vide. Créez des compétences dans{" "}
+              <Link href="/admin/competences" className="font-semibold text-brand-blue-royal hover:underline">
+                Admin · Compétences
+              </Link>
+              .
+            </>
+          ) : (
+            <>Le référentiel de compétences est vide. Demandez à un administrateur d&apos;en créer avant de pouvoir les rattacher.</>
+          )}
+        </p>
+      )}
+
+      {/* Liste des compétences rattachées */}
+      {attached.length === 0 ? (
+        <p className="rounded-xl border border-dashed border-navy/15 px-4 py-6 text-center text-sm text-text-muted">
+          Aucune compétence rattachée pour l&apos;instant.
+        </p>
+      ) : (
+        <ul className="space-y-2">
+          {attached.map((cs) => (
+            <li
+              key={cs.skillId}
+              className="flex flex-wrap items-center gap-2.5 rounded-xl border border-navy/[0.08] bg-surface-primary p-3"
+            >
+              <span className="min-w-0 flex-1">
+                <span className="block truncate font-semibold text-navy">{cs.skill.name}</span>
+                {cs.skill.domain && <span className="block truncate text-xs text-text-muted">{cs.skill.domain}</span>}
+              </span>
+              <div className="w-36 shrink-0">
+                <Select
+                  value={cs.targetLevel}
+                  onChange={(v) => run(() => setCourseSkill(course.id, cs.skillId, v as (typeof SKILL_LEVELS)[number], cs.isPrimary))}
+                  options={SKILL_LEVELS.map((l) => ({ value: l, label: SKILL_LEVEL_LABEL[l] }))}
+                  buttonClassName="py-1.5 text-xs"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={() => run(() => setCourseSkill(course.id, cs.skillId, cs.targetLevel as (typeof SKILL_LEVELS)[number], !cs.isPrimary))}
+                aria-pressed={cs.isPrimary}
+                title={cs.isPrimary ? "Compétence primaire" : "Marquer comme primaire"}
+                className={cn(
+                  "inline-flex shrink-0 items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition-colors",
+                  cs.isPrimary
+                    ? "border-transparent bg-gradient-da text-white shadow-brand"
+                    : "border-navy/15 text-text-secondary hover:border-brand-blue-vif/40 hover:text-brand-blue-royal",
+                )}
+              >
+                <Star size={13} className={cs.isPrimary ? "fill-current" : ""} aria-hidden />
+                Primaire
+              </button>
+              <button
+                type="button"
+                onClick={() => run(() => removeCourseSkill(course.id, cs.skillId))}
+                aria-label={`Détacher ${cs.skill.name}`}
+                className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-text-muted transition-colors hover:bg-error/10 hover:text-error"
+              >
+                <X size={15} />
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <Feedback msg={msg} />
+    </div>
+  );
+}
 
 function RattachementsTab({ course, schools }: { course: CourseAdmin; schools: { id: string; name: string; color: string }[] }) {
   const { pending, msg, run } = useAdminAction();

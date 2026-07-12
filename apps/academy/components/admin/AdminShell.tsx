@@ -22,6 +22,7 @@ import {
   PanelLeftOpen,
   Ticket,
   ClipboardCheck,
+  Target,
 } from "lucide-react";
 import { cn, Avatar } from "@da/ui";
 
@@ -201,6 +202,7 @@ export function AdminShell({
       { label: "Formations", href: "/admin/formations", icon: BookOpen },
       { label: "Parcours", href: "/admin/parcours", icon: Route },
       { label: "Écoles", href: "/admin/ecoles", icon: GraduationCap },
+      { label: "Compétences", href: "/admin/competences", icon: Target },
       { label: "Utilisateurs", href: "/admin/utilisateurs", icon: Users },
       { label: "Paiements", href: "/admin/paiements", icon: CreditCard, badge: pendingPayments || undefined },
       { label: "Coupons", href: "/admin/coupons", icon: Ticket },

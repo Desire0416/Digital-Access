@@ -14,6 +14,7 @@ import {
   Briefcase,
   Heart,
   Settings,
+  Target,
   type LucideIcon,
 } from "lucide-react";
 import { cn, Avatar } from "@da/ui";
@@ -31,6 +32,7 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   "/espace/projets": FolderKanban,
   "/espace/evaluations": ClipboardCheck,
   "/espace/certificats": Award,
+  "/espace/competences": Target,
   "/espace/portfolio": Briefcase,
   "/espace/favoris": Heart,
   "/espace/parametres": Settings,

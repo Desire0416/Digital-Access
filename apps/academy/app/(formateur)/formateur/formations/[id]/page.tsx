@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { requireCourseEditor } from "@/lib/guards";
 import { getCourseForEditor } from "@/lib/admin-queries";
+import { getSkillOptions } from "@/lib/skill-queries";
 import { CourseBuilder } from "@/components/admin/CourseBuilder";
 
 export const metadata: Metadata = { title: "Éditer une formation — Studio formateur" };
@@ -17,13 +18,14 @@ export default async function FormateurCourseEditorPage({ params }: { params: Pr
   const editor = await requireCourseEditor(id);
   if (!editor) notFound();
 
-  const course = await getCourseForEditor(id);
+  const [course, skillOptions] = await Promise.all([getCourseForEditor(id), getSkillOptions()]);
   if (!course) notFound();
 
   return (
     <CourseBuilder
       course={course}
       schools={[]}
+      skillOptions={skillOptions}
       canManageSchools={false}
       canPublish={false}
       backHref="/formateur/formations"

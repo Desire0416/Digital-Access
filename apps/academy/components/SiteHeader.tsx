@@ -23,6 +23,7 @@ import {
   Briefcase,
   Heart,
   Settings,
+  Target,
 } from "lucide-react";
 import { cn, buttonClasses, Avatar, useScrolled } from "@da/ui";
 import { mainNav, userNav } from "@/lib/site";
@@ -54,6 +55,7 @@ const USER_NAV_ICONS: Record<string, React.ComponentType<{ size?: number | strin
   "/espace/projets": FolderKanban,
   "/espace/evaluations": ClipboardCheck,
   "/espace/certificats": Award,
+  "/espace/competences": Target,
   "/espace/portfolio": Briefcase,
   "/espace/favoris": Heart,
   "/espace/parametres": Settings,
