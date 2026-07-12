@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { prisma, type ContentStatus, type Role, type LessonType, type QuestionType } from "@da/academy-db/client";
+import { prisma, Prisma, type ContentStatus, type Role, type LessonType, type QuestionType } from "@da/academy-db/client";
 import { requireAdminFresh, requireCourseEditor, currentUserFresh, isAdmin, hasRole } from "./guards";
 import { createNotification } from "./notify";
 import { revokeCertificate, restoreCertificate } from "./certification";
@@ -911,43 +911,119 @@ export async function deleteAssessment(assessmentId: string): Promise<AdminActio
 
 /* ─── Questions (§18.3) — encodage correctAnswer strict (§5) ───────────────── */
 
+// options : string[] (choix / ordonnancement) OU { left, right } (appariement).
+const matchingOptions = z.object({
+  left: z.array(z.string().trim().min(1)).min(2).max(10),
+  right: z.array(z.string().trim().min(1)).min(2).max(10),
+});
 const questionSchema = z
   .object({
-    type: z.enum(["SINGLE_CHOICE", "MULTIPLE_CHOICE", "TRUE_FALSE"]),
+    type: z.enum(["SINGLE_CHOICE", "MULTIPLE_CHOICE", "TRUE_FALSE", "SHORT_ANSWER", "MATCHING", "ORDERING"]),
     question: z.string().trim().min(1, "Énoncé requis.").max(2000),
-    options: z.array(z.string().trim().min(1)).max(12).optional(),
+    options: z.union([z.array(z.string().trim().min(1)).max(12), matchingOptions]).optional(),
     correctAnswer: z.unknown(),
     explanation: z.string().trim().max(2000).optional().or(z.literal("")),
     points: z.number().int().min(1).max(100).optional(),
   })
   .superRefine((d, ctx) => {
-    if (d.type === "TRUE_FALSE") {
-      if (typeof d.correctAnswer !== "boolean") ctx.addIssue({ code: "custom", message: "Indiquez si l'affirmation est vraie ou fausse.", path: ["correctAnswer"] });
-      return;
-    }
-    const opts = d.options ?? [];
-    if (opts.length < 2) {
-      ctx.addIssue({ code: "custom", message: "Au moins deux options sont requises.", path: ["options"] });
-      return;
-    }
-    if (d.type === "SINGLE_CHOICE") {
-      if (typeof d.correctAnswer !== "number" || d.correctAnswer < 0 || d.correctAnswer >= opts.length)
-        ctx.addIssue({ code: "custom", message: "Sélectionnez la bonne réponse.", path: ["correctAnswer"] });
-    } else {
-      const ok = Array.isArray(d.correctAnswer) && d.correctAnswer.length > 0 && d.correctAnswer.every((n) => typeof n === "number" && n >= 0 && n < opts.length);
-      if (!ok) ctx.addIssue({ code: "custom", message: "Cochez au moins une bonne réponse.", path: ["correctAnswer"] });
+    const arr = Array.isArray(d.options) ? d.options : null;
+    switch (d.type) {
+      case "TRUE_FALSE": {
+        if (typeof d.correctAnswer !== "boolean")
+          ctx.addIssue({ code: "custom", message: "Indiquez si l'affirmation est vraie ou fausse.", path: ["correctAnswer"] });
+        return;
+      }
+      case "SHORT_ANSWER": {
+        const ok =
+          Array.isArray(d.correctAnswer) &&
+          d.correctAnswer.length > 0 &&
+          d.correctAnswer.every((v) => typeof v === "string" && v.trim().length > 0);
+        if (!ok) ctx.addIssue({ code: "custom", message: "Saisissez au moins une réponse acceptée.", path: ["correctAnswer"] });
+        return;
+      }
+      case "MATCHING": {
+        const m = d.options && !Array.isArray(d.options) ? d.options : null;
+        if (!m || m.left.length < 2 || m.left.length !== m.right.length) {
+          ctx.addIssue({ code: "custom", message: "Renseignez au moins deux paires (colonnes de même longueur).", path: ["options"] });
+          return;
+        }
+        const ok =
+          Array.isArray(d.correctAnswer) &&
+          d.correctAnswer.length === m.left.length &&
+          d.correctAnswer.every((n) => typeof n === "number" && n >= 0 && n < m.right.length);
+        if (!ok) ctx.addIssue({ code: "custom", message: "Associez chaque élément de gauche à un élément de droite.", path: ["correctAnswer"] });
+        return;
+      }
+      case "ORDERING": {
+        if (!arr || arr.length < 2)
+          ctx.addIssue({ code: "custom", message: "Saisissez au moins deux éléments à ordonner.", path: ["options"] });
+        return; // correctAnswer implicite = ordre de saisie.
+      }
+      case "SINGLE_CHOICE": {
+        if (!arr || arr.length < 2) {
+          ctx.addIssue({ code: "custom", message: "Au moins deux options sont requises.", path: ["options"] });
+          return;
+        }
+        if (typeof d.correctAnswer !== "number" || d.correctAnswer < 0 || d.correctAnswer >= arr.length)
+          ctx.addIssue({ code: "custom", message: "Sélectionnez la bonne réponse.", path: ["correctAnswer"] });
+        return;
+      }
+      case "MULTIPLE_CHOICE": {
+        if (!arr || arr.length < 2) {
+          ctx.addIssue({ code: "custom", message: "Au moins deux options sont requises.", path: ["options"] });
+          return;
+        }
+        const ok =
+          Array.isArray(d.correctAnswer) &&
+          d.correctAnswer.length > 0 &&
+          d.correctAnswer.every((n) => typeof n === "number" && n >= 0 && n < arr.length);
+        if (!ok) ctx.addIssue({ code: "custom", message: "Cochez au moins une bonne réponse.", path: ["correctAnswer"] });
+        return;
+      }
     }
   });
 
 export type QuestionInput = z.input<typeof questionSchema>;
 
+/** Normalise l'encodage stocké selon le type (voir contrat §5 / learn-actions). */
 function questionData(d: z.infer<typeof questionSchema>) {
-  const options = d.type === "TRUE_FALSE" ? undefined : (d.options ?? []);
+  let options: Prisma.InputJsonValue | typeof Prisma.JsonNull;
+  let correctAnswer: Prisma.InputJsonValue | typeof Prisma.JsonNull;
+
+  switch (d.type) {
+    case "TRUE_FALSE":
+      options = Prisma.JsonNull;
+      correctAnswer = d.correctAnswer as boolean;
+      break;
+    case "SHORT_ANSWER":
+      options = Prisma.JsonNull;
+      // Réponses acceptées, nettoyées.
+      correctAnswer = (d.correctAnswer as string[]).map((s) => s.trim()).filter(Boolean);
+      break;
+    case "MATCHING": {
+      const m = d.options as { left: string[]; right: string[] };
+      options = { left: m.left, right: m.right };
+      correctAnswer = d.correctAnswer as number[];
+      break;
+    }
+    case "ORDERING": {
+      const items = (d.options as string[]) ?? [];
+      options = items; // ordre d'auteur = ordre correct
+      correctAnswer = items.map((_, i) => i); // [0,1,…,n-1] (explicite)
+      break;
+    }
+    default: {
+      // SINGLE_CHOICE / MULTIPLE_CHOICE
+      options = (d.options as string[]) ?? [];
+      correctAnswer = d.correctAnswer as number | number[];
+    }
+  }
+
   return {
     type: d.type as QuestionType,
     question: d.question,
-    options: options as unknown as object | undefined,
-    correctAnswer: d.correctAnswer as unknown as object,
+    options,
+    correctAnswer,
     explanation: d.explanation || null,
     points: d.points ?? 1,
   };

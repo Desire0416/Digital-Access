@@ -874,6 +874,10 @@ export interface TakingQuestion {
   question: string;
   /** Choix proposés (SINGLE/MULTIPLE_CHOICE). TRUE_FALSE : options implicites [« Vrai », « Faux »]. */
   options: string[] | null;
+  /** MATCHING : colonnes à apparier (droite dans l'ordre d'auteur ; l'appariement correct N'est PAS envoyé). */
+  matching: { left: string[]; right: string[] } | null;
+  /** ORDERING : items MÉLANGÉS avec leur index d'origine (l'ordre correct N'est PAS envoyé). */
+  ordering: { id: number; text: string }[] | null;
   points: number;
   order: number;
 }
@@ -914,14 +918,33 @@ export async function getAssessmentForTaking(assessmentId: string, userId: strin
   if (!enrollment || !ACQUIRED.includes(enrollment.status)) return null;
 
   const attemptsUsed = await prisma.assessmentAttempt.count({ where: { assessmentId, userId } });
-  const plainQuestions: TakingQuestion[] = assessment.questions.map((q) => ({
-    id: q.id,
-    type: q.type,
-    question: q.question,
-    options: Array.isArray(q.options) ? (q.options as string[]) : null,
-    points: q.points,
-    order: q.order,
-  }));
+  const plainQuestions: TakingQuestion[] = assessment.questions.map((q) => {
+    const opts = q.options;
+    let options: string[] | null = null;
+    let matching: { left: string[]; right: string[] } | null = null;
+    let ordering: { id: number; text: string }[] | null = null;
+
+    if (q.type === "MATCHING" && opts && typeof opts === "object" && !Array.isArray(opts)) {
+      const o = opts as { left?: unknown; right?: unknown };
+      const left = Array.isArray(o.left) ? (o.left.filter((x) => typeof x === "string") as string[]) : [];
+      const right = Array.isArray(o.right) ? (o.right.filter((x) => typeof x === "string") as string[]) : [];
+      // On MÉLANGE la colonne de droite : sinon l'alignement gauche[i] ↔ droite[i]
+      // révèle la bonne réponse quand correctAnswer est l'identité (cas d'auteur par
+      // défaut). La réponse du client est le TEXTE choisi, comparé serveur (§5 sécurité).
+      matching = { left, right: [...right].sort(() => Math.random() - 0.5) };
+    } else if (q.type === "ORDERING" && Array.isArray(opts)) {
+      // Items MÉLANGÉS. `id` = position D'AFFICHAGE (après mélange), jamais l'index
+      // d'auteur : l'ordre correct ne peut donc pas se déduire du payload (§5 sécurité).
+      // La réponse renvoyée par le client est la suite des TEXTES (comparée serveur).
+      const items = (opts as unknown[]).filter((x): x is string => typeof x === "string");
+      const shuffled = [...items].sort(() => Math.random() - 0.5);
+      ordering = shuffled.map((text, id) => ({ id, text }));
+    } else if (Array.isArray(opts)) {
+      options = (opts as unknown[]).filter((x): x is string => typeof x === "string");
+    }
+
+    return { id: q.id, type: q.type, question: q.question, options, matching, ordering, points: q.points, order: q.order };
+  });
   const questions = assessment.shuffleQuestions ? plainQuestions.sort(() => Math.random() - 0.5) : plainQuestions;
 
   return {

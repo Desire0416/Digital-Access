@@ -470,14 +470,34 @@ export async function markLessonComplete(lessonId: string): Promise<MarkLessonRe
 
 /* ─── Quiz — scoring 100 % serveur ─────────────────────────────────────────── */
 
-const answerValue = z.union([z.number().int(), z.array(z.number().int()), z.boolean()]);
+// SINGLE=index · MULTIPLE=index[] · TRUE_FALSE=bool · SHORT_ANSWER=string ·
+// MATCHING=string[] (leftIndex→TEXTE droit choisi) · ORDERING=string[] (TEXTES dans l'ordre choisi).
+const answerValue = z.union([
+  z.number().int(),
+  z.array(z.number().int()),
+  z.boolean(),
+  z.string().max(2000),
+  z.array(z.string().max(2000)).max(30),
+]);
 const submitQuizSchema = z.record(z.string(), answerValue);
+
+/** Normalise un texte pour comparer une réponse courte (casse/accents/espaces). */
+function normalizeText(s: string): string {
+  return s
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/\s+/g, " ");
+}
 
 export type QuizCorrection = {
   questionId: string;
   correct: boolean;
-  /** Révélé APRÈS soumission uniquement. */
+  /** Révélé APRÈS soumission uniquement (types à choix : indices). */
   correctAnswer: number | number[] | boolean | null;
+  /** Bonne réponse en texte (réponse courte / appariement / ordonnancement). */
+  correctText: string | null;
   explanation: string | null;
 };
 
@@ -517,7 +537,7 @@ export async function submitQuiz(assessmentId: string, answers: unknown): Promis
       courseId: true,
       questions: {
         orderBy: { order: "asc" },
-        select: { id: true, type: true, correctAnswer: true, explanation: true, points: true },
+        select: { id: true, type: true, options: true, correctAnswer: true, explanation: true, points: true },
       },
     },
   });
@@ -548,6 +568,7 @@ export async function submitQuiz(assessmentId: string, answers: unknown): Promis
     const answer = given[q.id];
     let correct = false;
     let revealed: number | number[] | boolean | null = null;
+    let correctText: string | null = null;
 
     switch (q.type) {
       case "SINGLE_CHOICE": {
@@ -562,7 +583,7 @@ export async function submitQuiz(assessmentId: string, answers: unknown): Promis
         revealed = expected;
         totalPoints += q.points;
         if (expected && Array.isArray(answer)) {
-          const a = [...new Set(answer)].sort((x, y) => x - y);
+          const a = [...new Set(answer as number[])].sort((x, y) => x - y);
           const e = [...new Set(expected)].sort((x, y) => x - y);
           correct = a.length === e.length && a.every((v, i) => v === e[i]);
         }
@@ -575,13 +596,73 @@ export async function submitQuiz(assessmentId: string, answers: unknown): Promis
         correct = expected !== null && typeof answer === "boolean" && answer === expected;
         break;
       }
+      case "SHORT_ANSWER": {
+        // correctAnswer = string[] (réponses acceptées) ; comparaison normalisée.
+        totalPoints += q.points;
+        const accepted = Array.isArray(q.correctAnswer)
+          ? (q.correctAnswer as unknown[]).filter((v): v is string => typeof v === "string")
+          : [];
+        const normAccepted = accepted.map(normalizeText);
+        correct = typeof answer === "string" && normAccepted.includes(normalizeText(answer));
+        correctText = accepted.length ? `Réponse attendue : ${accepted[0]}` : null;
+        break;
+      }
+      case "MATCHING": {
+        // options = { left[], right[] } (ordre d'auteur) ; correctAnswer = number[]
+        // (leftIndex→rightIndex d'auteur). La colonne droite est MÉLANGÉE à l'affichage
+        // (learn-queries) donc le client renvoie le TEXTE choisi — on compare texte à
+        // texte contre right[correctAnswer[i]] : aucune fuite par alignement d'index.
+        totalPoints += q.points;
+        const expected = Array.isArray(q.correctAnswer) ? (q.correctAnswer as number[]) : null;
+        const opts =
+          q.options && typeof q.options === "object" && !Array.isArray(q.options)
+            ? (q.options as { left?: string[]; right?: string[] })
+            : null;
+        const right = opts?.right ?? [];
+        const submitted = Array.isArray(answer) ? answer : [];
+        if (
+          expected &&
+          right.length > 0 &&
+          submitted.length === expected.length &&
+          expected.every(
+            (r, i) =>
+              typeof submitted[i] === "string" &&
+              typeof right[r] === "string" &&
+              normalizeText(submitted[i] as string) === normalizeText(right[r]),
+          )
+        ) {
+          correct = true;
+        }
+        if (expected && opts?.left && opts.right) {
+          correctText =
+            "Bonnes associations — " +
+            expected.map((r, i) => `${opts.left![i]} ↔ ${opts.right![r]}`).join(" · ");
+        }
+        break;
+      }
+      case "ORDERING": {
+        // options = items dans l'ORDRE correct (ordre d'auteur). Le client renvoie la
+        // suite des TEXTES qu'il a ordonnés ; on compare texte à texte (normalisé) —
+        // aucune référence à un index d'origine n'a transité côté client (§5 sécurité).
+        totalPoints += q.points;
+        const items = Array.isArray(q.options)
+          ? (q.options as unknown[]).filter((v): v is string => typeof v === "string")
+          : [];
+        const submitted = Array.isArray(answer) ? answer : [];
+        correct =
+          items.length > 0 &&
+          submitted.length === items.length &&
+          items.every((it, i) => typeof submitted[i] === "string" && normalizeText(submitted[i] as string) === normalizeText(it));
+        correctText = items.length ? "Ordre correct : " + items.join(" → ") : null;
+        break;
+      }
       default:
-        // Types à correction manuelle : exclus du scoring automatique.
+        // Type inconnu / non auto-notable : exclu du scoring.
         continue;
     }
 
     if (correct) earnedPoints += q.points;
-    corrections.push({ questionId: q.id, correct, correctAnswer: revealed, explanation: q.explanation });
+    corrections.push({ questionId: q.id, correct, correctAnswer: revealed, correctText, explanation: q.explanation });
   }
 
   const score = totalPoints === 0 ? 0 : Math.round((earnedPoints / totalPoints) * 100);
@@ -596,7 +677,7 @@ export async function submitQuiz(assessmentId: string, answers: unknown): Promis
   const canReveal = passed || isFinalAttempt;
   const safeCorrections = canReveal
     ? corrections
-    : corrections.map((c) => ({ ...c, correctAnswer: null, explanation: null }));
+    : corrections.map((c) => ({ ...c, correctAnswer: null, correctText: null, explanation: null }));
 
   await prisma.assessmentAttempt.create({
     data: {

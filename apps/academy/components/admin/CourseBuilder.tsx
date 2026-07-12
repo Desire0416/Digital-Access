@@ -18,6 +18,8 @@ import {
   CheckCircle2,
   AlertTriangle,
   Star,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react";
 import { cn, GradientText } from "@da/ui";
 import type { ContentStatus } from "@da/academy-db/client";
@@ -45,6 +47,7 @@ import {
   attachCourseToSchool,
   detachCourseFromSchool,
   submitCourseForReview,
+  type QuestionInput,
 } from "@/lib/admin-actions";
 import { CONTENT_STATUS_LABEL, CONTENT_STATUS_TONE, StatusPill } from "./ui";
 import { inputClass, textareaClass, FieldLabel, linesToArray, arrayToLines } from "./forms";
@@ -668,20 +671,63 @@ function AddQuestionButton({ assessmentId }: { assessmentId: string }) {
   );
 }
 
-type QType = "SINGLE_CHOICE" | "MULTIPLE_CHOICE" | "TRUE_FALSE";
+type QType = "SINGLE_CHOICE" | "MULTIPLE_CHOICE" | "TRUE_FALSE" | "SHORT_ANSWER" | "MATCHING" | "ORDERING";
+
+const ALL_Q_TYPES: QType[] = ["SINGLE_CHOICE", "MULTIPLE_CHOICE", "TRUE_FALSE", "SHORT_ANSWER", "MATCHING", "ORDERING"];
 
 function QuestionEditor({ question, index }: { question: QuestionT; index: number }) {
   const { pending, msg, run } = useAdminAction();
-  const initialType = (["SINGLE_CHOICE", "MULTIPLE_CHOICE", "TRUE_FALSE"].includes(question.type) ? question.type : "SINGLE_CHOICE") as QType;
+  const initialType = (ALL_Q_TYPES.includes(question.type as QType) ? question.type : "SINGLE_CHOICE") as QType;
   const [type, setType] = React.useState<QType>(initialType);
   const [text, setText] = React.useState(question.question);
-  const [options, setOptions] = React.useState<string[]>(() => {
-    const o = question.options as unknown as string[] | null;
-    return Array.isArray(o) && o.length ? o : ["Option 1", "Option 2"];
-  });
-  const [single, setSingle] = React.useState<number>(() => (typeof question.correctAnswer === "number" ? (question.correctAnswer as number) : 0));
-  const [multi, setMulti] = React.useState<number[]>(() => (Array.isArray(question.correctAnswer) ? (question.correctAnswer as number[]) : []));
-  const [tf, setTf] = React.useState<boolean>(() => question.correctAnswer === true);
+
+  // Encodage stocké relu à l'initialisation : options = string[] (choix / ordre)
+  // OU { left, right } (appariement) ; correctAnswer selon le type (§5).
+  const rawOptions = question.options as unknown;
+  const rawAnswer = question.correctAnswer as unknown;
+  const asStrings = (v: unknown): string[] | null =>
+    Array.isArray(v) ? (v.filter((x) => typeof x === "string") as string[]) : null;
+  const matchingRaw =
+    rawOptions && typeof rawOptions === "object" && !Array.isArray(rawOptions) && "left" in rawOptions && "right" in rawOptions
+      ? (rawOptions as { left: unknown; right: unknown })
+      : null;
+  const rawStringOptions = asStrings(rawOptions);
+  const initLeft = (matchingRaw && asStrings(matchingRaw.left)) || ["Élément 1", "Élément 2"];
+  const initRight = (matchingRaw && asStrings(matchingRaw.right)) || ["Correspondance 1", "Correspondance 2"];
+
+  // Choix unique / multiple
+  const [options, setOptions] = React.useState<string[]>(() =>
+    rawStringOptions && rawStringOptions.length ? rawStringOptions : ["Option 1", "Option 2"],
+  );
+  const [single, setSingle] = React.useState<number>(() => (typeof rawAnswer === "number" ? (rawAnswer as number) : 0));
+  const [multi, setMulti] = React.useState<number[]>(() =>
+    Array.isArray(rawAnswer) ? (rawAnswer.filter((x) => typeof x === "number") as number[]) : [],
+  );
+  const [tf, setTf] = React.useState<boolean>(() => rawAnswer === true);
+
+  // Réponse courte : liste de réponses acceptées.
+  const [accepted, setAccepted] = React.useState<string[]>(() =>
+    Array.isArray(rawAnswer) && rawAnswer.length > 0 && rawAnswer.every((v) => typeof v === "string")
+      ? (rawAnswer as string[])
+      : [""],
+  );
+
+  // Appariement : colonnes left/right (même longueur) + pairs[i] = index dans right.
+  const [left, setLeft] = React.useState<string[]>(() => initLeft);
+  const [right, setRight] = React.useState<string[]>(() => initRight);
+  const [pairs, setPairs] = React.useState<number[]>(() =>
+    Array.isArray(rawAnswer) &&
+    rawAnswer.length === initLeft.length &&
+    rawAnswer.every((n) => typeof n === "number" && n >= 0 && n < initRight.length)
+      ? (rawAnswer as number[])
+      : initLeft.map(() => 0),
+  );
+
+  // Ordonnancement : éléments saisis dans l'ordre correct.
+  const [orderItems, setOrderItems] = React.useState<string[]>(() =>
+    rawStringOptions && rawStringOptions.length >= 2 ? rawStringOptions : ["Élément 1", "Élément 2"],
+  );
+
   const [explanation, setExplanation] = React.useState(question.explanation ?? "");
   const [points, setPoints] = React.useState(question.points.toString());
 
@@ -694,14 +740,78 @@ function QuestionEditor({ question, index }: { question: QuestionT; index: numbe
     setMulti((m) => m.filter((x) => x !== i).map((x) => (x > i ? x - 1 : x)));
   }
 
+  // Réponse courte
+  function setAcceptedAt(i: number, v: string) {
+    setAccepted((prev) => prev.map((a, idx) => (idx === i ? v : a)));
+  }
+  function addAccepted() {
+    setAccepted((prev) => [...prev, ""]);
+  }
+  function removeAccepted(i: number) {
+    setAccepted((prev) => (prev.length <= 1 ? prev : prev.filter((_, idx) => idx !== i)));
+  }
+
+  // Appariement — une paire par ligne : left/right grandissent ensemble (invariant left.length === right.length === pairs.length).
+  function setLeftAt(i: number, v: string) {
+    setLeft((prev) => prev.map((l, idx) => (idx === i ? v : l)));
+  }
+  function setRightAt(i: number, v: string) {
+    setRight((prev) => prev.map((r, idx) => (idx === i ? v : r)));
+  }
+  function setPairAt(i: number, v: number) {
+    setPairs((prev) => prev.map((p, idx) => (idx === i ? v : p)));
+  }
+  function addPairRow() {
+    const n = left.length;
+    setLeft([...left, `Élément ${n + 1}`]);
+    setRight([...right, `Correspondance ${n + 1}`]);
+    setPairs([...pairs, n]); // par défaut, la nouvelle ligne s'apparie à sa propre correspondance.
+  }
+  function removePairRow(j: number) {
+    if (left.length <= 2) return;
+    setLeft(left.filter((_, i) => i !== j));
+    setRight(right.filter((_, i) => i !== j));
+    setPairs(pairs.filter((_, i) => i !== j).map((p) => (p === j ? 0 : p > j ? p - 1 : p)));
+  }
+
+  // Ordonnancement
+  function setOrderItemAt(i: number, v: string) {
+    setOrderItems((prev) => prev.map((o, idx) => (idx === i ? v : o)));
+  }
+  function addOrderItem() {
+    setOrderItems((prev) => [...prev, `Élément ${prev.length + 1}`]);
+  }
+  function removeOrderItem(i: number) {
+    setOrderItems((prev) => (prev.length <= 2 ? prev : prev.filter((_, idx) => idx !== i)));
+  }
+  function moveOrderItem(i: number, dir: -1 | 1) {
+    const target = i + dir;
+    if (target < 0 || target >= orderItems.length) return;
+    const next = [...orderItems];
+    [next[i], next[target]] = [next[target], next[i]];
+    setOrderItems(next);
+  }
+
   function save() {
-    const base = { question: text, explanation, points: Number(points) || 1 };
-    const input =
+    const base = { question: text.trim(), explanation, points: Number(points) || 1 };
+    const input: QuestionInput =
       type === "TRUE_FALSE"
         ? { type, correctAnswer: tf, ...base }
-        : type === "SINGLE_CHOICE"
-          ? { type, options, correctAnswer: single, ...base }
-          : { type, options, correctAnswer: multi, ...base };
+        : type === "SHORT_ANSWER"
+          ? { type, correctAnswer: accepted.map((a) => a.trim()).filter(Boolean), ...base }
+          : type === "MATCHING"
+            ? {
+                type,
+                options: { left: left.map((l) => l.trim()), right: right.map((r) => r.trim()) },
+                correctAnswer: pairs,
+                ...base,
+              }
+            : type === "ORDERING"
+              ? // ORDERING : l'ordre de saisie EST l'ordre correct — on omet correctAnswer (§5).
+                { type, options: orderItems.map((o) => o.trim()).filter(Boolean), ...base }
+              : type === "SINGLE_CHOICE"
+                ? { type, options: options.map((o) => o.trim()), correctAnswer: single, ...base }
+                : { type, options: options.map((o) => o.trim()), correctAnswer: multi, ...base };
     run(() => updateQuestion(question.id, input));
   }
 
@@ -710,14 +820,18 @@ function QuestionEditor({ question, index }: { question: QuestionT; index: numbe
       <div className="mb-2 flex items-center gap-2">
         <span className="grid h-6 w-6 shrink-0 place-items-center rounded-md bg-brand-violet/10 text-xs font-bold text-brand-violet">{index + 1}</span>
         <HelpCircle size={14} className="text-text-muted" />
-        <div className="ml-auto w-40">
+        <div className="ml-auto w-44">
           <Select
             value={type}
             onChange={(v) => setType(v as QType)}
+            ariaLabel="Type de question"
             options={[
               { value: "SINGLE_CHOICE", label: "Choix unique" },
               { value: "MULTIPLE_CHOICE", label: "Choix multiple" },
               { value: "TRUE_FALSE", label: "Vrai / Faux" },
+              { value: "SHORT_ANSWER", label: "Réponse courte" },
+              { value: "MATCHING", label: "Appariement" },
+              { value: "ORDERING", label: "Ordonnancement" },
             ]}
             buttonClassName="py-1.5 text-xs"
           />
@@ -741,6 +855,156 @@ function QuestionEditor({ question, index }: { question: QuestionT; index: numbe
               {val ? "Vrai" : "Faux"}
             </button>
           ))}
+        </div>
+      ) : type === "SHORT_ANSWER" ? (
+        <div className="mt-2 space-y-2">
+          {accepted.map((ans, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <span className="grid h-6 w-6 shrink-0 place-items-center rounded-md bg-success/10 text-success" aria-hidden>
+                <CheckCircle2 size={13} />
+              </span>
+              <input
+                value={ans}
+                onChange={(e) => setAcceptedAt(i, e.target.value)}
+                className={cn(inputClass, "py-1.5")}
+                placeholder={`Réponse acceptée ${i + 1}`}
+                aria-label={`Réponse acceptée ${i + 1}`}
+              />
+              <button
+                type="button"
+                onClick={() => removeAccepted(i)}
+                disabled={accepted.length <= 1}
+                className="shrink-0 text-text-muted transition-colors hover:text-error disabled:opacity-30"
+                aria-label="Retirer la réponse acceptée"
+              >
+                <span className="text-lg leading-none">×</span>
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={addAccepted}
+            className="text-xs font-semibold text-brand-blue-royal transition-colors hover:text-brand-violet"
+          >
+            + Ajouter une réponse acceptée
+          </button>
+          <p className="text-xs text-text-muted">Toute réponse équivalente (casse/accents ignorés) sera acceptée.</p>
+        </div>
+      ) : type === "MATCHING" ? (
+        <div className="mt-2 space-y-2">
+          <p className="text-xs text-text-muted">
+            Renseignez chaque paire, puis indiquez la bonne correspondance. Les colonnes sont mélangées pour l'apprenant.
+          </p>
+          {left.map((l, i) => (
+            <div key={i} className="space-y-2 rounded-lg border border-navy/[0.08] bg-surface-secondary/40 p-2">
+              <div className="flex items-center gap-2">
+                <span className="grid h-6 w-6 shrink-0 place-items-center rounded-md bg-brand-violet/10 text-xs font-bold text-brand-violet">
+                  {i + 1}
+                </span>
+                <input
+                  value={l}
+                  onChange={(e) => setLeftAt(i, e.target.value)}
+                  className={cn(inputClass, "py-1.5")}
+                  placeholder={`Élément ${i + 1}`}
+                  aria-label={`Élément de gauche ${i + 1}`}
+                />
+                <span className="shrink-0 text-text-muted" aria-hidden>
+                  ↔
+                </span>
+                <input
+                  value={right[i] ?? ""}
+                  onChange={(e) => setRightAt(i, e.target.value)}
+                  className={cn(inputClass, "py-1.5")}
+                  placeholder={`Correspondance ${i + 1}`}
+                  aria-label={`Élément de droite ${i + 1}`}
+                />
+                <button
+                  type="button"
+                  onClick={() => removePairRow(i)}
+                  disabled={left.length <= 2}
+                  className="shrink-0 text-text-muted transition-colors hover:text-error disabled:opacity-30"
+                  aria-label="Retirer la paire"
+                >
+                  <span className="text-lg leading-none">×</span>
+                </button>
+              </div>
+              <div className="flex items-center gap-2 pl-8">
+                <span className="shrink-0 text-xs font-medium text-text-secondary">Bonne correspondance :</span>
+                <div className="w-48">
+                  <Select
+                    value={String(pairs[i] ?? 0)}
+                    onChange={(v) => setPairAt(i, Number(v))}
+                    ariaLabel={`Bonne correspondance pour l'élément ${i + 1}`}
+                    options={right.map((r, idx) => ({ value: String(idx), label: r.trim() || `Correspondance ${idx + 1}` }))}
+                    buttonClassName="py-1.5 text-xs"
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={addPairRow}
+            disabled={left.length >= 10}
+            className="text-xs font-semibold text-brand-blue-royal transition-colors hover:text-brand-violet disabled:opacity-40"
+          >
+            + Ajouter une paire
+          </button>
+        </div>
+      ) : type === "ORDERING" ? (
+        <div className="mt-2 space-y-2">
+          {orderItems.map((it, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <span className="grid h-6 w-6 shrink-0 place-items-center rounded-md bg-brand-blue-vif/10 text-xs font-bold text-brand-blue-royal">
+                {i + 1}
+              </span>
+              <div className="flex shrink-0 flex-col">
+                <button
+                  type="button"
+                  onClick={() => moveOrderItem(i, -1)}
+                  disabled={i === 0}
+                  className="text-text-muted transition-colors hover:text-brand-blue-royal disabled:opacity-30"
+                  aria-label="Monter l'élément"
+                >
+                  <ArrowUp size={13} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => moveOrderItem(i, 1)}
+                  disabled={i === orderItems.length - 1}
+                  className="text-text-muted transition-colors hover:text-brand-blue-royal disabled:opacity-30"
+                  aria-label="Descendre l'élément"
+                >
+                  <ArrowDown size={13} />
+                </button>
+              </div>
+              <input
+                value={it}
+                onChange={(e) => setOrderItemAt(i, e.target.value)}
+                className={cn(inputClass, "py-1.5")}
+                placeholder={`Élément ${i + 1}`}
+                aria-label={`Élément ${i + 1}`}
+              />
+              <button
+                type="button"
+                onClick={() => removeOrderItem(i)}
+                disabled={orderItems.length <= 2}
+                className="shrink-0 text-text-muted transition-colors hover:text-error disabled:opacity-30"
+                aria-label="Retirer l'élément"
+              >
+                <span className="text-lg leading-none">×</span>
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={addOrderItem}
+            disabled={orderItems.length >= 12}
+            className="text-xs font-semibold text-brand-blue-royal transition-colors hover:text-brand-violet disabled:opacity-40"
+          >
+            + Ajouter un élément
+          </button>
+          <p className="text-xs text-text-muted">Saisissez les éléments dans l'ordre correct ; ils seront mélangés pour l'apprenant.</p>
         </div>
       ) : (
         <div className="mt-2 space-y-2">
