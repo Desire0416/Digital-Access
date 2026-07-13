@@ -61,7 +61,7 @@ export function SiteFooter() {
                 alt="Access Academy"
                 width={200}
                 height={193}
-                className="h-16 w-auto brightness-0 invert"
+                className="h-20 w-auto brightness-0 invert"
               />
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/60">{siteConfig.description}</p>
