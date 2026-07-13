@@ -11,17 +11,13 @@ import {
 } from "lucide-react";
 import { Container, GradientText } from "@da/ui";
 import { verifyCertificate, type CertificateVerification } from "@/lib/certification";
+import { CERTIFICATE_TYPE_LABEL } from "@/lib/certificate-types";
 import { VerifyForm } from "@/components/certificate/VerifyForm";
 
 export const metadata: Metadata = {
   title: "Vérifier un certificat",
   description:
     "Vérifiez l'authenticité d'un certificat Access Academy à partir de son code de vérification unique.",
-};
-
-const CERT_TYPE_LABEL: Record<string, string> = {
-  COURSE: "Certificat de formation",
-  CAREER_PATH: "Certification métier",
 };
 
 const INVALID_LABEL: Record<string, { title: string; message: string }> = {
@@ -68,7 +64,7 @@ function ValidCard({ r }: { r: Extract<CertificateVerification, { valid: true }>
       <div className="p-6 sm:p-8">
         <span className="inline-flex items-center gap-1.5 rounded-full bg-accent/10 px-3 py-1 text-xs font-bold text-accent">
           <Award size={13} />
-          {CERT_TYPE_LABEL[r.type] ?? "Certificat"}
+          {CERTIFICATE_TYPE_LABEL[r.type] ?? "Certificat"}
         </span>
         <h2 className="mt-4 font-display text-2xl font-bold leading-tight text-navy">{r.title}</h2>
 

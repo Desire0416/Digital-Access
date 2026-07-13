@@ -28,6 +28,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
       id: true,
       userId: true,
       title: true,
+      type: true,
       number: true,
       verifyCode: true,
       status: true,
@@ -53,6 +54,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     CertificateDocument({
       name: cert.user.name,
       courseTitle: cert.title,
+      type: cert.type,
       dateStr: dateFmt.format(cert.issuedAt),
       code: cert.verifyCode,
       verifyUrl,

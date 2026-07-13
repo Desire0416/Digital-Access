@@ -15,6 +15,7 @@ import {
   Stop,
 } from "@react-pdf/renderer";
 import { CERT_LOGO_WHITE } from "./certificate-logo";
+import { CERTIFICATE_PDF_COPY } from "./certificate-types";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Certificat de réussite Access Academy — @react-pdf/renderer.
@@ -52,6 +53,8 @@ export interface CertificateData {
   verifyUrl: string;
   qrDataUrl: string;
   instructor?: string | null;
+  /** Type §20.1 — adapte l'énoncé (CERTIFICAT/ATTESTATION/BADGE…). Défaut : COURSE. */
+  type?: string;
 }
 
 const s = StyleSheet.create({
@@ -364,11 +367,14 @@ export function CertificateDocument(data: CertificateData) {
     /* garde la valeur par défaut */
   }
 
+  const copy = CERTIFICATE_PDF_COPY[data.type ?? "COURSE"] ?? CERTIFICATE_PDF_COPY.COURSE;
+  const eyebrow = data.type === "SKILL_BADGE" ? "CE BADGE EST FIÈREMENT DÉCERNÉ À" : "CE CERTIFICAT EST FIÈREMENT DÉCERNÉ À";
+
   return (
     <Document
-      title={`Certificat — ${data.courseTitle}`}
+      title={`${copy.title} — ${data.courseTitle}`}
       author="Access Academy — Digital Access"
-      subject={`Certificat de réussite de ${data.name}`}
+      subject={`${copy.title} ${copy.subtitle} de ${data.name}`}
     >
       <Page size="A4" orientation="landscape" style={s.page}>
         <Background />
@@ -381,15 +387,15 @@ export function CertificateDocument(data: CertificateData) {
 
         {/* En-tête + contenu */}
         <View style={s.content}>
-          <Text style={s.title}>CERTIFICAT</Text>
-          <Text style={s.subtitle}>DE RÉUSSITE</Text>
+          <Text style={s.title}>{copy.title}</Text>
+          <Text style={s.subtitle}>{copy.subtitle}</Text>
           <GradientRule />
 
-          <Text style={s.eyebrow}>CE CERTIFICAT EST FIÈREMENT DÉCERNÉ À</Text>
+          <Text style={s.eyebrow}>{eyebrow}</Text>
           <Text style={s.name}>{data.name}</Text>
           <NameUnderline />
 
-          <Text style={s.mention}>pour avoir complété avec succès la formation</Text>
+          <Text style={s.mention}>{copy.intro}</Text>
           <Text style={s.course}>{data.courseTitle}</Text>
         </View>
 

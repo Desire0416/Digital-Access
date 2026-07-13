@@ -73,7 +73,9 @@ export async function getLearnerDashboard(userId: string) {
       },
     }),
     prisma.certificate.findMany({
-      where: { userId, status: "ACTIVE" },
+      // Widget « Mes certificats » = crédentials formels ; les badges de
+      // compétence ont leur propre section dans /espace/certificats.
+      where: { userId, status: "ACTIVE", type: { not: "SKILL_BADGE" } },
       orderBy: { issuedAt: "desc" },
       take: 4,
       select: { id: true, title: true, type: true, number: true, verifyCode: true, issuedAt: true },
@@ -161,9 +163,14 @@ export async function getMyCourses(userId: string) {
     ).map((p) => p.careerPathId),
   );
 
-  // Certificats de formation déjà obtenus.
+  // Crédential de formation déjà obtenu (réussite COURSE ou attestation PARTICIPATION).
   const certs = await prisma.certificate.findMany({
-    where: { userId, type: "COURSE", status: "ACTIVE", courseId: { in: enrollments.map((e) => e.courseId) } },
+    where: {
+      userId,
+      type: { in: ["COURSE", "PARTICIPATION"] },
+      status: "ACTIVE",
+      courseId: { in: enrollments.map((e) => e.courseId) },
+    },
     select: { courseId: true, id: true, verifyCode: true },
   });
   const certByCourse = new Map(certs.map((c) => [c.courseId, c]));

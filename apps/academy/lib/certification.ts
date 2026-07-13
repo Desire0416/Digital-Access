@@ -24,7 +24,7 @@ function randomCode(length: number): string {
 }
 
 function certificateNumber(): string {
-  return `DA-AC-${new Date().getFullYear()}-${randomBytes(3).toString("hex").toUpperCase()}`;
+  return `DA-AC-${new Date().getFullYear()}-${randomBytes(4).toString("hex").toUpperCase()}`;
 }
 
 /** Violation de contrainte d'unicité Prisma (index partiel un-certificat-actif). */
@@ -45,9 +45,44 @@ async function uniqueIdentifiers(): Promise<{ number: string; verifyCode: string
   }
   // Improbable — on élargit l'entropie en dernier recours.
   return {
-    number: `DA-AC-${new Date().getFullYear()}-${randomBytes(4).toString("hex").toUpperCase()}`,
+    number: `DA-AC-${new Date().getFullYear()}-${randomBytes(6).toString("hex").toUpperCase()}`,
     verifyCode: randomCode(14),
   };
+}
+
+type CertificateCreateData = Parameters<typeof prisma.certificate.create>[0]["data"];
+
+/**
+ * Crée un certificat de façon RÉSILIENTE et IDEMPOTENTE. La contrainte P2002
+ * peut provenir de DEUX sources distinctes que la génération pré-contrôlée ne
+ * ferme pas totalement (TOCTOU) : (a) l'index partiel « un seul certificat
+ * ACTIF par cible/type » → le doublon existe déjà, on le renvoie ; (b) une
+ * collision improbable sur `number`/`verifyCode` @unique → on régénère les
+ * identifiants et on réessaie. On NE lève JAMAIS un P2002 hors de la fonction
+ * (l'émission est awaited sans garde depuis les Server Actions).
+ * `created` distingue une vraie création (→ notifier) d'un renvoi d'existant.
+ */
+async function createCertificateResilient(
+  buildData: (ids: { number: string; verifyCode: string }) => CertificateCreateData,
+  findExisting: () => Promise<Certificate | null>,
+): Promise<{ cert: Certificate; created: boolean } | null> {
+  const pre = await findExisting();
+  if (pre) return { cert: pre, created: false };
+
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const ids = await uniqueIdentifiers();
+    try {
+      const cert = await prisma.certificate.create({ data: buildData(ids) });
+      return { cert, created: true };
+    } catch (e) {
+      if (!isUniqueViolation(e)) throw e; // erreur DB réelle : laisser remonter
+      // Doublon de cible (index partiel) → renvoyer l'existant ; sinon collision
+      // d'identifiants → nouvelle tentative avec de nouveaux number/verifyCode.
+      const existing = await findExisting();
+      if (existing) return { cert: existing, created: false };
+    }
+  }
+  return null; // 3 collisions d'identifiants d'affilée (quasi impossible)
 }
 
 function mentionForScore(score: number | null): string | null {
@@ -104,14 +139,42 @@ async function notifyCertificate(userId: string, cert: { title: string; verifyCo
 }
 
 /**
- * Délivre le certificat de FORMATION (type COURSE). Idempotent : si un
- * certificat actif existe déjà pour (userId, courseId), il est retourné tel quel.
+ * Une formation est « validée » (certificat de RÉUSSITE) si elle comporte au
+ * moins une évaluation obligatoire OU un projet obligatoire publié à réussir.
+ * À défaut (formation de contenu seul), on délivre une ATTESTATION de
+ * participation (§20.1). Comme la formation n'est marquée COMPLETED qu'après
+ * avoir passé toutes ses évaluations/projets obligatoires, l'existence d'au
+ * moins un requis suffit à distinguer réussite validée et simple suivi.
+ */
+async function courseRequiresValidation(courseId: string): Promise<boolean> {
+  const [assessments, projects] = await Promise.all([
+    prisma.assessment.count({ where: { courseId, isRequired: true, status: "PUBLISHED" } }),
+    prisma.project.count({ where: { courseId, isRequired: true, status: "PUBLISHED" } }),
+  ]);
+  return assessments + projects > 0;
+}
+
+/**
+ * Délivre le certificat de FORMATION. Idempotent : si un crédential actif de
+ * formation (COURSE ou PARTICIPATION) existe déjà pour (userId, courseId), il
+ * est retourné tel quel. Le type dépend de la présence d'évaluations/projets
+ * obligatoires : COURSE (réussite validée) sinon PARTICIPATION (attestation).
+ * Pour une formation validée, un badge de compétence est aussi émis (§20.1).
  */
 export async function issueCourseCertificate(userId: string, courseId: string): Promise<Certificate | null> {
-  const existing = await prisma.certificate.findFirst({
-    where: { userId, courseId, type: "COURSE", status: "ACTIVE" },
-  });
-  if (existing) return existing;
+  const findExisting = () =>
+    prisma.certificate.findFirst({
+      where: { userId, courseId, type: { in: ["COURSE", "PARTICIPATION"] }, status: "ACTIVE" },
+    });
+
+  const existing = await findExisting();
+  if (existing) {
+    // Filet idempotent : si le crédential existant est un certificat de FORMATION
+    // validée, s'assurer que son badge de compétence existe aussi (utile dans la
+    // course de deux complétions concurrentes ; sans effet si le badge existe déjà).
+    if (existing.type === "COURSE") await issueSkillBadge(userId, courseId).catch(() => null);
+    return existing;
+  }
 
   const course = await prisma.course.findUnique({
     where: { id: courseId },
@@ -123,39 +186,74 @@ export async function issueCourseCertificate(userId: string, courseId: string): 
   });
   if (!course) return null;
 
-  const score = await averageCourseScore(userId, courseId);
-  const ids = await uniqueIdentifiers();
+  const validated = await courseRequiresValidation(courseId);
+  const type = validated ? "COURSE" : "PARTICIPATION";
+  const score = validated ? await averageCourseScore(userId, courseId) : null;
 
-  let cert: Certificate;
-  try {
-    cert = await prisma.certificate.create({
-      data: {
-        userId,
-        courseId,
-        type: "COURSE",
-        title: course.certificateTitle ?? course.title,
-        number: ids.number,
-        verifyCode: ids.verifyCode,
-        status: "ACTIVE",
-        score,
-        mention: mentionForScore(score),
-        skills: course.skills.map((s) => s.skill.name),
-      },
-    });
-  } catch (e) {
-    // Course concurrente : l'index partiel (un seul certificat ACTIF par
-    // userId+courseId+type) a rejeté le doublon → on renvoie l'existant.
-    if (isUniqueViolation(e)) {
-      const again = await prisma.certificate.findFirst({
-        where: { userId, courseId, type: "COURSE", status: "ACTIVE" },
-      });
-      if (again) return again;
-    }
-    throw e;
-  }
+  const res = await createCertificateResilient(
+    (ids) => ({
+      userId,
+      courseId,
+      type,
+      title: course.certificateTitle ?? course.title,
+      number: ids.number,
+      verifyCode: ids.verifyCode,
+      status: "ACTIVE",
+      score,
+      mention: validated ? mentionForScore(score) : null,
+      skills: course.skills.map((s) => s.skill.name),
+    }),
+    findExisting,
+  );
+  if (!res) return null;
 
-  await notifyCertificate(userId, cert);
-  return cert;
+  if (res.created) await notifyCertificate(userId, res.cert);
+  if (validated) await issueSkillBadge(userId, courseId).catch(() => null);
+  return res.cert;
+}
+
+/**
+ * Délivre le BADGE DE COMPÉTENCE (§20.1) d'une formation validée. Un badge par
+ * formation (contrainte de l'index partiel un-actif-par (userId, courseId, type)),
+ * portant les compétences PRIMAIRES rattachées (à défaut, toutes les compétences).
+ * Idempotent ; silencieux (pas d'email/notif — surfacé dans « Mes certificats »).
+ */
+async function issueSkillBadge(userId: string, courseId: string): Promise<Certificate | null> {
+  const findExisting = () =>
+    prisma.certificate.findFirst({ where: { userId, courseId, type: "SKILL_BADGE", status: "ACTIVE" } });
+
+  const existing = await findExisting();
+  if (existing) return existing;
+
+  const course = await prisma.course.findUnique({
+    where: { id: courseId },
+    select: {
+      title: true,
+      skills: { select: { isPrimary: true, skill: { select: { name: true } } } },
+    },
+  });
+  if (!course) return null;
+
+  const primary = course.skills.filter((s) => s.isPrimary).map((s) => s.skill.name);
+  const names = primary.length > 0 ? primary : course.skills.map((s) => s.skill.name);
+  if (names.length === 0) return null; // pas de compétence rattachée → pas de badge
+
+  const title = names.length === 1 ? `Badge de compétence — ${names[0]}` : `Badge de compétences — ${course.title}`;
+
+  const res = await createCertificateResilient(
+    (ids) => ({
+      userId,
+      courseId,
+      type: "SKILL_BADGE",
+      title,
+      number: ids.number,
+      verifyCode: ids.verifyCode,
+      status: "ACTIVE",
+      skills: names,
+    }),
+    findExisting,
+  );
+  return res?.cert ?? null;
 }
 
 /**
@@ -163,9 +261,10 @@ export async function issueCourseCertificate(userId: string, courseId: string): 
  * Compétences = union des compétences de toutes les formations du parcours.
  */
 export async function issueCareerPathCertificate(userId: string, careerPathId: string): Promise<Certificate | null> {
-  const existing = await prisma.certificate.findFirst({
-    where: { userId, careerPathId, type: "CAREER_PATH", status: "ACTIVE" },
-  });
+  const findExisting = () =>
+    prisma.certificate.findFirst({ where: { userId, careerPathId, type: "CAREER_PATH", status: "ACTIVE" } });
+
+  const existing = await findExisting();
   if (existing) return existing;
 
   const path = await prisma.careerPath.findUnique({
@@ -181,34 +280,24 @@ export async function issueCareerPathCertificate(userId: string, careerPathId: s
   if (!path) return null;
 
   const skills = [...new Set(path.courses.flatMap((c) => c.course.skills.map((s) => s.skill.name)))];
-  const ids = await uniqueIdentifiers();
 
-  let cert: Certificate;
-  try {
-    cert = await prisma.certificate.create({
-      data: {
-        userId,
-        careerPathId,
-        type: "CAREER_PATH",
-        title: path.certificationTitle ?? `Certification métier — ${path.title}`,
-        number: ids.number,
-        verifyCode: ids.verifyCode,
-        status: "ACTIVE",
-        skills,
-      },
-    });
-  } catch (e) {
-    if (isUniqueViolation(e)) {
-      const again = await prisma.certificate.findFirst({
-        where: { userId, careerPathId, type: "CAREER_PATH", status: "ACTIVE" },
-      });
-      if (again) return again;
-    }
-    throw e;
-  }
+  const res = await createCertificateResilient(
+    (ids) => ({
+      userId,
+      careerPathId,
+      type: "CAREER_PATH",
+      title: path.certificationTitle ?? `Certification métier — ${path.title}`,
+      number: ids.number,
+      verifyCode: ids.verifyCode,
+      status: "ACTIVE",
+      skills,
+    }),
+    findExisting,
+  );
+  if (!res) return null;
 
-  await notifyCertificate(userId, cert);
-  return cert;
+  if (res.created) await notifyCertificate(userId, res.cert);
+  return res.cert;
 }
 
 /* ─── Vérification publique (cahier §20.4, page /certificats/verifier) ────── */
