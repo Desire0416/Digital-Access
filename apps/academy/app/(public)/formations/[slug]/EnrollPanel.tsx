@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { ArrowRight, PlayCircle, CreditCard, Clock3, UserPlus, LogIn, MailWarning, Loader2 } from "lucide-react";
+import { ArrowRight, PlayCircle, CreditCard, Clock3, UserPlus, LogIn, MailWarning, Loader2, Lock } from "lucide-react";
 import { buttonClasses, cn } from "@da/ui";
 import { formatFCFA } from "@/lib/site";
 import { enrollFreeCourse } from "@/lib/learn-actions";
@@ -23,9 +23,22 @@ export interface EnrollPanelProps {
   emailVerified: boolean;
   enrolled: boolean;
   pending: boolean;
+  /** Prérequis structurés (§22.1) tous satisfaits pour l'apprenant connecté. */
+  prerequisitesMet: boolean;
+  /** Prérequis publiés non terminés (bloquants). */
+  unmetPrerequisites: { slug: string; title: string }[];
 }
 
-export function EnrollPanel({ slug, price, authenticated, emailVerified, enrolled, pending }: EnrollPanelProps) {
+export function EnrollPanel({
+  slug,
+  price,
+  authenticated,
+  emailVerified,
+  enrolled,
+  pending,
+  prerequisitesMet,
+  unmetPrerequisites,
+}: EnrollPanelProps) {
   const router = useRouter();
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -116,6 +129,34 @@ export function EnrollPanel({ slug, price, authenticated, emailVerified, enrolle
         <p className="mt-1 text-xs leading-relaxed text-[#92400E]">
           Un email de confirmation vous a été envoyé. Validez-le pour vous inscrire à une formation.
         </p>
+      </div>
+    );
+  }
+
+  // ── Prérequis non satisfaits (§22.1) : inscription verrouillée ──
+  if (!prerequisitesMet) {
+    return (
+      <div className="rounded-xl border border-navy/15 bg-surface-secondary px-4 py-3.5">
+        <p className="flex items-center gap-2 text-sm font-bold text-navy">
+          <Lock size={16} aria-hidden />
+          Prérequis à compléter
+        </p>
+        <p className="mt-1 text-xs leading-relaxed text-text-secondary">
+          Terminez d&apos;abord {unmetPrerequisites.length > 1 ? "ces formations" : "cette formation"} pour vous inscrire :
+        </p>
+        <ul className="mt-2.5 space-y-1.5">
+          {unmetPrerequisites.map((p) => (
+            <li key={p.slug}>
+              <Link
+                href={`/formations/${p.slug}`}
+                className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-blue-royal hover:text-brand-violet"
+              >
+                <ArrowRight size={13} aria-hidden />
+                {p.title}
+              </Link>
+            </li>
+          ))}
+        </ul>
       </div>
     );
   }

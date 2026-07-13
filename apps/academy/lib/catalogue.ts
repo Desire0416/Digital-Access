@@ -348,6 +348,9 @@ export async function getCourseDetail(slug: string) {
         },
       },
       requires: {
+        // Publiés seulement : cohérent avec le verrou et le badge « acquise »
+        // (getPrerequisiteStatus ne compte que les prérequis PUBLIÉS §22.1).
+        where: { requiresCourse: { status: "PUBLISHED" } },
         select: { requiresCourse: { select: { title: true, slug: true, level: true } } },
       },
       reviews: {

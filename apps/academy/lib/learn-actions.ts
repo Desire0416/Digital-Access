@@ -8,6 +8,7 @@ import { currentUser, currentUserFresh, hasRole, isAdmin, type SessionUser } fro
 import { ACQUIRED_STATUSES, computeCareerPathPricing } from "./pricing";
 import { issueCourseCertificate, issueCareerPathCertificate } from "./certification";
 import { createNotification } from "./notify";
+import { getPrerequisiteStatus, unmetPrerequisitesMessage } from "./prerequisites";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Actions apprenant — inscriptions, progression, quiz, projets (cahier §16-19).
@@ -177,6 +178,10 @@ export async function enrollFreeCourse(slug: string): Promise<EnrollResult> {
   });
   // Règle 40.4 : une formation acquise le reste — jamais ré-inscrite ni refacturée.
   if (existing && ACQUIRED.includes(existing.status)) return { ok: true, already: true };
+
+  // Verrou prérequis (§22.1) : bloque l'inscription gratuite ET l'entrée en paiement.
+  const prereq = await getPrerequisiteStatus(user.id, course.id);
+  if (!prereq.met) return { ok: false, error: unmetPrerequisitesMessage(prereq.unmet) };
 
   if (course.price > 0) return { ok: false, redirect: `/paiement/formation/${course.slug}` };
 

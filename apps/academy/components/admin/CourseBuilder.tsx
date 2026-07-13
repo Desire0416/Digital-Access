@@ -21,6 +21,7 @@ import {
   ArrowUp,
   ArrowDown,
   Target,
+  Route,
   X,
 } from "lucide-react";
 import { cn, GradientText } from "@da/ui";
@@ -52,6 +53,7 @@ import {
   type QuestionInput,
 } from "@/lib/admin-actions";
 import { setCourseSkill, removeCourseSkill } from "@/lib/skill-actions";
+import { addCoursePrerequisite, removeCoursePrerequisite } from "@/lib/prerequisite-actions";
 import { CONTENT_STATUS_LABEL, CONTENT_STATUS_TONE, StatusPill } from "./ui";
 import { inputClass, textareaClass, FieldLabel, linesToArray, arrayToLines } from "./forms";
 import { useAdminAction, Feedback, SaveButton, DeleteButton } from "./action-hooks";
@@ -89,11 +91,13 @@ const SKILL_LEVEL_LABEL: Record<(typeof SKILL_LEVELS)[number], string> = {
   EXPERT: "Expert",
 };
 export type SkillPickerOption = { id: string; name: string; slug: string; domain: string | null };
+export type PrereqPickerOption = { id: string; slug: string; title: string; level: string };
 
 export function CourseBuilder({
   course,
   schools,
   skillOptions = [],
+  prerequisiteOptions = [],
   canManageSchools = true,
   canPublish = true,
   backHref = "/admin/formations",
@@ -103,6 +107,8 @@ export function CourseBuilder({
   schools: { id: string; name: string; color: string }[];
   /** Référentiel complet des compétences (pour l'onglet Compétences). */
   skillOptions?: SkillPickerOption[];
+  /** Formations publiées sélectionnables comme prérequis structurés (§22.1). */
+  prerequisiteOptions?: PrereqPickerOption[];
   /** Le rattachement aux écoles est réservé à l'admin (masqué au formateur). */
   canManageSchools?: boolean;
   /** L'admin publie/change le statut ; le formateur soumet à validation (§31). */
@@ -174,7 +180,7 @@ export function CourseBuilder({
         })}
       </div>
 
-      {tab === "fiche" && <FicheTab course={course} />}
+      {tab === "fiche" && <FicheTab course={course} prerequisiteOptions={prerequisiteOptions} />}
       {tab === "programme" && <ProgrammeTab course={course} />}
       {tab === "competences" && <CompetencesTab course={course} skillOptions={skillOptions} isAdmin={canManageSchools} />}
       {tab === "rattachements" && canManageSchools && <RattachementsTab course={course} schools={schools} />}
@@ -187,7 +193,7 @@ export function CourseBuilder({
 
 /* ─────────────────────────── Onglet FICHE (§11.1) ─────────────────────────── */
 
-function FicheTab({ course }: { course: CourseAdmin }) {
+function FicheTab({ course, prerequisiteOptions }: { course: CourseAdmin; prerequisiteOptions: PrereqPickerOption[] }) {
   const { pending, msg, run } = useAdminAction();
   const [title, setTitle] = React.useState(course.title);
   const [slug, setSlug] = React.useState(course.slug);
@@ -305,6 +311,11 @@ function FicheTab({ course }: { course: CourseAdmin }) {
         </div>
       </div>
 
+      {/* Prérequis structurés (§22.1) — sauvegarde immédiate, indépendante de la fiche */}
+      <div className="lg:col-span-2">
+        <PrerequisitesSection courseId={course.id} requires={course.requires} options={prerequisiteOptions} />
+      </div>
+
       {/* Barre d'enregistrement */}
       <div className="lg:col-span-2">
         <div className="sticky bottom-4 flex items-center justify-end gap-3 rounded-xl border border-navy/[0.07] bg-surface-primary/95 px-4 py-3 shadow-lg backdrop-blur">
@@ -313,6 +324,89 @@ function FicheTab({ course }: { course: CourseAdmin }) {
             Enregistrer la fiche
           </SaveButton>
         </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Prérequis structurés (§22.1) — sélecteur + liste, sauvegarde immédiate ── */
+function PrerequisitesSection({
+  courseId,
+  requires,
+  options,
+}: {
+  courseId: string;
+  requires: CourseAdmin["requires"];
+  options: PrereqPickerOption[];
+}) {
+  const { pending, msg, run } = useAdminAction();
+  const [pick, setPick] = React.useState("");
+  const attachedIds = new Set(requires.map((r) => r.requiresCourse.id));
+  const available = options.filter((o) => o.id !== courseId && !attachedIds.has(o.id));
+
+  return (
+    <div className="rounded-2xl border border-navy/[0.07] bg-surface-primary p-5">
+      <h2 className="font-display text-base font-bold text-navy">Prérequis (formations)</h2>
+      <p className="mt-1 text-xs text-text-secondary">
+        Formations à <strong>terminer</strong> avant de pouvoir s&apos;inscrire à celle-ci (§22.1). L&apos;inscription reste
+        verrouillée tant qu&apos;elles ne sont pas validées.
+      </p>
+
+      <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-end">
+        <div className="min-w-0 flex-1">
+          <p className="mb-1 text-xs font-semibold text-navy">Ajouter un prérequis</p>
+          <Select
+            value={pick}
+            onChange={setPick}
+            options={[
+              { value: "", label: available.length ? "Choisir une formation…" : "Aucune autre formation publiée" },
+              ...available.map((o) => ({ value: o.id, label: o.title })),
+            ]}
+            buttonClassName="py-2"
+          />
+        </div>
+        <button
+          type="button"
+          disabled={pending || !pick}
+          onClick={() => {
+            const id = pick;
+            setPick("");
+            run(() => addCoursePrerequisite(courseId, id));
+          }}
+          className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg bg-gradient-da px-4 py-2 text-sm font-semibold text-white shadow-brand transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <Plus size={15} /> Ajouter
+        </button>
+      </div>
+
+      {requires.length === 0 ? (
+        <p className="mt-3 rounded-xl border border-dashed border-navy/15 px-4 py-4 text-center text-sm text-text-muted">
+          Aucun prérequis — cette formation est accessible directement.
+        </p>
+      ) : (
+        <ul className="mt-3 space-y-2">
+          {requires.map((r) => (
+            <li
+              key={r.requiresCourse.id}
+              className="flex items-center gap-2.5 rounded-xl border border-navy/[0.08] bg-surface-secondary/40 p-3"
+            >
+              <Route size={15} className="shrink-0 text-brand-violet" aria-hidden />
+              <span className="min-w-0 flex-1 truncate font-semibold text-navy">{r.requiresCourse.title}</span>
+              <button
+                type="button"
+                disabled={pending}
+                onClick={() => run(() => removeCoursePrerequisite(courseId, r.requiresCourse.id))}
+                className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-text-muted transition-colors hover:bg-error/10 hover:text-error disabled:opacity-50"
+                aria-label={`Retirer ${r.requiresCourse.title}`}
+              >
+                <X size={15} />
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+      <div className="mt-2">
+        <Feedback msg={msg} />
       </div>
     </div>
   );

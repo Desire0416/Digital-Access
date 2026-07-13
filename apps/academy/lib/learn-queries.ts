@@ -1,6 +1,7 @@
 import "server-only";
 import { prisma, type EnrollmentStatus, type QuestionType } from "@da/academy-db/client";
 import { ACQUIRED_STATUSES } from "./pricing";
+import { getPrerequisiteStatus, type PrerequisiteStatus } from "./prerequisites";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Espace apprenant & lecteur — LECTURES (cahier §16, §17).
@@ -628,6 +629,8 @@ export interface CourseUserState {
   enrolled: boolean;
   /** Un paiement Mobile Money est en attente de validation admin. */
   pending: boolean;
+  /** État des prérequis structurés (§22.1) pour cet apprenant. */
+  prerequisites: PrerequisiteStatus;
 }
 
 /**
@@ -636,8 +639,10 @@ export interface CourseUserState {
  * bouton d'inscription (gratuit) ou de paiement selon le prix.
  */
 export async function getCourseUserState(courseId: string, userId: string | null): Promise<CourseUserState> {
-  if (!userId) return { enrolled: false, pending: false };
-  const [enrollment, pending] = await Promise.all([
+  if (!userId) {
+    return { enrolled: false, pending: false, prerequisites: await getPrerequisiteStatus(null, courseId) };
+  }
+  const [enrollment, pending, prerequisites] = await Promise.all([
     prisma.enrollment.findUnique({
       where: { userId_courseId: { userId, courseId } },
       select: { status: true },
@@ -646,10 +651,12 @@ export async function getCourseUserState(courseId: string, userId: string | null
       where: { userId, courseId, status: "PENDING" },
       select: { id: true },
     }),
+    getPrerequisiteStatus(userId, courseId),
   ]);
   return {
     enrolled: !!enrollment && ACQUIRED.includes(enrollment.status),
     pending: !!pending,
+    prerequisites,
   };
 }
 

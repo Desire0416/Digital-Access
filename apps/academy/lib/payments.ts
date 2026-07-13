@@ -7,6 +7,7 @@ import { currentUser, requireAdminFresh } from "./guards";
 import { ACQUIRED_STATUSES, computeCareerPathPricing, type CareerPathPricing } from "./pricing";
 import { validateCoupon, consumeCoupon } from "./coupons";
 import { createNotification } from "./notify";
+import { getPrerequisiteStatus, unmetPrerequisitesMessage } from "./prerequisites";
 import { siteConfig, paymentConfig, formatFCFA } from "./site";
 import { sendPaymentSubmittedEmail, sendPaymentApprovedEmail, sendPaymentRejectedEmail } from "@da/email";
 
@@ -194,6 +195,13 @@ export async function submitManualPayment(input: SubmitPaymentInput): Promise<Pa
   }
   if (target.amount <= 0) {
     return { ok: false, error: "Cet achat est gratuit pour vous : utilisez le bouton d'inscription directe." };
+  }
+
+  // Verrou prérequis (§22.1) : un paiement ne peut pas ouvrir une formation dont
+  // les prérequis ne sont pas terminés (même invariant que l'inscription directe).
+  if (data.type === "formation") {
+    const prereq = await getPrerequisiteStatus(user.id, target.id);
+    if (!prereq.met) return { ok: false, error: unmetPrerequisitesMessage(prereq.unmet) };
   }
 
   // Coupon éventuel — remise recalculée et revérifiée CÔTÉ SERVEUR (jamais la

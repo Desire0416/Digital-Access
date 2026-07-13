@@ -270,6 +270,8 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
                     emailVerified={!!user?.emailVerified}
                     enrolled={state.enrolled}
                     pending={state.pending}
+                    prerequisitesMet={state.prerequisites.met}
+                    unmetPrerequisites={state.prerequisites.unmet.map((p) => ({ slug: p.slug, title: p.title }))}
                   />
 
                   {/* Garanties */}
@@ -381,17 +383,34 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
                             {p}
                           </li>
                         ))}
-                        {course.requires.map((r) => (
-                          <li key={r.requiresCourse.slug} className="flex items-start gap-2 text-sm">
-                            <Route size={14} className="mt-0.5 shrink-0 text-brand-violet" aria-hidden />
-                            <Link
-                              href={`/formations/${r.requiresCourse.slug}`}
-                              className="font-medium text-brand-blue-royal underline-offset-2 hover:text-brand-violet hover:underline"
-                            >
-                              {r.requiresCourse.title}
-                            </Link>
-                          </li>
-                        ))}
+                        {course.requires.map((r) => {
+                          const acquired = state.prerequisites.acquiredSlugs.includes(r.requiresCourse.slug);
+                          return (
+                            <li key={r.requiresCourse.slug} className="flex items-start gap-2 text-sm">
+                              {acquired ? (
+                                <span
+                                  className="mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded-full bg-success text-white"
+                                  aria-hidden
+                                >
+                                  <Check size={11} strokeWidth={3} />
+                                </span>
+                              ) : (
+                                <Route size={14} className="mt-0.5 shrink-0 text-brand-violet" aria-hidden />
+                              )}
+                              <span className="flex flex-wrap items-baseline gap-x-2">
+                                <Link
+                                  href={`/formations/${r.requiresCourse.slug}`}
+                                  className="font-medium text-brand-blue-royal underline-offset-2 hover:text-brand-violet hover:underline"
+                                >
+                                  {r.requiresCourse.title}
+                                </Link>
+                                <span className="text-xs font-medium text-text-muted">
+                                  Formation prérequise{acquired ? " · acquise" : ""}
+                                </span>
+                              </span>
+                            </li>
+                          );
+                        })}
                         {course.prerequisitesText.length === 0 && course.requires.length === 0 && (
                           <li className="text-sm text-text-secondary">Aucun prérequis particulier.</li>
                         )}

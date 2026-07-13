@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { requireCourseEditor } from "@/lib/guards";
 import { getCourseForEditor } from "@/lib/admin-queries";
 import { getSkillOptions } from "@/lib/skill-queries";
+import { getCoursePrerequisiteOptions } from "@/lib/prerequisite-queries";
 import { CourseBuilder } from "@/components/admin/CourseBuilder";
 
 export const metadata: Metadata = { title: "Éditer une formation — Studio formateur" };
@@ -18,7 +19,11 @@ export default async function FormateurCourseEditorPage({ params }: { params: Pr
   const editor = await requireCourseEditor(id);
   if (!editor) notFound();
 
-  const [course, skillOptions] = await Promise.all([getCourseForEditor(id), getSkillOptions()]);
+  const [course, skillOptions, prerequisiteOptions] = await Promise.all([
+    getCourseForEditor(id),
+    getSkillOptions(),
+    getCoursePrerequisiteOptions(id),
+  ]);
   if (!course) notFound();
 
   return (
@@ -26,6 +31,7 @@ export default async function FormateurCourseEditorPage({ params }: { params: Pr
       course={course}
       schools={[]}
       skillOptions={skillOptions}
+      prerequisiteOptions={prerequisiteOptions}
       canManageSchools={false}
       canPublish={false}
       backHref="/formateur/formations"
