@@ -55,17 +55,14 @@ export function SiteFooter() {
           {/* ── Marque ── */}
           <div>
             <Link href="/" aria-label="Access Academy — accueil" className="inline-flex">
-              {/* Le logo a un fond blanc opaque → on l'affiche en couleur sur une
-                  pastille blanche arrondie (pas d'invert, sinon bloc blanc plein). */}
-              <span className="inline-flex rounded-2xl bg-white p-2.5 shadow-sm">
-                <Image
-                  src="/logo-access-academy.png"
-                  alt="Access Academy"
-                  width={200}
-                  height={190}
-                  className="h-14 w-auto"
-                />
-              </span>
+              {/* Logo à fond transparent → silhouette blanche sur le footer sombre. */}
+              <Image
+                src="/logo-access-academy.png"
+                alt="Access Academy"
+                width={200}
+                height={193}
+                className="h-16 w-auto brightness-0 invert"
+              />
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/60">{siteConfig.description}</p>
             <a
