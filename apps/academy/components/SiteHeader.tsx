@@ -325,16 +325,16 @@ export function SiteHeader({ user, notifications }: SiteHeaderProps) {
           : "border-transparent bg-surface-primary",
       )}
     >
-      <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4 sm:px-6 lg:h-[4.5rem] lg:px-8">
+      <div className="mx-auto flex h-[4.5rem] max-w-7xl items-center gap-3 px-4 sm:px-6 lg:h-20 lg:px-8">
         {/* Logo */}
         <Link href="/" aria-label="Access Academy — accueil" className="flex shrink-0 items-center">
           <Image
             src="/logo-access-academy.png"
             alt="Access Academy"
-            width={170}
-            height={40}
+            width={200}
+            height={190}
             priority
-            className="h-9 w-auto lg:h-10"
+            className="h-12 w-auto lg:h-14"
           />
         </Link>
 
@@ -477,7 +477,7 @@ export function SiteHeader({ user, notifications }: SiteHeaderProps) {
                   {/* En-tête : logo (→ accueil) + fermer */}
                   <div className="sticky top-0 z-10 flex items-center justify-between border-b border-navy/[0.06] bg-surface-primary px-4 py-3">
                     <Link href="/" aria-label="Accueil Access Academy" onClick={() => setMobileOpen(false)} className="shrink-0">
-                      <Image src="/logo-access-academy.png" alt="Access Academy" width={140} height={33} className="h-8 w-auto" />
+                      <Image src="/logo-access-academy.png" alt="Access Academy" width={180} height={171} className="h-11 w-auto" />
                     </Link>
                     <button
                       type="button"
