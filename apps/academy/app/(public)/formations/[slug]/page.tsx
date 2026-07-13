@@ -31,6 +31,7 @@ import { currentUser } from "@/lib/guards";
 import { siteConfig, formatFCFA, LEVEL_LABEL } from "@/lib/site";
 import { Markdown } from "@/components/Markdown";
 import { CareerPathCard } from "@/components/cards";
+import { DiagnosticTest } from "@/components/DiagnosticTest";
 import { EnrollPanel } from "./EnrollPanel";
 import { ProgramAccordion } from "./ProgramAccordion";
 
@@ -109,6 +110,8 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
 
   const primarySchool = course.schools.find((s) => s.isPrimary)?.school ?? course.schools[0]?.school ?? null;
   const durationLabel = course.durationHours && course.durationHours > 0 ? `${course.durationHours} h` : null;
+  // Test de positionnement IA (§22.2) — proposé seulement si la clé Anthropic est configurée.
+  const positioningEnabled = !!process.env.ANTHROPIC_API_KEY && course.modules.length > 0;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -430,6 +433,9 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
                 )}
               </Block>
             )}
+
+            {/* Test de positionnement IA (§22.2) */}
+            {positioningEnabled && <DiagnosticTest slug={course.slug} title={course.title} />}
 
             {/* Programme (§11.4) */}
             {course.modules.length > 0 && (
