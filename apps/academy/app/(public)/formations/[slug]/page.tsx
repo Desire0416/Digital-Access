@@ -32,6 +32,8 @@ import { siteConfig, formatFCFA, LEVEL_LABEL } from "@/lib/site";
 import { Markdown } from "@/components/Markdown";
 import { CareerPathCard } from "@/components/cards";
 import { DiagnosticTest } from "@/components/DiagnosticTest";
+import { getEquivalenceEligibility } from "@/lib/equivalences";
+import { EquivalenceRequestForm } from "@/components/equivalence/EquivalenceRequestForm";
 import { EnrollPanel } from "./EnrollPanel";
 import { ProgramAccordion } from "./ProgramAccordion";
 
@@ -107,6 +109,11 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
 
   const user = await currentUser();
   const state = await getCourseUserState(course.id, user?.id ?? null);
+  // Équivalence / reconnaissance des acquis (§22.3) — proposée sur les
+  // formations payantes non encore acquises (éviter de payer un acquis).
+  const equivalence = await getEquivalenceEligibility(user?.id ?? null, course.id, {
+    emailVerified: !!user?.emailVerified,
+  });
 
   const primarySchool = course.schools.find((s) => s.isPrimary)?.school ?? course.schools[0]?.school ?? null;
   const durationLabel = course.durationHours && course.durationHours > 0 ? `${course.durationHours} h` : null;
@@ -276,6 +283,19 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
                     prerequisitesMet={state.prerequisites.met}
                     unmetPrerequisites={state.prerequisites.unmet.map((p) => ({ slug: p.slug, title: p.title }))}
                   />
+
+                  {/* Équivalence / reconnaissance des acquis (§22.3) — formations payantes */}
+                  {course.price > 0 && (equivalence.canRequest || equivalence.pending) && (
+                    <div className="mt-3">
+                      {equivalence.canRequest ? (
+                        <EquivalenceRequestForm courseSlug={course.slug} courseTitle={course.title} />
+                      ) : (
+                        <p className="rounded-xl border border-warning/25 bg-warning/[0.06] px-3.5 py-2.5 text-center text-xs font-medium text-[#b45309]">
+                          Demande d'équivalence en attente de validation
+                        </p>
+                      )}
+                    </div>
+                  )}
 
                   {/* Garanties */}
                   <ul className="mt-5 space-y-2.5 border-t border-navy/[0.06] pt-5 text-sm text-navy/85">

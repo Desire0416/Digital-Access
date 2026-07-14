@@ -28,3 +28,8 @@ CREATE UNIQUE INDEX IF NOT EXISTS "Certificate_active_course_uq"
 CREATE UNIQUE INDEX IF NOT EXISTS "Certificate_active_path_uq"
   ON "Certificate" ("userId", "careerPathId", "type")
   WHERE "status" = 'ACTIVE' AND "careerPathId" IS NOT NULL;
+
+-- Équivalence : une seule demande PENDING par (apprenant, formation) — §22.3
+CREATE UNIQUE INDEX IF NOT EXISTS "EquivalenceRequest_pending_uq"
+  ON "EquivalenceRequest" ("userId", "courseId")
+  WHERE "status" = 'PENDING';

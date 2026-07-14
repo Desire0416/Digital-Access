@@ -51,7 +51,7 @@ model User {
   phone           String?
   objective       String? // onboarding 15.4
   experienceLevel String? // onboarding 15.4
-  roles           Role[]   @default([LEARNER])
+  roles           Role[]    @default([LEARNER])
   emailVerified   DateTime?
   isActive        Boolean   @default(false)
   lastActiveAt    DateTime?
@@ -75,6 +75,8 @@ model User {
   orgMemberships        OrganizationMember[]
   auditLogs             AuditLog[]
   portfolio             Portfolio?
+  equivalenceRequests   EquivalenceRequest[]   @relation("EquivalenceLearner")
+  reviewedEquivalences  EquivalenceRequest[]   @relation("EquivalenceReviewer")
 }
 
 enum TokenType {
@@ -165,22 +167,23 @@ model Course {
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
 
-  modules       Module[]
-  assessments   Assessment[]
-  projects      Project[]
-  resources     Resource[]
-  skills        CourseSkill[]
-  instructors   CourseInstructor[]
-  schools       SchoolCourse[]
-  careerPaths   CareerPathCourse[]
-  enrollments   Enrollment[]
-  reviews       Review[]
-  certificates  Certificate[]
-  favorites     Favorite[]
-  payments      Payment[]
+  modules             Module[]
+  assessments         Assessment[]
+  projects            Project[]
+  resources           Resource[]
+  skills              CourseSkill[]
+  instructors         CourseInstructor[]
+  schools             SchoolCourse[]
+  careerPaths         CareerPathCourse[]
+  enrollments         Enrollment[]
+  reviews             Review[]
+  certificates        Certificate[]
+  favorites           Favorite[]
+  payments            Payment[]
   // prérequis structurés (22.1) : cette formation exige d'autres formations
-  requires      CoursePrerequisite[] @relation("CourseRequires")
-  requiredBy    CoursePrerequisite[] @relation("CourseRequiredBy")
+  requires            CoursePrerequisite[] @relation("CourseRequires")
+  requiredBy          CoursePrerequisite[] @relation("CourseRequiredBy")
+  equivalenceRequests EquivalenceRequest[]
 }
 
 /// Prérequis structuré : `course` exige la validation de `requiresCourse`.
@@ -195,13 +198,13 @@ model CoursePrerequisite {
 }
 
 model CourseInstructor {
-  id        String  @id @default(cuid())
+  id        String @id @default(cuid())
   courseId  String
-  course    Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  course    Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
   userId    String
-  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  roleLabel String  @default("Formateur") // Formateur principal, Tuteur…
-  order     Int     @default(0)
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  roleLabel String @default("Formateur") // Formateur principal, Tuteur…
+  order     Int    @default(0)
 
   @@unique([courseId, userId])
 }
@@ -699,6 +702,56 @@ model LessonProgress {
   @@index([enrollmentId])
 }
 
+// ─── Équivalences / VAE (section 22.3-22.4) ─────────────────────────────────
+// L'apprenant dépose une preuve (certificat, diplôme, portfolio, expérience,
+// résultat de test) pour faire reconnaître une formation. Un administrateur
+// valide : acceptée (dispense totale → Enrollment COMPLETED via EQUIVALENCE),
+// partielle (accès gratuit à compléter → Enrollment ACTIVE), conditionnelle ou
+// refusée (aucun accès, motif). INVARIANT : le dépôt ne donne JAMAIS accès —
+// seule la validation admin crée une inscription.
+
+enum EquivalenceEvidenceType {
+  CERTIFICATE // certificat
+  DIPLOMA // diplôme
+  PORTFOLIO // portfolio
+  EXPERIENCE // preuve d'expérience
+  TEST // résultat de test
+}
+
+enum EquivalenceStatus {
+  PENDING // en attente de validation
+  ACCEPTED // acceptée — dispense totale
+  PARTIAL // partielle — accès accordé, à compléter
+  CONDITIONAL // conditionnelle — accès sous condition (motif)
+  REJECTED // refusée
+}
+
+model EquivalenceRequest {
+  id           String                  @id @default(cuid())
+  userId       String
+  user         User                    @relation("EquivalenceLearner", fields: [userId], references: [id], onDelete: Cascade)
+  courseId     String
+  course       Course                  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  evidenceType EquivalenceEvidenceType
+  description  String // justification de l'apprenant
+  proofUrl     String? // capture / document (Blob)
+  proofLink    String? // lien externe (certificat en ligne, portfolio…)
+  status       EquivalenceStatus       @default(PENDING)
+  reviewNote   String? // motif / condition (admin)
+  reviewedById String?
+  reviewedBy   User?                   @relation("EquivalenceReviewer", fields: [reviewedById], references: [id])
+  reviewedAt   DateTime?
+  createdAt    DateTime                @default(now())
+  updatedAt    DateTime                @updatedAt
+  // ⚠️ Index partiel d'unicité HORS Prisma (cf. partial-indexes.sql) :
+  // au plus UNE demande PENDING par (userId, courseId) →
+  //   "EquivalenceRequest_pending_uq".
+
+  @@index([userId])
+  @@index([courseId])
+  @@index([status])
+}
+
 // ─── Certificats (section 20, 41.6) ─────────────────────────────────────────
 
 enum CertificateType {
@@ -738,12 +791,12 @@ model Certificate {
   expiresAt     DateTime?
   revokedAt     DateTime?
   revokedReason String?
-
-  @@index([userId])
   // ⚠️ Index partiels d'unicité maintenus HORS Prisma (raw SQL, cf.
   // packages/academy-db/prisma/partial-indexes.sql) — un seul certificat ACTIF
   // par (userId, courseId, type) et par (userId, careerPathId, type) :
   //   "Certificate_active_course_uq", "Certificate_active_path_uq".
+
+  @@index([userId])
 }
 
 // ─── Paiements (section 27, 41.5) ────────────────────────────────────────────
@@ -800,13 +853,13 @@ model Payment {
   processedAt   DateTime?
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
-
-  @@index([userId])
-  @@index([status])
   // ⚠️ Index partiels d'unicité maintenus HORS Prisma (raw SQL, cf.
   // packages/academy-db/prisma/partial-indexes.sql) — au plus UN paiement
   // PENDING par (userId, courseId) et par (userId, careerPathId) :
   //   "Payment_pending_course_uq", "Payment_pending_path_uq".
+
+  @@index([userId])
+  @@index([status])
 }
 
 enum DiscountType {

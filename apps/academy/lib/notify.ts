@@ -15,7 +15,8 @@ export type NotificationKind =
   | "CERTIFICATE"
   | "PROJECT"
   | "ASSESSMENT"
-  | "PATH";
+  | "PATH"
+  | "EQUIVALENCE";
 
 export async function createNotification(input: {
   userId: string;

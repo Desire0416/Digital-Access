@@ -12,6 +12,7 @@ import {
   ClipboardCheck,
   BookOpen,
   Route,
+  BadgeCheck,
   CheckCheck,
 } from "lucide-react";
 import { cn } from "@da/ui";
@@ -47,6 +48,7 @@ const TYPE_ICONS: Record<string, React.ComponentType<{ size?: number | string; c
   ASSESSMENT: ClipboardCheck,
   ENROLLMENT: BookOpen,
   PATH: Route,
+  EQUIVALENCE: BadgeCheck,
 };
 
 /* Heure relative en français, sans dépendance externe. */

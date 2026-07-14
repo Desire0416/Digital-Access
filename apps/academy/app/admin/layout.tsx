@@ -1,5 +1,6 @@
 import { requireRole } from "@/lib/guards";
 import { countPendingPayments } from "@/lib/admin-queries";
+import { countPendingEquivalences } from "@/lib/equivalences";
 import { AdminShell } from "@/components/admin/AdminShell";
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -11,12 +12,16 @@ import { AdminShell } from "@/components/admin/AdminShell";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const user = await requireRole(["ACADEMIC_ADMIN", "SALES_ADMIN", "SUPER_ADMIN"], "/admin");
-  const pendingPayments = await countPendingPayments();
+  const [pendingPayments, pendingEquivalences] = await Promise.all([
+    countPendingPayments(),
+    countPendingEquivalences(),
+  ]);
 
   return (
     <AdminShell
       user={{ name: user.name, email: user.email, avatar: user.avatar, roles: user.roles }}
       pendingPayments={pendingPayments}
+      pendingEquivalences={pendingEquivalences}
     >
       {children}
     </AdminShell>
