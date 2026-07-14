@@ -37,6 +37,7 @@ export const userNav = [
   { label: "Compétences", href: "/espace/competences" },
   { label: "Portfolio", href: "/espace/portfolio" },
   { label: "Mes favoris", href: "/espace/favoris" },
+  { label: "Recommandations", href: "/espace/recommandations" },
   { label: "Paramètres", href: "/espace/parametres" },
 ] as const;
 

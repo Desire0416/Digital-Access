@@ -14,13 +14,13 @@ import {
   Sparkles,
   GraduationCap,
 } from "lucide-react";
-import { buttonClasses, StaggerGroup, StaggerItem } from "@da/ui";
+import { buttonClasses } from "@da/ui";
 import { requireUser } from "@/lib/guards";
-import { getLearnerDashboard, getAcquiredCourseIds } from "@/lib/learn-queries";
-import { getCourses } from "@/lib/catalogue";
+import { getLearnerDashboard } from "@/lib/learn-queries";
+import { getRecommendations } from "@/lib/recommendations";
 import { getMyNotifications } from "@/lib/notify";
 import { LEVEL_LABEL } from "@/lib/site";
-import { CourseCard } from "@/components/cards";
+import { RecommendationGrid } from "@/components/RecommendationGrid";
 import { EmptyState } from "@/components/EmptyState";
 import { EspaceHeader, StatTile, Panel } from "@/components/espace/parts";
 import { ProgressBar } from "@/components/espace/ProgressBar";
@@ -45,10 +45,9 @@ export default async function EspaceDashboardPage() {
   // Parcours actif (le plus récent en cours) — récupère la phase courante.
   const activePath = pathEnrollments.find((p) => p.status === "ACTIVE") ?? null;
 
-  // Recommandations : formations publiées non encore acquises.
-  const acquired = await getAcquiredCourseIds(user.id);
-  const popular = await getCourses({ sort: "popular" });
-  const recommendations = popular.filter((c) => !acquired.has(c.id)).slice(0, 3);
+  // Recommandations personnalisées (§33) — moteur déterministe (niveau,
+  // objectif, historique, résultats, compétences, favoris, parcours actifs).
+  const recommendations = await getRecommendations(user.id, { limit: 3 });
 
   const resumeHref = resume
     ? resume.lessonId
@@ -211,7 +210,7 @@ export default async function EspaceDashboardPage() {
             </Panel>
           )}
 
-          {/* Recommandations */}
+          {/* Recommandations personnalisées (§33) */}
           {recommendations.length > 0 && (
             <Panel
               title={
@@ -220,30 +219,17 @@ export default async function EspaceDashboardPage() {
                   Recommandé pour vous
                 </span>
               }
+              action={
+                <Link
+                  href="/espace/recommandations"
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-brand-blue-royal hover:underline"
+                >
+                  Voir tout
+                  <ArrowRight size={13} />
+                </Link>
+              }
             >
-              <StaggerGroup className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                {recommendations.map((c) => (
-                  <StaggerItem key={c.id}>
-                    <CourseCard
-                      course={{
-                        slug: c.slug,
-                        title: c.title,
-                        subtitle: c.subtitle,
-                        coverImage: c.coverImage,
-                        level: c.level,
-                        price: c.price,
-                        durationHours: c.durationHours,
-                        moduleCount: c.modulesCount,
-                        rating: c.rating,
-                        reviewCount: c.reviewsCount,
-                        hasCertificate: c.hasCertificate,
-                        hasProject: c.hasProject,
-                        schoolName: c.primarySchool?.name ?? null,
-                      }}
-                    />
-                  </StaggerItem>
-                ))}
-              </StaggerGroup>
+              <RecommendationGrid recommendations={recommendations} columns={3} />
             </Panel>
           )}
         </div>

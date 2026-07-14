@@ -15,6 +15,7 @@ import {
   Briefcase,
   Heart,
   Settings,
+  Sparkles,
   Target,
   type LucideIcon,
 } from "lucide-react";
@@ -37,6 +38,7 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   "/espace/competences": Target,
   "/espace/portfolio": Briefcase,
   "/espace/favoris": Heart,
+  "/espace/recommandations": Sparkles,
   "/espace/parametres": Settings,
 };
 
