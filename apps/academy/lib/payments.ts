@@ -157,6 +157,25 @@ export async function getCheckoutInfo(
 
 /* ─── Dépôt de preuve → Payment PENDING (et RIEN d'autre) ──────────────────── */
 
+// La capture (proofUrl) est AUTO-chargée en <img> dans la file admin
+// (PaymentActions/ProofThumb) → elle DOIT provenir de notre propre Vercel Blob
+// (capture téléversée via /api/upload). Sinon un apprenant peut y placer un hôte
+// tiers : le navigateur authentifié de l'admin le charge sans clic → pixel
+// traceur / fuite IP-UA / sonde réseau. Même durcissement que les équivalences.
+const BLOB_HOST_SUFFIX = ".public.blob.vercel-storage.com";
+const blobImageUrl = z
+  .string()
+  .trim()
+  .url("La capture de preuve est obligatoire.")
+  .refine((v) => {
+    try {
+      const u = new URL(v);
+      return u.protocol === "https:" && u.hostname.endsWith(BLOB_HOST_SUFFIX);
+    } catch {
+      return false;
+    }
+  }, "Capture invalide : envoyez le fichier via le formulaire.");
+
 const submitPaymentSchema = z.object({
   type: z.enum(["formation", "parcours"]),
   slug: z.string().min(1),
@@ -167,7 +186,7 @@ const submitPaymentSchema = z.object({
     .min(6, "L'identifiant de transaction doit contenir au moins 6 caractères.")
     .max(64),
   payerPhone: z.string().trim().min(8, "Numéro de téléphone invalide.").max(30),
-  proofUrl: z.string().url("La capture de preuve est obligatoire."),
+  proofUrl: blobImageUrl,
   couponCode: z.string().trim().max(40).optional(),
 });
 
