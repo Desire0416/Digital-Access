@@ -120,6 +120,7 @@ enum CourseLevel {
 
 model School {
   id          String        @id @default(cuid())
+  code        String?       @unique // ex. "S01"
   name        String
   slug        String        @unique
   tagline     String?
@@ -134,6 +135,7 @@ model School {
 
   courses     SchoolCourse[]
   careerPaths SchoolCareerPath[]
+  programs    Program[]
 }
 
 // ─── Formation (sections 10-12) — LA brique centrale, unique ────────────────
@@ -145,6 +147,7 @@ enum UnlockMode {
 
 model Course {
   id                String        @id @default(cuid())
+  code              String?       @unique // ex. "AI-001", "CORE-005"
   title             String
   slug              String        @unique
   subtitle          String?
@@ -160,6 +163,8 @@ model Course {
   coverImage        String?
   promoVideoUrl     String?
   certificateTitle  String?
+  badgeTitle        String? // badge remis à la validation
+  priority          String? // "Vague 1", "Vague 2", "Vague 3"
   unlockMode        UnlockMode    @default(FREE)
   featured          Boolean       @default(false)
   status            ContentStatus @default(DRAFT)
@@ -175,6 +180,7 @@ model Course {
   instructors         CourseInstructor[]
   schools             SchoolCourse[]
   careerPaths         CareerPathCourse[]
+  programs            ProgramCourse[]
   enrollments         Enrollment[]
   reviews             Review[]
   certificates        Certificate[]
@@ -533,6 +539,7 @@ model CourseSkill {
 
 model CareerPath {
   id                 String        @id @default(cuid())
+  code               String?       @unique // ex. "PATH-AI-01"
   title              String
   slug               String        @unique
   targetJob          String
@@ -544,15 +551,18 @@ model CareerPath {
   duration           String? // libellé, ex. « 9 mois »
   rhythm             String? // ex. « 10 h / semaine »
   price              Int           @default(0) // FCFA — prix plein, avant déduction des acquis
+  installments       String? // ex. « 4 mensualités de 50 000 F CFA »
   certificationTitle String?
   coverImage         String?
   featured           Boolean       @default(false)
+  priority           String? // "Vague 1", "Vague 2", "Vague 3"
   status             ContentStatus @default(DRAFT)
   createdAt          DateTime      @default(now())
   updatedAt          DateTime      @updatedAt
 
   phases       CareerPathPhase[]
   courses      CareerPathCourse[]
+  programs     CareerPathProgram[]
   schools      SchoolCareerPath[]
   enrollments  CareerPathEnrollment[]
   projects     Project[] // projet(s) transversal(aux)
@@ -968,4 +978,56 @@ model AuditLog {
 
   @@index([entity, entityId])
   @@index([actorId])
+}
+
+// ─── Programme de compétences (catalogue maître) ─────────────────────────────
+// Assemblage cohérent de formations conduisant à une micro-certification.
+// Réutilisable dans plusieurs parcours métiers via CareerPathProgram.
+
+model Program {
+  id                 String        @id @default(cuid())
+  code               String        @unique // ex. "PRG-AI-01"
+  title              String
+  slug               String        @unique
+  description        String?       @db.Text
+  volume             Int? // durée totale en heures
+  price              Int           @default(0) // FCFA
+  certificationTitle String? // micro-certification
+  coverImage         String?
+  priority           String? // "Vague 1", "Vague 2"
+  status             ContentStatus @default(DRAFT)
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  schoolId    String?
+  school      School?             @relation(fields: [schoolId], references: [id])
+  courses     ProgramCourse[]
+  careerPaths CareerPathProgram[]
+
+  @@index([schoolId])
+}
+
+/// JONCTION : composition d'un programme à partir de formations existantes.
+model ProgramCourse {
+  programId String
+  program   Program @relation(fields: [programId], references: [id], onDelete: Cascade)
+  courseId   String
+  course    Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  position  Int     @default(0)
+
+  @@id([programId, courseId])
+  @@index([courseId])
+}
+
+/// JONCTION : composition d'un parcours métier à partir de programmes.
+model CareerPathProgram {
+  careerPathId String
+  careerPath   CareerPath @relation(fields: [careerPathId], references: [id], onDelete: Cascade)
+  programId    String
+  program      Program    @relation(fields: [programId], references: [id], onDelete: Cascade)
+  position     Int        @default(0)
+  isRequired   Boolean    @default(true)
+
+  @@id([careerPathId, programId])
+  @@index([programId])
 }

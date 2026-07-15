@@ -14,6 +14,7 @@
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
+    "db:seed-catalogue": "tsx prisma/catalogue-seed.ts && tsx prisma/catalogue-seed-part2.ts",
     "partial-indexes": "node --env-file=../../.env scripts/apply-partial-indexes.mjs"
   },
   "dependencies": {
