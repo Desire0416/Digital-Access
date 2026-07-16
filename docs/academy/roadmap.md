@@ -1,32 +1,112 @@
-# Digital Access Academy — Feuille de route
+# Access Academy v2 — Feuille de route harmonisée
 
-Reconstruction par phases (les Lots du CDC maître regroupés). Le web n'est jamais touché.
+> **Plan de travail unique** qui fusionne (a) les 9 chantiers du briefing de migration
+> et (b) les sprints S6–S13 du `plan-mise-en-oeuvre-v2.md` (détail par lot + critères
+> d'acceptation y restent la référence fine). Le web (`apps/web`) n'est jamais touché.
+> Base de données dédiée : `packages/academy-db` (Neon `ACADEMY_DATABASE_URL`).
 
-| Phase | Lots CDC | Contenu | État |
-|---|---|---|---|
-| **0 — Socle : shell & docs** | 1 | Nettoyage ancienne UI · shell institutionnel (header/nav/footer) · homepage data-driven · `/schools`(+détail), `/career-paths`(+détail), `/short-courses`(+détail), `/certifications`, `/companies` · docs | ✅ Fait |
-| **1 — Modèle de données** | 2 | Schéma Prisma (24 modèles) · migration Neon (destructive côté academy, web préservé) · seed complet · types + helpers | ✅ Fait |
-| **2 — Public + Auth** | 3-4 | Filtres/recherche catalogue (école/niveau/recherche, URL-driven) · inscription→LearnerProfile · 9 rôles + gardes de route + aiguilleur post-connexion | ✅ Fait |
-| **3 — Espace apprenant** | 5 | `/dashboard` (vue d'ensemble, mes-cours, passeport, badges, certificats, portfolio, opportunités) · player leçon immersif `(learn)` + quiz noté serveur · modèle `LessonProgress` · contenu+quiz enrichis (6 parcours) | ✅ Fait |
-| **4 — Projets & Certification** | 6-7 | Moteur projets (dépôt liens/captures/déclaration IA → revue à la grille par relecteur → validation) · badges par preuve · portfolio auto-alimenté · certificats vérifiables (react-pdf + QR, `/api/certificates/[id]`) · `/verify/[code]` public · émission conditionnée (parcours terminé + projets validés) | ✅ Fait |
-| **5 — Administration** | 8 | Back-office `/admin` (AdminShell gardé) : dashboard KPI + charts · CRUD écoles · parcours/formations (statut+méta) · utilisateurs (rôles+activation+impersonation) · soumissions (supervision) · certificats (révocation) · coupons · gardes strictes anti-élévation | ✅ Fait |
-| **6 — Entreprises** | 9 | Espace entreprise (comptes vérifiés, offres/missions, recherche talents, candidatures, B2B) | À faire |
-| **7 — Finitions** | 10 | Responsive, SEO/OG, sécurité, notifications, gate qualité | À faire |
-| **8 — Intelligence Artificielle** | Tome 10 | Assistant pédago, aide projet/CV/entretien, correction assistée, matching, prompt library | À faire |
+## Déjà livré (ne pas refaire)
 
-## Comptes de démonstration (seed)
+- **Socle v2** : schéma dédié (~33 tables), auth locale, catalogue public (formations /
+  parcours / écoles), filtres/recherche URL-driven, aiguilleur post-connexion.
+- **Espace apprenant** : dashboard, mes formations/parcours, favoris, paramètres,
+  lecteur immersif `(learn)` + quiz notés serveur (7 types jouables : QCU/QCM/V-F/
+  réponse courte/appariement/ordonnancement ; LONG_ANSWER = manuel).
+- **Projets & certification** : dépôt → correction à la grille → validation → badge par
+  preuve → portfolio auto ; certificats PDF+QR type-aware (6 types) + `/certificats/verifier`.
+- **Employabilité (base)** : Portfolio public `/portfolio/[slug]`, passeport de compétences
+  `/espace/competences`, référentiel compétences admin.
+- **Paiement** : Mobile Money **manuel** (preuve → validation admin ; invariant sécurité)
+  + coupons (CRUD admin + application checkout).
+- **Espaces rôles** : **formateur** `(formateur)/*` (dashboard, formations, éditeur scopé
+  propriétaire, apprenants) ✅ *(= « studio instructeur » du briefing, item 3)*,
+  **correcteur** `(correcteur)/*`.
+- **Parcours-cœur** : prérequis inter-formations (verrou réel), test de positionnement IA
+  par formation, équivalences / reconnaissance des acquis, recommandations personnalisées.
+- **Admin** : dashboard KPI, écoles, parcours, formations, utilisateurs, paiements,
+  certificats, coupons, compétences, équivalences (gardes anti-élévation).
+- **Catalogue maître seedé (DRAFT)** : 10 écoles, 180 formations, 92 programmes, 46 parcours.
+- **Transverse** : notifications (cloche + centre), recherche globale, responsive 375px,
+  menu mobile accordéon.
 
-- `admin@digitalaccess.ci` — ADMIN / SUPER_ADMIN
-- `koffi@digitalaccess.ci` — INSTRUCTOR
-- `mentor@digitalaccess.ci` — MENTOR
-- `apprenant@digitalaccess.ci`, `yann@digitalaccess.ci`, `mariam@digitalaccess.ci` — LEARNER
-- Mot de passe commun : `DigitalAccess2026!`
+---
 
-## Regénérer les données
+## Track transversal — Contenu (parallèle à tous les sprints)
 
+**T. Enrichissement du catalogue** *(briefing item 1)* — les 180 formations sont seedées
+en **DRAFT** (fiches sans modules/leçons/quiz réels). À enrichir **par vagues** (Vague 1
+prioritaire = parcours de lancement). Outil existant : `/admin/import-formation` (upload
+docx/pdf/md → extraction IA → CareerPath/Course complet). Sortie de chaque vague : passer
+les formations en `PUBLISHED` après relecture. **Se mène en continu, en fond des sprints ci-dessous.**
+
+---
+
+## Sprints restants (ordre d'exécution)
+
+### Sprint 6 — Cohortes & Événements (§23, §24) — *Tome 7 (partie 1)* ✅ LIVRÉ (2026-07-16)
+Modèles `Cohort`/`CohortMember`/`CohortInstructor` + `Event` (unifié : sessions de cohorte
++ événements autonomes) / `EventRegistration` / `Announcement`. Cohorte gratuite (join direct)
+ou payante (tunnel Mobile Money, purpose COHORT, invariant respecté). Espaces apprenant
+(`/espace/cohortes`, `/espace/agenda`), public (`/evenements`), admin (`/admin/{cohortes,evenements}`).
+Échéances/RDV/annonces au dashboard (§16.1). Rappel cron (`/api/cron/reminders`, secret →
+Vercel Cron à configurer). **Débloque le Sprint 8 (mentorat par groupe).**
+
+### Sprint 7 — Communauté, commentaires & support (§25, §35) — *briefing item 4 + Tome 7 (partie 2)*
+Forum par école/parcours/cohorte, commentaires par leçon dans le lecteur, tickets support
+`/espace/support` + file admin. Temps réel optionnel (Ably déjà en infra). *(Remplace
+l'ancien Forum/Chat de la v1 sur le nouveau schéma.)*
+
+### Sprint 8 — Gouvernance pédagogique (§7.5–7.7)
+Espaces scopés : **responsable d'école**, **responsable de parcours**, **mentor/tuteur**
+(rattachement mentor↔groupe via cohortes). Aucun accès admin global.
+**Dépend du Sprint 6.**
+
+### Sprint 9 — Finitions apprenant, onboarding & CV Builder (§15–17) — *+ briefing item 8 (Tome 5)*
+3ᵉ zone du lecteur (notes/signets), accessibilité (sous-titres/vitesse), onboarding complet
+(5 questions → alimente les recos), profil enrichi, filtres projets/évaluations, partage
+certificat. **+ CV Builder** (générateur CV depuis passeport de compétences + projets
+publiés) et passeport avancé (Tome 5).
+
+### Sprint 10 — Entreprises (§28) — *briefing item 6 (Tome 8)*
+Admin des organisations, espace entreprise connecté (équipe, licences, rapports de
+progression), facturation B2B, offres/missions + recherche de talents via portfolios.
+**Dépend du Portfolio (fait) et du Sprint 11 (facturation).**
+
+### Sprint 11 — Paiements avancés & abonnements (§27) — *briefing items 2 + 5*
+**Intégration CinetPay/FedaPay** (Mobile Money automatique — le manuel reste en secours ;
+schéma prêt : provider CINETPAY/FEDAPAY, vérif signature webhook). Factures/reçus PDF,
+statuts PARTIAL/REFUNDED/EXPIRED, échéancier/acompte, **abonnements MONTHLY/YEARLY**.
+
+### Sprint 12 — Administration complète & rapports (§30, §34)
+14 sections admin manquantes (cohortes, événements, formateurs, entreprises, commandes,
+notifications, rapports, audit…), versioning des formations publiées, rapports analytiques
+(Recharts + exports), publication programmée (scheduler `SCHEDULED`).
+
+### Sprint 13 — IA avancée (Tome 10) — *briefing item 9*
+Couche IA transversale au-delà de l'existant (diagnostic, positionnement, import,
+recommandations) : assistant pédagogique apprenant, aide formateur (génération quiz/leçons),
+correction assistée, aide projet/portfolio/**CV**/entretien, matching entreprise↔talent,
+prompt library, orchestrateur + journal IA (gouvernance §10). Déploiement MVP→avancé.
+
+### Sprint 14 — Multilingue réel (§37) — *Phase 4*
+Infrastructure i18n (next-intl), interface externalisée, entité de traductions de contenu,
+sous-titres/transcriptions par langue. Lourd — planifié en dernier.
+
+---
+
+## Hors périmètre (§5.2)
+App mobile native · marketplace ouverte de formateurs · proctoring · visio interne ·
+paiement crypto · diplômes réglementés.
+
+## Comptes de démonstration (base dédiée v2)
+`superadmin@` (SUPER_ADMIN) · `pedagogie@` (ACADEMIC_ADMIN) · `formateur@` (INSTRUCTOR) ·
+`apprenant@` (LEARNER) — tous `@digitalaccess.ci` / `DigitalAccess2026!`.
+
+## Régénérer les données (base academy dédiée)
 ```bash
-# depuis la racine du repo
-npx prisma generate --schema=packages/db/prisma/schema.prisma
-npx prisma db push  --schema=packages/db/prisma/schema.prisma   # réveiller Neon via le pooler d'abord
-npx tsx -r dotenv/config packages/db/prisma/seed.ts
+cd packages/academy-db
+npx prisma db push            # réveiller Neon via le pooler d'abord
+npx prisma generate
+# ⚠️ rejouer les index partiels après CHAQUE db push :
+pnpm --filter @da/academy-db partial-indexes
 ```

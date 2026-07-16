@@ -8,6 +8,7 @@ import { ACQUIRED_STATUSES, computeCareerPathPricing, type CareerPathPricing } f
 import { validateCoupon, consumeCoupon } from "./coupons";
 import { createNotification } from "./notify";
 import { getPrerequisiteStatus, unmetPrerequisitesMessage } from "./prerequisites";
+import { enrollMemberIntoCohortTx } from "./cohort-enroll";
 import { siteConfig, paymentConfig, formatFCFA } from "./site";
 import { sendPaymentSubmittedEmail, sendPaymentApprovedEmail, sendPaymentRejectedEmail } from "@da/email";
 
@@ -27,7 +28,7 @@ const APPROVAL_RACE = "__PAYMENT_ALREADY_PROCESSED__";
 export type PaymentActionResult = { ok: true; message?: string } | { ok: false; error: string };
 
 export interface CheckoutInfo {
-  kind: "formation" | "parcours";
+  kind: "formation" | "parcours" | "cohorte";
   id: string;
   slug: string;
   title: string;
@@ -49,10 +50,10 @@ export interface CheckoutInfo {
  * /paiement/parcours/[slug]. L'utilisateur est TOUJOURS celui de la session.
  */
 export async function getCheckoutInfo(
-  type: "formation" | "parcours",
+  type: "formation" | "parcours" | "cohorte",
   slug: string,
 ): Promise<{ ok: true; data: CheckoutInfo } | { ok: false; error: string }> {
-  const parsed = z.object({ type: z.enum(["formation", "parcours"]), slug: z.string().min(1) }).safeParse({ type, slug });
+  const parsed = z.object({ type: z.enum(["formation", "parcours", "cohorte"]), slug: z.string().min(1) }).safeParse({ type, slug });
   if (!parsed.success) return { ok: false, error: "Demande invalide." };
 
   const user = await currentUser();
@@ -102,6 +103,66 @@ export async function getCheckoutInfo(
         amount: course.price,
         pricing: null,
         alreadyAcquired: !!enrollment && ACQUIRED.includes(enrollment.status),
+        pendingPayment: !!pending,
+      },
+    };
+  }
+
+  if (parsed.data.type === "cohorte") {
+    // Cohorte (§23) : prix FORFAITAIRE (cohort.price sinon prix de la cible
+    // sous-jacente) — pas de reconnaissance des acquis appliquée au montant.
+    const cohort = await prisma.cohort.findUnique({
+      where: { slug: parsed.data.slug },
+      select: {
+        id: true,
+        slug: true,
+        name: true,
+        coverImage: true,
+        status: true,
+        price: true,
+        capacity: true,
+        enrollmentDeadline: true,
+        endDate: true,
+        courseId: true,
+        careerPathId: true,
+        course: { select: { price: true, level: true } },
+        careerPath: { select: { price: true, entryLevel: true } },
+        school: { select: { name: true } },
+      },
+    });
+    if (!cohort || cohort.status !== "OPEN") return { ok: false, error: "Cette cohorte n'est pas ouverte aux inscriptions." };
+
+    const now = new Date();
+    if (cohort.enrollmentDeadline && cohort.enrollmentDeadline < now) return { ok: false, error: "Les inscriptions à cette cohorte sont closes." };
+    if (cohort.endDate && cohort.endDate < now) return { ok: false, error: "Cette cohorte est déjà terminée." };
+
+    const [member, pending, seatsTaken] = await Promise.all([
+      prisma.cohortMember.findUnique({
+        where: { cohortId_userId: { cohortId: cohort.id, userId: user.id } },
+        select: { status: true },
+      }),
+      prisma.payment.findFirst({
+        where: { userId: user.id, cohortId: cohort.id, status: "PENDING" },
+        select: { id: true },
+      }),
+      prisma.cohortMember.count({ where: { cohortId: cohort.id, status: "ACTIVE" } }),
+    ]);
+    if (cohort.capacity != null && seatsTaken >= cohort.capacity) return { ok: false, error: "Cette cohorte est complète." };
+
+    const amount = cohort.price ?? cohort.course?.price ?? cohort.careerPath?.price ?? 0;
+    return {
+      ok: true,
+      data: {
+        kind: "cohorte",
+        id: cohort.id,
+        slug: cohort.slug,
+        title: cohort.name,
+        coverImage: cohort.coverImage,
+        level: cohort.course?.level ?? cohort.careerPath?.entryLevel ?? null,
+        schoolName: cohort.school?.name ?? null,
+        amount,
+        pricing: null,
+        alreadyAcquired: !!member && member.status === "ACTIVE",
         pendingPayment: !!pending,
       },
     };
@@ -177,7 +238,7 @@ const blobImageUrl = z
   }, "Capture invalide : envoyez le fichier via le formulaire.");
 
 const submitPaymentSchema = z.object({
-  type: z.enum(["formation", "parcours"]),
+  type: z.enum(["formation", "parcours", "cohorte"]),
   slug: z.string().min(1),
   operator: z.enum(["ORANGE", "MTN", "WAVE"]),
   reference: z
@@ -207,7 +268,15 @@ export async function submitManualPayment(input: SubmitPaymentInput): Promise<Pa
   const target = info.data;
 
   if (target.alreadyAcquired) {
-    return { ok: false, error: data.type === "formation" ? "Vous avez déjà accès à cette formation." : "Vous êtes déjà inscrit(e) à ce parcours." };
+    return {
+      ok: false,
+      error:
+        data.type === "formation"
+          ? "Vous avez déjà accès à cette formation."
+          : data.type === "cohorte"
+            ? "Vous faites déjà partie de cette cohorte."
+            : "Vous êtes déjà inscrit(e) à ce parcours.",
+    };
   }
   if (target.pendingPayment) {
     return { ok: false, error: `Un paiement est déjà en attente de validation pour cet achat. Notre équipe le vérifie ${paymentConfig.reviewDelay}.` };
@@ -245,9 +314,10 @@ export async function submitManualPayment(input: SubmitPaymentInput): Promise<Pa
         currency: "XOF",
         provider: "MOBILE_MONEY",
         status: "PENDING", // ⚠️ INVARIANT : aucune inscription ici.
-        purpose: data.type === "formation" ? "COURSE" : "CAREER_PATH",
+        purpose: data.type === "formation" ? "COURSE" : data.type === "parcours" ? "CAREER_PATH" : "COHORT",
         courseId: data.type === "formation" ? target.id : null,
         careerPathId: data.type === "parcours" ? target.id : null,
+        cohortId: data.type === "cohorte" ? target.id : null,
         reference: data.reference,
         operator: data.operator,
         payerPhone: data.payerPhone,
@@ -269,7 +339,11 @@ export async function submitManualPayment(input: SubmitPaymentInput): Promise<Pa
         where: {
           userId: user.id,
           status: "PENDING",
-          ...(data.type === "formation" ? { courseId: target.id } : { careerPathId: target.id }),
+          ...(data.type === "formation"
+            ? { courseId: target.id }
+            : data.type === "parcours"
+              ? { careerPathId: target.id }
+              : { cohortId: target.id }),
         },
         select: { id: true },
       });
@@ -286,7 +360,7 @@ export async function submitManualPayment(input: SubmitPaymentInput): Promise<Pa
     type: "PAYMENT",
     title: "Preuve de paiement reçue",
     message: `Votre paiement pour « ${target.title} » est en cours de vérification (${formatFCFA(amount)}).`,
-    link: "/espace/formations",
+    link: data.type === "cohorte" ? "/espace/cohortes" : "/espace/formations",
   });
 
   try {
@@ -314,7 +388,7 @@ export async function submitManualPayment(input: SubmitPaymentInput): Promise<Pa
 /* ─── Aperçu d'un code promo au checkout (montant recalculé côté serveur) ───── */
 
 export async function previewCoupon(
-  type: "formation" | "parcours",
+  type: "formation" | "parcours" | "cohorte",
   slug: string,
   code: string,
 ): Promise<
@@ -357,12 +431,14 @@ export async function approvePayment(paymentId: string): Promise<PaymentActionRe
       careerPath: {
         select: { id: true, slug: true, title: true, courses: { select: { courseId: true, isRequired: true } } },
       },
+      cohortId: true,
+      cohort: { select: { id: true, slug: true, name: true, courseId: true, careerPathId: true } },
     },
   });
   if (!payment) return { ok: false, error: "Paiement introuvable." };
   if (payment.status !== "PENDING") return { ok: false, error: "Ce paiement a déjà été traité." };
 
-  const targetTitle = payment.course?.title ?? payment.careerPath?.title ?? "votre achat";
+  const targetTitle = payment.course?.title ?? payment.careerPath?.title ?? payment.cohort?.name ?? "votre achat";
 
   let cancelledAcquired = false;
   try {
@@ -383,6 +459,12 @@ export async function approvePayment(paymentId: string): Promise<PaymentActionRe
         select: { status: true },
       });
       acquired = !!pe && ACQUIRED.includes(pe.status);
+    } else if (payment.purpose === "COHORT" && payment.cohortId) {
+      const m = await tx.cohortMember.findUnique({
+        where: { cohortId_userId: { cohortId: payment.cohortId, userId: payment.userId } },
+        select: { status: true },
+      });
+      acquired = !!m && m.status === "ACTIVE";
     }
     if (acquired) {
       cancelledAcquired = true;
@@ -480,13 +562,27 @@ export async function approvePayment(paymentId: string): Promise<PaymentActionRe
       }
     }
 
+    // Cohorte (§23) : adhésion + inscription pédagogique sous-jacente, via le
+    // helper partagé (même invariant que l'inscription directe).
+    if (payment.purpose === "COHORT" && payment.cohortId && payment.cohort) {
+      await enrollMemberIntoCohortTx(tx, {
+        cohort: { id: payment.cohort.id, courseId: payment.cohort.courseId, careerPathId: payment.cohort.careerPathId },
+        userId: payment.userId,
+        accessType: "PAID",
+      });
+    }
+
     await tx.notification.create({
       data: {
         userId: payment.userId,
         type: "PAYMENT",
         title: "Paiement confirmé ✅",
         message: `Votre paiement pour « ${targetTitle} » est validé. Votre accès est ouvert !`,
-        link: payment.course ? `/apprendre/${payment.course.slug}` : "/espace/parcours",
+        link: payment.cohort
+          ? `/espace/cohortes/${payment.cohort.id}`
+          : payment.course
+            ? `/apprendre/${payment.course.slug}`
+            : "/espace/parcours",
       },
     });
     await tx.auditLog.create({
@@ -529,7 +625,11 @@ export async function approvePayment(paymentId: string): Promise<PaymentActionRe
     await sendPaymentApprovedEmail(payment.user.email, {
       name: payment.user.name,
       courseTitle: targetTitle,
-      courseUrl: payment.course ? `${siteConfig.url}/apprendre/${payment.course.slug}` : `${siteConfig.url}/espace/parcours`,
+      courseUrl: payment.cohort
+        ? `${siteConfig.url}/espace/cohortes/${payment.cohort.id}`
+        : payment.course
+          ? `${siteConfig.url}/apprendre/${payment.course.slug}`
+          : `${siteConfig.url}/espace/parcours`,
       amountLabel: formatFCFA(payment.amount),
       reference: payment.reference ?? payment.id,
     });
@@ -560,17 +660,20 @@ export async function rejectPayment(paymentId: string, reason: string): Promise<
       user: { select: { name: true, email: true } },
       course: { select: { slug: true, title: true } },
       careerPath: { select: { slug: true, title: true } },
+      cohort: { select: { slug: true, name: true } },
     },
   });
   if (!payment) return { ok: false, error: "Paiement introuvable." };
   if (payment.status !== "PENDING") return { ok: false, error: "Ce paiement a déjà été traité." };
 
-  const targetTitle = payment.course?.title ?? payment.careerPath?.title ?? "votre achat";
+  const targetTitle = payment.course?.title ?? payment.careerPath?.title ?? payment.cohort?.name ?? "votre achat";
   const checkoutUrl = payment.course
     ? `${siteConfig.url}/paiement/formation/${payment.course.slug}`
     : payment.careerPath
       ? `${siteConfig.url}/paiement/parcours/${payment.careerPath.slug}`
-      : siteConfig.url;
+      : payment.cohort
+        ? `${siteConfig.url}/paiement/cohorte/${payment.cohort.slug}`
+        : siteConfig.url;
 
   await prisma.$transaction([
     prisma.payment.update({

@@ -14,6 +14,10 @@ import {
   Route,
   BadgeCheck,
   CheckCheck,
+  UsersRound,
+  CalendarDays,
+  Megaphone,
+  AlarmClock,
 } from "lucide-react";
 import { cn } from "@da/ui";
 import { markNotificationRead, markAllNotificationsRead } from "@/lib/notify-actions";
@@ -49,6 +53,10 @@ const TYPE_ICONS: Record<string, React.ComponentType<{ size?: number | string; c
   ENROLLMENT: BookOpen,
   PATH: Route,
   EQUIVALENCE: BadgeCheck,
+  COHORT: UsersRound,
+  EVENT: CalendarDays,
+  ANNOUNCEMENT: Megaphone,
+  REMINDER: AlarmClock,
 };
 
 /* Heure relative en français, sans dépendance externe. */

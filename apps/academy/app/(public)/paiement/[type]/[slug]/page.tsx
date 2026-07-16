@@ -5,6 +5,7 @@ import { notFound, redirect } from "next/navigation";
 import {
   GraduationCap,
   Route,
+  UsersRound,
   BadgeCheck,
   Clock,
   ShieldCheck,
@@ -23,9 +24,12 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-const TYPE_LABEL: Record<"formation" | "parcours", string> = {
+type CheckoutKind = "formation" | "parcours" | "cohorte";
+
+const TYPE_LABEL: Record<CheckoutKind, string> = {
   formation: "Formation",
   parcours: "Parcours métier",
+  cohorte: "Cohorte",
 };
 
 export default async function PaiementPage({
@@ -34,8 +38,8 @@ export default async function PaiementPage({
   params: Promise<{ type: string; slug: string }>;
 }) {
   const { type, slug } = await params;
-  if (type !== "formation" && type !== "parcours") notFound();
-  const kind = type as "formation" | "parcours";
+  if (type !== "formation" && type !== "parcours" && type !== "cohorte") notFound();
+  const kind = type as CheckoutKind;
 
   const callbackUrl = `/paiement/${kind}/${slug}`;
   const user = await requireUser(callbackUrl);
@@ -46,7 +50,7 @@ export default async function PaiementPage({
 
   // Déjà acquis → l'apprenant a déjà l'accès : on l'y renvoie.
   if (data.alreadyAcquired) {
-    redirect(kind === "formation" ? "/espace/formations" : "/espace/parcours");
+    redirect(kind === "formation" ? "/espace/formations" : kind === "cohorte" ? "/espace/cohortes" : "/espace/parcours");
   }
 
   const levelLabel = data.level ? LEVEL_LABEL[data.level] ?? data.level : null;
@@ -62,7 +66,7 @@ export default async function PaiementPage({
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-navy/70 via-navy/10 to-transparent" />
         <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-navy backdrop-blur-sm">
-          {kind === "formation" ? <GraduationCap size={14} /> : <Route size={14} />}
+          {kind === "formation" ? <GraduationCap size={14} /> : kind === "cohorte" ? <UsersRound size={14} /> : <Route size={14} />}
           {TYPE_LABEL[kind]}
         </span>
       </div>
@@ -166,14 +170,15 @@ export default async function PaiementPage({
         </div>
         <h2 className="mt-5 font-display text-xl font-bold text-navy">C'est gratuit pour vous !</h2>
         <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-text-secondary">
-          Vous possédez déjà toutes les formations facturables de ce parcours. Aucun paiement n'est nécessaire : lancez
-          votre inscription directement depuis la fiche du parcours.
+          {kind === "cohorte"
+            ? "Cette cohorte est gratuite : lancez votre inscription directement depuis le bouton « Rejoindre » de la fiche."
+            : "Vous possédez déjà toutes les formations facturables de ce parcours. Aucun paiement n'est nécessaire : lancez votre inscription directement depuis la fiche du parcours."}
         </p>
         <Link
-          href={`/parcours-metiers/${slug}`}
+          href={kind === "cohorte" ? "/espace/cohortes" : kind === "formation" ? `/formations/${slug}` : `/parcours-metiers/${slug}`}
           className="mt-6 inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-gradient-da px-6 text-[0.95rem] font-medium text-white shadow-brand transition-all hover:-translate-y-0.5"
         >
-          Aller à la fiche du parcours
+          {kind === "cohorte" ? "Voir mes cohortes" : "Aller à la fiche"}
           <ArrowRight size={18} />
         </Link>
       </div>
@@ -191,7 +196,7 @@ export default async function PaiementPage({
           accès s'ouvrira automatiquement dès la validation — inutile de payer à nouveau.
         </p>
         <Link
-          href="/espace/formations"
+          href={kind === "cohorte" ? "/espace/cohortes" : "/espace/formations"}
           className="mt-6 inline-flex h-11 items-center justify-center rounded-lg bg-gradient-da px-6 text-[0.95rem] font-medium text-white shadow-brand transition-all hover:-translate-y-0.5"
         >
           Suivre dans mon espace

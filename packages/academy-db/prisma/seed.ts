@@ -2606,6 +2606,183 @@ async function main() {
   });
   console.log("✓ Démo : inscription Aya + progression + quiz réussi 80 % + avis 5★ + coupon BIENVENUE10");
 
+  /* ── 8b. Cohortes, événements & annonces (§23, §24) ──────────────────── */
+  const _day = 86400000;
+  const _at = (d: number) => new Date(now.getTime() + d * _day);
+
+  // Cohorte GRATUITE accompagnée sur « Fondamentaux SQL »
+  const cohortFreeData = {
+    name: "Cohorte SQL Fondamentaux — Rentrée",
+    type: "GUIDED" as const,
+    status: "OPEN" as const,
+    courseId: course1.id,
+    careerPathId: null as string | null,
+    startDate: _at(7),
+    endDate: _at(45),
+    enrollmentDeadline: _at(5),
+    capacity: 30,
+    price: 0,
+    rhythm: "6 h / semaine",
+    description:
+      "Une cohorte accompagnée pour maîtriser les fondamentaux SQL en groupe : sessions live hebdomadaires, entraide et formateur dédié.",
+    rules: "- Assiduité aux sessions en direct\n- Rendu des exercices hebdomadaires\n- Bienveillance et entraide",
+  };
+  const cohortFree = await prisma.cohort.upsert({
+    where: { slug: "cohorte-sql-fondamentaux" },
+    update: cohortFreeData,
+    create: { slug: "cohorte-sql-fondamentaux", ...cohortFreeData },
+  });
+
+  // Cohorte PAYANTE intensive sur le parcours DBA
+  const cohortPaidData = {
+    name: "Cohorte intensive — Administrateur BDD",
+    type: "INTENSIVE" as const,
+    status: "OPEN" as const,
+    courseId: null as string | null,
+    careerPathId: path.id,
+    startDate: _at(14),
+    endDate: _at(200),
+    enrollmentDeadline: _at(10),
+    capacity: 20,
+    price: 180000,
+    rhythm: "12 h / semaine",
+    description:
+      "Un accompagnement intensif vers le métier d'administrateur de bases de données, en cohorte, avec mentorat et soutenance finale.",
+    rules: "- Engagement de 12 h/semaine\n- Participation aux revues de projet\n- Soutenance finale obligatoire",
+  };
+  const cohortPaid = await prisma.cohort.upsert({
+    where: { slug: "cohorte-dba-intensive" },
+    update: cohortPaidData,
+    create: { slug: "cohorte-dba-intensive", ...cohortPaidData },
+  });
+
+  // Encadrants des deux cohortes
+  for (const c of [cohortFree, cohortPaid]) {
+    await prisma.cohortInstructor.upsert({
+      where: { cohortId_userId: { cohortId: c.id, userId: formateur.id } },
+      update: { roleLabel: "Formateur principal" },
+      create: { cohortId: c.id, userId: formateur.id, roleLabel: "Formateur principal" },
+    });
+  }
+
+  // Aya, membre de la cohorte gratuite (déjà inscrite à la formation course1)
+  await prisma.cohortMember.upsert({
+    where: { cohortId_userId: { cohortId: cohortFree.id, userId: apprenant.id } },
+    update: { status: "ACTIVE" },
+    create: { cohortId: cohortFree.id, userId: apprenant.id, status: "ACTIVE" },
+  });
+
+  // Événements : 1 session de cohorte à venir, 1 webinaire public à venir, 1 atelier passé (replay)
+  const sessionStart = _at(8);
+  const eventsData = [
+    {
+      slug: "session-live-sql-semaine-1",
+      title: "Session live — Semaine 1 : le modèle relationnel",
+      type: "VIRTUAL_CLASS" as const,
+      audience: "COHORT" as const,
+      status: "PUBLISHED" as const,
+      provider: "GOOGLE_MEET" as const,
+      meetingUrl: "https://meet.google.com/demo-access-academy",
+      startAt: sessionStart,
+      endAt: new Date(sessionStart.getTime() + 2 * 3600000),
+      capacity: null as number | null,
+      replayUrl: null as string | null,
+      summary: null as string | null,
+      resources: undefined as unknown,
+      speakerName: null as string | null,
+      cohortId: cohortFree.id,
+      courseId: course1.id,
+      hostId: formateur.id,
+      description:
+        "Première session en direct de la cohorte : tour de table, rappel du modèle relationnel et premiers SELECT commentés.",
+    },
+    {
+      slug: "webinaire-decouverte-donnees",
+      title: "Webinaire — Découvrir les métiers de la donnée",
+      type: "WEBINAR" as const,
+      audience: "PUBLIC" as const,
+      status: "PUBLISHED" as const,
+      provider: "ZOOM" as const,
+      meetingUrl: "https://zoom.us/j/demo-access-academy",
+      startAt: _at(3),
+      endAt: null as Date | null,
+      capacity: 200,
+      replayUrl: null as string | null,
+      summary: null as string | null,
+      resources: undefined as unknown,
+      speakerName: "Koffi N'Guessan",
+      cohortId: null as string | null,
+      courseId: null as string | null,
+      hostId: formateur.id,
+      description:
+        "Un webinaire gratuit et ouvert à tous pour explorer les métiers de la donnée et de l'IA en Côte d'Ivoire : débouchés, compétences et parcours conseillés.",
+    },
+    {
+      slug: "atelier-sql-replay",
+      title: "Atelier — Optimiser ses requêtes SQL (replay)",
+      type: "WORKSHOP" as const,
+      audience: "PUBLIC" as const,
+      status: "PUBLISHED" as const,
+      provider: "OTHER" as const,
+      meetingUrl: null as string | null,
+      startAt: _at(-10),
+      endAt: null as Date | null,
+      capacity: null as number | null,
+      replayUrl: "https://www.youtube.com/watch?v=demo",
+      summary:
+        "Récapitulatif de l'atelier : index, plans d'exécution et bonnes pratiques d'optimisation. Le replay et les diapositives sont disponibles ci-dessous.",
+      resources: [{ title: "Diapositives de l'atelier", url: "https://example.com/slides.pdf", kind: "PDF" }] as unknown,
+      speakerName: "Koffi N'Guessan",
+      cohortId: null as string | null,
+      courseId: null as string | null,
+      hostId: formateur.id,
+      description: "Atelier pratique sur l'optimisation des requêtes SQL — désormais disponible en replay pour tous.",
+    },
+  ];
+  const eventRecs: Record<string, { id: string }> = {};
+  for (const ev of eventsData) {
+    const { slug, resources, ...rest } = ev;
+    const data = { ...rest, ...(resources !== undefined ? { resources: resources as object } : {}) };
+    const rec = await prisma.event.upsert({ where: { slug }, update: data, create: { slug, ...data } });
+    eventRecs[slug] = rec;
+  }
+
+  // Inscriptions d'Aya : au webinaire (à venir) + à l'atelier passé (présence)
+  await prisma.eventRegistration.upsert({
+    where: { eventId_userId: { eventId: eventRecs["webinaire-decouverte-donnees"].id, userId: apprenant.id } },
+    update: {},
+    create: { eventId: eventRecs["webinaire-decouverte-donnees"].id, userId: apprenant.id },
+  });
+  await prisma.eventRegistration.upsert({
+    where: { eventId_userId: { eventId: eventRecs["atelier-sql-replay"].id, userId: apprenant.id } },
+    update: { attended: true, attendedAt: _at(-10) },
+    create: { eventId: eventRecs["atelier-sql-replay"].id, userId: apprenant.id, attended: true, attendedAt: _at(-10) },
+  });
+
+  // Annonces (idempotent : on repart de zéro pour ces cibles)
+  await prisma.announcement.deleteMany({
+    where: { OR: [{ cohortId: cohortFree.id }, { cohortId: cohortPaid.id }, { courseId: course1.id }] },
+  });
+  await prisma.announcement.create({
+    data: {
+      cohortId: cohortFree.id,
+      authorId: formateur.id,
+      title: "Bienvenue dans la cohorte 🎉",
+      body: "Ravi de vous accueillir ! La **première session live** a lieu la semaine prochaine. Pensez à préparer votre environnement PostgreSQL avant de nous rejoindre.",
+      pinned: true,
+    },
+  });
+  await prisma.announcement.create({
+    data: {
+      courseId: course1.id,
+      authorId: formateur.id,
+      title: "Nouvelle ressource ajoutée",
+      body: "Un aide-mémoire des principales commandes SQL a été ajouté aux ressources de la formation. Bon apprentissage !",
+      pinned: false,
+    },
+  });
+  console.log("✓ Cohortes (1 gratuite + 1 payante), 3 événements, inscriptions + annonces de démo");
+
   // Empêcher « variable non utilisée » sur les comptes admin (référencés à dessein)
   void superadmin;
   void pedagogie;
@@ -2635,6 +2812,11 @@ async function main() {
     tentatives: await prisma.assessmentAttempt.count(),
     avis: await prisma.review.count(),
     coupons: await prisma.coupon.count(),
+    cohortes: await prisma.cohort.count(),
+    membresCohorte: await prisma.cohortMember.count(),
+    evenements: await prisma.event.count(),
+    inscriptionsEvenement: await prisma.eventRegistration.count(),
+    annonces: await prisma.announcement.count(),
   };
   console.log("\n📊 COMPTES FINAUX :", JSON.stringify(counts, null, 2));
   await prisma.$disconnect();

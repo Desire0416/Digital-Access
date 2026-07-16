@@ -33,3 +33,8 @@ CREATE UNIQUE INDEX IF NOT EXISTS "Certificate_active_path_uq"
 CREATE UNIQUE INDEX IF NOT EXISTS "EquivalenceRequest_pending_uq"
   ON "EquivalenceRequest" ("userId", "courseId")
   WHERE "status" = 'PENDING';
+
+-- Paiement : un seul PENDING par (apprenant, cohorte) — §23/§27
+CREATE UNIQUE INDEX IF NOT EXISTS "Payment_pending_cohort_uq"
+  ON "Payment" ("userId", "cohortId")
+  WHERE "status" = 'PENDING' AND "cohortId" IS NOT NULL;

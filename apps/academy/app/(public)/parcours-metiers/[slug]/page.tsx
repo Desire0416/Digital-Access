@@ -25,9 +25,11 @@ import {
 } from "lucide-react";
 import { Container, Badge, Reveal } from "@da/ui";
 import { getCareerPathDetail, type CareerPathDetail } from "@/lib/catalogue";
+import { getOpenCohorts } from "@/lib/cohorts";
 import { currentUser } from "@/lib/guards";
 import { siteConfig, formatFCFA, LEVEL_LABEL } from "@/lib/site";
 import { Markdown } from "@/components/Markdown";
+import { CohortOpenSessions } from "@/components/cohort/CohortOpenSessions";
 import { PathEnrollPanel } from "./PathEnrollPanel";
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -93,6 +95,8 @@ export default async function CareerPathDetailPage({ params }: { params: Promise
   const primarySchool = path.schools.find((s) => s.isPrimary)?.school ?? path.schools[0]?.school ?? null;
   const enrolled = !!path.pathEnrollment && ACQUIRED_STATUSES.includes(path.pathEnrollment.status);
   const { pricing } = path;
+  // Cohortes ouvertes ciblant ce parcours (§23.4) — sessions accompagnées.
+  const cohorts = await getOpenCohorts({ careerPathId: path.id });
 
   // Titre des formations pour afficher un prérequis interne lisible.
   const titleById = new Map(path.courses.map((c) => [c.course.id, c.course.title]));
@@ -126,7 +130,12 @@ export default async function CareerPathDetailPage({ params }: { params: Promise
 
   return (
     <div className="pb-24">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c").replace(/>/g, "\\u003e").replace(/&/g, "\\u0026"),
+        }}
+      />
 
       {/* ══════════════════ Hero métier ══════════════════ */}
       <section className="relative overflow-hidden bg-navy text-white">
@@ -404,6 +413,17 @@ export default async function CareerPathDetailPage({ params }: { params: Promise
                 )}
               </div>
             </Block>
+
+            {/* Sessions & cohortes (§23.4) */}
+            {cohorts.length > 0 && (
+              <Block icon={CalendarDays} title="Sessions & cohortes">
+                <p className="mb-4 -mt-1 text-sm text-text-secondary">
+                  Suivez ce parcours en groupe, à un rythme cadencé et accompagné. Rejoignez une cohorte pour
+                  bénéficier d&apos;un suivi, de sessions en direct et d&apos;une dynamique collective.
+                </p>
+                <CohortOpenSessions cohorts={cohorts} />
+              </Block>
+            )}
 
             {/* Projet transversal (§13.8) */}
             {path.projects.length > 0 && (

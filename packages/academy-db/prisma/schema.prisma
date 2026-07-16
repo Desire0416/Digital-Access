@@ -77,6 +77,11 @@ model User {
   portfolio             Portfolio?
   equivalenceRequests   EquivalenceRequest[]   @relation("EquivalenceLearner")
   reviewedEquivalences  EquivalenceRequest[]   @relation("EquivalenceReviewer")
+  cohortMemberships     CohortMember[]
+  cohortInstructorships CohortInstructor[]
+  eventRegistrations    EventRegistration[]
+  hostedEvents          Event[]                @relation("EventHost")
+  announcements         Announcement[]         @relation("AnnouncementAuthor")
 }
 
 enum TokenType {
@@ -136,6 +141,8 @@ model School {
   courses     SchoolCourse[]
   careerPaths SchoolCareerPath[]
   programs    Program[]
+  cohorts     Cohort[]
+  events      Event[]
 }
 
 // ─── Formation (sections 10-12) — LA brique centrale, unique ────────────────
@@ -190,6 +197,9 @@ model Course {
   requires            CoursePrerequisite[] @relation("CourseRequires")
   requiredBy          CoursePrerequisite[] @relation("CourseRequiredBy")
   equivalenceRequests EquivalenceRequest[]
+  cohorts             Cohort[]
+  events              Event[]
+  announcements       Announcement[]
 }
 
 /// Prérequis structuré : `course` exige la validation de `requiresCourse`.
@@ -569,6 +579,8 @@ model CareerPath {
   certificates Certificate[]
   favorites    Favorite[]
   payments     Payment[]
+  cohorts      Cohort[]
+  events       Event[]
 }
 
 model CareerPathPhase {
@@ -648,6 +660,7 @@ enum EnrollmentOrigin {
   DIRECT
   CAREER_PATH
   ORGANIZATION
+  COHORT
 }
 
 enum AccessType {
@@ -851,6 +864,8 @@ model Payment {
   course        Course?         @relation(fields: [courseId], references: [id])
   careerPathId  String?
   careerPath    CareerPath?     @relation(fields: [careerPathId], references: [id])
+  cohortId      String?
+  cohort        Cohort?         @relation(fields: [cohortId], references: [id])
   reference     String?         @unique // ID de transaction Mobile Money (anti-doublon)
   operator      String? // ORANGE / MTN / WAVE
   payerPhone    String?
@@ -937,6 +952,223 @@ model Notification {
   createdAt DateTime  @default(now())
 
   @@index([userId, readAt])
+}
+
+// ─── Cohortes & événements (sections 23, 24) ─────────────────────────────────
+// Une COHORTE (§23) est un groupe daté qui suit ENSEMBLE une formation OU un
+// parcours (jamais dupliqué — on cible la brique existante). Les ÉVÉNEMENTS
+// (§24 : webinaire, classe virtuelle, atelier, soutenance…) sont UNIFIÉS dans un
+// seul modèle `Event` : un événement rattaché à une cohorte (`cohortId`) est une
+// SESSION de cette cohorte ; sans `cohortId`, c'est un événement autonome
+// (public ou réservé aux inscrits). Inscription / lien / présence / rappel /
+// replay / ressources / compte rendu s'appliquent aux deux.
+//
+// INVARIANT (miroir du paiement) : rejoindre une cohorte GRATUITE crée le
+// `CohortMember` + l'inscription pédagogique sous-jacente ; une cohorte PAYANTE
+// passe par le tunnel de paiement (Payment PENDING, purpose COHORT) et SEULE
+// l'approbation admin crée l'accès (cf. lib/payments.ts).
+
+enum CohortType {
+  AUTONOMOUS // autonome
+  GUIDED // accompagnée
+  INTENSIVE // intensive
+  ENTERPRISE // entreprise
+  HYBRID // hybride
+  VIRTUAL_CLASS // classe virtuelle
+}
+
+enum CohortStatus {
+  DRAFT // brouillon
+  OPEN // inscriptions ouvertes
+  RUNNING // en cours
+  COMPLETED // terminée
+  CANCELLED // annulée
+}
+
+enum CohortMemberStatus {
+  PENDING // inscription en attente (paiement à valider)
+  ACTIVE // membre actif
+  COMPLETED // a terminé la cohorte
+  WITHDRAWN // retiré / abandon
+}
+
+model Cohort {
+  id                 String       @id @default(cuid())
+  code               String?      @unique
+  name               String
+  slug               String       @unique
+  type               CohortType   @default(GUIDED)
+  description        String? // markdown (présentation, §23)
+  rules              String? // markdown (règles de la cohorte, §23.2)
+  // Cible pédagogique : formation OU parcours (contrôle applicatif : exactement un).
+  courseId           String?
+  course             Course?      @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  careerPathId       String?
+  careerPath         CareerPath?  @relation(fields: [careerPathId], references: [id], onDelete: SetNull)
+  schoolId           String?
+  school             School?      @relation(fields: [schoolId], references: [id], onDelete: SetNull)
+  startDate          DateTime
+  endDate            DateTime?
+  enrollmentDeadline DateTime? // date limite d'inscription (§23.2)
+  capacity           Int? // effectif max (§23.2) ; null = illimité
+  price              Int? // FCFA ; null = prix de la cible sous-jacente
+  rhythm             String? // ex. « 10 h / semaine »
+  coverImage         String?
+  status             CohortStatus @default(DRAFT)
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  members       CohortMember[]
+  instructors   CohortInstructor[]
+  events        Event[]
+  announcements Announcement[]
+  payments      Payment[]
+
+  @@index([courseId])
+  @@index([careerPathId])
+  @@index([schoolId])
+  @@index([status])
+}
+
+model CohortMember {
+  id          String             @id @default(cuid())
+  cohortId    String
+  cohort      Cohort             @relation(fields: [cohortId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status      CohortMemberStatus @default(ACTIVE)
+  joinedAt    DateTime           @default(now())
+  completedAt DateTime?
+
+  @@unique([cohortId, userId]) // un apprenant n'apparaît qu'une fois par cohorte
+  @@index([userId])
+  @@index([status])
+}
+
+model CohortInstructor {
+  id        String @id @default(cuid())
+  cohortId  String
+  cohort    Cohort @relation(fields: [cohortId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  roleLabel String @default("Formateur")
+
+  @@unique([cohortId, userId])
+  @@index([userId])
+}
+
+// Types d'événement (§24.1)
+enum EventType {
+  WEBINAR // webinaire
+  VIRTUAL_CLASS // classe virtuelle
+  WORKSHOP // atelier
+  DEFENSE // soutenance
+  MENTORING // mentorat
+  CONFERENCE // conférence
+  QA_SESSION // session de questions
+}
+
+// Intégrations visio (§24.2)
+enum EventProvider {
+  GOOGLE_MEET
+  ZOOM
+  TEAMS
+  JITSI
+  IN_PERSON // présentiel
+  OTHER
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  CANCELLED
+}
+
+// Qui peut s'inscrire / voir un événement.
+enum EventAudience {
+  PUBLIC // ouvert à tous (inscription libre)
+  ENROLLED // réservé aux inscrits de la formation/parcours lié
+  COHORT // réservé aux membres de la cohorte
+}
+
+model Event {
+  id           String        @id @default(cuid())
+  title        String
+  slug         String        @unique
+  description  String? // markdown
+  type         EventType     @default(WEBINAR)
+  audience     EventAudience @default(PUBLIC)
+  startAt      DateTime
+  endAt        DateTime?
+  timezone     String        @default("Africa/Abidjan")
+  provider     EventProvider @default(GOOGLE_MEET)
+  meetingUrl   String? // lien de connexion (§24.3)
+  location     String? // présentiel / hybride
+  capacity     Int?
+  coverImage   String?
+  speakerName  String? // intervenant (texte libre)
+  hostId       String?
+  host         User?         @relation("EventHost", fields: [hostId], references: [id], onDelete: SetNull)
+  // Rattachement : session de cohorte (cohortId) et/ou contexte pédagogique.
+  cohortId     String?
+  cohort       Cohort?       @relation(fields: [cohortId], references: [id], onDelete: Cascade)
+  courseId     String?
+  course       Course?       @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  careerPathId String?
+  careerPath   CareerPath?   @relation(fields: [careerPathId], references: [id], onDelete: SetNull)
+  schoolId     String?
+  school       School?       @relation(fields: [schoolId], references: [id], onDelete: SetNull)
+  replayUrl    String? // replay (§24.3)
+  summary      String? // compte rendu (§24.3, markdown)
+  resources    Json? // ressources : [{ title, url, kind }] (§24.3)
+  status       EventStatus   @default(DRAFT)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  registrations EventRegistration[]
+
+  @@index([cohortId])
+  @@index([courseId])
+  @@index([careerPathId])
+  @@index([schoolId])
+  @@index([startAt])
+  @@index([status])
+}
+
+model EventRegistration {
+  id           String    @id @default(cuid())
+  eventId      String
+  event        Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  registeredAt DateTime  @default(now())
+  attended     Boolean   @default(false) // présence (§24.3)
+  attendedAt   DateTime?
+  remindedAt   DateTime? // rappel envoyé (§24.3) — anti-doublon du cron
+
+  @@unique([eventId, userId])
+  @@index([userId])
+}
+
+// Annonces (§23.3, §25.1) — d'une cohorte ou d'une formation ; alimentent le
+// tableau de bord apprenant (§16.1 « annonces »).
+model Announcement {
+  id        String   @id @default(cuid())
+  cohortId  String?
+  cohort    Cohort?  @relation(fields: [cohortId], references: [id], onDelete: Cascade)
+  courseId  String?
+  course    Course?  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  authorId  String?
+  author    User?    @relation("AnnouncementAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  title     String
+  body      String // markdown
+  pinned    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([cohortId])
+  @@index([courseId])
+  @@index([createdAt])
 }
 
 // ─── Entreprises (section 28) — socle minimal, développé en Phase 3 ─────────

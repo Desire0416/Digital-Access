@@ -13,12 +13,18 @@ import {
   Bell,
   Sparkles,
   GraduationCap,
+  CalendarClock,
+  Video,
+  Megaphone,
+  Pin,
 } from "lucide-react";
 import { buttonClasses } from "@da/ui";
 import { requireUser } from "@/lib/guards";
 import { getLearnerDashboard } from "@/lib/learn-queries";
 import { getRecommendations } from "@/lib/recommendations";
 import { getMyNotifications } from "@/lib/notify";
+import { getUpcomingAgenda } from "@/lib/events";
+import { getMyAnnouncements } from "@/lib/announcements";
 import { LEVEL_LABEL } from "@/lib/site";
 import { RecommendationGrid } from "@/components/RecommendationGrid";
 import { EmptyState } from "@/components/EmptyState";
@@ -28,13 +34,16 @@ import { ProgressBar } from "@/components/espace/ProgressBar";
 export const metadata: Metadata = { title: "Tableau de bord" };
 
 const dateFmt = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short", year: "numeric" });
+const dateTimeFmt = new Intl.DateTimeFormat("fr-FR", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 
 export default async function EspaceDashboardPage() {
   const user = await requireUser("/espace");
 
-  const [dashboard, notifData] = await Promise.all([
+  const [dashboard, notifData, agenda, announcements] = await Promise.all([
     getLearnerDashboard(user.id),
     getMyNotifications(user.id, { unreadOnly: true, take: 5 }),
+    getUpcomingAgenda(user.id, { take: 4 }),
+    getMyAnnouncements(user.id, { take: 3 }),
   ]);
 
   const { resume, enrollments, pathEnrollments, recentAttempts, certificates, stats } = dashboard;
@@ -136,6 +145,53 @@ export default async function EspaceDashboardPage() {
           accent="text-warning"
         />
       </div>
+
+      {/* ── Prochains rendez-vous (§16.1) — cohortes & événements ── */}
+      {agenda.length > 0 && (
+        <Panel
+          title={
+            <span className="inline-flex items-center gap-2">
+              <CalendarClock size={16} className="text-brand-violet" aria-hidden />
+              Prochains rendez-vous
+            </span>
+          }
+          action={
+            <Link
+              href="/espace/agenda"
+              className="inline-flex items-center gap-1 text-xs font-semibold text-brand-blue-royal hover:text-brand-violet"
+            >
+              Agenda complet <ArrowRight size={13} aria-hidden />
+            </Link>
+          }
+        >
+          <ul className="grid gap-3 sm:grid-cols-2">
+            {agenda.map((it) => (
+              <li key={it.id} className="flex items-center gap-3 rounded-xl border border-navy/[0.06] p-3">
+                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-gradient-da text-white" aria-hidden>
+                  <CalendarClock size={18} />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-display text-sm font-bold text-navy">{it.title}</p>
+                  <p className="mt-0.5 truncate text-xs text-text-secondary">
+                    {dateTimeFmt.format(it.startAt)}
+                    {it.cohortName ? ` · ${it.cohortName}` : it.source === "SESSION" ? " · Session de cohorte" : ""}
+                  </p>
+                </div>
+                {it.meetingUrl && (
+                  <a
+                    href={it.meetingUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-gradient-da px-2.5 py-1.5 text-xs font-semibold text-white transition-transform hover:scale-[1.03]"
+                  >
+                    <Video size={13} aria-hidden /> Rejoindre
+                  </a>
+                )}
+              </li>
+            ))}
+          </ul>
+        </Panel>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* ── Colonne principale ── */}
@@ -272,6 +328,33 @@ export default async function EspaceDashboardPage() {
               <p className="py-4 text-center text-sm text-text-secondary">Vous êtes à jour. Aucune notification.</p>
             )}
           </Panel>
+
+          {/* Annonces (§16.1) — cohortes & formations */}
+          {announcements.length > 0 && (
+            <Panel
+              title={
+                <span className="inline-flex items-center gap-2">
+                  <Megaphone size={16} className="text-accent" aria-hidden />
+                  Annonces
+                </span>
+              }
+            >
+              <ul className="space-y-2.5">
+                {announcements.map((an) => (
+                  <li key={an.id} className="rounded-xl border border-navy/[0.06] bg-surface-secondary/40 p-3">
+                    <div className="flex items-center gap-1.5">
+                      {an.pinned && <Pin size={12} className="shrink-0 text-accent" aria-hidden />}
+                      <p className="truncate text-sm font-semibold text-navy">{an.title}</p>
+                    </div>
+                    <p className="mt-0.5 line-clamp-2 text-xs leading-relaxed text-text-secondary">{an.body}</p>
+                    <p className="mt-1.5 text-[11px] text-text-muted">
+                      {an.cohortName ?? an.courseTitle ?? "Annonce"} · {dateFmt.format(an.createdAt)}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </Panel>
+          )}
 
           {/* Évaluations récentes */}
           <Panel

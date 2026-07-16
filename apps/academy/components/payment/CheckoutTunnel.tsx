@@ -33,7 +33,7 @@ import { submitManualPayment, previewCoupon } from "@/lib/payments";
 type OperatorId = "ORANGE" | "MTN" | "WAVE";
 
 interface CheckoutTunnelProps {
-  type: "formation" | "parcours";
+  type: "formation" | "parcours" | "cohorte";
   slug: string;
   amount: number;
   title: string;

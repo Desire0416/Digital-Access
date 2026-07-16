@@ -27,10 +27,12 @@ import {
 import { Container, Badge, Avatar, StarRating, StaggerGroup, Reveal } from "@da/ui";
 import { getCourseDetail } from "@/lib/catalogue";
 import { getCourseUserState } from "@/lib/learn-queries";
+import { getOpenCohorts } from "@/lib/cohorts";
 import { currentUser } from "@/lib/guards";
 import { siteConfig, formatFCFA, LEVEL_LABEL } from "@/lib/site";
 import { Markdown } from "@/components/Markdown";
 import { CareerPathCard } from "@/components/cards";
+import { CohortOpenSessions } from "@/components/cohort/CohortOpenSessions";
 import { DiagnosticTest } from "@/components/DiagnosticTest";
 import { getEquivalenceEligibility } from "@/lib/equivalences";
 import { EquivalenceRequestForm } from "@/components/equivalence/EquivalenceRequestForm";
@@ -114,6 +116,8 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
   const equivalence = await getEquivalenceEligibility(user?.id ?? null, course.id, {
     emailVerified: !!user?.emailVerified,
   });
+  // Cohortes ouvertes ciblant cette formation (§23.4) — sessions accompagnées.
+  const cohorts = await getOpenCohorts({ courseId: course.id });
 
   const primarySchool = course.schools.find((s) => s.isPrimary)?.school ?? course.schools[0]?.school ?? null;
   const durationLabel = course.durationHours && course.durationHours > 0 ? `${course.durationHours} h` : null;
@@ -150,7 +154,12 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
 
   return (
     <div className="pb-24">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c").replace(/>/g, "\\u003e").replace(/&/g, "\\u0026"),
+        }}
+      />
 
       {/* ══════════════════ Hero navy ══════════════════ */}
       <section className="relative overflow-hidden bg-navy text-white">
@@ -451,6 +460,17 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
                     ))}
                   </div>
                 )}
+              </Block>
+            )}
+
+            {/* Sessions & cohortes (§23.4) */}
+            {cohorts.length > 0 && (
+              <Block icon={CalendarDays} title="Sessions & cohortes">
+                <p className="mb-4 -mt-1 text-sm text-text-secondary">
+                  Préférez apprendre en groupe, à un rythme cadencé et accompagné par un formateur ? Rejoignez une
+                  cohorte : une session validée déverrouille la formation — sans jamais la payer deux fois.
+                </p>
+                <CohortOpenSessions cohorts={cohorts} />
               </Block>
             )}
 

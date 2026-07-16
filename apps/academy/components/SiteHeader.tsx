@@ -24,6 +24,8 @@ import {
   Heart,
   Settings,
   Target,
+  UsersRound,
+  CalendarDays,
 } from "lucide-react";
 import { cn, buttonClasses, Avatar, useScrolled } from "@da/ui";
 import { mainNav, userNav } from "@/lib/site";
@@ -52,6 +54,8 @@ const USER_NAV_ICONS: Record<string, React.ComponentType<{ size?: number | strin
   "/espace": LayoutDashboard,
   "/espace/formations": BookOpen,
   "/espace/parcours": Route,
+  "/espace/cohortes": UsersRound,
+  "/espace/agenda": CalendarDays,
   "/espace/projets": FolderKanban,
   "/espace/evaluations": ClipboardCheck,
   "/espace/certificats": Award,
@@ -75,6 +79,7 @@ const MOBILE_NAV_GROUPS: { title: string; items: { label: string; href: string }
       { label: "Formations", href: "/formations" },
       { label: "Parcours métiers", href: "/parcours-metiers" },
       { label: "Écoles", href: "/ecoles" },
+      { label: "Événements", href: "/evenements" },
     ],
   },
   {

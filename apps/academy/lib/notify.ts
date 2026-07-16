@@ -16,7 +16,11 @@ export type NotificationKind =
   | "PROJECT"
   | "ASSESSMENT"
   | "PATH"
-  | "EQUIVALENCE";
+  | "EQUIVALENCE"
+  | "COHORT"
+  | "EVENT"
+  | "ANNOUNCEMENT"
+  | "REMINDER";
 
 export async function createNotification(input: {
   userId: string;

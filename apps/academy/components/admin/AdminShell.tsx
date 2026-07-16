@@ -24,6 +24,8 @@ import {
   ClipboardCheck,
   Target,
   BadgeCheck,
+  UsersRound,
+  CalendarDays,
 } from "lucide-react";
 import { cn, Avatar } from "@da/ui";
 
@@ -206,6 +208,8 @@ export function AdminShell({
       { label: "Parcours", href: "/admin/parcours", icon: Route },
       { label: "Écoles", href: "/admin/ecoles", icon: GraduationCap },
       { label: "Compétences", href: "/admin/competences", icon: Target },
+      { label: "Cohortes", href: "/admin/cohortes", icon: UsersRound },
+      { label: "Événements", href: "/admin/evenements", icon: CalendarDays },
       { label: "Utilisateurs", href: "/admin/utilisateurs", icon: Users },
       { label: "Paiements", href: "/admin/paiements", icon: CreditCard, badge: pendingPayments || undefined },
       { label: "Équivalences", href: "/admin/equivalences", icon: BadgeCheck, badge: pendingEquivalences || undefined },
