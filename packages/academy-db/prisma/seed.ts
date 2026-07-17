@@ -2825,6 +2825,41 @@ async function main() {
   }
   console.log("✓ Communauté : discussion résolue + réponse, commentaires de leçon, signalement démo");
 
+  /* ── 8d. Support & centre d'aide (§35) ───────────────────────────────── */
+  const FAQ_ITEMS = [
+    { category: "Inscription & compte", order: 1, question: "Comment créer un compte sur Access Academy ?", answer: "Cliquez sur **Créer un compte**, renseignez votre nom, votre email et un mot de passe, puis confirmez votre adresse via le lien reçu par email. Vous pouvez aussi vous inscrire avec Google." },
+    { category: "Inscription & compte", order: 2, question: "Je n'ai pas reçu l'email de confirmation, que faire ?", answer: "Vérifiez votre dossier **spam/courrier indésirable**. Vous pouvez renvoyer le lien depuis la page de vérification. Si le problème persiste, ouvrez un ticket depuis votre espace ou écrivez-nous sur WhatsApp." },
+    { category: "Formations & parcours", order: 1, question: "Quelle est la différence entre une formation et un parcours métier ?", answer: "Une **formation** développe une compétence précise. Un **parcours métier** assemble plusieurs formations, des projets et une certification pour vous préparer à un métier complet. Toute formation validée reste acquise — elle est reconnue et déduite du prix de tout parcours qui la contient." },
+    { category: "Formations & parcours", order: 2, question: "Ai-je accès à vie aux formations achetées ?", answer: "Oui. Une fois votre paiement validé, l'accès à la formation est **définitif**, y compris aux mises à jour de contenu." },
+    { category: "Paiement", order: 1, question: "Quels moyens de paiement acceptez-vous ?", answer: "Le paiement **Mobile Money** (Orange Money, MTN MoMo, Wave). Après votre transfert, déposez la preuve dans le tunnel de paiement : notre équipe valide sous 24 h ouvrées et votre accès s'ouvre automatiquement." },
+    { category: "Paiement", order: 2, question: "Mon paiement est en attente depuis plus de 24 h, que faire ?", answer: "Ouvrez un ticket depuis **Mon espace → Support** avec votre numéro de transaction, ou contactez-nous sur WhatsApp. Nous vérifions et ouvrons votre accès en priorité." },
+    { category: "Certificats", order: 1, question: "Comment obtenir mon certificat ?", answer: "Terminez toutes les leçons obligatoires, réussissez les évaluations et faites valider les projets requis. Le certificat est émis automatiquement, téléchargeable en PDF et **vérifiable publiquement** par son code." },
+    { category: "Certificats", order: 2, question: "Un employeur peut-il vérifier mon certificat ?", answer: "Oui : chaque certificat porte un code unique et un QR code. La page **Vérifier un certificat** confirme son authenticité en quelques secondes." },
+  ];
+  for (const f of FAQ_ITEMS) {
+    const existingFaq = await prisma.faqItem.findFirst({ where: { question: f.question }, select: { id: true } });
+    if (existingFaq) await prisma.faqItem.update({ where: { id: existingFaq.id }, data: { ...f, published: true } });
+    else await prisma.faqItem.create({ data: { ...f, published: true } });
+  }
+  await prisma.supportTicket.deleteMany({ where: { userId: apprenant.id, subject: { startsWith: "[DEMO]" } } });
+  await prisma.supportTicket.create({
+    data: {
+      userId: apprenant.id,
+      subject: "[DEMO] Vidéo de la leçon 3 qui ne se lance pas",
+      category: "TECHNICAL",
+      priority: "MEDIUM",
+      status: "WAITING_LEARNER",
+      messages: {
+        create: [
+          { authorId: apprenant.id, body: "Bonjour, la vidéo de la leçon 3 du module 1 reste bloquée sur le chargement, même après actualisation. Je suis sur mobile (Chrome).", fromStaff: false },
+          { authorId: superadmin.id, body: "Bonjour Aya 👋 Merci pour votre signalement. Pouvez-vous essayer en désactivant l'économiseur de données de Chrome et nous dire si la vidéo se lance ?", fromStaff: true },
+          { body: "Statut passé à « En attente de votre réponse »", isSystem: true, fromStaff: true },
+        ],
+      },
+    },
+  });
+  console.log("✓ Support : 8 questions FAQ + ticket de démo avec fil (apprenant/staff/système)");
+
   // Empêcher « variable non utilisée » sur les comptes admin (référencés à dessein)
   void superadmin;
   void pedagogie;
@@ -2863,6 +2898,8 @@ async function main() {
     reponsesForum: await prisma.discussionReply.count(),
     commentairesLecon: await prisma.lessonComment.count(),
     signalements: await prisma.report.count(),
+    faq: await prisma.faqItem.count(),
+    tickets: await prisma.supportTicket.count(),
   };
   console.log("\n📊 COMPTES FINAUX :", JSON.stringify(counts, null, 2));
   await prisma.$disconnect();

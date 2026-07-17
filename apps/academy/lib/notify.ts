@@ -24,7 +24,8 @@ export type NotificationKind =
   | "FORUM"
   | "MENTION"
   | "COMMENT"
-  | "MODERATION";
+  | "MODERATION"
+  | "TICKET";
 
 export async function createNotification(input: {
   userId: string;

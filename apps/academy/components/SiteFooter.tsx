@@ -12,6 +12,7 @@ const exploreLinks = [
   { label: "Formations", href: "/formations" },
   { label: "Parcours métiers", href: "/parcours-metiers" },
   { label: "Écoles", href: "/ecoles" },
+  { label: "Événements", href: "/evenements" },
   { label: "Certifications", href: "/certifications" },
   { label: "Vérifier un certificat", href: "/certificats/verifier" },
 ] as const;
@@ -21,6 +22,8 @@ const accountLinks = [
   { label: "Créer un compte", href: "/inscription" },
   { label: "Mon espace", href: "/espace" },
   { label: "Mes certificats", href: "/espace/certificats" },
+  { label: "Centre d'aide", href: "/aide" },
+  { label: "Support", href: "/espace/support" },
 ] as const;
 
 function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {

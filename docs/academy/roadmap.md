@@ -52,9 +52,13 @@ ou payante (tunnel Mobile Money, purpose COHORT, invariant respecté). Espaces a
 Vercel Cron à configurer). **Débloque le Sprint 8 (mentorat par groupe).**
 
 ### Sprint 7 — Communauté, commentaires & support (§25, §35) — *briefing item 4 + Tome 7 (partie 2)*
-Forum par école/parcours/cohorte, commentaires par leçon dans le lecteur, tickets support
-`/espace/support` + file admin. Temps réel optionnel (Ably déjà en infra). *(Remplace
-l'ancien Forum/Chat de la v1 sur le nouveau schéma.)*
+Scindé en deux tranches :
+- **7A ✅ LIVRÉ (commit `362b0fe`)** — Forum contextualisé (formation/parcours/école/cohorte) :
+  discussions/réponses threadées, réactions, suivre, marquer solution, signaler ;
+  commentaires par leçon dans le lecteur ; file de modération admin `/admin/moderation`.
+- **7B (à faire)** — Support/tickets §35 (`/espace/support` + file admin : sujet/catégorie/
+  priorité/statut/messages/pièces jointes) + centre d'aide (FAQ). Temps réel = hors périmètre
+  (Ably retiré en v2 ; server-render + revalidate suffisent).
 
 ### Sprint 8 — Gouvernance pédagogique (§7.5–7.7)
 Espaces scopés : **responsable d'école**, **responsable de parcours**, **mentor/tuteur**

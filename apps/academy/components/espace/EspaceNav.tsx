@@ -20,6 +20,7 @@ import {
   UsersRound,
   CalendarDays,
   MessagesSquare,
+  LifeBuoy,
   type LucideIcon,
 } from "lucide-react";
 import { cn, Avatar } from "@da/ui";
@@ -45,6 +46,7 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   "/espace/portfolio": Briefcase,
   "/espace/favoris": Heart,
   "/espace/recommandations": Sparkles,
+  "/espace/support": LifeBuoy,
   "/espace/parametres": Settings,
 };
 

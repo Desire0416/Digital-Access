@@ -27,6 +27,7 @@ import {
   UsersRound,
   CalendarDays,
   MessagesSquare,
+  LifeBuoy,
 } from "lucide-react";
 import { cn, buttonClasses, Avatar, useScrolled } from "@da/ui";
 import { mainNav, userNav } from "@/lib/site";
@@ -64,6 +65,7 @@ const USER_NAV_ICONS: Record<string, React.ComponentType<{ size?: number | strin
   "/espace/competences": Target,
   "/espace/portfolio": Briefcase,
   "/espace/favoris": Heart,
+  "/espace/support": LifeBuoy,
   "/espace/parametres": Settings,
 };
 

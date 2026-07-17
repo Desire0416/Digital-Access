@@ -42,6 +42,7 @@ export const userNav = [
   { label: "Portfolio", href: "/espace/portfolio" },
   { label: "Mes favoris", href: "/espace/favoris" },
   { label: "Recommandations", href: "/espace/recommandations" },
+  { label: "Support", href: "/espace/support" },
   { label: "Paramètres", href: "/espace/parametres" },
 ] as const;
 

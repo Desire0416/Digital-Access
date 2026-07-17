@@ -2,6 +2,7 @@ import { requireRole } from "@/lib/guards";
 import { countPendingPayments } from "@/lib/admin-queries";
 import { countPendingEquivalences } from "@/lib/equivalences";
 import { countPendingReports } from "@/lib/moderation-queries";
+import { countOpenTickets } from "@/lib/support-admin-queries";
 import { AdminShell } from "@/components/admin/AdminShell";
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -13,10 +14,11 @@ import { AdminShell } from "@/components/admin/AdminShell";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const user = await requireRole(["ACADEMIC_ADMIN", "SALES_ADMIN", "SUPER_ADMIN"], "/admin");
-  const [pendingPayments, pendingEquivalences, pendingReports] = await Promise.all([
+  const [pendingPayments, pendingEquivalences, pendingReports, pendingTickets] = await Promise.all([
     countPendingPayments(),
     countPendingEquivalences(),
     countPendingReports(),
+    countOpenTickets(),
   ]);
 
   return (
@@ -25,6 +27,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       pendingPayments={pendingPayments}
       pendingEquivalences={pendingEquivalences}
       pendingReports={pendingReports}
+      pendingTickets={pendingTickets}
     >
       {children}
     </AdminShell>
