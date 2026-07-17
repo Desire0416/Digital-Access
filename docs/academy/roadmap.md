@@ -56,9 +56,10 @@ Scindé en deux tranches :
 - **7A ✅ LIVRÉ (commit `362b0fe`)** — Forum contextualisé (formation/parcours/école/cohorte) :
   discussions/réponses threadées, réactions, suivre, marquer solution, signaler ;
   commentaires par leçon dans le lecteur ; file de modération admin `/admin/moderation`.
-- **7B (à faire)** — Support/tickets §35 (`/espace/support` + file admin : sujet/catégorie/
-  priorité/statut/messages/pièces jointes) + centre d'aide (FAQ). Temps réel = hors périmètre
-  (Ably retiré en v2 ; server-render + revalidate suffisent).
+- **7B ✅ LIVRÉ (commit `38751ef`)** — Support/tickets §35 : `/espace/support` (ouvrir/répondre/
+  clôturer, fil staff/apprenant/système) + file admin `/admin/support` (répondre, statut,
+  priorité, assignation) + centre d'aide public `/aide` (FAQ administrable via `/admin/faq`).
+  Temps réel hors périmètre (Ably retiré en v2 ; server-render + revalidate suffisent).
 
 ### Sprint 8 — Gouvernance pédagogique (§7.5–7.7)
 Espaces scopés : **responsable d'école**, **responsable de parcours**, **mentor/tuteur**

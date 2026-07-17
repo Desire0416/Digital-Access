@@ -29,6 +29,7 @@ import {
   ShieldAlert,
   LifeBuoy,
   HelpCircle,
+  ChevronDown,
 } from "lucide-react";
 import { cn, Avatar } from "@da/ui";
 
@@ -54,6 +55,11 @@ interface NavItem {
   exact?: boolean;
 }
 
+interface NavGroup {
+  title: string;
+  items: NavItem[];
+}
+
 const ROLE_LABEL: Record<string, string> = {
   SUPER_ADMIN: "Super administrateur",
   ACADEMIC_ADMIN: "Admin pédagogique",
@@ -69,12 +75,12 @@ function isActive(pathname: string, item: NavItem): boolean {
 
 /* ─── Contenu de la barre latérale (partagé desktop / tiroir) ──────────────── */
 function SidebarContent({
-  items,
+  groups,
   user,
   collapsed,
   onNavigate,
 }: {
-  items: NavItem[];
+  groups: NavGroup[];
   user: AdminShellUser;
   collapsed: boolean;
   onNavigate?: () => void;
@@ -82,6 +88,62 @@ function SidebarContent({
   const pathname = usePathname();
   const reduce = useReducedMotion();
   const roleLabel = ROLE_LABEL[user.roles.find((r) => ROLE_LABEL[r]) ?? ""] ?? "Administration";
+
+  // Accordéon (mode déplié) : la catégorie de la page active est ouverte.
+  const activeGroup = React.useMemo(
+    () => groups.find((g) => g.items.some((it) => isActive(pathname, it)))?.title ?? null,
+    [groups, pathname],
+  );
+  const [openGroups, setOpenGroups] = React.useState<Set<string>>(
+    () => new Set(activeGroup ? [activeGroup] : []),
+  );
+  React.useEffect(() => {
+    if (activeGroup) setOpenGroups((prev) => new Set(prev).add(activeGroup));
+  }, [activeGroup]);
+
+  const renderItem = (item: NavItem) => {
+    const active = isActive(pathname, item);
+    const Icon = item.icon;
+    return (
+      <Link
+        key={item.href}
+        href={item.href}
+        onClick={onNavigate}
+        aria-current={active ? "page" : undefined}
+        title={collapsed ? item.label : undefined}
+        className={cn(
+          "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
+          collapsed && "justify-center px-0",
+          active ? "text-white" : "text-white/55 hover:bg-white/[0.06] hover:text-white",
+        )}
+      >
+        {active && (
+          <motion.span
+            layoutId="admin-active-bg"
+            transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 380, damping: 32 }}
+            className="absolute inset-0 rounded-xl bg-gradient-da opacity-95 shadow-lg"
+            aria-hidden
+          />
+        )}
+        <span className="relative z-10 flex items-center gap-3">
+          <Icon size={18} className="shrink-0" />
+          {!collapsed && <span className="relative">{item.label}</span>}
+        </span>
+        {!collapsed && item.badge ? (
+          <span
+            className={cn(
+              "relative z-10 ml-auto grid min-w-5 place-items-center rounded-full px-1.5 py-0.5 text-[11px] font-bold",
+              active ? "bg-white/25 text-white" : "bg-warning text-navy",
+            )}
+          >
+            {item.badge}
+          </span>
+        ) : collapsed && item.badge ? (
+          <span className="absolute right-1.5 top-1.5 z-10 h-2 w-2 rounded-full bg-warning ring-2 ring-[#0f0f1e]" aria-hidden />
+        ) : null}
+      </Link>
+    );
+  };
 
   return (
     <div className="flex h-full flex-col">
@@ -101,50 +163,53 @@ function SidebarContent({
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 space-y-1 overflow-y-auto px-2.5 py-4" aria-label="Navigation administration">
-        {items.map((item) => {
-          const active = isActive(pathname, item);
-          const Icon = item.icon;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={onNavigate}
-              aria-current={active ? "page" : undefined}
-              title={collapsed ? item.label : undefined}
-              className={cn(
-                "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
-                collapsed && "justify-center px-0",
-                active ? "text-white" : "text-white/55 hover:bg-white/[0.06] hover:text-white",
-              )}
-            >
-              {active && (
-                <motion.span
-                  layoutId="admin-active-bg"
-                  transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 380, damping: 32 }}
-                  className="absolute inset-0 rounded-xl bg-gradient-da opacity-95 shadow-lg"
-                  aria-hidden
-                />
-              )}
-              <span className="relative z-10 flex items-center gap-3">
-                <Icon size={18} className="shrink-0" />
-                {!collapsed && <span className="relative">{item.label}</span>}
-              </span>
-              {!collapsed && item.badge ? (
-                <span
-                  className={cn(
-                    "relative z-10 ml-auto grid min-w-5 place-items-center rounded-full px-1.5 py-0.5 text-[11px] font-bold",
-                    active ? "bg-white/25 text-white" : "bg-warning text-navy",
-                  )}
-                >
-                  {item.badge}
-                </span>
-              ) : collapsed && item.badge ? (
-                <span className="absolute right-1.5 top-1.5 z-10 h-2 w-2 rounded-full bg-warning ring-2 ring-[#0f0f1e]" aria-hidden />
-              ) : null}
-            </Link>
-          );
-        })}
+      <nav className="flex-1 overflow-y-auto px-2.5 py-4" aria-label="Navigation administration">
+        {collapsed ? (
+          <div className="space-y-1">{groups.flatMap((g) => g.items).map(renderItem)}</div>
+        ) : (
+          <div className="space-y-0.5">
+            {groups.map((group) => {
+              const isOpen = openGroups.has(group.title);
+              return (
+                <div key={group.title}>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setOpenGroups((prev) => {
+                        const next = new Set(prev);
+                        if (next.has(group.title)) next.delete(group.title);
+                        else next.add(group.title);
+                        return next;
+                      })
+                    }
+                    aria-expanded={isOpen}
+                    className="flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-white/35 transition-colors hover:text-white/70"
+                  >
+                    {group.title}
+                    <ChevronDown
+                      size={12}
+                      className={cn("shrink-0 transition-transform duration-200", isOpen && "rotate-180")}
+                      aria-hidden
+                    />
+                  </button>
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={reduce ? { duration: 0 } : { duration: 0.2, ease: "easeInOut" }}
+                        className="overflow-hidden"
+                      >
+                        <div className="space-y-1 pb-1.5">{group.items.map(renderItem)}</div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         <span className="my-3 block h-px bg-white/[0.06]" aria-hidden />
 
@@ -208,24 +273,52 @@ export function AdminShell({
   const [collapsed, setCollapsed] = React.useState(false);
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
-  const items: NavItem[] = React.useMemo(
+  const groups: NavGroup[] = React.useMemo(
     () => [
-      { label: "Tableau de bord", href: "/admin", icon: LayoutDashboard, exact: true },
-      { label: "Formations", href: "/admin/formations", icon: BookOpen },
-      { label: "Parcours", href: "/admin/parcours", icon: Route },
-      { label: "Écoles", href: "/admin/ecoles", icon: GraduationCap },
-      { label: "Compétences", href: "/admin/competences", icon: Target },
-      { label: "Cohortes", href: "/admin/cohortes", icon: UsersRound },
-      { label: "Événements", href: "/admin/evenements", icon: CalendarDays },
-      { label: "Utilisateurs", href: "/admin/utilisateurs", icon: Users },
-      { label: "Paiements", href: "/admin/paiements", icon: CreditCard, badge: pendingPayments || undefined },
-      { label: "Équivalences", href: "/admin/equivalences", icon: BadgeCheck, badge: pendingEquivalences || undefined },
-      { label: "Modération", href: "/admin/moderation", icon: ShieldAlert, badge: pendingReports || undefined },
-      { label: "Support", href: "/admin/support", icon: LifeBuoy, badge: pendingTickets || undefined },
-      { label: "Centre d'aide", href: "/admin/faq", icon: HelpCircle },
-      { label: "Coupons", href: "/admin/coupons", icon: Ticket },
-      { label: "Certificats", href: "/admin/certificats", icon: Award },
-      { label: "Corrections", href: "/correction", icon: ClipboardCheck },
+      {
+        title: "Pilotage",
+        items: [{ label: "Tableau de bord", href: "/admin", icon: LayoutDashboard, exact: true }],
+      },
+      {
+        title: "Contenus",
+        items: [
+          { label: "Formations", href: "/admin/formations", icon: BookOpen },
+          { label: "Parcours", href: "/admin/parcours", icon: Route },
+          { label: "Écoles", href: "/admin/ecoles", icon: GraduationCap },
+          { label: "Compétences", href: "/admin/competences", icon: Target },
+        ],
+      },
+      {
+        title: "Animation",
+        items: [
+          { label: "Cohortes", href: "/admin/cohortes", icon: UsersRound },
+          { label: "Événements", href: "/admin/evenements", icon: CalendarDays },
+        ],
+      },
+      {
+        title: "Communauté & support",
+        items: [
+          { label: "Modération", href: "/admin/moderation", icon: ShieldAlert, badge: pendingReports || undefined },
+          { label: "Support", href: "/admin/support", icon: LifeBuoy, badge: pendingTickets || undefined },
+          { label: "Centre d'aide", href: "/admin/faq", icon: HelpCircle },
+        ],
+      },
+      {
+        title: "Commerce",
+        items: [
+          { label: "Paiements", href: "/admin/paiements", icon: CreditCard, badge: pendingPayments || undefined },
+          { label: "Coupons", href: "/admin/coupons", icon: Ticket },
+        ],
+      },
+      {
+        title: "Comptes & validations",
+        items: [
+          { label: "Utilisateurs", href: "/admin/utilisateurs", icon: Users },
+          { label: "Équivalences", href: "/admin/equivalences", icon: BadgeCheck, badge: pendingEquivalences || undefined },
+          { label: "Certificats", href: "/admin/certificats", icon: Award },
+          { label: "Corrections", href: "/correction", icon: ClipboardCheck },
+        ],
+      },
     ],
     [pendingPayments, pendingEquivalences, pendingReports, pendingTickets],
   );
@@ -273,7 +366,7 @@ export function AdminShell({
           collapsed ? "w-[76px]" : "w-64",
         )}
       >
-        <SidebarContent items={items} user={user} collapsed={collapsed} />
+        <SidebarContent groups={groups} user={user} collapsed={collapsed} />
         {/* Poignée de repli */}
         <button
           type="button"
@@ -334,7 +427,7 @@ export function AdminShell({
               >
                 <X size={18} />
               </button>
-              <SidebarContent items={items} user={user} collapsed={false} onNavigate={() => setMobileOpen(false)} />
+              <SidebarContent groups={groups} user={user} collapsed={false} onNavigate={() => setMobileOpen(false)} />
             </motion.aside>
           </>
         )}

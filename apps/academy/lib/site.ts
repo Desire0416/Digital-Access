@@ -26,25 +26,49 @@ export const mainNav = [
   { label: "À propos", href: "/a-propos" },
 ] as const;
 
-/** Menu utilisateur connecté (cahier §8.3). */
-export const userNav = [
-  { label: "Tableau de bord", href: "/espace" },
-  { label: "Mes formations", href: "/espace/formations" },
-  { label: "Mes parcours", href: "/espace/parcours" },
-  { label: "Mes cohortes", href: "/espace/cohortes" },
-  { label: "Agenda", href: "/espace/agenda" },
-  { label: "Communauté", href: "/espace/communaute" },
-  { label: "Mes projets", href: "/espace/projets" },
-  { label: "Mes évaluations", href: "/espace/evaluations" },
-  { label: "Mes certificats", href: "/espace/certificats" },
-  { label: "Mes équivalences", href: "/espace/equivalences" },
-  { label: "Compétences", href: "/espace/competences" },
-  { label: "Portfolio", href: "/espace/portfolio" },
-  { label: "Mes favoris", href: "/espace/favoris" },
-  { label: "Recommandations", href: "/espace/recommandations" },
-  { label: "Support", href: "/espace/support" },
-  { label: "Paramètres", href: "/espace/parametres" },
-] as const;
+/** Menu utilisateur connecté GROUPÉ par catégorie (cahier §8.3) — source unique
+ *  du menu déroulant (accordéon) du header et de la barre latérale de l'espace. */
+export const userNavGroups: { title: string; items: { label: string; href: string }[] }[] = [
+  {
+    title: "Apprentissage",
+    items: [
+      { label: "Tableau de bord", href: "/espace" },
+      { label: "Mes formations", href: "/espace/formations" },
+      { label: "Mes parcours", href: "/espace/parcours" },
+      { label: "Mes cohortes", href: "/espace/cohortes" },
+      { label: "Agenda", href: "/espace/agenda" },
+    ],
+  },
+  {
+    title: "Progression",
+    items: [
+      { label: "Mes projets", href: "/espace/projets" },
+      { label: "Mes évaluations", href: "/espace/evaluations" },
+      { label: "Mes certificats", href: "/espace/certificats" },
+      { label: "Mes équivalences", href: "/espace/equivalences" },
+      { label: "Compétences", href: "/espace/competences" },
+    ],
+  },
+  {
+    title: "Communauté & employabilité",
+    items: [
+      { label: "Communauté", href: "/espace/communaute" },
+      { label: "Portfolio", href: "/espace/portfolio" },
+      { label: "Recommandations", href: "/espace/recommandations" },
+      { label: "Mes favoris", href: "/espace/favoris" },
+    ],
+  },
+  {
+    title: "Aide & compte",
+    items: [
+      { label: "Support", href: "/espace/support" },
+      { label: "Paramètres", href: "/espace/parametres" },
+    ],
+  },
+];
+
+/** Version à plat (barre latérale de l'espace, liens header, etc.). */
+export const userNav: { label: string; href: string }[] = userNavGroups.flatMap((g) => g.items);
 
 /** Paiement Mobile Money manuel (numéros réels Digital Access). */
 export const paymentConfig = {

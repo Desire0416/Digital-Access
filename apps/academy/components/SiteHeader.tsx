@@ -30,7 +30,7 @@ import {
   LifeBuoy,
 } from "lucide-react";
 import { cn, buttonClasses, Avatar, useScrolled } from "@da/ui";
-import { mainNav, userNav } from "@/lib/site";
+import { mainNav, userNav, userNavGroups } from "@/lib/site";
 import { NotificationBell, type NotificationItem } from "@/components/NotificationBell";
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -145,9 +145,20 @@ function SearchField({
 function UserMenu({ user }: { user: HeaderUser }) {
   const [open, setOpen] = React.useState(false);
   const ref = React.useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
   const admin = user.roles.some((r) => ADMIN_ROLES.includes(r));
   const reviewer = user.roles.some((r) => REVIEWER_ROLES.includes(r));
   const instructor = user.roles.includes("INSTRUCTOR");
+
+  // Accordéon : la catégorie contenant la page active est ouverte par défaut.
+  const activeGroup = React.useMemo(
+    () =>
+      userNavGroups.find((g) => g.items.some((it) => isActivePath(pathname, it.href)))?.title ??
+      userNavGroups[0].title,
+    [pathname],
+  );
+  const [openGroup, setOpenGroup] = React.useState<string | null>(activeGroup);
+  React.useEffect(() => setOpenGroup(activeGroup), [activeGroup]);
 
   React.useEffect(() => {
     if (!open) return;
@@ -191,7 +202,7 @@ function UserMenu({ user }: { user: HeaderUser }) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 6, scale: 0.97 }}
             transition={{ duration: 0.18, ease: "easeOut" }}
-            className="absolute right-0 top-full z-50 mt-2 w-64 origin-top-right overflow-hidden rounded-2xl border border-navy/[0.08] bg-surface-primary shadow-xl"
+            className="absolute right-0 top-full z-50 mt-2 max-h-[calc(100vh-5.5rem)] w-64 origin-top-right overflow-y-auto rounded-2xl border border-navy/[0.08] bg-surface-primary shadow-xl"
           >
             <div className="border-b border-navy/[0.06] bg-surface-secondary/60 px-4 py-3">
               <p className="truncate font-display text-sm font-bold text-navy">{user.name}</p>
@@ -199,19 +210,59 @@ function UserMenu({ user }: { user: HeaderUser }) {
             </div>
 
             <nav className="p-1.5">
-              {userNav.map((item) => {
-                const Icon = USER_NAV_ICONS[item.href] ?? LayoutDashboard;
+              {userNavGroups.map((group) => {
+                const isOpen = openGroup === group.title;
                 return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    role="menuitem"
-                    onClick={() => setOpen(false)}
-                    className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-navy transition-colors hover:bg-brand-blue-vif/[0.07] hover:text-brand-blue-royal"
-                  >
-                    <Icon size={15} className="text-text-muted" aria-hidden />
-                    {item.label}
-                  </Link>
+                  <div key={group.title}>
+                    <button
+                      type="button"
+                      onClick={() => setOpenGroup(isOpen ? null : group.title)}
+                      aria-expanded={isOpen}
+                      className="flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-text-secondary transition-colors hover:bg-navy/[0.04]"
+                    >
+                      {group.title}
+                      <ChevronDown
+                        size={13}
+                        className={cn("shrink-0 transition-transform duration-200", isOpen && "rotate-180")}
+                        aria-hidden
+                      />
+                    </button>
+                    <AnimatePresence initial={false}>
+                      {isOpen && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2, ease: "easeInOut" }}
+                          className="overflow-hidden"
+                        >
+                          <div className="pb-1">
+                            {group.items.map((item) => {
+                              const Icon = USER_NAV_ICONS[item.href] ?? LayoutDashboard;
+                              const active = isActivePath(pathname, item.href);
+                              return (
+                                <Link
+                                  key={item.href}
+                                  href={item.href}
+                                  role="menuitem"
+                                  onClick={() => setOpen(false)}
+                                  className={cn(
+                                    "flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                                    active
+                                      ? "bg-brand-blue-vif/[0.08] text-brand-blue-royal"
+                                      : "text-navy hover:bg-brand-blue-vif/[0.07] hover:text-brand-blue-royal",
+                                  )}
+                                >
+                                  <Icon size={15} className={active ? "text-brand-blue-royal" : "text-text-muted"} aria-hidden />
+                                  {item.label}
+                                </Link>
+                              );
+                            })}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
                 );
               })}
 
