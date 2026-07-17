@@ -18,12 +18,14 @@ import {
   getAssessmentForTaking,
   type PlayerCourse,
 } from "@/lib/learn-queries";
+import { getLessonComments } from "@/lib/lesson-comments";
 import { LESSON_TYPE_LABEL } from "@/lib/site";
 import { Markdown } from "@/components/Markdown";
 import { VideoEmbed } from "@/components/VideoEmbed";
 import { PlayerShell } from "@/components/player/PlayerShell";
 import { QuizRunner } from "@/components/player/QuizRunner";
 import { AssignmentPanel } from "@/components/player/AssignmentPanel";
+import { LessonComments } from "@/components/player/LessonComments";
 
 /* ══════════════════════════════════════════════════════════════════════════
    /apprendre/[courseSlug]/[lessonId] — cœur du lecteur (§17).
@@ -63,6 +65,10 @@ export default async function LessonPage({
     const banner: "preview" | null =
       !lesson.enrolled && lesson.isPreview && lesson.hasAccess ? "preview" : null;
 
+    // Commentaires par leçon (§5.1/§7.3) — le composant se cloisonne lui-même
+    // sur `canView` (l'accès est revérifié côté serveur).
+    const lessonComments = await getLessonComments(lesson.id, userId);
+
     return (
       <PlayerShell
         course={course}
@@ -99,6 +105,13 @@ export default async function LessonPage({
             )
           ) : (
             <LessonBody lesson={lesson} />
+          )}
+
+          {/* ── Discussion de la leçon (§7.3) ── */}
+          {lessonComments && (
+            <div className="mt-12 border-t border-navy/[0.08] pt-8">
+              <LessonComments lessonId={lesson.id} initial={lessonComments} />
+            </div>
           )}
         </article>
       </PlayerShell>

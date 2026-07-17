@@ -19,6 +19,7 @@ import {
   Target,
   UsersRound,
   CalendarDays,
+  MessagesSquare,
   type LucideIcon,
 } from "lucide-react";
 import { cn, Avatar } from "@da/ui";
@@ -35,6 +36,7 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   "/espace/parcours": Route,
   "/espace/cohortes": UsersRound,
   "/espace/agenda": CalendarDays,
+  "/espace/communaute": MessagesSquare,
   "/espace/projets": FolderKanban,
   "/espace/evaluations": ClipboardCheck,
   "/espace/certificats": Award,

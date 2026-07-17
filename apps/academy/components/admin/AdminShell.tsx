@@ -26,6 +26,7 @@ import {
   BadgeCheck,
   UsersRound,
   CalendarDays,
+  ShieldAlert,
 } from "lucide-react";
 import { cn, Avatar } from "@da/ui";
 
@@ -189,11 +190,13 @@ export function AdminShell({
   user,
   pendingPayments,
   pendingEquivalences = 0,
+  pendingReports = 0,
   children,
 }: {
   user: AdminShellUser;
   pendingPayments: number;
   pendingEquivalences?: number;
+  pendingReports?: number;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
@@ -213,11 +216,12 @@ export function AdminShell({
       { label: "Utilisateurs", href: "/admin/utilisateurs", icon: Users },
       { label: "Paiements", href: "/admin/paiements", icon: CreditCard, badge: pendingPayments || undefined },
       { label: "Équivalences", href: "/admin/equivalences", icon: BadgeCheck, badge: pendingEquivalences || undefined },
+      { label: "Modération", href: "/admin/moderation", icon: ShieldAlert, badge: pendingReports || undefined },
       { label: "Coupons", href: "/admin/coupons", icon: Ticket },
       { label: "Certificats", href: "/admin/certificats", icon: Award },
       { label: "Corrections", href: "/correction", icon: ClipboardCheck },
     ],
-    [pendingPayments, pendingEquivalences],
+    [pendingPayments, pendingEquivalences, pendingReports],
   );
 
   // Restaure l'état replié depuis localStorage.

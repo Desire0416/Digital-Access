@@ -33,6 +33,7 @@ export const userNav = [
   { label: "Mes parcours", href: "/espace/parcours" },
   { label: "Mes cohortes", href: "/espace/cohortes" },
   { label: "Agenda", href: "/espace/agenda" },
+  { label: "Communauté", href: "/espace/communaute" },
   { label: "Mes projets", href: "/espace/projets" },
   { label: "Mes évaluations", href: "/espace/evaluations" },
   { label: "Mes certificats", href: "/espace/certificats" },

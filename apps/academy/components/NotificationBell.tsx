@@ -18,6 +18,10 @@ import {
   CalendarDays,
   Megaphone,
   AlarmClock,
+  MessagesSquare,
+  AtSign,
+  MessageCircle,
+  ShieldAlert,
 } from "lucide-react";
 import { cn } from "@da/ui";
 import { markNotificationRead, markAllNotificationsRead } from "@/lib/notify-actions";
@@ -57,6 +61,10 @@ const TYPE_ICONS: Record<string, React.ComponentType<{ size?: number | string; c
   EVENT: CalendarDays,
   ANNOUNCEMENT: Megaphone,
   REMINDER: AlarmClock,
+  FORUM: MessagesSquare,
+  MENTION: AtSign,
+  COMMENT: MessageCircle,
+  MODERATION: ShieldAlert,
 };
 
 /* Heure relative en français, sans dépendance externe. */

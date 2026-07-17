@@ -20,7 +20,11 @@ export type NotificationKind =
   | "COHORT"
   | "EVENT"
   | "ANNOUNCEMENT"
-  | "REMINDER";
+  | "REMINDER"
+  | "FORUM"
+  | "MENTION"
+  | "COMMENT"
+  | "MODERATION";
 
 export async function createNotification(input: {
   userId: string;

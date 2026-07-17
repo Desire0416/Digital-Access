@@ -82,6 +82,13 @@ model User {
   eventRegistrations    EventRegistration[]
   hostedEvents          Event[]                @relation("EventHost")
   announcements         Announcement[]         @relation("AnnouncementAuthor")
+  discussions           Discussion[]           @relation("DiscussionAuthor")
+  discussionReplies     DiscussionReply[]      @relation("ReplyAuthor")
+  discussionFollows     DiscussionFollow[]
+  lessonComments        LessonComment[]        @relation("CommentAuthor")
+  reactions             Reaction[]
+  reportsFiled          Report[]               @relation("Reporter")
+  reportsReviewed       Report[]               @relation("ReportReviewer")
 }
 
 enum TokenType {
@@ -143,6 +150,7 @@ model School {
   programs    Program[]
   cohorts     Cohort[]
   events      Event[]
+  discussions Discussion[]
 }
 
 // ─── Formation (sections 10-12) — LA brique centrale, unique ────────────────
@@ -200,6 +208,8 @@ model Course {
   cohorts             Cohort[]
   events              Event[]
   announcements       Announcement[]
+  discussions         Discussion[]
+  lessonComments      LessonComment[]      @relation("CourseLessonComments")
 }
 
 /// Prérequis structuré : `course` exige la validation de `requiresCourse`.
@@ -277,6 +287,7 @@ model Lesson {
 
   resources Resource[]
   progress  LessonProgress[]
+  comments  LessonComment[]
 
   @@index([moduleId])
 }
@@ -581,6 +592,7 @@ model CareerPath {
   payments     Payment[]
   cohorts      Cohort[]
   events       Event[]
+  discussions  Discussion[]
 }
 
 model CareerPathPhase {
@@ -1023,6 +1035,7 @@ model Cohort {
   events        Event[]
   announcements Announcement[]
   payments      Payment[]
+  discussions   Discussion[]
 
   @@index([courseId])
   @@index([careerPathId])
@@ -1169,6 +1182,146 @@ model Announcement {
   @@index([cohortId])
   @@index([courseId])
   @@index([createdAt])
+}
+
+// ─── Communauté & modération (sections 25, 5.1) ──────────────────────────────
+// Forum contextualisé (§25.1) : une DISCUSSION appartient à UN espace — une
+// formation, un parcours, une école OU une cohorte (contrôle applicatif :
+// exactement un contexte). Réponses en fil (parentId), solution marquée,
+// épinglage/verrou par la modération (§25.3). Les COMMENTAIRES PAR LEÇON
+// (§5.1/§7.3) = modèle distinct, rendus dans le lecteur. Réactions et
+// signalements sont POLYMORPHES (targetType + targetId) pour couvrir les trois
+// cibles sans multiplier les tables.
+
+model Discussion {
+  id           String      @id @default(cuid())
+  title        String
+  body         String // markdown
+  courseId     String?
+  course       Course?     @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  careerPathId String?
+  careerPath   CareerPath? @relation(fields: [careerPathId], references: [id], onDelete: Cascade)
+  schoolId     String?
+  school       School?     @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  cohortId     String?
+  cohort       Cohort?     @relation(fields: [cohortId], references: [id], onDelete: Cascade)
+  authorId     String?
+  author       User?       @relation("DiscussionAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  pinned       Boolean     @default(false)
+  locked       Boolean     @default(false) // verrouillée : plus de réponses (§25.3)
+  solved       Boolean     @default(false)
+  attachments  Json? // pièces jointes (images Blob) : [{ url, name }]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  replies DiscussionReply[]
+  follows DiscussionFollow[]
+
+  @@index([courseId])
+  @@index([careerPathId])
+  @@index([schoolId])
+  @@index([cohortId])
+  @@index([createdAt])
+}
+
+model DiscussionReply {
+  id           String            @id @default(cuid())
+  discussionId String
+  discussion   Discussion        @relation(fields: [discussionId], references: [id], onDelete: Cascade)
+  authorId     String?
+  author       User?             @relation("ReplyAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  parentId     String? // réponse à une réponse (fil §25.2)
+  parent       DiscussionReply?  @relation("ReplyThread", fields: [parentId], references: [id], onDelete: SetNull)
+  children     DiscussionReply[] @relation("ReplyThread")
+  body         String
+  isSolution   Boolean           @default(false)
+  attachments  Json?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  @@index([discussionId])
+  @@index([parentId])
+}
+
+model DiscussionFollow {
+  id           String     @id @default(cuid())
+  discussionId String
+  discussion   Discussion @relation(fields: [discussionId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+
+  @@unique([discussionId, userId])
+  @@index([userId])
+}
+
+model LessonComment {
+  id        String          @id @default(cuid())
+  lessonId  String
+  lesson    Lesson          @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  courseId  String // dénormalisé pour le cloisonnement d'accès (inscription)
+  course    Course          @relation("CourseLessonComments", fields: [courseId], references: [id], onDelete: Cascade)
+  authorId  String?
+  author    User?           @relation("CommentAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  parentId  String?
+  parent    LessonComment?  @relation("CommentThread", fields: [parentId], references: [id], onDelete: SetNull)
+  children  LessonComment[] @relation("CommentThread")
+  body      String
+  pinned    Boolean         @default(false)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  @@index([lessonId])
+  @@index([courseId])
+  @@index([parentId])
+}
+
+enum ReactionTarget {
+  DISCUSSION
+  REPLY
+  LESSON_COMMENT
+}
+
+model Reaction {
+  id         String         @id @default(cuid())
+  userId     String
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  targetType ReactionTarget
+  targetId   String
+  createdAt  DateTime       @default(now())
+
+  @@unique([userId, targetType, targetId]) // une réaction par cible et par utilisateur
+  @@index([targetType, targetId])
+}
+
+enum ReportTarget {
+  DISCUSSION
+  REPLY
+  LESSON_COMMENT
+}
+
+enum ReportStatus {
+  PENDING
+  ACTIONED
+  DISMISSED
+}
+
+model Report {
+  id           String       @id @default(cuid())
+  reporterId   String?
+  reporter     User?        @relation("Reporter", fields: [reporterId], references: [id], onDelete: SetNull)
+  targetType   ReportTarget
+  targetId     String
+  reason       String
+  status       ReportStatus @default(PENDING)
+  note         String? // note du modérateur (§25.3)
+  reviewedById String?
+  reviewedBy   User?        @relation("ReportReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  reviewedAt   DateTime?
+  createdAt    DateTime     @default(now())
+
+  @@index([status])
+  @@index([targetType, targetId])
 }
 
 // ─── Entreprises (section 28) — socle minimal, développé en Phase 3 ─────────

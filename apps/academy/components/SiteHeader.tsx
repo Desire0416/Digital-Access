@@ -26,6 +26,7 @@ import {
   Target,
   UsersRound,
   CalendarDays,
+  MessagesSquare,
 } from "lucide-react";
 import { cn, buttonClasses, Avatar, useScrolled } from "@da/ui";
 import { mainNav, userNav } from "@/lib/site";
@@ -56,6 +57,7 @@ const USER_NAV_ICONS: Record<string, React.ComponentType<{ size?: number | strin
   "/espace/parcours": Route,
   "/espace/cohortes": UsersRound,
   "/espace/agenda": CalendarDays,
+  "/espace/communaute": MessagesSquare,
   "/espace/projets": FolderKanban,
   "/espace/evaluations": ClipboardCheck,
   "/espace/certificats": Award,

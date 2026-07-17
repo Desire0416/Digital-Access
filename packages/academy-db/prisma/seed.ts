@@ -2783,6 +2783,48 @@ async function main() {
   });
   console.log("✓ Cohortes (1 gratuite + 1 payante), 3 événements, inscriptions + annonces de démo");
 
+  /* ── 8c. Communauté & modération (§25, §5.1) ─────────────────────────── */
+  const demoLesson = firstModule.lessons[0];
+  await prisma.discussion.deleteMany({ where: { courseId: course1.id, title: { startsWith: "[DEMO]" } } });
+  if (demoLesson) await prisma.lessonComment.deleteMany({ where: { lessonId: demoLesson.id, body: { startsWith: "[DEMO]" } } });
+
+  const demoDisc = await prisma.discussion.create({
+    data: {
+      courseId: course1.id,
+      authorId: apprenant.id,
+      title: "[DEMO] Comment bien démarrer avec SQL ?",
+      body: "Bonjour à toutes et tous 👋 Je débute avec **SQL** et je me demande par quel type de requête commencer pour prendre de bonnes habitudes. Des conseils ?",
+      solved: true,
+      follows: { create: { userId: apprenant.id } },
+      replies: {
+        create: {
+          authorId: formateur.id,
+          body: "Excellente question ! Commencez par des `SELECT` simples sur une seule table, puis ajoutez `WHERE` et `ORDER BY`. La **lisibilité** avant la performance au début.",
+          isSolution: true,
+        },
+      },
+    },
+  });
+  await prisma.report.deleteMany({ where: { targetType: "DISCUSSION", targetId: demoDisc.id } });
+  await prisma.report.create({
+    data: {
+      reporterId: formateur.id,
+      targetType: "DISCUSSION",
+      targetId: demoDisc.id,
+      reason: "[DEMO] Vérification de la file de modération.",
+      status: "PENDING",
+    },
+  });
+  if (demoLesson) {
+    const demoComment = await prisma.lessonComment.create({
+      data: { lessonId: demoLesson.id, courseId: course1.id, authorId: apprenant.id, body: "[DEMO] Petit doute sur cette notion — quelqu'un peut reformuler l'exemple ?" },
+    });
+    await prisma.lessonComment.create({
+      data: { lessonId: demoLesson.id, courseId: course1.id, authorId: formateur.id, parentId: demoComment.id, body: "[DEMO] Bien sûr : imagine une table `clients` et on filtre ceux d'Abidjan avec `WHERE ville = 'Abidjan'`." },
+    });
+  }
+  console.log("✓ Communauté : discussion résolue + réponse, commentaires de leçon, signalement démo");
+
   // Empêcher « variable non utilisée » sur les comptes admin (référencés à dessein)
   void superadmin;
   void pedagogie;
@@ -2817,6 +2859,10 @@ async function main() {
     evenements: await prisma.event.count(),
     inscriptionsEvenement: await prisma.eventRegistration.count(),
     annonces: await prisma.announcement.count(),
+    discussions: await prisma.discussion.count(),
+    reponsesForum: await prisma.discussionReply.count(),
+    commentairesLecon: await prisma.lessonComment.count(),
+    signalements: await prisma.report.count(),
   };
   console.log("\n📊 COMPTES FINAUX :", JSON.stringify(counts, null, 2));
   await prisma.$disconnect();
