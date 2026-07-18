@@ -28,6 +28,7 @@ import {
   CalendarDays,
   MessagesSquare,
   LifeBuoy,
+  Compass,
 } from "lucide-react";
 import { cn, buttonClasses, Avatar, useScrolled } from "@da/ui";
 import { mainNav, userNav, userNavGroups } from "@/lib/site";
@@ -51,6 +52,7 @@ export interface SiteHeaderProps {
 
 const ADMIN_ROLES = ["ACADEMIC_ADMIN", "SALES_ADMIN", "SUPER_ADMIN"];
 const REVIEWER_ROLES = ["GRADER", "INSTRUCTOR", "ACADEMIC_ADMIN", "SALES_ADMIN", "SUPER_ADMIN"];
+const MENTOR_ROLES = ["MENTOR", "ACADEMIC_ADMIN", "SALES_ADMIN", "SUPER_ADMIN"];
 
 const USER_NAV_ICONS: Record<string, React.ComponentType<{ size?: number | string; className?: string }>> = {
   "/espace": LayoutDashboard,
@@ -149,6 +151,7 @@ function UserMenu({ user }: { user: HeaderUser }) {
   const admin = user.roles.some((r) => ADMIN_ROLES.includes(r));
   const reviewer = user.roles.some((r) => REVIEWER_ROLES.includes(r));
   const instructor = user.roles.includes("INSTRUCTOR");
+  const mentor = user.roles.some((r) => MENTOR_ROLES.includes(r));
 
   // Accordéon : la catégorie contenant la page active est ouverte par défaut.
   const activeGroup = React.useMemo(
@@ -296,9 +299,24 @@ function UserMenu({ user }: { user: HeaderUser }) {
                 </>
               )}
 
-              {admin && (
+              {mentor && (
                 <>
                   {!reviewer && !instructor && <span className="my-1.5 block h-px bg-navy/[0.06]" aria-hidden />}
+                  <Link
+                    href="/mentorat"
+                    role="menuitem"
+                    onClick={() => setOpen(false)}
+                    className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-semibold text-brand-blue-royal transition-colors hover:bg-brand-blue-vif/[0.07]"
+                  >
+                    <Compass size={15} aria-hidden />
+                    Mentorat
+                  </Link>
+                </>
+              )}
+
+              {admin && (
+                <>
+                  {!reviewer && !instructor && !mentor && <span className="my-1.5 block h-px bg-navy/[0.06]" aria-hidden />}
                   <Link
                     href="/admin"
                     role="menuitem"
@@ -341,13 +359,14 @@ export function SiteHeader({ user, notifications }: SiteHeaderProps) {
   const admin = !!user && user.roles.some((r) => ADMIN_ROLES.includes(r));
   const reviewer = !!user && user.roles.some((r) => REVIEWER_ROLES.includes(r));
   const instructor = !!user && user.roles.includes("INSTRUCTOR");
+  const mentor = !!user && user.roles.some((r) => MENTOR_ROLES.includes(r));
 
   // Accordéon du tiroir mobile : sections repliables. La section contenant la
   // page active est ouverte par défaut (et rouverte à chaque navigation).
   const activeSection = React.useMemo(() => {
     const g = MOBILE_NAV_GROUPS.find((grp) => grp.items.some((it) => isActivePath(pathname, it.href)));
     if (g) return g.title;
-    if (/^\/(espace|correction|formateur|admin)/.test(pathname)) return "Mon espace";
+    if (/^\/(espace|correction|formateur|mentorat|admin)/.test(pathname)) return "Mon espace";
     return "Explorer";
   }, [pathname]);
   const [openSections, setOpenSections] = React.useState<Set<string>>(() => new Set([activeSection]));
@@ -675,6 +694,15 @@ export function SiteHeader({ user, notifications }: SiteHeaderProps) {
                                   >
                                     <BookOpen size={16} aria-hidden />
                                     Studio formateur
+                                  </Link>
+                                )}
+                                {mentor && (
+                                  <Link
+                                    href="/mentorat"
+                                    className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold text-brand-blue-royal transition-colors hover:bg-brand-blue-vif/[0.06]"
+                                  >
+                                    <Compass size={16} aria-hidden />
+                                    Mentorat
                                   </Link>
                                 )}
                                 {admin && (

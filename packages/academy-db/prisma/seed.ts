@@ -2860,6 +2860,23 @@ async function main() {
   });
   console.log("✓ Support : 8 questions FAQ + ticket de démo avec fil (apprenant/staff/système)");
 
+  /* ── 8e. Mentorat / tutorat (§7.5) ───────────────────────────────────── */
+  // Le formateur de démo endosse aussi le rôle MENTOR et suit l'apprenante.
+  await prisma.user.update({
+    where: { id: formateur.id },
+    data: { roles: { set: [...new Set([...formateur.roles, "MENTOR"])] } },
+  });
+  await prisma.mentorAssignment.upsert({
+    where: { mentorId_learnerId: { mentorId: formateur.id, learnerId: apprenant.id } },
+    update: {},
+    create: {
+      mentorId: formateur.id,
+      learnerId: apprenant.id,
+      note: "Apprenante motivée — à encourager sur les projets.",
+    },
+  });
+  console.log("✓ Mentorat : formateur (MENTOR) suit l'apprenante");
+
   // Empêcher « variable non utilisée » sur les comptes admin (référencés à dessein)
   void superadmin;
   void pedagogie;
@@ -2900,6 +2917,7 @@ async function main() {
     signalements: await prisma.report.count(),
     faq: await prisma.faqItem.count(),
     tickets: await prisma.supportTicket.count(),
+    mentorats: await prisma.mentorAssignment.count(),
   };
   console.log("\n📊 COMPTES FINAUX :", JSON.stringify(counts, null, 2));
   await prisma.$disconnect();

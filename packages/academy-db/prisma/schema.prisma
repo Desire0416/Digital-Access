@@ -92,6 +92,8 @@ model User {
   supportTickets        SupportTicket[]        @relation("TicketOpener")
   assignedTickets       SupportTicket[]        @relation("TicketAssignee")
   ticketMessages        TicketMessage[]        @relation("TicketMessageAuthor")
+  mentorAssignments     MentorAssignment[]     @relation("MentorOf")
+  mentorships           MentorAssignment[]     @relation("MenteeOf")
 }
 
 enum TokenType {
@@ -1407,6 +1409,43 @@ model FaqItem {
   updatedAt DateTime @updatedAt
 
   @@index([published, category])
+}
+
+// ─── Mentorat / tutorat (section 7.5) ────────────────────────────────────────
+// Un MENTOR suit un groupe d'apprenants (assignations), consulte leur
+// progression, leur envoie des messages/recommandations, propose des RDV
+// (Event MENTORING existant) et signale ceux en difficulté (notif admin).
+// INVARIANT : un mentor n'agit QUE sur les apprenants qui lui sont assignés.
+
+model MentorAssignment {
+  id        String   @id @default(cuid())
+  mentorId  String
+  mentor    User     @relation("MentorOf", fields: [mentorId], references: [id], onDelete: Cascade)
+  learnerId String
+  learner   User     @relation("MenteeOf", fields: [learnerId], references: [id], onDelete: Cascade)
+  note      String? // note privée du mentor sur l'apprenant
+  createdAt DateTime @default(now())
+
+  messages MentorMessage[]
+
+  @@unique([mentorId, learnerId])
+  @@index([learnerId])
+}
+
+enum MentorMessageKind {
+  MESSAGE
+  RECOMMENDATION
+}
+
+model MentorMessage {
+  id           String            @id @default(cuid())
+  assignmentId String
+  assignment   MentorAssignment  @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  body         String
+  kind         MentorMessageKind @default(MESSAGE)
+  createdAt    DateTime          @default(now())
+
+  @@index([assignmentId])
 }
 
 // ─── Entreprises (section 28) — socle minimal, développé en Phase 3 ─────────

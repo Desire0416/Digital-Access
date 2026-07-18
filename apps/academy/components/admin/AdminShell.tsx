@@ -30,6 +30,7 @@ import {
   LifeBuoy,
   HelpCircle,
   ChevronDown,
+  Compass,
 } from "lucide-react";
 import { cn, Avatar } from "@da/ui";
 
@@ -314,6 +315,7 @@ export function AdminShell({
         title: "Comptes & validations",
         items: [
           { label: "Utilisateurs", href: "/admin/utilisateurs", icon: Users },
+          { label: "Mentorat", href: "/admin/mentorat", icon: Compass },
           { label: "Équivalences", href: "/admin/equivalences", icon: BadgeCheck, badge: pendingEquivalences || undefined },
           { label: "Certificats", href: "/admin/certificats", icon: Award },
           { label: "Corrections", href: "/correction", icon: ClipboardCheck },

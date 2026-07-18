@@ -25,7 +25,8 @@ export type NotificationKind =
   | "MENTION"
   | "COMMENT"
   | "MODERATION"
-  | "TICKET";
+  | "TICKET"
+  | "MENTOR";
 
 export async function createNotification(input: {
   userId: string;

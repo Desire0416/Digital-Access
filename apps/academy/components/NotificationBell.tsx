@@ -23,6 +23,7 @@ import {
   MessageCircle,
   ShieldAlert,
   LifeBuoy,
+  Compass,
 } from "lucide-react";
 import { cn } from "@da/ui";
 import { markNotificationRead, markAllNotificationsRead } from "@/lib/notify-actions";
@@ -67,6 +68,7 @@ const TYPE_ICONS: Record<string, React.ComponentType<{ size?: number | string; c
   COMMENT: MessageCircle,
   MODERATION: ShieldAlert,
   TICKET: LifeBuoy,
+  MENTOR: Compass,
 };
 
 /* Heure relative en français, sans dépendance externe. */
