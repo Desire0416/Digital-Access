@@ -380,6 +380,23 @@ export function SiteHeader({ user, notifications }: SiteHeaderProps) {
     };
   }, [heroEligible, pathname]);
   const [searchOpen, setSearchOpen] = React.useState(false);
+  const searchRef = React.useRef<HTMLDivElement>(null);
+  // Ferme la recherche au clic extérieur ou sur Échap.
+  React.useEffect(() => {
+    if (!searchOpen) return;
+    const onClick = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) setSearchOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSearchOpen(false);
+    };
+    document.addEventListener("mousedown", onClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onClick);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [searchOpen]);
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
   React.useEffect(() => setMounted(true), []);
@@ -446,15 +463,8 @@ export function SiteHeader({ user, notifications }: SiteHeaderProps) {
           />
         </Link>
 
-        {/* Navigation desktop — masquée quand la recherche est ouverte pour
-            libérer la largeur (évite tout débordement horizontal). */}
-        <nav
-          aria-label="Navigation principale"
-          className={cn(
-            "ml-6 flex-1 items-center gap-1",
-            searchOpen ? "hidden" : "hidden lg:flex",
-          )}
-        >
+        {/* Navigation desktop */}
+        <nav aria-label="Navigation principale" className="ml-6 hidden flex-1 items-center gap-1 lg:flex">
           {mainNav.map((item) => {
             const active = isActivePath(pathname, item.href);
             return (
@@ -489,41 +499,37 @@ export function SiteHeader({ user, notifications }: SiteHeaderProps) {
 
         {/* Actions droite */}
         <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
-          {/* Recherche (desktop : champ extensible) */}
-          <div className="hidden items-center md:flex">
-            <AnimatePresence initial={false} mode="popLayout">
-              {searchOpen ? (
+          {/* Recherche (desktop) : bouton + panneau déroulant (positionné en
+              absolu → n'affecte pas la largeur de la barre, aucun débordement,
+              le menu reste visible). Se ferme au clic extérieur / Échap. */}
+          <div ref={searchRef} className="relative hidden md:block">
+            <button
+              type="button"
+              onClick={() => setSearchOpen((v) => !v)}
+              aria-label="Rechercher une formation"
+              aria-expanded={searchOpen}
+              className={cn(
+                "grid h-10 w-10 place-items-center rounded-full transition-colors",
+                searchOpen
+                  ? "bg-navy/[0.06] text-navy"
+                  : overHero
+                    ? "text-white/90 hover:bg-white/10 hover:text-white"
+                    : "text-text-secondary hover:bg-navy/[0.05] hover:text-navy",
+              )}
+            >
+              <Search size={18} />
+            </button>
+            <AnimatePresence>
+              {searchOpen && (
                 <motion.div
-                  key="field"
-                  initial={{ opacity: 0, width: 0 }}
-                  animate={{ opacity: 1, width: 260 }}
-                  exit={{ opacity: 0, width: 0 }}
-                  transition={{ duration: reduce ? 0 : 0.25, ease: "easeOut" }}
-                  className="overflow-hidden"
-                  onKeyDown={(e) => {
-                    if (e.key === "Escape") setSearchOpen(false);
-                  }}
+                  initial={reduce ? false : { opacity: 0, y: -8, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={reduce ? { opacity: 0 } : { opacity: 0, y: -8, scale: 0.98 }}
+                  transition={{ duration: reduce ? 0 : 0.18, ease: "easeOut" }}
+                  className="absolute right-0 top-full z-50 mt-2 w-[min(20rem,calc(100vw-2rem))] rounded-xl border border-navy/[0.08] bg-surface-primary p-2 shadow-[0_16px_40px_-12px_rgba(26,26,46,0.28)]"
                 >
                   <SearchField autoFocus onDone={() => setSearchOpen(false)} />
                 </motion.div>
-              ) : (
-                <motion.button
-                  key="button"
-                  type="button"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  onClick={() => setSearchOpen(true)}
-                  aria-label="Rechercher une formation"
-                  className={cn(
-                    "grid h-10 w-10 place-items-center rounded-full transition-colors",
-                    overHero
-                      ? "text-white/90 hover:bg-white/10 hover:text-white"
-                      : "text-text-secondary hover:bg-navy/[0.05] hover:text-navy",
-                  )}
-                >
-                  <Search size={18} />
-                </motion.button>
               )}
             </AnimatePresence>
           </div>
