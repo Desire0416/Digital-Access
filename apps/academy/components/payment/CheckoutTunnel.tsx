@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Check,
@@ -301,11 +302,14 @@ export function CheckoutTunnel({ type, slug, amount, title }: CheckoutTunnelProp
                         : "border-navy/10 bg-surface-primary hover:border-brand-blue-vif/50 hover:-translate-y-0.5",
                     )}
                   >
-                    <span
-                      className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-white"
-                      style={{ backgroundColor: op.color }}
-                    >
-                      <Smartphone size={20} />
+                    <span className="relative block h-12 w-12 overflow-hidden rounded-xl bg-white ring-1 ring-navy/[0.08] shadow-sm">
+                      <Image
+                        src={op.logo}
+                        alt={`Logo ${op.name}`}
+                        fill
+                        sizes="48px"
+                        className="object-contain"
+                      />
                     </span>
                     <p className="mt-3 text-sm font-bold text-navy">{op.name}</p>
                     {active && (

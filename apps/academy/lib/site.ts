@@ -78,6 +78,7 @@ export const paymentConfig = {
       name: "Orange Money",
       number: "+225 07 57 90 88 84",
       color: "#FF7900",
+      logo: "/payment/orange-money.png",
       instructions: "Composez #144# puis « Transfert d'argent »",
     },
     {
@@ -85,6 +86,7 @@ export const paymentConfig = {
       name: "MTN MoMo",
       number: "+225 05 64 45 26 92",
       color: "#FFCC00",
+      logo: "/payment/mtn-momo.png",
       instructions: "Composez *133# puis « Transfert d'argent »",
     },
     {
@@ -92,6 +94,7 @@ export const paymentConfig = {
       name: "Wave",
       number: "+225 07 57 90 88 84",
       color: "#00C2F3",
+      logo: "/payment/wave.png",
       instructions: "Depuis l'application Wave, « Envoyer de l'argent »",
     },
   ],
