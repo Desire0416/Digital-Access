@@ -35,9 +35,14 @@
 
 **T. Enrichissement du catalogue** *(briefing item 1)* — les 180 formations sont seedées
 en **DRAFT** (fiches sans modules/leçons/quiz réels). À enrichir **par vagues** (Vague 1
-prioritaire = parcours de lancement). Outil existant : `/admin/import-formation` (upload
-docx/pdf/md → extraction IA → CareerPath/Course complet). Sortie de chaque vague : passer
-les formations en `PUBLISHED` après relecture. **Se mène en continu, en fond des sprints ci-dessous.**
+prioritaire). Deux voies : `/admin/import-formation` (upload docx/pdf/md → extraction IA) ;
+ou **génération IA à partir de la fiche** (pipeline `scripts/import-pilot-content.mjs` +
+`content/pilot-formations.json`). Sortie de chaque vague : passer les formations en `PUBLISHED`.
+- **Lot pilote ✅ FAIT (6 formations phares, contenu complet généré + publié)** : Excel admin,
+  PowerPoint pro, Prompt Engineering, Stratégie réseaux sociaux, SEO fondamentaux, WhatsApp
+  Business — 32 modules / 158 leçons markdown / 32 quiz notés, contextualisés Côte d'Ivoire.
+  Catalogue publié : 3 → **9** formations avec contenu.
+- **Reste** : ~171 formations DRAFT à enrichir par vagues suivantes (même pipeline).
 
 ---
 
@@ -62,9 +67,14 @@ Scindé en deux tranches :
   Temps réel hors périmètre (Ably retiré en v2 ; server-render + revalidate suffisent).
 
 ### Sprint 8 — Gouvernance pédagogique (§7.5–7.7)
-Espaces scopés : **responsable d'école**, **responsable de parcours**, **mentor/tuteur**
-(rattachement mentor↔groupe via cohortes). Aucun accès admin global.
-**Dépend du Sprint 6.**
+Espaces scopés, aucun accès admin global. Livré par tranches :
+- **8A ✅ LIVRÉ (commit `25b0be6`)** — **Mentor/tuteur (§7.5)** : espace `/mentorat`
+  (mentorés assignés, progression, note privée, message/recommandation/RDV, signalement),
+  assignation admin `/admin/mentorat`. Cloisonnement strict (mentor ↔ apprenants assignés).
+- **8B (à faire)** — **Responsable d'école (§7.6)** : présentation de l'école, parcours/
+  formations rattachés, stats, événements, ressources, demandes de modification.
+- **8C (à faire)** — **Responsable de parcours (§7.7)** : phases, composition, obligatoire/
+  optionnel, projets transversaux, progression, soutenances.
 
 ### Sprint 9 — Finitions apprenant, onboarding & CV Builder (§15–17) — *+ briefing item 8 (Tome 5)*
 3ᵉ zone du lecteur (notes/signets), accessibilité (sous-titres/vitesse), onboarding complet

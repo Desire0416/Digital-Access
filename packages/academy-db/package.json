@@ -15,7 +15,8 @@
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
     "db:seed-catalogue": "tsx prisma/catalogue-seed.ts && tsx prisma/catalogue-seed-part2.ts",
-    "partial-indexes": "node --env-file=../../.env scripts/apply-partial-indexes.mjs"
+    "partial-indexes": "node --env-file=../../.env scripts/apply-partial-indexes.mjs",
+    "import-pilot-content": "node --env-file=../../.env scripts/import-pilot-content.mjs"
   },
   "dependencies": {
     "@prisma/client": "^6.19.0",
