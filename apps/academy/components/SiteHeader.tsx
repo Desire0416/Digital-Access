@@ -353,32 +353,10 @@ export function SiteHeader({ user, notifications }: SiteHeaderProps) {
   const scrolled = useScrolled(8);
   const reduce = useReducedMotion();
 
-  // Le header se pose en transparence (texte clair) TANT QUE le header survole
-  // encore la section hero — c.-à-d. pour un visiteur non connecté sur l'accueil,
-  // jusqu'à ce que le bas du hero passe sous la barre. Au-delà (ou sur toute
-  // autre page / utilisateur connecté), il redevient solide.
-  const heroEligible = pathname === "/" && !user;
-  const [overHero, setOverHero] = React.useState(heroEligible);
-  React.useEffect(() => {
-    if (!heroEligible) {
-      setOverHero(false);
-      return;
-    }
-    const hero = document.querySelector<HTMLElement>("[data-hero]");
-    if (!hero) {
-      setOverHero(false);
-      return;
-    }
-    const HEADER_H = 96; // hauteur max de la barre (h-24)
-    const update = () => setOverHero(hero.getBoundingClientRect().bottom > HEADER_H);
-    update();
-    window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
-    return () => {
-      window.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
-    };
-  }, [heroEligible, pathname]);
+  // Le header n'est transparent (texte clair) qu'AU REPOS, en haut du hero, pour
+  // un visiteur non connecté sur l'accueil. Au moindre défilement — ou sur toute
+  // autre page / utilisateur connecté — il redevient solide.
+  const overHero = pathname === "/" && !user && !scrolled;
   const [searchOpen, setSearchOpen] = React.useState(false);
   const searchRef = React.useRef<HTMLDivElement>(null);
   // Ferme la recherche au clic extérieur ou sur Échap.

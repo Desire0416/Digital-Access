@@ -114,10 +114,7 @@ export default function HeroSection({ courses }: HeroSectionProps) {
   });
 
   return (
-    <section
-      data-hero
-      className="relative isolate -mt-20 overflow-hidden bg-surface-dark text-white lg:-mt-24"
-    >
+    <section className="relative isolate -mt-20 overflow-hidden bg-surface-dark text-white lg:-mt-24">
       {/* ── Image de fond (sujet à droite, navy à gauche) ── */}
       <Image
         src="/hero-home.png"
