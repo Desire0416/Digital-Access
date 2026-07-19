@@ -48,6 +48,8 @@ export interface NotificationItem {
 export interface NotificationBellProps {
   initialItems: NotificationItem[];
   initialUnread: number;
+  /** Texte clair (fond transparent sur le hero). */
+  overHero?: boolean;
 }
 
 const TYPE_ICONS: Record<string, React.ComponentType<{ size?: number | string; className?: string }>> = {
@@ -91,7 +93,7 @@ function relativeTime(value: string | Date): string {
   return `il y a ${years} an${years > 1 ? "s" : ""}`;
 }
 
-export function NotificationBell({ initialItems, initialUnread }: NotificationBellProps) {
+export function NotificationBell({ initialItems, initialUnread, overHero }: NotificationBellProps) {
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
   const [items, setItems] = React.useState<NotificationItem[]>(initialItems);
@@ -158,7 +160,12 @@ export function NotificationBell({ initialItems, initialUnread }: NotificationBe
         aria-label={
           displayCount > 0 ? `Notifications, ${displayCount} non lues` : "Notifications"
         }
-        className="relative grid h-10 w-10 place-items-center rounded-full text-text-secondary transition-colors hover:bg-navy/[0.05] hover:text-navy focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue-vif"
+        className={cn(
+          "relative grid h-10 w-10 place-items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue-vif",
+          overHero
+            ? "text-white/90 hover:bg-white/10 hover:text-white"
+            : "text-text-secondary hover:bg-navy/[0.05] hover:text-navy",
+        )}
       >
         <Bell size={18} />
         {displayCount > 0 && (

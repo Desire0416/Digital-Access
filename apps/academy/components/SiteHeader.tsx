@@ -144,7 +144,7 @@ function SearchField({
 }
 
 /* ─── Menu avatar (desktop) ────────────────────────────────────────────── */
-function UserMenu({ user }: { user: HeaderUser }) {
+function UserMenu({ user, overHero }: { user: HeaderUser; overHero?: boolean }) {
   const [open, setOpen] = React.useState(false);
   const ref = React.useRef<HTMLDivElement>(null);
   const pathname = usePathname();
@@ -187,12 +187,19 @@ function UserMenu({ user }: { user: HeaderUser }) {
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label="Menu du compte"
-        className="flex items-center gap-1.5 rounded-full p-1 transition-colors hover:bg-navy/[0.05] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue-vif"
+        className={cn(
+          "flex items-center gap-1.5 rounded-full p-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue-vif",
+          overHero ? "hover:bg-white/10" : "hover:bg-navy/[0.05]",
+        )}
       >
         <Avatar name={user.name} src={user.avatar ?? undefined} className="h-9 w-9" />
         <ChevronDown
           size={14}
-          className={cn("mr-1 text-text-secondary transition-transform duration-200", open && "rotate-180")}
+          className={cn(
+            "mr-1 transition-transform duration-200",
+            overHero ? "text-white/80" : "text-text-secondary",
+            open && "rotate-180",
+          )}
           aria-hidden
         />
       </button>
@@ -353,10 +360,10 @@ export function SiteHeader({ user, notifications }: SiteHeaderProps) {
   const scrolled = useScrolled(8);
   const reduce = useReducedMotion();
 
-  // Le header n'est transparent (texte clair) qu'AU REPOS, en haut du hero, pour
-  // un visiteur non connecté sur l'accueil. Au moindre défilement — ou sur toute
-  // autre page / utilisateur connecté — il redevient solide.
-  const overHero = pathname === "/" && !user && !scrolled;
+  // Le header n'est transparent (texte clair) qu'AU REPOS, en haut du hero de
+  // l'accueil (connecté ou non). Au moindre défilement — ou sur toute autre
+  // page — il redevient solide.
+  const overHero = pathname === "/" && !scrolled;
   const [searchOpen, setSearchOpen] = React.useState(false);
   const searchRef = React.useRef<HTMLDivElement>(null);
   // Ferme la recherche au clic extérieur ou sur Échap.
@@ -516,10 +523,14 @@ export function SiteHeader({ user, notifications }: SiteHeaderProps) {
             <>
               {/* Cloche notifications — panneau réel (backend §26) */}
               {notifications && (
-                <NotificationBell initialItems={notifications.items} initialUnread={notifications.unreadCount} />
+                <NotificationBell
+                  initialItems={notifications.items}
+                  initialUnread={notifications.unreadCount}
+                  overHero={overHero}
+                />
               )}
               <div className="hidden lg:block">
-                <UserMenu user={user} />
+                <UserMenu user={user} overHero={overHero} />
               </div>
               {/* Avatar simple sur mobile (le détail vit dans le tiroir) */}
               <Avatar name={user.name} src={user.avatar ?? undefined} className="h-9 w-9 lg:hidden" />
