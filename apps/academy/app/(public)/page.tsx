@@ -6,8 +6,6 @@ import {
   Reveal,
   StaggerGroup,
   StaggerItem,
-  GradientText,
-  AnimatedCounter,
   Badge,
   buttonClasses,
 } from "@da/ui";
@@ -31,6 +29,7 @@ import {
 import { getHomeData } from "@/lib/catalogue";
 import { CourseCard, CareerPathCard, SchoolCard } from "@/components/cards";
 import { SectionHeading } from "@/components/SectionHeading";
+import HeroSection from "@/components/home/HeroSection";
 
 export const metadata: Metadata = {
   title: "Apprenez une compétence. Préparez-vous à un métier.",
@@ -116,57 +115,6 @@ const TESTIMONIALS = [
   },
 ] as const;
 
-/* ─── Composition visuelle du hero (SVG/CSS original, aucune interactivité) ── */
-
-function HeroVisual() {
-  return (
-    <div className="relative mx-auto aspect-square w-full max-w-md lg:max-w-none" aria-hidden>
-      {/* Halo dégradé signature */}
-      <span className="absolute inset-8 rounded-full bg-gradient-da opacity-20 blur-3xl" />
-
-      {/* Carte principale « parcours » flottante */}
-      <div className="absolute left-1/2 top-1/2 w-[78%] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-white/10 bg-surface-dark-card p-5 shadow-brand-lg">
-        <div className="mb-4 flex items-center gap-2">
-          <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-da text-white">
-            <Route size={18} />
-          </span>
-          <div className="min-w-0">
-            <p className="truncate font-display text-sm font-bold text-white">Parcours métier</p>
-            <p className="truncate text-[11px] text-white/50">Analyste de données</p>
-          </div>
-        </div>
-        {[82, 64, 100].map((w, i) => (
-          <div key={i} className="mb-2.5 last:mb-0">
-            <div className="mb-1 flex items-center justify-between text-[10px] text-white/50">
-              <span>Module {i + 1}</span>
-              <span>{w}%</span>
-            </div>
-            <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/10">
-              <span className="block h-full rounded-full bg-gradient-da" style={{ width: `${w}%` }} />
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Pastille certificat */}
-      <div className="absolute -right-1 top-6 flex items-center gap-2 rounded-full bg-white px-3.5 py-2 shadow-brand">
-        <Award size={16} className="text-brand-violet" />
-        <span className="text-xs font-bold text-navy">Certifié</span>
-      </div>
-
-      {/* Pastille projet */}
-      <div className="absolute -left-2 bottom-10 flex items-center gap-2 rounded-full bg-white px-3.5 py-2 shadow-brand">
-        <FolderKanban size={16} className="text-brand-blue-vif" />
-        <span className="text-xs font-bold text-navy">Projet réel</span>
-      </div>
-
-      {/* Anneaux géométriques */}
-      <span className="absolute right-4 bottom-2 h-20 w-20 rounded-full border-2 border-brand-cyan/30" />
-      <span className="absolute left-6 top-2 h-12 w-12 rounded-full border-2 border-brand-violet/30" />
-    </div>
-  );
-}
-
 /* ─── Bloc d'orientation §9.2 ──────────────────────────────────────────────── */
 
 const ORIENTATION = [
@@ -199,79 +147,40 @@ const ORIENTATION = [
 export default async function HomePage() {
   const { featuredPaths, popularCourses, schools, stats } = await getHomeData();
 
-  const trust = [
-    { value: stats.learnersCount, suffix: "+", label: "apprenants" },
-    { value: schools.length, suffix: "", label: "écoles" },
-    { value: featuredPaths.length + popularCourses.length, suffix: "+", label: "programmes" },
-    { value: stats.certificatesCount, suffix: "", label: "certificats délivrés" },
-  ];
+  // Données sérialisables pour le hero (composant client) — §9.1
+  const heroCourses = popularCourses.map((c) => ({
+    slug: c.slug,
+    title: c.title,
+    subtitle: c.subtitle,
+    level: c.level,
+    price: c.price,
+    coverImage: c.coverImage,
+    rating: c.rating,
+    reviewsCount: c.reviewsCount,
+    modulesCount: c.modulesCount,
+    hasCertificate: c.hasCertificate,
+    hasProject: c.hasProject,
+    schoolName: c.primarySchool?.name ?? null,
+  }));
+  const heroPaths = featuredPaths.map((p) => ({
+    slug: p.slug,
+    title: p.title,
+    targetJob: p.targetJob,
+    coursesCount: p.coursesCount,
+    projectsCount: p.projectsCount,
+    exitLevel: p.exitLevel,
+    certificationTitle: p.certificationTitle,
+  }));
 
   return (
     <>
       {/* ═══════════════════════ HERO §9.1 ═══════════════════════ */}
-      <section className="relative overflow-hidden bg-surface-dark text-white">
-        {/* Fond : dégradé + grille + halos */}
-        <span className="pointer-events-none absolute inset-0 bg-grid opacity-[0.15]" aria-hidden />
-        <span className="pointer-events-none absolute -left-40 top-0 h-96 w-96 rounded-full bg-brand-violet opacity-30 blur-[120px]" aria-hidden />
-        <span className="pointer-events-none absolute -right-32 bottom-0 h-96 w-96 rounded-full bg-brand-cyan opacity-20 blur-[120px]" aria-hidden />
-
-        <Container className="relative grid items-center gap-12 py-20 sm:py-24 lg:grid-cols-2 lg:gap-8 lg:py-28">
-          <div>
-            <Reveal>
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-semibold tracking-wide text-white/80 backdrop-blur">
-                <Sparkles size={13} className="text-brand-cyan" />
-                L'académie numérique de Digital Access
-              </span>
-            </Reveal>
-            <Reveal delay={0.05}>
-              <h1 className="mt-6 font-display text-4xl font-extrabold leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl">
-                Apprenez une compétence.
-                <br />
-                <GradientText>Préparez-vous à un métier.</GradientText>
-              </h1>
-            </Reveal>
-            <Reveal delay={0.1}>
-              <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/70">
-                Formations certifiantes, parcours métiers et projets pratiques. Développez des
-                compétences concrètes, réalisez de vrais projets et obtenez des certificats
-                vérifiables qui font la différence.
-              </p>
-            </Reveal>
-            <Reveal delay={0.15}>
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <Link href="/parcours-metiers" className={buttonClasses({ size: "lg" })}>
-                  Explorer les parcours métiers
-                  <ArrowRight size={18} className="transition-transform group-hover:translate-x-0.5" />
-                </Link>
-                <Link
-                  href="/formations"
-                  className={buttonClasses({ variant: "white", size: "lg" })}
-                >
-                  Voir les formations
-                </Link>
-              </div>
-            </Reveal>
-
-            {/* Indicateurs de confiance */}
-            <Reveal delay={0.2}>
-              <dl className="mt-12 grid max-w-lg grid-cols-2 gap-6 border-t border-white/10 pt-8 sm:grid-cols-4">
-                {trust.map((t) => (
-                  <div key={t.label}>
-                    <dt className="font-display text-2xl font-extrabold sm:text-3xl">
-                      <AnimatedCounter value={t.value} suffix={t.suffix} />
-                    </dt>
-                    <dd className="mt-1 text-xs text-white/55">{t.label}</dd>
-                  </div>
-                ))}
-              </dl>
-            </Reveal>
-          </div>
-
-          <Reveal delay={0.15} className="hidden lg:block">
-            <HeroVisual />
-          </Reveal>
-        </Container>
-      </section>
+      <HeroSection
+        stats={stats}
+        courses={heroCourses}
+        paths={heroPaths}
+        schoolsCount={schools.length}
+      />
 
       {/* ═══════════════════════ ORIENTATION §9.2 ═══════════════════════ */}
       <Section tone="default" spacing="md">
