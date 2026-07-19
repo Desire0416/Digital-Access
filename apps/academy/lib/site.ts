@@ -15,14 +15,14 @@ export const siteConfig = {
 } as const;
 
 /** Menu principal (cahier §8.1). */
+// Menu principal condensé à 5 entrées (cahier §8.1). Les pages secondaires
+// (Écoles, Événements, Entreprises) restent accessibles via le pied de page et
+// le tiroir mobile (MOBILE_NAV_GROUPS), ainsi que depuis l'accueil.
 export const mainNav = [
   { label: "Accueil", href: "/" },
   { label: "Formations", href: "/formations" },
   { label: "Parcours métiers", href: "/parcours-metiers" },
-  { label: "Écoles", href: "/ecoles" },
-  { label: "Événements", href: "/evenements" },
   { label: "Certifications", href: "/certifications" },
-  { label: "Entreprises", href: "/entreprises" },
   { label: "À propos", href: "/a-propos" },
 ] as const;
 

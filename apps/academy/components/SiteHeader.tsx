@@ -352,10 +352,33 @@ export function SiteHeader({ user, notifications }: SiteHeaderProps) {
   const pathname = usePathname();
   const scrolled = useScrolled(8);
   const reduce = useReducedMotion();
-  // Sur l'accueil, au repos et pour un visiteur non connecté, le header se pose
-  // en transparence sur le ciel du hero (texte clair). Dès qu'on défile — ou sur
-  // toute autre page / utilisateur connecté — il redevient solide.
-  const overHero = pathname === "/" && !scrolled && !user;
+
+  // Le header se pose en transparence (texte clair) TANT QUE le header survole
+  // encore la section hero — c.-à-d. pour un visiteur non connecté sur l'accueil,
+  // jusqu'à ce que le bas du hero passe sous la barre. Au-delà (ou sur toute
+  // autre page / utilisateur connecté), il redevient solide.
+  const heroEligible = pathname === "/" && !user;
+  const [overHero, setOverHero] = React.useState(heroEligible);
+  React.useEffect(() => {
+    if (!heroEligible) {
+      setOverHero(false);
+      return;
+    }
+    const hero = document.querySelector<HTMLElement>("[data-hero]");
+    if (!hero) {
+      setOverHero(false);
+      return;
+    }
+    const HEADER_H = 96; // hauteur max de la barre (h-24)
+    const update = () => setOverHero(hero.getBoundingClientRect().bottom > HEADER_H);
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+  }, [heroEligible, pathname]);
   const [searchOpen, setSearchOpen] = React.useState(false);
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
@@ -403,10 +426,10 @@ export function SiteHeader({ user, notifications }: SiteHeaderProps) {
     <header
       className={cn(
         "sticky top-0 z-40 border-b transition-all duration-300",
-        scrolled
-          ? "border-navy/[0.07] bg-surface-primary/90 shadow-[0_4px_24px_-12px_rgba(26,26,46,0.15)] backdrop-blur-xl"
-          : overHero
-            ? "border-transparent bg-transparent"
+        overHero
+          ? "border-transparent bg-transparent"
+          : scrolled
+            ? "border-navy/[0.07] bg-surface-primary/90 shadow-[0_4px_24px_-12px_rgba(26,26,46,0.15)] backdrop-blur-xl"
             : "border-transparent bg-surface-primary",
       )}
     >
@@ -423,8 +446,15 @@ export function SiteHeader({ user, notifications }: SiteHeaderProps) {
           />
         </Link>
 
-        {/* Navigation desktop */}
-        <nav aria-label="Navigation principale" className="ml-6 hidden flex-1 items-center gap-1 lg:flex">
+        {/* Navigation desktop — masquée quand la recherche est ouverte pour
+            libérer la largeur (évite tout débordement horizontal). */}
+        <nav
+          aria-label="Navigation principale"
+          className={cn(
+            "ml-6 flex-1 items-center gap-1",
+            searchOpen ? "hidden" : "hidden lg:flex",
+          )}
+        >
           {mainNav.map((item) => {
             const active = isActivePath(pathname, item.href);
             return (
