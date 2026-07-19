@@ -885,6 +885,95 @@ export async function getPlayerLesson(lessonId: string, userId: string | null) {
 
 export type PlayerLesson = NonNullable<Awaited<ReturnType<typeof getPlayerLesson>>>;
 
+/* ─── Devoir (ASSIGNMENT) côté apprenant : consignes + historique des dépôts ── */
+
+function asDepositLinks(value: unknown): string[] {
+  return Array.isArray(value) ? (value.filter((v) => typeof v === "string") as string[]) : [];
+}
+function asDepositFiles(value: unknown): { name: string; url: string }[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter(
+    (v): v is { name: string; url: string } => !!v && typeof v === "object" && "url" in (v as object),
+  );
+}
+
+/**
+ * État d'un devoir pour l'apprenant : consignes, réglages et HISTORIQUE de ses
+ * dépôts (statut/note/retour). `null` si l'évaluation n'est pas un devoir publié.
+ * Les dépôts ne sont chargés que pour un apprenant inscrit (cloisonnement).
+ */
+export async function getAssignmentForLearner(assessmentId: string, userId: string | null) {
+  const a = await prisma.assessment.findUnique({
+    where: { id: assessmentId },
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      type: true,
+      status: true,
+      passingScore: true,
+      attemptsAllowed: true,
+      isRequired: true,
+      courseId: true,
+      module: { select: { title: true } },
+    },
+  });
+  if (!a || a.status !== "PUBLISHED" || a.type !== "ASSIGNMENT") return null;
+
+  const enrollment = userId
+    ? await prisma.enrollment.findUnique({
+        where: { userId_courseId: { userId, courseId: a.courseId } },
+        select: { status: true },
+      })
+    : null;
+  const enrolled = !!enrollment && ACQUIRED.includes(enrollment.status);
+
+  const rawAttempts =
+    userId && enrolled
+      ? await prisma.assessmentAttempt.findMany({
+          where: { assessmentId: a.id, userId },
+          orderBy: { attemptNumber: "desc" },
+          select: {
+            id: true,
+            attemptNumber: true,
+            status: true,
+            score: true,
+            feedback: true,
+            files: true,
+            content: true,
+            links: true,
+            submittedAt: true,
+            gradedAt: true,
+          },
+        })
+      : [];
+
+  return {
+    id: a.id,
+    title: a.title,
+    description: a.description,
+    passingScore: a.passingScore,
+    attemptsAllowed: a.attemptsAllowed,
+    isRequired: a.isRequired,
+    moduleTitle: a.module?.title ?? null,
+    enrolled,
+    attempts: rawAttempts.map((att) => ({
+      id: att.id,
+      attemptNumber: att.attemptNumber,
+      status: att.status,
+      score: att.score,
+      feedback: att.feedback,
+      content: att.content,
+      files: asDepositFiles(att.files),
+      links: asDepositLinks(att.links),
+      submittedAt: att.submittedAt,
+      gradedAt: att.gradedAt,
+    })),
+  };
+}
+
+export type LearnerAssignment = NonNullable<Awaited<ReturnType<typeof getAssignmentForLearner>>>;
+
 /** Question telle qu'envoyée au client : SANS correctAnswer ni explanation. */
 export interface TakingQuestion {
   id: string;

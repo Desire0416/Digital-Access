@@ -913,3 +913,183 @@ export async function reviewSubmission(
   revalidatePath("/espace/projets");
   return { ok: true, message: "Correction enregistrée." };
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Devoirs (AssessmentType.ASSIGNMENT) — exercices pratiques déposés par
+   l'apprenant (fichiers) et corrigés MANUELLEMENT par un formateur (§18/§19),
+   à la manière d'un « devoir » Moodle. Le dépôt vit dans AssessmentAttempt
+   (files/content/links). Invariants alignés sur les projets :
+   · dépôt réservé à l'apprenant inscrit ; un seul dépôt en attente à la fois ;
+   · une note ne valide que si elle atteint le seuil (jamais de réussite sous
+     le minimum) ; correcteur cloisonné aux formations qu'il encadre ;
+   · un devoir OBLIGATOIRE validé recalcule la progression (→ complétion/certif).
+   ══════════════════════════════════════════════════════════════════════════ */
+
+const submitAssignmentSchema = z.object({
+  content: z.string().trim().max(5000).optional().or(z.literal("")),
+  links: z.array(z.string().url("Lien invalide.")).max(10).optional(),
+  files: z.array(z.object({ name: z.string().max(200), url: z.string().url() })).max(15).optional(),
+});
+
+export async function submitAssignment(
+  assessmentId: string,
+  input: z.infer<typeof submitAssignmentSchema>,
+): Promise<ActionResult> {
+  const idParsed = z.string().min(1).safeParse(assessmentId);
+  const parsed = submitAssignmentSchema.safeParse(input);
+  if (!idParsed.success) return { ok: false, error: "Devoir invalide." };
+  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Formulaire invalide." };
+
+  const files = parsed.data.files ?? [];
+  const links = parsed.data.links ?? [];
+  const content = (parsed.data.content ?? "").trim();
+  if (files.length === 0 && links.length === 0) {
+    return { ok: false, error: "Joignez au moins un fichier ou un lien à votre dépôt." };
+  }
+
+  const user = await currentUser();
+  if (!user) return { ok: false, error: "Veuillez vous connecter." };
+
+  const assessment = await prisma.assessment.findUnique({
+    where: { id: idParsed.data },
+    select: { id: true, title: true, type: true, status: true, attemptsAllowed: true, courseId: true },
+  });
+  if (!assessment || assessment.status !== "PUBLISHED" || assessment.type !== "ASSIGNMENT") {
+    return { ok: false, error: "Devoir introuvable." };
+  }
+
+  const e = await prisma.enrollment.findUnique({
+    where: { userId_courseId: { userId: user.id, courseId: assessment.courseId } },
+    select: { status: true },
+  });
+  if (!e || !ACQUIRED.includes(e.status)) return { ok: false, error: "Vous devez être inscrit(e) à la formation." };
+
+  const previous = await prisma.assessmentAttempt.findMany({
+    where: { assessmentId: assessment.id, userId: user.id },
+    orderBy: { attemptNumber: "desc" },
+    select: { attemptNumber: true, status: true },
+  });
+  if (previous.some((a) => a.status === "PASSED")) return { ok: false, error: "Ce devoir est déjà validé. Félicitations !" };
+  if (previous.some((a) => a.status === "SUBMITTED")) {
+    return { ok: false, error: "Votre dépôt précédent est en cours de correction. Patientez avant d'en déposer un nouveau." };
+  }
+  if (assessment.attemptsAllowed > 0 && previous.length >= assessment.attemptsAllowed) {
+    return { ok: false, error: `Nombre maximal de dépôts atteint (${assessment.attemptsAllowed}).` };
+  }
+
+  await prisma.assessmentAttempt.create({
+    data: {
+      assessmentId: assessment.id,
+      userId: user.id,
+      attemptNumber: (previous[0]?.attemptNumber ?? 0) + 1,
+      content: content || null,
+      links,
+      files,
+      status: "SUBMITTED",
+      submittedAt: new Date(),
+    },
+  });
+
+  await createNotification({
+    userId: user.id,
+    type: "ASSESSMENT",
+    title: "Devoir déposé",
+    message: `Votre dépôt pour « ${assessment.title} » a bien été enregistré. Correction en cours.`,
+    link: "/espace/evaluations",
+  });
+  revalidatePath("/apprendre");
+  revalidatePath("/espace/evaluations");
+  return { ok: true, message: "Devoir déposé. Vous serez notifié(e) après correction." };
+}
+
+/* ─── Correction d'un devoir (admin OU correcteur cloisonné) ────────────────── */
+
+const gradeAssignmentSchema = z.object({
+  decision: z.enum(["PASSED", "RETAKE_REQUIRED", "FAILED"]),
+  score: z.number().int().min(0).max(100).optional(),
+  feedback: z.string().trim().max(5000).optional(),
+});
+
+export async function gradeAssignment(
+  attemptId: string,
+  input: z.infer<typeof gradeAssignmentSchema>,
+): Promise<ActionResult> {
+  const idParsed = z.string().min(1).safeParse(attemptId);
+  const parsed = gradeAssignmentSchema.safeParse(input);
+  if (!idParsed.success || !parsed.success) return { ok: false, error: "Données de correction invalides." };
+
+  const reviewer = await requireReviewer();
+  if (!reviewer) return { ok: false, error: "Accès réservé aux correcteurs et administrateurs." };
+
+  const attempt = await prisma.assessmentAttempt.findUnique({
+    where: { id: idParsed.data },
+    select: {
+      id: true,
+      userId: true,
+      status: true,
+      assessment: { select: { id: true, title: true, type: true, passingScore: true, isRequired: true, courseId: true } },
+    },
+  });
+  if (!attempt || attempt.assessment.type !== "ASSIGNMENT") return { ok: false, error: "Dépôt introuvable." };
+  if (attempt.status !== "SUBMITTED") return { ok: false, error: "Ce dépôt a déjà été corrigé." };
+
+  // Cloisonnement : un correcteur/formateur NON-admin ne corrige que les dépôts
+  // des formations qu'il encadre (CourseInstructor). L'admin n'est pas restreint.
+  if (!isAdmin(reviewer)) {
+    const allowed = !!(await prisma.courseInstructor.findFirst({
+      where: { courseId: attempt.assessment.courseId, userId: reviewer.id },
+      select: { id: true },
+    }));
+    if (!allowed) return { ok: false, error: "Vous n'encadrez pas la formation liée à ce dépôt." };
+  }
+
+  const { decision, score, feedback } = parsed.data;
+  if (decision === "PASSED" && (score === undefined || score < attempt.assessment.passingScore)) {
+    return { ok: false, error: `Pour valider, indiquez une note atteignant le minimum requis (${attempt.assessment.passingScore}).` };
+  }
+
+  await prisma.$transaction([
+    prisma.assessmentAttempt.update({
+      where: { id: attempt.id },
+      data: {
+        status: decision,
+        passed: decision === "PASSED",
+        score: score ?? null,
+        feedback: feedback || null,
+        gradedById: reviewer.id,
+        gradedAt: new Date(),
+      },
+    }),
+    prisma.auditLog.create({
+      data: {
+        actorId: reviewer.id,
+        action: "assignment.grade",
+        entity: "AssessmentAttempt",
+        entityId: attempt.id,
+        meta: { decision, score: score ?? null, assessmentId: attempt.assessment.id, learnerId: attempt.userId },
+      },
+    }),
+  ]);
+
+  // Un devoir obligatoire validé peut compléter la formation (et ses parcours).
+  if (decision === "PASSED" && attempt.assessment.isRequired) {
+    await recalcCourseProgress(attempt.userId, attempt.assessment.courseId);
+  }
+
+  const labels: Record<typeof decision, { title: string; message: string }> = {
+    PASSED: { title: "Devoir validé 🎉", message: `Votre devoir « ${attempt.assessment.title} » a été validé.` },
+    RETAKE_REQUIRED: {
+      title: "Devoir à retravailler",
+      message: `Votre devoir « ${attempt.assessment.title} » demande des ajustements. Consultez le retour du formateur.`,
+    },
+    FAILED: {
+      title: "Devoir non validé",
+      message: `Votre devoir « ${attempt.assessment.title} » n'a pas été validé. Consultez le retour du formateur.`,
+    },
+  };
+  await createNotification({ userId: attempt.userId, type: "ASSESSMENT", ...labels[decision], link: "/espace/evaluations" });
+
+  revalidatePath("/correction");
+  revalidatePath("/espace/evaluations");
+  return { ok: true, message: "Correction enregistrée." };
+}

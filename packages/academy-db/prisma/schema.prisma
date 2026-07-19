@@ -405,11 +405,15 @@ model AssessmentAttempt {
   userId        String
   user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   attemptNumber Int           @default(1)
-  answers       Json?
+  answers       Json? // QUIZ : réponses de l'apprenant
+  // Dépôt de DEVOIR (AssessmentType.ASSIGNMENT — correction manuelle §18/§19) :
+  files         Json? // fichiers déposés [{ name, url }] (Blob)
+  content       String? // texte de présentation / démarche
+  links         Json? // liens (dépôt en ligne, dépôt cloud…)
   score         Int?
   passed        Boolean?
   status        AttemptStatus @default(SUBMITTED)
-  feedback      String?
+  feedback      String? // retour du correcteur
   startedAt     DateTime      @default(now())
   submittedAt   DateTime?
   gradedAt      DateTime?
@@ -417,6 +421,7 @@ model AssessmentAttempt {
 
   @@index([assessmentId])
   @@index([userId])
+  @@index([status])
 }
 
 // ─── Projets (section 19) ────────────────────────────────────────────────────

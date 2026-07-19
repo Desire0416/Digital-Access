@@ -28,6 +28,10 @@ import {
   Video,
   Calendar,
   PlayCircle,
+  UploadCloud,
+  Sparkles,
+  Loader2,
+  WandSparkles,
 } from "lucide-react";
 import { cn, GradientText } from "@da/ui";
 import type { ContentStatus } from "@da/academy-db/client";
@@ -60,6 +64,7 @@ import {
 } from "@/lib/admin-actions";
 import { setCourseSkill, removeCourseSkill } from "@/lib/skill-actions";
 import { addCoursePrerequisite, removeCoursePrerequisite } from "@/lib/prerequisite-actions";
+import { generateLessonTranscript } from "@/lib/transcription-actions";
 import { CONTENT_STATUS_LABEL, CONTENT_STATUS_TONE, StatusPill } from "./ui";
 import { inputClass, textareaClass, FieldLabel, linesToArray, arrayToLines } from "./forms";
 import { useAdminAction, Feedback, SaveButton, DeleteButton } from "./action-hooks";
@@ -647,6 +652,133 @@ function toDatetimeLocal(d: Date | string | null | undefined): string {
   return local.toISOString().slice(0, 16);
 }
 
+/* Types de leçon pour lesquels une transcription / support écrit IA a du sens. */
+const TRANSCRIBABLE = new Set(["VIDEO", "AUDIO", "DEMO", "PRESENTATION", "PDF"]);
+
+/* Assistant de transcription IA (§ IA intégrée). Génère un support écrit markdown
+   à partir d'une source (script/sous-titres collés, PDF attaché, ou contexte) et
+   l'insère dans le champ « contenu ». La transcription AUTO de l'audio (STT) n'est
+   pas encore branchée — l'UI oriente alors vers le collage d'une source. */
+function TranscriptionAssistant({
+  lessonId,
+  lessonType,
+  pdfAttached,
+  onGenerated,
+}: {
+  lessonId: string;
+  lessonType: string;
+  pdfAttached: boolean;
+  onGenerated: (text: string) => void;
+}) {
+  const [open, setOpen] = React.useState(false);
+  const [mode, setMode] = React.useState<"text" | "document" | "context">(pdfAttached ? "document" : "text");
+  const [sourceText, setSourceText] = React.useState("");
+  const [pending, setPending] = React.useState(false);
+  const [msg, setMsg] = React.useState<{ tone: "ok" | "error"; text: string } | null>(null);
+
+  const isAudioVideo = lessonType === "AUDIO" || lessonType === "VIDEO" || lessonType === "DEMO";
+
+  const MODES: { value: "text" | "document" | "context"; label: string; show: boolean }[] = [
+    { value: "document", label: "Depuis le document PDF", show: pdfAttached },
+    { value: "text", label: "Coller une source", show: true },
+    { value: "context", label: "Depuis le contexte", show: true },
+  ];
+
+  async function generate() {
+    setPending(true);
+    setMsg(null);
+    const res = await generateLessonTranscript(lessonId, {
+      mode,
+      sourceText: mode === "text" ? sourceText : undefined,
+    });
+    setPending(false);
+    if (res.ok) {
+      onGenerated(res.transcript);
+      setMsg({ tone: "ok", text: "Transcription générée et insérée. Relisez-la avant d'enregistrer." });
+    } else {
+      setMsg({ tone: "error", text: res.error });
+    }
+  }
+
+  return (
+    <div className="rounded-xl border border-brand-violet/20 bg-brand-violet/[0.03]">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full items-center gap-2 px-3 py-2.5 text-left"
+      >
+        <Sparkles size={15} className="shrink-0 text-brand-violet" aria-hidden />
+        <span className="text-sm font-semibold text-navy">Transcription assistée par IA</span>
+        <ChevronDown size={15} className={cn("ml-auto text-text-muted transition-transform", open && "rotate-180")} aria-hidden />
+      </button>
+
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.18 }} className="overflow-hidden">
+            <div className="space-y-3 border-t border-brand-violet/10 p-3">
+              {isAudioVideo && (
+                <p className="rounded-lg bg-brand-violet/[0.06] px-3 py-2 text-xs text-text-secondary">
+                  La transcription <strong>automatique</strong> de l&apos;audio/vidéo arrivera avec un service dédié.
+                  En attendant, collez le script ou les sous-titres, ou partez du contexte de la leçon.
+                </p>
+              )}
+
+              <div className="flex flex-wrap gap-1.5">
+                {MODES.filter((m) => m.show).map((m) => (
+                  <button
+                    key={m.value}
+                    type="button"
+                    onClick={() => setMode(m.value)}
+                    className={cn(
+                      "rounded-lg border px-2.5 py-1 text-xs font-semibold transition-colors",
+                      mode === m.value
+                        ? "border-brand-violet/40 bg-brand-violet/10 text-brand-violet"
+                        : "border-navy/10 text-text-secondary hover:border-navy/20",
+                    )}
+                  >
+                    {m.label}
+                  </button>
+                ))}
+              </div>
+
+              {mode === "text" && (
+                <textarea
+                  value={sourceText}
+                  onChange={(e) => setSourceText(e.target.value)}
+                  className={cn(textareaClass, "min-h-[90px] text-xs")}
+                  placeholder="Collez ici le script, les sous-titres (copiés depuis YouTube…) ou vos notes brutes."
+                />
+              )}
+              {mode === "context" && (
+                <p className="text-xs text-text-muted">
+                  L&apos;IA rédigera un support écrit (brouillon) à partir du titre de la leçon et des objectifs de la formation.
+                </p>
+              )}
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={generate}
+                  disabled={pending}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-da px-3.5 py-2 text-sm font-semibold text-white shadow-brand transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {pending ? <Loader2 size={15} className="animate-spin" /> : <WandSparkles size={15} />}
+                  {pending ? "Génération…" : "Générer la transcription"}
+                </button>
+                {msg && (
+                  <span className={cn("text-xs font-medium", msg.tone === "ok" ? "text-success" : "text-error")}>
+                    {msg.text}
+                  </span>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 function LessonEditor({ lesson, index, total, onMove }: { lesson: LessonT; index: number; total: number; onMove: (dir: -1 | 1) => void }) {
   const [open, setOpen] = React.useState(false);
   const { pending, msg, run } = useAdminAction();
@@ -761,6 +893,16 @@ function LessonEditor({ lesson, index, total, onMove }: { lesson: LessonT; index
                 </div>
               )}
 
+              {/* ── Transcription assistée par IA (types média) ── */}
+              {TRANSCRIBABLE.has(lessonType) && (
+                <TranscriptionAssistant
+                  lessonId={lesson.id}
+                  lessonType={lessonType}
+                  pdfAttached={!!lesson.fileUrl && /\.pdf(\?.*)?$/i.test(lesson.fileUrl)}
+                  onGenerated={(t) => setContent((prev) => (prev.trim() ? `${prev}\n\n${t}` : t))}
+                />
+              )}
+
               {/* ── Champ markdown secondaire (libellé contextuel) ── */}
               <FieldLabel label={cfg.contentLabel} hint={cfg.contentHint}>
                 <textarea value={content} onChange={(e) => setContent(e.target.value)} className={cn(textareaClass, "min-h-[120px] font-mono text-xs")} />
@@ -809,21 +951,37 @@ function AssessmentsSection({ module }: { module: ModuleT }) {
   );
 }
 
+const ASSESSMENT_TYPE_LABEL: Record<string, string> = {
+  QUIZ: "Quiz (correction automatique)",
+  ASSIGNMENT: "Devoir (dépôt corrigé par un formateur)",
+  EXAM: "Examen",
+};
+
 function AssessmentEditor({ assessment }: { assessment: AssessmentT }) {
   const [open, setOpen] = React.useState(false);
   const { pending, msg, run } = useAdminAction();
   const [title, setTitle] = React.useState(assessment.title);
+  const [type, setType] = React.useState<"QUIZ" | "ASSIGNMENT" | "EXAM">(assessment.type);
+  const [description, setDescription] = React.useState(assessment.description ?? "");
   const [passingScore, setPassingScore] = React.useState(assessment.passingScore.toString());
   const [attempts, setAttempts] = React.useState(assessment.attemptsAllowed.toString());
+
+  const isAssignment = type === "ASSIGNMENT";
 
   return (
     <div className="rounded-xl border border-brand-violet/15 bg-brand-violet/[0.03]">
       <div className="flex items-center gap-2 px-3 py-2.5">
-        <ClipboardList size={16} className="shrink-0 text-brand-violet" />
+        {isAssignment ? (
+          <UploadCloud size={16} className="shrink-0 text-brand-violet" />
+        ) : (
+          <ClipboardList size={16} className="shrink-0 text-brand-violet" />
+        )}
         <button type="button" onClick={() => setOpen((v) => !v)} className="flex min-w-0 flex-1 items-center gap-2 text-left">
           <span className="truncate text-sm font-semibold text-navy">{assessment.title}</span>
           <span className="rounded-full bg-brand-violet/10 px-2 py-0.5 text-[10px] font-semibold text-brand-violet">
-            {assessment._count.questions} question{assessment._count.questions > 1 ? "s" : ""}
+            {assessment.type === "ASSIGNMENT"
+              ? "Devoir"
+              : `${assessment._count.questions} question${assessment._count.questions > 1 ? "s" : ""}`}
           </span>
         </button>
         <button type="button" onClick={() => setOpen((v) => !v)} className="grid h-7 w-7 shrink-0 place-items-center rounded-md text-text-muted hover:bg-navy/[0.04]" aria-label={open ? "Replier" : "Déplier"}>
@@ -835,32 +993,71 @@ function AssessmentEditor({ assessment }: { assessment: AssessmentT }) {
         {open && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.18 }} className="overflow-hidden">
             <div className="space-y-3 border-t border-brand-violet/10 p-3">
-              <div className="grid gap-3 sm:grid-cols-3">
-                <FieldLabel label="Titre" className="sm:col-span-3">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <FieldLabel label="Titre">
                   <input value={title} onChange={(e) => setTitle(e.target.value)} className={inputClass} />
                 </FieldLabel>
-                <FieldLabel label="Seuil de réussite (%)">
+                <FieldLabel label="Type d'évaluation">
+                  <Select
+                    value={type}
+                    onChange={(v) => setType(v as typeof type)}
+                    options={(["QUIZ", "ASSIGNMENT", "EXAM"] as const).map((k) => ({ value: k, label: ASSESSMENT_TYPE_LABEL[k] }))}
+                  />
+                </FieldLabel>
+              </div>
+              <FieldLabel
+                label={isAssignment ? "Consignes du devoir" : "Consigne / introduction (facultatif)"}
+                hint={isAssignment ? "Énoncé de l'exercice, livrable attendu, critères d'évaluation." : undefined}
+              >
+                <textarea value={description} onChange={(e) => setDescription(e.target.value)} className={cn(textareaClass, isAssignment && "min-h-[100px]")} />
+              </FieldLabel>
+              <div className="grid gap-3 sm:grid-cols-3">
+                <FieldLabel label={isAssignment ? "Note de passage (%)" : "Seuil de réussite (%)"}>
                   <input type="number" min={0} max={100} value={passingScore} onChange={(e) => setPassingScore(e.target.value)} className={inputClass} />
                 </FieldLabel>
-                <FieldLabel label="Tentatives" hint="0 = illimité.">
+                <FieldLabel label={isAssignment ? "Dépôts autorisés" : "Tentatives"} hint="0 = illimité.">
                   <input type="number" min={0} value={attempts} onChange={(e) => setAttempts(e.target.value)} className={inputClass} />
                 </FieldLabel>
                 <div className="flex items-end">
-                  <SaveButton pending={pending} onClick={() => run(() => updateAssessment(assessment.id, { title, passingScore: Number(passingScore) || 0, attemptsAllowed: Number(attempts) || 0 }))}>
+                  <SaveButton
+                    pending={pending}
+                    onClick={() =>
+                      run(() =>
+                        updateAssessment(assessment.id, {
+                          title,
+                          type,
+                          description,
+                          passingScore: Number(passingScore) || 0,
+                          attemptsAllowed: Number(attempts) || 0,
+                        }),
+                      )
+                    }
+                  >
                     Enregistrer
                   </SaveButton>
                 </div>
               </div>
               <Feedback msg={msg} />
 
-              {/* Questions */}
-              <div className="space-y-2 border-t border-brand-violet/10 pt-3">
-                <p className="text-xs font-semibold uppercase tracking-wide text-text-muted">Questions</p>
-                {assessment.questions.map((q, i) => (
-                  <QuestionEditor key={q.id} question={q} index={i} />
-                ))}
-                <AddQuestionButton assessmentId={assessment.id} />
-              </div>
+              {/* Devoir : dépôt de fichiers corrigé manuellement — pas de questions */}
+              {isAssignment ? (
+                <div className="flex items-start gap-3 rounded-xl border border-brand-blue-vif/20 bg-brand-blue-vif/[0.04] p-3.5 text-sm">
+                  <UploadCloud size={18} className="mt-0.5 shrink-0 text-brand-blue-royal" />
+                  <p className="text-navy/80">
+                    <span className="font-semibold text-navy">Exercice pratique à rendre.</span> L&apos;apprenant dépose
+                    un ou plusieurs fichiers depuis le lecteur ; un formateur les corrige (note + retour) dans l&apos;espace
+                    de correction. Aucune question à saisir ici.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-2 border-t border-brand-violet/10 pt-3">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-text-muted">Questions</p>
+                  {assessment.questions.map((q, i) => (
+                    <QuestionEditor key={q.id} question={q} index={i} />
+                  ))}
+                  <AddQuestionButton assessmentId={assessment.id} />
+                </div>
+              )}
 
               <div className="flex justify-end border-t border-brand-violet/10 pt-3">
                 <DeleteButton pending={pending} label="Supprimer l'évaluation" onConfirm={() => run(() => deleteAssessment(assessment.id))} />

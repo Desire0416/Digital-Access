@@ -15,6 +15,7 @@ import {
   Calendar,
   MousePointerClick,
   Clock,
+  UploadCloud,
 } from "lucide-react";
 import { buttonClasses } from "@da/ui";
 import { currentUser } from "@/lib/guards";
@@ -22,6 +23,7 @@ import {
   getPlayerCourse,
   getPlayerLesson,
   getAssessmentForTaking,
+  getAssignmentForLearner,
   type PlayerCourse,
 } from "@/lib/learn-queries";
 import { getLessonComments } from "@/lib/lesson-comments";
@@ -30,7 +32,7 @@ import { Markdown } from "@/components/Markdown";
 import { VideoEmbed } from "@/components/VideoEmbed";
 import { PlayerShell } from "@/components/player/PlayerShell";
 import { QuizRunner } from "@/components/player/QuizRunner";
-import { AssignmentPanel } from "@/components/player/AssignmentPanel";
+import { AssignmentSubmission } from "@/components/player/AssignmentSubmission";
 import { LessonComments } from "@/components/player/LessonComments";
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -128,6 +130,32 @@ export default async function LessonPage({
   const meta = findAssessmentMeta(course, lessonId);
   if (!meta) notFound();
 
+  // Devoir (dépôt de fichiers corrigé manuellement) — parcours distinct du quiz.
+  if (meta.type === "ASSIGNMENT") {
+    const assignment = await getAssignmentForLearner(lessonId, userId);
+    return (
+      <PlayerShell course={course} currentId={lessonId} lessonNav={null} banner={null}>
+        <div className="mx-auto w-full max-w-3xl px-5 py-8 sm:px-8 sm:py-12">
+          <header className="mb-6">
+            <p className="mb-2 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-brand-blue-royal">
+              <UploadCloud size={14} aria-hidden />
+              {meta.moduleTitle ? `Devoir · ${meta.moduleTitle}` : "Devoir"}
+            </p>
+            <h1 className="font-display text-2xl font-bold leading-tight text-navy sm:text-3xl">
+              {meta.title}
+            </h1>
+          </header>
+
+          {!assignment || !assignment.enrolled ? (
+            <EnrollNotice slug={courseSlug} assessment />
+          ) : (
+            <AssignmentSubmission assignment={assignment} />
+          )}
+        </div>
+      </PlayerShell>
+    );
+  }
+
   const assessment = userId ? await getAssessmentForTaking(lessonId, userId) : null;
 
   return (
@@ -143,13 +171,7 @@ export default async function LessonPage({
           </h1>
         </header>
 
-        {!assessment ? (
-          <EnrollNotice slug={courseSlug} assessment />
-        ) : assessment.type === "ASSIGNMENT" ? (
-          <AssignmentPanel title={assessment.title} description={assessment.description} />
-        ) : (
-          <QuizRunner assessment={assessment} />
-        )}
+        {!assessment ? <EnrollNotice slug={courseSlug} assessment /> : <QuizRunner assessment={assessment} />}
       </div>
     </PlayerShell>
   );

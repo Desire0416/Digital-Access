@@ -245,3 +245,158 @@ export async function countSubmissionsToReview(reviewer: SessionUser): Promise<n
     },
   });
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   DEVOIRS (AssessmentType.ASSIGNMENT) — dépôts déposés dans le lecteur, corrigés
+   manuellement (§18). Même cloisonnement que les projets, mais un devoir est
+   TOUJOURS rattaché à une formation (assessment.courseId) : le correcteur voit
+   uniquement les dépôts des formations qu'il encadre (CourseInstructor).
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/** Identifiants des formations encadrées par ce correcteur. `null` = admin (aucune restriction). */
+async function scopeCourseIds(reviewer: SessionUser): Promise<string[] | null> {
+  if (isAdmin(reviewer)) return null;
+  const instructed = await prisma.courseInstructor.findMany({
+    where: { userId: reviewer.id },
+    select: { courseId: true },
+  });
+  return [...new Set(instructed.map((c) => c.courseId))];
+}
+
+/** Dépôts de devoir à corriger (status SUBMITTED) visibles par ce correcteur. */
+export async function getAssignmentsToReview(reviewer: SessionUser) {
+  const courseIds = await scopeCourseIds(reviewer);
+  if (courseIds && courseIds.length === 0) return [];
+
+  const attempts = await prisma.assessmentAttempt.findMany({
+    where: {
+      status: "SUBMITTED",
+      assessment: { type: "ASSIGNMENT", ...(courseIds ? { courseId: { in: courseIds } } : {}) },
+    },
+    orderBy: { submittedAt: "asc" },
+    select: {
+      id: true,
+      attemptNumber: true,
+      submittedAt: true,
+      content: true,
+      links: true,
+      files: true,
+      status: true,
+      user: { select: { name: true, email: true, avatar: true } },
+      assessment: {
+        select: {
+          title: true,
+          passingScore: true,
+          course: { select: { title: true, slug: true } },
+          module: { select: { title: true } },
+        },
+      },
+    },
+  });
+
+  return attempts.map((a) => ({
+    id: a.id,
+    attemptNumber: a.attemptNumber,
+    submittedAt: a.submittedAt,
+    status: a.status,
+    content: a.content,
+    links: asLinks(a.links),
+    files: asFiles(a.files),
+    user: a.user,
+    assessment: {
+      title: a.assessment.title,
+      passingScore: a.assessment.passingScore,
+      course: a.assessment.course,
+      moduleTitle: a.assessment.module?.title ?? null,
+    },
+  }));
+}
+
+export type AssignmentQueueItem = Awaited<ReturnType<typeof getAssignmentsToReview>>[number];
+
+/** Fiche de correction d'un dépôt de devoir. `null` si non autorisé/introuvable/déjà corrigé. */
+export async function getAssignmentForReview(id: string, reviewer: SessionUser) {
+  const attempt = await prisma.assessmentAttempt.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      attemptNumber: true,
+      status: true,
+      content: true,
+      links: true,
+      files: true,
+      score: true,
+      feedback: true,
+      submittedAt: true,
+      userId: true,
+      assessmentId: true,
+      user: { select: { id: true, name: true, email: true, avatar: true } },
+      assessment: {
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          type: true,
+          passingScore: true,
+          attemptsAllowed: true,
+          isRequired: true,
+          courseId: true,
+          module: { select: { title: true } },
+          course: { select: { title: true, slug: true } },
+        },
+      },
+    },
+  });
+  if (!attempt || attempt.assessment.type !== "ASSIGNMENT") return null;
+  if (attempt.status !== "SUBMITTED") return null;
+
+  if (!isAdmin(reviewer)) {
+    const allowed = await prisma.courseInstructor.findFirst({
+      where: { courseId: attempt.assessment.courseId, userId: reviewer.id },
+      select: { id: true },
+    });
+    if (!allowed) return null;
+  }
+
+  const history = await prisma.assessmentAttempt.findMany({
+    where: { assessmentId: attempt.assessmentId, userId: attempt.userId, id: { not: attempt.id } },
+    orderBy: { attemptNumber: "desc" },
+    select: { id: true, attemptNumber: true, status: true, score: true, feedback: true, submittedAt: true, gradedAt: true },
+  });
+
+  return {
+    id: attempt.id,
+    attemptNumber: attempt.attemptNumber,
+    status: attempt.status,
+    content: attempt.content,
+    links: asLinks(attempt.links),
+    files: asFiles(attempt.files),
+    submittedAt: attempt.submittedAt,
+    learner: attempt.user,
+    assessment: {
+      id: attempt.assessment.id,
+      title: attempt.assessment.title,
+      description: attempt.assessment.description,
+      passingScore: attempt.assessment.passingScore,
+      attemptsAllowed: attempt.assessment.attemptsAllowed,
+      isRequired: attempt.assessment.isRequired,
+      moduleTitle: attempt.assessment.module?.title ?? null,
+      course: attempt.assessment.course,
+    },
+    history,
+  };
+}
+
+export type AssignmentReviewDetail = NonNullable<Awaited<ReturnType<typeof getAssignmentForReview>>>;
+
+/** Nombre de dépôts de devoir à corriger visibles par ce correcteur (badge). */
+export async function countAssignmentsToReview(reviewer: SessionUser): Promise<number> {
+  const courseIds = await scopeCourseIds(reviewer);
+  if (courseIds && courseIds.length === 0) return 0;
+  return prisma.assessmentAttempt.count({
+    where: {
+      status: "SUBMITTED",
+      assessment: { type: "ASSIGNMENT", ...(courseIds ? { courseId: { in: courseIds } } : {}) },
+    },
+  });
+}

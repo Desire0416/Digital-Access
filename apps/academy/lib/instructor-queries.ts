@@ -1,7 +1,7 @@
 import "server-only";
 import { prisma } from "@da/academy-db/client";
 import { isAdmin, type SessionUser } from "./guards";
-import { countSubmissionsToReview } from "./correction-queries";
+import { countSubmissionsToReview, countAssignmentsToReview } from "./correction-queries";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Espace formateur — LECTURES (cahier §18). Cloisonnement : un formateur ne
@@ -88,7 +88,7 @@ export async function getInstructorDashboard(user: SessionUser) {
   const courseIds = courses.map((c) => c.id);
 
   // Inscrits DISTINCTS sur l'ensemble des formations encadrées.
-  const [distinctLearners, ratingGlobal, pendingReviews] = await Promise.all([
+  const [distinctLearners, ratingGlobal, pendingProjects, pendingAssignments] = await Promise.all([
     courseIds.length
       ? prisma.enrollment.findMany({
           where: { courseId: { in: courseIds } },
@@ -103,7 +103,10 @@ export async function getInstructorDashboard(user: SessionUser) {
         })
       : Promise.resolve({ _avg: { rating: null } }),
     countSubmissionsToReview(user),
+    countAssignmentsToReview(user),
   ]);
+  // À corriger = livrables de projet + dépôts de devoir.
+  const pendingReviews = pendingProjects + pendingAssignments;
 
   const globalAvg = ratingGlobal._avg.rating;
 
