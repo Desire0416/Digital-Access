@@ -352,6 +352,10 @@ export function SiteHeader({ user, notifications }: SiteHeaderProps) {
   const pathname = usePathname();
   const scrolled = useScrolled(8);
   const reduce = useReducedMotion();
+  // Sur l'accueil, au repos et pour un visiteur non connecté, le header se pose
+  // en transparence sur le ciel du hero (texte clair). Dès qu'on défile — ou sur
+  // toute autre page / utilisateur connecté — il redevient solide.
+  const overHero = pathname === "/" && !scrolled && !user;
   const [searchOpen, setSearchOpen] = React.useState(false);
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
@@ -401,7 +405,9 @@ export function SiteHeader({ user, notifications }: SiteHeaderProps) {
         "sticky top-0 z-40 border-b transition-all duration-300",
         scrolled
           ? "border-navy/[0.07] bg-surface-primary/90 shadow-[0_4px_24px_-12px_rgba(26,26,46,0.15)] backdrop-blur-xl"
-          : "border-transparent bg-surface-primary",
+          : overHero
+            ? "border-transparent bg-transparent"
+            : "border-transparent bg-surface-primary",
       )}
     >
       <div className="mx-auto flex h-20 max-w-7xl items-center gap-3 px-4 sm:px-6 lg:h-24 lg:px-8">
@@ -413,7 +419,7 @@ export function SiteHeader({ user, notifications }: SiteHeaderProps) {
             width={200}
             height={193}
             priority
-            className="h-14 w-auto lg:h-16"
+            className={cn("h-14 w-auto transition-[filter] lg:h-16", overHero && "brightness-0 invert")}
           />
         </Link>
 
@@ -428,7 +434,13 @@ export function SiteHeader({ user, notifications }: SiteHeaderProps) {
                 aria-current={active ? "page" : undefined}
                 className={cn(
                   "relative rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                  active ? "text-navy" : "text-text-secondary hover:text-navy",
+                  active
+                    ? overHero
+                      ? "text-white"
+                      : "text-navy"
+                    : overHero
+                      ? "text-white/85 hover:text-white"
+                      : "text-text-secondary hover:text-navy",
                 )}
               >
                 {item.label}
@@ -473,7 +485,12 @@ export function SiteHeader({ user, notifications }: SiteHeaderProps) {
                   exit={{ opacity: 0 }}
                   onClick={() => setSearchOpen(true)}
                   aria-label="Rechercher une formation"
-                  className="grid h-10 w-10 place-items-center rounded-full text-text-secondary transition-colors hover:bg-navy/[0.05] hover:text-navy"
+                  className={cn(
+                    "grid h-10 w-10 place-items-center rounded-full transition-colors",
+                    overHero
+                      ? "text-white/90 hover:bg-white/10 hover:text-white"
+                      : "text-text-secondary hover:bg-navy/[0.05] hover:text-navy",
+                  )}
                 >
                   <Search size={18} />
                 </motion.button>
@@ -497,7 +514,10 @@ export function SiteHeader({ user, notifications }: SiteHeaderProps) {
             <>
               <Link
                 href="/connexion"
-                className="hidden rounded-lg px-3.5 py-2 text-sm font-medium text-navy transition-colors hover:bg-navy/[0.05] sm:inline-flex"
+                className={cn(
+                  "hidden rounded-lg px-3.5 py-2 text-sm font-medium transition-colors sm:inline-flex",
+                  overHero ? "text-white hover:bg-white/10" : "text-navy hover:bg-navy/[0.05]",
+                )}
               >
                 Se connecter
               </Link>
@@ -513,7 +533,10 @@ export function SiteHeader({ user, notifications }: SiteHeaderProps) {
             onClick={() => setMobileOpen(true)}
             aria-label="Ouvrir le menu"
             aria-expanded={mobileOpen}
-            className="grid h-10 w-10 place-items-center rounded-lg text-navy transition-colors hover:bg-navy/[0.05] lg:hidden"
+            className={cn(
+              "grid h-10 w-10 place-items-center rounded-lg transition-colors lg:hidden",
+              overHero ? "text-white hover:bg-white/10" : "text-navy hover:bg-navy/[0.05]",
+            )}
           >
             <Menu size={22} />
           </button>
