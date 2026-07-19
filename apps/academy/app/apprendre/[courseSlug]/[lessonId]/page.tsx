@@ -9,6 +9,12 @@ import {
   Download,
   ClipboardList,
   FolderKanban,
+  Headphones,
+  Presentation,
+  Video,
+  Calendar,
+  MousePointerClick,
+  Clock,
 } from "lucide-react";
 import { buttonClasses } from "@da/ui";
 import { currentUser } from "@/lib/guards";
@@ -151,39 +157,31 @@ export default async function LessonPage({
 
 /* ─── Corps d'une leçon selon son type (§12.2) ─────────────────────────────── */
 
-function LessonBody({ lesson }: { lesson: NonNullable<Awaited<ReturnType<typeof getPlayerLesson>>> }) {
+type PlayerLessonT = NonNullable<Awaited<ReturnType<typeof getPlayerLesson>>>;
+
+const isPdf = (url: string) => /\.pdf(\?.*)?$/i.test(url);
+const isOfficeDoc = (url: string) => /\.(pptx?|docx?|xlsx?)(\?.*)?$/i.test(url);
+const isHttp = (url: string) => /^https?:\/\//i.test(url);
+const officeEmbed = (url: string) => `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}`;
+const dateTimeFmt = new Intl.DateTimeFormat("fr-FR", {
+  dateStyle: "full",
+  timeStyle: "short",
+  timeZone: "Africa/Abidjan",
+});
+
+function LessonBody({ lesson }: { lesson: PlayerLessonT }) {
+  const hasMedia = !!(lesson.videoUrl || lesson.fileUrl || lesson.externalUrl || lesson.scheduledAt);
   return (
     <div className="space-y-8">
-      {/* Vidéo */}
-      {lesson.lessonType === "VIDEO" && lesson.videoUrl && (
-        <VideoEmbed url={lesson.videoUrl} title={lesson.title} />
-      )}
+      {/* Média principal selon le type de leçon */}
+      <LessonMedia lesson={lesson} />
 
-      {/* Lien externe */}
-      {lesson.lessonType === "EXTERNAL_LINK" && lesson.externalUrl && (
-        <a
-          href={lesson.externalUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group flex items-center gap-4 rounded-2xl border border-brand-blue-vif/25 bg-brand-blue-vif/[0.04] p-5 transition-colors hover:border-brand-blue-vif/50 hover:bg-brand-blue-vif/[0.08]"
-        >
-          <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-gradient-da text-white shadow-brand">
-            <ExternalLink size={22} aria-hidden />
-          </span>
-          <span className="min-w-0">
-            <span className="block font-display text-base font-bold text-navy">
-              Ouvrir la ressource
-            </span>
-            <span className="block truncate text-sm text-text-secondary">{lesson.externalUrl}</span>
-          </span>
-        </a>
-      )}
-
-      {/* Contenu markdown (TEXT, CASE_STUDY, WORKSHOP, LAB, DEMO, PRESENTATION…) */}
+      {/* Contenu markdown : cours complet (TEXT, cas, atelier, labo) OU
+          notes / consignes / transcription secondaires (vidéo, audio, doc…). */}
       {lesson.content && <Markdown>{lesson.content}</Markdown>}
 
       {/* Aucun contenu disponible */}
-      {!lesson.content && !lesson.videoUrl && !lesson.externalUrl && (
+      {!lesson.content && !hasMedia && (
         <p className="rounded-xl border border-navy/10 bg-surface-secondary px-4 py-6 text-center text-sm text-text-secondary">
           Le contenu de cette leçon sera bientôt disponible.
         </p>
@@ -219,6 +217,169 @@ function LessonBody({ lesson }: { lesson: NonNullable<Awaited<ReturnType<typeof 
         </section>
       )}
     </div>
+  );
+}
+
+/* ─── Média principal, spécifique au type de leçon (§12.2) ─────────────────── */
+
+function LessonMedia({ lesson }: { lesson: PlayerLessonT }) {
+  const { lessonType: t, videoUrl, fileUrl, externalUrl, scheduledAt } = lesson;
+
+  // Vidéo & Démonstration → lecteur vidéo intégré.
+  if ((t === "VIDEO" || t === "DEMO") && videoUrl) {
+    return <VideoEmbed url={videoUrl} title={lesson.title} />;
+  }
+
+  // Audio → lecteur audio branché.
+  if (t === "AUDIO" && fileUrl) {
+    return (
+      <div className="rounded-2xl border border-navy/[0.08] bg-surface-secondary/50 p-5">
+        <div className="mb-4 flex items-center gap-3">
+          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gradient-da text-white shadow-brand">
+            <Headphones size={20} aria-hidden />
+          </span>
+          <div>
+            <p className="font-display font-bold text-navy">Écouter la leçon</p>
+            <p className="text-xs text-text-secondary">Support audio</p>
+          </div>
+        </div>
+        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+        <audio controls preload="metadata" src={fileUrl} className="w-full">
+          Votre navigateur ne peut pas lire cet audio.
+        </audio>
+      </div>
+    );
+  }
+
+  // Document (PDF, Word, Excel…) → aperçu intégré (PDF) + carte de téléchargement.
+  if (t === "PDF" && fileUrl && isHttp(fileUrl)) {
+    return (
+      <div className="space-y-3">
+        {isPdf(fileUrl) && (
+          <iframe
+            src={fileUrl}
+            title={lesson.title}
+            className="h-[75vh] min-h-[420px] w-full rounded-2xl border border-navy/10 bg-white"
+          />
+        )}
+        <DownloadCard url={fileUrl} label="Ouvrir le document" icon={FileText} />
+      </div>
+    );
+  }
+
+  // Présentation → PDF intégré, PPTX via visionneuse Office, ou embed direct (Slides/Canva).
+  if (t === "PRESENTATION" && fileUrl && isHttp(fileUrl)) {
+    const src = isPdf(fileUrl) ? fileUrl : isOfficeDoc(fileUrl) ? officeEmbed(fileUrl) : fileUrl;
+    return (
+      <div className="space-y-3">
+        <iframe
+          src={src}
+          title={lesson.title}
+          allowFullScreen
+          className="aspect-video w-full rounded-2xl border border-navy/10 bg-white shadow-brand"
+        />
+        <DownloadCard url={fileUrl} label="Ouvrir la présentation" icon={Presentation} />
+      </div>
+    );
+  }
+
+  // Ressource interactive → intégration en iframe (H5P, Genially, Figma…).
+  if (t === "INTERACTIVE" && externalUrl && isHttp(externalUrl)) {
+    return (
+      <div className="space-y-3">
+        <iframe
+          src={externalUrl}
+          title={lesson.title}
+          allowFullScreen
+          allow="fullscreen; accelerometer; gyroscope; clipboard-write; encrypted-media"
+          className="min-h-[520px] w-full rounded-2xl border border-navy/10 bg-white shadow-brand"
+        />
+        <DownloadCard url={externalUrl} label="Ouvrir en plein écran" icon={MousePointerClick} external />
+      </div>
+    );
+  }
+
+  // Classe virtuelle → carte de session avec date et bouton « Rejoindre ».
+  if (t === "VIRTUAL_CLASS") {
+    const past = scheduledAt ? new Date(scheduledAt).getTime() < Date.now() : false;
+    return (
+      <div className="overflow-hidden rounded-2xl border border-brand-violet/20 bg-gradient-to-br from-brand-violet/[0.06] to-brand-cyan/[0.06] p-6">
+        <span className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-da text-white shadow-brand">
+          <Video size={24} aria-hidden />
+        </span>
+        <h2 className="mt-4 font-display text-lg font-bold text-navy">Classe virtuelle en direct</h2>
+        {scheduledAt && (
+          <p className="mt-2 inline-flex items-center gap-2 text-sm font-medium text-text-secondary">
+            <Calendar size={15} className="text-brand-violet" aria-hidden />
+            {dateTimeFmt.format(new Date(scheduledAt))}
+          </p>
+        )}
+        <div className="mt-5">
+          {past ? (
+            <span className="inline-flex items-center gap-2 rounded-lg bg-navy/[0.06] px-4 py-2.5 text-sm font-semibold text-text-secondary">
+              <Clock size={16} aria-hidden />
+              Session terminée
+            </span>
+          ) : externalUrl && isHttp(externalUrl) ? (
+            <a
+              href={externalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={buttonClasses({ size: "lg", className: "inline-flex" })}
+            >
+              <Video size={18} aria-hidden />
+              Rejoindre la classe
+            </a>
+          ) : (
+            <span className="text-sm text-text-muted">Le lien de connexion sera communiqué prochainement.</span>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Lien externe → carte d'ouverture.
+  if (t === "EXTERNAL_LINK" && externalUrl && isHttp(externalUrl)) {
+    return <DownloadCard url={externalUrl} label="Ouvrir la ressource" icon={ExternalLink} external big />;
+  }
+
+  return null;
+}
+
+/** Carte d'accès à un fichier / lien (téléchargement ou ouverture). */
+function DownloadCard({
+  url,
+  label,
+  icon: Icon,
+  external = false,
+  big = false,
+}: {
+  url: string;
+  label: string;
+  icon: React.ComponentType<{ size?: number; className?: string }>;
+  external?: boolean;
+  big?: boolean;
+}) {
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`group flex items-center gap-4 rounded-2xl border border-brand-blue-vif/25 bg-brand-blue-vif/[0.04] transition-colors hover:border-brand-blue-vif/50 hover:bg-brand-blue-vif/[0.08] ${big ? "p-5" : "p-4"}`}
+    >
+      <span className={`grid shrink-0 place-items-center rounded-xl bg-gradient-da text-white shadow-brand ${big ? "h-12 w-12" : "h-10 w-10"}`}>
+        <Icon size={big ? 22 : 18} aria-hidden />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block font-display font-bold text-navy">{label}</span>
+        <span className="block truncate text-sm text-text-secondary">{url}</span>
+      </span>
+      {external ? (
+        <ExternalLink size={18} className="shrink-0 text-text-muted transition-colors group-hover:text-brand-blue-royal" aria-hidden />
+      ) : (
+        <Download size={18} className="shrink-0 text-text-muted transition-colors group-hover:text-brand-blue-royal" aria-hidden />
+      )}
+    </a>
   );
 }
 

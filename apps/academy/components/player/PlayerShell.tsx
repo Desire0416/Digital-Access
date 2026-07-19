@@ -184,7 +184,7 @@ export function PlayerShell({ course, currentId, lessonNav, banner, children }: 
   const isCompleted = lessonNav ? completed.has(lessonNav.lessonId) : false;
 
   return (
-    <div className="flex h-screen overflow-hidden bg-surface-dark">
+    <div className="flex h-dvh overflow-hidden bg-surface-dark">
       {/* ══ Overlay mobile ══ */}
       <AnimatePresence>
         {mobileOpen && (

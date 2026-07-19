@@ -279,9 +279,11 @@ model Lesson {
   module          Module        @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   title           String
   lessonType      LessonType    @default(TEXT)
-  content         String? // markdown
-  videoUrl        String?
-  externalUrl     String?
+  content         String? // markdown (cours, consignes, transcription, notes)
+  videoUrl        String? // embed vidéo (YouTube / Vimeo / mp4) — type VIDEO / DEMO
+  fileUrl         String? // asset hébergé (PDF, PPTX, audio…) — type PDF / PRESENTATION / AUDIO
+  externalUrl     String? // lien externe ou salle de réunion — type EXTERNAL_LINK / INTERACTIVE / VIRTUAL_CLASS
+  scheduledAt     DateTime? // date/heure de la session — type VIRTUAL_CLASS
   durationMinutes Int?
   order           Int           @default(0)
   isPreview       Boolean       @default(false)

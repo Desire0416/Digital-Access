@@ -13,5 +13,8 @@ export const metadata: Metadata = {
 };
 
 export default function ApprendreLayout({ children }: { children: React.ReactNode }) {
-  return <div className="min-h-screen bg-surface-dark text-white">{children}</div>;
+  // Hauteur EXACTE d'un viewport (dynamique, gère la barre mobile) + clip : le
+  // corps ne peut jamais dépasser une page, donc aucun espace blanc résiduel
+  // sous la coque immersive. Le défilement se fait DANS le PlayerShell.
+  return <div className="h-dvh overflow-hidden bg-surface-dark text-white">{children}</div>;
 }

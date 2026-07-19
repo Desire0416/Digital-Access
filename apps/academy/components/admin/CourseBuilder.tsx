@@ -23,6 +23,11 @@ import {
   Target,
   Route,
   X,
+  Headphones,
+  Presentation,
+  Video,
+  Calendar,
+  PlayCircle,
 } from "lucide-react";
 import { cn, GradientText } from "@da/ui";
 import type { ContentStatus } from "@da/academy-db/client";
@@ -30,6 +35,7 @@ import type { getCourseAdmin } from "@/lib/admin-queries";
 import { LESSON_TYPE_LABEL, LEVEL_LABEL, formatFCFA } from "@/lib/site";
 import { Select } from "@/components/Select";
 import { ImageUpload } from "@/components/ImageUpload";
+import { FileUpload } from "@/components/FileUpload";
 import {
   updateCourse,
   setCourseStatus,
@@ -597,6 +603,50 @@ function LessonsSection({ module }: { module: ModuleT }) {
   );
 }
 
+/* Champs affichés selon le type de leçon (§12.2). Chaque type a son éditeur :
+   un champ PRIMAIRE (vidéo / fichier / lien) + un champ markdown secondaire
+   au libellé contextuel (notes, consignes, transcription…). */
+type LessonFieldConfig = {
+  primary: "video" | "file" | "external" | null;
+  fileAccept?: string;
+  fileHint?: string;
+  fileIcon?: React.ComponentType<{ size?: number | string; className?: string }>;
+  externalLabel?: string;
+  externalHint?: string;
+  schedule?: boolean;
+  contentLabel: string;
+  contentHint?: string;
+};
+
+const LESSON_FIELDS: Record<string, LessonFieldConfig> = {
+  TEXT: { primary: null, contentLabel: "Contenu du cours (markdown)", contentHint: "Titres ##, listes, **gras**, blocs de code, citations…" },
+  CASE_STUDY: { primary: null, contentLabel: "Étude de cas (markdown)", contentHint: "Contexte, problématique, questions de réflexion." },
+  WORKSHOP: { primary: null, contentLabel: "Consignes de l'atelier (markdown)", contentHint: "Étapes à réaliser, livrable attendu, critères de réussite." },
+  LAB: { primary: null, contentLabel: "Protocole du laboratoire (markdown)", contentHint: "Manipulations à effectuer, environnement, résultats attendus." },
+  VIDEO: { primary: "video", contentLabel: "Notes / transcription (facultatif)" },
+  DEMO: { primary: "video", contentLabel: "Notes de la démonstration (facultatif)", contentHint: "Étapes montrées, points d'attention." },
+  AUDIO: { primary: "file", fileAccept: "audio/*", fileHint: "MP3, WAV, M4A, OGG… — 100 Mo max", fileIcon: Headphones, contentLabel: "Transcription / notes (facultatif)" },
+  PDF: { primary: "file", fileAccept: ".pdf,.doc,.docx,.txt,.csv,.xls,.xlsx", fileHint: "PDF, Word, Excel, TXT… — 100 Mo max", fileIcon: FileText, contentLabel: "Description / consignes (facultatif)" },
+  PRESENTATION: { primary: "file", fileAccept: ".pdf,.ppt,.pptx", fileHint: "PDF ou PowerPoint — 100 Mo max (ou collez un lien Google Slides / Canva).", fileIcon: Presentation, contentLabel: "Notes de présentation (facultatif)" },
+  INTERACTIVE: { primary: "external", externalLabel: "URL de la ressource interactive", externalHint: "H5P, Genially, Figma, CodePen… — intégrée en iframe.", contentLabel: "Consignes (facultatif)" },
+  EXTERNAL_LINK: { primary: "external", externalLabel: "URL du lien externe", externalHint: "Article, documentation, outil en ligne à consulter.", contentLabel: "Description (facultatif)" },
+  VIRTUAL_CLASS: { primary: "external", externalLabel: "Lien de la salle virtuelle", externalHint: "Zoom, Google Meet, Microsoft Teams…", schedule: true, contentLabel: "Ordre du jour (facultatif)" },
+};
+
+const LESSON_PRIMARY_ICON: Record<string, React.ComponentType<{ size?: number | string; className?: string }>> = {
+  VIDEO: PlayCircle, DEMO: PlayCircle, AUDIO: Headphones, PDF: FileText,
+  PRESENTATION: Presentation, INTERACTIVE: Link2, EXTERNAL_LINK: Link2, VIRTUAL_CLASS: Video,
+};
+
+/** Date stockée (Date | ISO) → valeur d'un <input type="datetime-local"> (heure locale). */
+function toDatetimeLocal(d: Date | string | null | undefined): string {
+  if (!d) return "";
+  const date = new Date(d);
+  if (Number.isNaN(date.getTime())) return "";
+  const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+  return local.toISOString().slice(0, 16);
+}
+
 function LessonEditor({ lesson, index, total, onMove }: { lesson: LessonT; index: number; total: number; onMove: (dir: -1 | 1) => void }) {
   const [open, setOpen] = React.useState(false);
   const { pending, msg, run } = useAdminAction();
@@ -604,9 +654,14 @@ function LessonEditor({ lesson, index, total, onMove }: { lesson: LessonT; index
   const [lessonType, setLessonType] = React.useState(lesson.lessonType);
   const [content, setContent] = React.useState(lesson.content ?? "");
   const [videoUrl, setVideoUrl] = React.useState(lesson.videoUrl ?? "");
+  const [fileUrl, setFileUrl] = React.useState<string | null>(lesson.fileUrl ?? null);
+  const [externalUrl, setExternalUrl] = React.useState(lesson.externalUrl ?? "");
+  const [scheduledAt, setScheduledAt] = React.useState(toDatetimeLocal(lesson.scheduledAt));
   const [duration, setDuration] = React.useState(lesson.durationMinutes?.toString() ?? "");
   const [isPreview, setIsPreview] = React.useState(lesson.isPreview);
   const [isRequired, setIsRequired] = React.useState(lesson.isRequired);
+
+  const cfg = LESSON_FIELDS[lessonType] ?? LESSON_FIELDS.TEXT;
 
   function save() {
     run(() =>
@@ -615,6 +670,9 @@ function LessonEditor({ lesson, index, total, onMove }: { lesson: LessonT; index
         lessonType,
         content,
         videoUrl: videoUrl.trim() ? videoUrl : "",
+        fileUrl: fileUrl?.trim() ? fileUrl : "",
+        externalUrl: externalUrl.trim() ? externalUrl : "",
+        scheduledAt: scheduledAt ? new Date(scheduledAt).toISOString() : "",
         durationMinutes: duration.trim() ? Number(duration) : null,
         isPreview,
         isRequired,
@@ -657,12 +715,57 @@ function LessonEditor({ lesson, index, total, onMove }: { lesson: LessonT; index
                   />
                 </FieldLabel>
               </div>
-              <FieldLabel label="URL vidéo" hint="YouTube ou Vimeo — utilisé si le type est Vidéo.">
-                <input value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} className={inputClass} placeholder="https://www.youtube.com/watch?v=…" />
-              </FieldLabel>
-              <FieldLabel label="Contenu (markdown)">
+
+              {/* ── Champ PRIMAIRE selon le type ── */}
+              {cfg.primary === "video" && (
+                <FieldLabel label="Vidéo de la leçon" hint="YouTube, Vimeo ou fichier .mp4 — intégrée dans le lecteur.">
+                  <div className="relative">
+                    <PlayCircle size={15} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-brand-blue-royal" />
+                    <input value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} className={cn(inputClass, "pl-9")} placeholder="https://www.youtube.com/watch?v=…" />
+                  </div>
+                </FieldLabel>
+              )}
+
+              {cfg.primary === "file" && (
+                <FieldLabel label={lessonType === "AUDIO" ? "Fichier audio" : lessonType === "PRESENTATION" ? "Présentation" : "Document"}>
+                  <FileUpload
+                    value={fileUrl}
+                    onChange={setFileUrl}
+                    accept={cfg.fileAccept}
+                    hint={cfg.fileHint}
+                    icon={cfg.fileIcon}
+                    folder="lessons"
+                  />
+                </FieldLabel>
+              )}
+
+              {cfg.primary === "external" && (
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <FieldLabel label={cfg.externalLabel ?? "URL"} hint={cfg.externalHint} className={cfg.schedule ? undefined : "sm:col-span-2"}>
+                    <div className="relative">
+                      {React.createElement(LESSON_PRIMARY_ICON[lessonType] ?? Link2, {
+                        size: 15,
+                        className: "pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-brand-blue-royal",
+                      })}
+                      <input value={externalUrl} onChange={(e) => setExternalUrl(e.target.value)} className={cn(inputClass, "pl-9")} placeholder="https://…" />
+                    </div>
+                  </FieldLabel>
+                  {cfg.schedule && (
+                    <FieldLabel label="Date et heure de la session" hint="Fuseau local. Affiché à l'apprenant.">
+                      <div className="relative">
+                        <Calendar size={15} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-brand-violet" />
+                        <input type="datetime-local" value={scheduledAt} onChange={(e) => setScheduledAt(e.target.value)} className={cn(inputClass, "pl-9")} />
+                      </div>
+                    </FieldLabel>
+                  )}
+                </div>
+              )}
+
+              {/* ── Champ markdown secondaire (libellé contextuel) ── */}
+              <FieldLabel label={cfg.contentLabel} hint={cfg.contentHint}>
                 <textarea value={content} onChange={(e) => setContent(e.target.value)} className={cn(textareaClass, "min-h-[120px] font-mono text-xs")} />
               </FieldLabel>
+
               <div className="grid gap-3 sm:grid-cols-2">
                 <FieldLabel label="Durée (minutes)">
                   <input type="number" min={0} value={duration} onChange={(e) => setDuration(e.target.value)} className={inputClass} />
