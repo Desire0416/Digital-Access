@@ -25,6 +25,9 @@ const ACQUIRED: EnrollmentStatus[] = [...ACQUIRED_STATUSES];
 /** Marqueur interne : bascule d'approbation perdue (course concurrente). */
 const APPROVAL_RACE = "__PAYMENT_ALREADY_PROCESSED__";
 
+/** Marqueur interne : limite d'utilisation du coupon atteinte (course concurrente). */
+const COUPON_EXHAUSTED = "__COUPON_EXHAUSTED__";
+
 export type PaymentActionResult = { ok: true; message?: string } | { ok: false; error: string };
 
 export interface CheckoutInfo {
@@ -302,7 +305,8 @@ export async function submitManualPayment(input: SubmitPaymentInput): Promise<Pa
     amount = v.finalAmount;
     couponCode = v.code;
     if (amount <= 0) {
-      return { ok: false, error: "Ce code couvre la totalité du montant. Contactez-nous pour activer votre accès." };
+      // Rien à payer : ce cas passe par redeemFullCoupon (activation immédiate).
+      return { ok: false, error: "Ce code couvre la totalité du montant : utilisez le bouton d'activation gratuite." };
     }
   }
 
@@ -403,6 +407,227 @@ export async function previewCoupon(
   const v = await validateCoupon(code, base);
   if (!v.ok) return { ok: false, error: v.error };
   return { ok: true, code: v.code, discount: v.discount, finalAmount: v.finalAmount, baseAmount: base };
+}
+
+/* ─── Coupon 100 % → activation IMMÉDIATE de l'accès (montant nul) ──────────
+   Exception ENCADRÉE à l'invariant « seule l'approbation admin inscrit » :
+   quand un code promo couvre la totalité du montant, il n'y a AUCUNE preuve à
+   vérifier — on inscrit directement (accessType COUPON) et on trace un Payment
+   à 0 F (provider COUPON, status PAID) pour l'historique admin. Le coupon est
+   consommé ATOMIQUEMENT dans la même transaction (limite maxUses respectée
+   même en cas d'activations concurrentes). Montant TOUJOURS recalculé serveur. */
+
+export async function redeemFullCoupon(
+  type: "formation" | "parcours" | "cohorte",
+  slug: string,
+  code: string,
+): Promise<{ ok: true; redirect: string } | { ok: false; error: string }> {
+  const parsed = z
+    .object({
+      type: z.enum(["formation", "parcours", "cohorte"]),
+      slug: z.string().min(1),
+      code: z.string().trim().min(1).max(40),
+    })
+    .safeParse({ type, slug, code });
+  if (!parsed.success) return { ok: false, error: "Demande invalide." };
+
+  const user = await currentUser();
+  if (!user) return { ok: false, error: "Veuillez vous connecter." };
+  if (!user.emailVerified) return { ok: false, error: "Confirmez votre adresse email avant d'activer votre accès." };
+
+  // Cible + montant recalculés côté serveur — mêmes gardes que le paiement.
+  const info = await getCheckoutInfo(parsed.data.type, parsed.data.slug);
+  if (!info.ok) return info;
+  const target = info.data;
+
+  if (target.alreadyAcquired) {
+    return {
+      ok: false,
+      error:
+        parsed.data.type === "formation"
+          ? "Vous avez déjà accès à cette formation."
+          : parsed.data.type === "cohorte"
+            ? "Vous faites déjà partie de cette cohorte."
+            : "Vous êtes déjà inscrit(e) à ce parcours.",
+    };
+  }
+  if (target.pendingPayment) {
+    return { ok: false, error: `Un paiement est déjà en attente de validation pour cet achat. Notre équipe le vérifie ${paymentConfig.reviewDelay}.` };
+  }
+  if (target.amount <= 0) {
+    return { ok: false, error: "Cet achat est gratuit pour vous : utilisez le bouton d'inscription directe." };
+  }
+
+  // Verrou prérequis (§22.1) — même invariant que paiement et inscription directe.
+  if (parsed.data.type === "formation") {
+    const prereq = await getPrerequisiteStatus(user.id, target.id);
+    if (!prereq.met) return { ok: false, error: unmetPrerequisitesMessage(prereq.unmet) };
+  }
+
+  // Le code doit couvrir la TOTALITÉ du montant (sinon → tunnel Mobile Money).
+  const v = await validateCoupon(parsed.data.code, target.amount);
+  if (!v.ok) return { ok: false, error: v.error };
+  if (v.finalAmount > 0) {
+    return { ok: false, error: "Ce code ne couvre pas la totalité du montant : réglez le solde via Mobile Money." };
+  }
+
+  const purpose = parsed.data.type === "formation" ? "COURSE" : parsed.data.type === "parcours" ? "CAREER_PATH" : "COHORT";
+  const redirect =
+    parsed.data.type === "formation"
+      ? `/apprendre/${target.slug}`
+      : parsed.data.type === "parcours"
+        ? "/espace/parcours"
+        : "/espace/cohortes";
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      // Consommation ATOMIQUE du coupon DANS la transaction : si la limite est
+      // atteinte entre la validation et ici (course concurrente), rien n'est créé.
+      const consumed = await tx.$executeRaw`
+        UPDATE "Coupon"
+        SET "usedCount" = "usedCount" + 1
+        WHERE "code" = ${v.code}
+          AND "active" = true
+          AND ("maxUses" IS NULL OR "usedCount" < "maxUses")`;
+      if (consumed === 0) throw new Error(COUPON_EXHAUSTED);
+
+      // Trace comptable : Payment 0 F déjà réglé — visible dans l'historique
+      // admin sans passer par la file de validation (rien à vérifier).
+      const paymentRow = await tx.payment.create({
+        data: {
+          userId: user.id,
+          amount: 0,
+          currency: "XOF",
+          provider: "COUPON",
+          status: "PAID",
+          purpose,
+          courseId: parsed.data.type === "formation" ? target.id : null,
+          careerPathId: parsed.data.type === "parcours" ? target.id : null,
+          cohortId: parsed.data.type === "cohorte" ? target.id : null,
+          couponCode: v.code,
+          processedAt: new Date(),
+          metadata: { baseAmount: target.amount, discount: v.discount, fullCoupon: true },
+        },
+        select: { id: true },
+      });
+
+      if (parsed.data.type === "formation") {
+        const existing = await tx.enrollment.findUnique({
+          where: { userId_courseId: { userId: user.id, courseId: target.id } },
+          select: { id: true, status: true },
+        });
+        if (existing && ACQUIRED.includes(existing.status)) {
+          // Déjà acquis (règle 40.5) : rien à créer.
+        } else if (existing) {
+          await tx.enrollment.update({
+            where: { id: existing.id },
+            data: { status: "ACTIVE", origin: "DIRECT", accessType: "COUPON", enrolledAt: new Date() },
+          });
+        } else {
+          await tx.enrollment.create({
+            data: { userId: user.id, courseId: target.id, status: "ACTIVE", origin: "DIRECT", accessType: "COUPON" },
+          });
+        }
+      }
+
+      if (parsed.data.type === "parcours") {
+        const path = await tx.careerPath.findUnique({
+          where: { id: target.id },
+          select: { courses: { select: { courseId: true, isRequired: true } } },
+        });
+        const existingPE = await tx.careerPathEnrollment.findUnique({
+          where: { userId_careerPathId: { userId: user.id, careerPathId: target.id } },
+          select: { id: true, status: true },
+        });
+        if (existingPE && ACQUIRED.includes(existingPE.status)) {
+          // Déjà inscrit au parcours.
+        } else if (existingPE) {
+          await tx.careerPathEnrollment.update({
+            where: { id: existingPE.id },
+            data: { status: "ACTIVE", enrolledAt: new Date() },
+          });
+        } else {
+          await tx.careerPathEnrollment.create({
+            data: { userId: user.id, careerPathId: target.id, status: "ACTIVE" },
+          });
+        }
+
+        // Formations obligatoires : inscrites SAUF celles déjà acquises (règle 40.6).
+        const requiredIds = (path?.courses ?? []).filter((c) => c.isRequired).map((c) => c.courseId);
+        if (requiredIds.length > 0) {
+          const existingEnrollments = await tx.enrollment.findMany({
+            where: { userId: user.id, courseId: { in: requiredIds } },
+            select: { id: true, courseId: true, status: true },
+          });
+          const byCourse = new Map(existingEnrollments.map((e) => [e.courseId, e]));
+          for (const courseId of requiredIds) {
+            const existing = byCourse.get(courseId);
+            if (existing && ACQUIRED.includes(existing.status)) continue;
+            if (existing) {
+              await tx.enrollment.update({
+                where: { id: existing.id },
+                data: { status: "ACTIVE", origin: "CAREER_PATH", accessType: "COUPON", enrolledAt: new Date() },
+              });
+            } else {
+              await tx.enrollment.create({
+                data: { userId: user.id, courseId, status: "ACTIVE", origin: "CAREER_PATH", accessType: "COUPON" },
+              });
+            }
+          }
+        }
+      }
+
+      if (parsed.data.type === "cohorte") {
+        const cohort = await tx.cohort.findUnique({
+          where: { id: target.id },
+          select: { id: true, courseId: true, careerPathId: true },
+        });
+        if (!cohort) throw new Error("COHORT_NOT_FOUND");
+        await enrollMemberIntoCohortTx(tx, {
+          cohort: { id: cohort.id, courseId: cohort.courseId, careerPathId: cohort.careerPathId },
+          userId: user.id,
+          accessType: "COUPON",
+        });
+      }
+
+      await tx.notification.create({
+        data: {
+          userId: user.id,
+          type: "PAYMENT",
+          title: "Accès activé 🎉",
+          message: `Votre code « ${v.code} » couvre la totalité du montant : votre accès à « ${target.title} » est ouvert !`,
+          link: redirect,
+        },
+      });
+      await tx.auditLog.create({
+        data: {
+          actorId: user.id,
+          action: "payment.coupon_full_redeem",
+          entity: "Payment",
+          entityId: paymentRow.id,
+          meta: { couponCode: v.code, baseAmount: target.amount, purpose, targetId: target.id },
+        },
+      });
+    });
+  } catch (e) {
+    if (e instanceof Error && e.message === COUPON_EXHAUSTED) {
+      return { ok: false, error: "Ce code promo a atteint sa limite d'utilisation." };
+    }
+    throw e;
+  }
+
+  if (parsed.data.type === "formation") {
+    revalidatePath(`/formations/${target.slug}`);
+    revalidatePath("/espace/formations");
+  } else if (parsed.data.type === "parcours") {
+    revalidatePath(`/parcours-metiers/${target.slug}`);
+    revalidatePath("/espace/parcours");
+  } else {
+    revalidatePath("/espace/cohortes");
+  }
+  revalidatePath("/admin/paiements");
+
+  return { ok: true, redirect };
 }
 
 /* ─── Approbation admin → SEULE source de création des inscriptions ────────── */

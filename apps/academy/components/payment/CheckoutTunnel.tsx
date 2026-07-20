@@ -16,11 +16,12 @@ import {
   Sparkles,
   Ticket,
   X,
+  Gift,
 } from "lucide-react";
 import { Button, Field, Input, cn } from "@da/ui";
 import { ImageUpload } from "@/components/ImageUpload";
 import { paymentConfig, formatFCFA } from "@/lib/site";
-import { submitManualPayment, previewCoupon } from "@/lib/payments";
+import { submitManualPayment, previewCoupon, redeemFullCoupon } from "@/lib/payments";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Tunnel de paiement Mobile Money MANUEL (cahier §27).
@@ -83,10 +84,25 @@ export function CheckoutTunnel({ type, slug, amount, title }: CheckoutTunnelProp
   const [appliedCoupon, setAppliedCoupon] = React.useState<{ code: string; discount: number; finalAmount: number } | null>(null);
   const [couponError, setCouponError] = React.useState<string | null>(null);
   const [couponLoading, setCouponLoading] = React.useState(false);
+  // Coupon couvrant 100 % du montant → activation immédiate, sans paiement.
+  const [redeeming, setRedeeming] = React.useState(false);
+  const [redeemError, setRedeemError] = React.useState<string | null>(null);
+  const [redeemed, setRedeemed] = React.useState<string | null>(null); // URL d'accès
 
   const selected = paymentConfig.operators.find((o) => o.id === operator) ?? null;
   const effectiveAmount = appliedCoupon ? appliedCoupon.finalAmount : amount;
   const amountLabel = formatFCFA(effectiveAmount);
+  const fullyCovered = !!appliedCoupon && appliedCoupon.finalAmount <= 0;
+
+  async function activateFreeAccess() {
+    if (!appliedCoupon) return;
+    setRedeemError(null);
+    setRedeeming(true);
+    const res = await redeemFullCoupon(type, slug, appliedCoupon.code);
+    setRedeeming(false);
+    if (res.ok) setRedeemed(res.redirect);
+    else setRedeemError(res.error);
+  }
 
   async function applyCoupon() {
     const code = couponInput.trim();
@@ -106,6 +122,7 @@ export function CheckoutTunnel({ type, slug, amount, title }: CheckoutTunnelProp
     setAppliedCoupon(null);
     setCouponInput("");
     setCouponError(null);
+    setRedeemError(null);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -135,6 +152,46 @@ export function CheckoutTunnel({ type, slug, amount, title }: CheckoutTunnelProp
     } else {
       setError(res.error);
     }
+  }
+
+  /* ─── Écran « accès activé » (coupon 100 %) ─────────────────────────────── */
+  if (redeemed) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="rounded-2xl border border-navy/[0.08] bg-surface-primary p-8 text-center shadow-sm sm:p-10"
+      >
+        <motion.div
+          initial={{ scale: 0.6, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 260, damping: 18 }}
+          className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-gradient-da text-white shadow-brand"
+        >
+          <Gift size={30} strokeWidth={2.2} />
+        </motion.div>
+        <h2 className="mt-6 font-display text-2xl font-bold text-navy">Accès activé 🎉</h2>
+        <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-text-secondary">
+          Votre code promo couvre la totalité du montant : votre accès à
+          {" «"} {title} » est ouvert immédiatement — rien à payer.
+        </p>
+        <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+          <Link
+            href={redeemed}
+            className="inline-flex h-11 items-center justify-center rounded-lg bg-gradient-da px-6 text-[0.95rem] font-medium text-white shadow-brand transition-all hover:-translate-y-0.5"
+          >
+            Commencer maintenant
+            <ChevronRight size={17} />
+          </Link>
+          <Link
+            href="/espace/formations"
+            className="inline-flex h-11 items-center justify-center rounded-lg border-2 border-navy/15 px-6 text-[0.95rem] font-medium text-navy transition-colors hover:border-brand-blue-vif/60 hover:text-brand-blue-royal"
+          >
+            Voir mes formations
+          </Link>
+        </div>
+      </motion.div>
+    );
   }
 
   /* ─── Écran de confirmation ─────────────────────────────────────────────── */
@@ -179,8 +236,8 @@ export function CheckoutTunnel({ type, slug, amount, title }: CheckoutTunnelProp
 
   return (
     <div>
-      {/* Fil d'étapes */}
-      <ol className="mb-6 flex items-center gap-3">
+      {/* Fil d'étapes — masqué quand le coupon couvre tout (plus de paiement) */}
+      <ol className={cn("mb-6 flex items-center gap-3", fullyCovered && "hidden")}>
         {[
           { n: 1, label: "Payer" },
           { n: 2, label: "Preuve" },
@@ -221,9 +278,13 @@ export function CheckoutTunnel({ type, slug, amount, title }: CheckoutTunnelProp
             exit={{ opacity: 0, x: -16 }}
             transition={{ duration: 0.25 }}
           >
-            <h2 className="font-display text-lg font-bold text-navy">1. Choisissez votre opérateur Mobile Money</h2>
+            <h2 className="font-display text-lg font-bold text-navy">
+              {fullyCovered ? "Votre code couvre la totalité du montant" : "1. Choisissez votre opérateur Mobile Money"}
+            </h2>
             <p className="mt-1 text-sm text-text-secondary">
-              Effectuez le transfert du montant exact vers le numéro Digital Access indiqué, puis passez à l'étape suivante.
+              {fullyCovered
+                ? "Aucun paiement à effectuer : activez votre accès en un clic ci-dessous."
+                : "Effectuez le transfert du montant exact vers le numéro Digital Access indiqué, puis passez à l'étape suivante."}
             </p>
 
             {/* Code promo (facultatif) — remise revérifiée côté serveur */}
@@ -287,6 +348,36 @@ export function CheckoutTunnel({ type, slug, amount, title }: CheckoutTunnelProp
               )}
             </div>
 
+            {fullyCovered ? (
+              /* ─── Activation gratuite (coupon 100 %) ─────────────────────── */
+              <div className="mt-5 rounded-xl border border-success/25 bg-success/[0.05] p-6 text-center">
+                <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-gradient-da text-white shadow-brand">
+                  <Gift size={26} />
+                </span>
+                <p className="mt-4 font-display text-lg font-bold text-navy">Accès 100 % offert</p>
+                <p className="mx-auto mt-1.5 max-w-sm text-sm leading-relaxed text-text-secondary">
+                  Le code « {appliedCoupon?.code} » couvre l'intégralité du montant
+                  {" "}({formatFCFA(amount)}). Total à payer :{" "}
+                  <span className="font-bold text-success">0 F CFA</span>.
+                </p>
+                {redeemError && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mx-auto mt-4 max-w-sm rounded-lg border border-error/30 bg-error/[0.06] px-3 py-2.5 text-sm font-medium text-error"
+                  >
+                    {redeemError}
+                  </motion.p>
+                )}
+                <div className="mt-6 flex justify-center">
+                  <Button type="button" size="lg" loading={redeeming} onClick={() => void activateFreeAccess()}>
+                    {redeeming ? "Activation en cours…" : "Activer mon accès gratuitement"}
+                    {!redeeming && <Sparkles size={18} />}
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <>
             <div className="mt-5 grid gap-3 sm:grid-cols-3">
               {paymentConfig.operators.map((op) => {
                 const active = operator === op.id;
@@ -371,6 +462,8 @@ export function CheckoutTunnel({ type, slug, amount, title }: CheckoutTunnelProp
                 </motion.div>
               )}
             </AnimatePresence>
+              </>
+            )}
           </motion.div>
         )}
 
@@ -469,7 +562,7 @@ export function CheckoutTunnel({ type, slug, amount, title }: CheckoutTunnelProp
         )}
       </AnimatePresence>
 
-      <p className="mt-6 flex items-center justify-center gap-1.5 text-xs text-text-muted">
+      <p className={cn("mt-6 flex items-center justify-center gap-1.5 text-xs text-text-muted", fullyCovered && "hidden")}>
         <Clock size={13} />
         Validation manuelle {paymentConfig.reviewDelay} — paiement 100 % sécurisé Digital Access.
       </p>
