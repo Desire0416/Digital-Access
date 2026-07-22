@@ -448,8 +448,9 @@ export function SiteHeader({ user, notifications }: SiteHeaderProps) {
           />
         </Link>
 
-        {/* Navigation desktop */}
-        <nav aria-label="Navigation principale" className="ml-6 hidden flex-1 items-center gap-1 lg:flex">
+        {/* Navigation desktop — 8 pôles : affichée à partir de xl (où elle tient),
+            hamburger complet en dessous (MOBILE_NAV_GROUPS contient tout). */}
+        <nav aria-label="Navigation principale" className="ml-6 hidden flex-1 items-center gap-0.5 xl:flex">
           {mainNav.map((item) => {
             const active = isActivePath(pathname, item.href);
             return (
@@ -529,11 +530,11 @@ export function SiteHeader({ user, notifications }: SiteHeaderProps) {
                   overHero={overHero}
                 />
               )}
-              <div className="hidden lg:block">
+              <div className="hidden xl:block">
                 <UserMenu user={user} overHero={overHero} />
               </div>
-              {/* Avatar simple sur mobile (le détail vit dans le tiroir) */}
-              <Avatar name={user.name} src={user.avatar ?? undefined} className="h-9 w-9 lg:hidden" />
+              {/* Avatar simple sous xl (le détail vit dans le tiroir) */}
+              <Avatar name={user.name} src={user.avatar ?? undefined} className="h-9 w-9 xl:hidden" />
             </>
           ) : (
             <>
@@ -559,7 +560,7 @@ export function SiteHeader({ user, notifications }: SiteHeaderProps) {
             aria-label="Ouvrir le menu"
             aria-expanded={mobileOpen}
             className={cn(
-              "grid h-10 w-10 place-items-center rounded-lg transition-colors lg:hidden",
+              "grid h-10 w-10 place-items-center rounded-lg transition-colors xl:hidden",
               overHero ? "text-white hover:bg-white/10" : "text-navy hover:bg-navy/[0.05]",
             )}
           >
@@ -587,7 +588,7 @@ export function SiteHeader({ user, notifications }: SiteHeaderProps) {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.2 }}
                   onClick={() => setMobileOpen(false)}
-                  className="fixed inset-0 z-[60] bg-navy/40 backdrop-blur-sm lg:hidden"
+                  className="fixed inset-0 z-[60] bg-navy/40 backdrop-blur-sm xl:hidden"
                   aria-hidden
                 />
                 <motion.aside
@@ -599,7 +600,7 @@ export function SiteHeader({ user, notifications }: SiteHeaderProps) {
                   animate={{ x: 0 }}
                   exit={{ x: "100%" }}
                   transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 320, damping: 34 }}
-                  className="fixed inset-y-0 right-0 z-[61] flex w-[min(20rem,88vw)] flex-col overflow-y-auto overscroll-contain bg-surface-primary shadow-2xl lg:hidden"
+                  className="fixed inset-y-0 right-0 z-[61] flex w-[min(20rem,88vw)] flex-col overflow-y-auto overscroll-contain bg-surface-primary shadow-2xl xl:hidden"
                 >
                   {/* En-tête : logo (→ accueil) + fermer */}
                   <div className="sticky top-0 z-10 flex items-center justify-between border-b border-navy/[0.06] bg-surface-primary px-4 py-3">
