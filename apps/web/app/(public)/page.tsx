@@ -12,6 +12,7 @@ import {
   buttonClasses,
 } from "@da/ui";
 import { stats } from "@da/db";
+import { getVisitCount } from "@/lib/visits";
 import { getPublicPortfolio } from "@/lib/public-portfolio";
 import { getFeaturedTestimonials } from "@/lib/public-testimonials";
 import { buildMetadata } from "@/lib/seo";
@@ -49,17 +50,24 @@ export default async function HomePage() {
     featuredPack && restPacks.length === 2
       ? [restPacks[0], featuredPack, restPacks[1]]
       : top3;
-  const [portfolio, featuredTestimonials] = await Promise.all([
+  const [portfolio, featuredTestimonials, visits] = await Promise.all([
     getPublicPortfolio(),
     getFeaturedTestimonials(3),
+    getVisitCount(),
   ]);
   const featuredWork = portfolio.filter((p) => p.featured).slice(0, 3);
+
+  // Compteur de visites RÉEL (base) ajouté au bandeau de statistiques.
+  const statsWithVisits = [
+    ...stats,
+    { id: "visits", label: "Visites du site", value: visits, suffix: "" },
+  ];
 
   return (
     <>
       <HeroHome />
 
-      <StatsBand stats={stats} />
+      <StatsBand stats={statsWithVisits} />
 
       {/* Services */}
       <Section tone="muted">

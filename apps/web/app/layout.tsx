@@ -8,6 +8,7 @@ import { ChatBot } from "@/components/ChatBot";
 import { ChromeGate } from "@/components/ChromeGate";
 import { Providers } from "@/components/Providers";
 import { InactivityLogout } from "@/components/InactivityLogout";
+import { VisitTracker } from "@/components/VisitTracker";
 import { JsonLd } from "@/components/JsonLd";
 import { localBusinessSchema, websiteSchema } from "@/lib/structured-data";
 import { Analytics } from "@vercel/analytics/react";
@@ -101,6 +102,7 @@ export default async function RootLayout({
         </a>
         <Providers session={session}>
           <InactivityLogout />
+          <VisitTracker />
           <ChromeGate>
             <SiteHeader initialUser={initialUser} />
           </ChromeGate>

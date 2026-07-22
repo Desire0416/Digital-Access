@@ -1830,3 +1830,11 @@ model AuditLog {
   @@index([userId])
   @@index([createdAt])
 }
+
+/// Compteurs simples nommés (ex. "site_visits") — incrémentés atomiquement.
+/// Sert de compteur de visites public affiché sur le site vitrine.
+model SiteCounter {
+  key       String   @id
+  value     Int      @default(0)
+  updatedAt DateTime @updatedAt
+}
