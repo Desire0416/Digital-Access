@@ -32,6 +32,7 @@ import {
   Sparkles,
   Loader2,
   WandSparkles,
+  UsersRound,
 } from "lucide-react";
 import { cn, GradientText } from "@da/ui";
 import type { ContentStatus } from "@da/academy-db/client";
@@ -68,6 +69,8 @@ import { generateLessonTranscript } from "@/lib/transcription-actions";
 import { CONTENT_STATUS_LABEL, CONTENT_STATUS_TONE, StatusPill } from "./ui";
 import { inputClass, textareaClass, FieldLabel, linesToArray, arrayToLines } from "./forms";
 import { useAdminAction, Feedback, SaveButton, DeleteButton } from "./action-hooks";
+import { CourseEnrollments } from "./CourseEnrollments";
+import type { CourseEnrollmentRow } from "@/lib/admin-queries";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Constructeur de formation (§30.2, §11-12, §18). Onglets : Fiche · Programme ·
@@ -82,11 +85,12 @@ type LessonT = ModuleT["lessons"][number];
 type AssessmentT = ModuleT["assessments"][number];
 type QuestionT = AssessmentT["questions"][number];
 
-type Tab = "fiche" | "programme" | "competences" | "rattachements" | "publication";
+type Tab = "fiche" | "programme" | "inscrits" | "competences" | "rattachements" | "publication";
 
 const TABS: { id: Tab; label: string; icon: React.ComponentType<{ size?: number; className?: string }> }[] = [
   { id: "fiche", label: "Fiche", icon: FileText },
   { id: "programme", label: "Programme", icon: ListTree },
+  { id: "inscrits", label: "Inscrits", icon: UsersRound },
   { id: "competences", label: "Compétences", icon: Target },
   { id: "rattachements", label: "Rattachements", icon: Link2 },
   { id: "publication", label: "Publication", icon: Rocket },
@@ -109,6 +113,7 @@ export function CourseBuilder({
   schools,
   skillOptions = [],
   prerequisiteOptions = [],
+  enrollments = [],
   canManageSchools = true,
   canPublish = true,
   backHref = "/admin/formations",
@@ -116,6 +121,8 @@ export function CourseBuilder({
 }: {
   course: CourseAdmin;
   schools: { id: string; name: string; color: string }[];
+  /** Apprenants inscrits à la formation (onglet Inscrits). */
+  enrollments?: CourseEnrollmentRow[];
   /** Référentiel complet des compétences (pour l'onglet Compétences). */
   skillOptions?: SkillPickerOption[];
   /** Formations publiées sélectionnables comme prérequis structurés (§22.1). */
@@ -193,6 +200,7 @@ export function CourseBuilder({
 
       {tab === "fiche" && <FicheTab course={course} prerequisiteOptions={prerequisiteOptions} />}
       {tab === "programme" && <ProgrammeTab course={course} />}
+      {tab === "inscrits" && <CourseEnrollments courseId={course.id} enrollments={enrollments} />}
       {tab === "competences" && <CompetencesTab course={course} skillOptions={skillOptions} isAdmin={canManageSchools} />}
       {tab === "rattachements" && canManageSchools && <RattachementsTab course={course} schools={schools} />}
       {tab === "publication" && (

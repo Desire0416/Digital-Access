@@ -323,6 +323,61 @@ export async function getSchoolAdmin(schoolId: string) {
   });
 }
 
+/** Inscrits à une formation (onglet « Inscrits » du constructeur, §30.2). */
+export async function getCourseEnrollmentsAdmin(courseId: string) {
+  await guard();
+  const rows = await prisma.enrollment.findMany({
+    where: { courseId },
+    orderBy: [{ status: "asc" }, { enrolledAt: "desc" }],
+    take: 500,
+    select: {
+      id: true,
+      status: true,
+      origin: true,
+      accessType: true,
+      progress: true,
+      enrolledAt: true,
+      completedAt: true,
+      user: { select: { id: true, name: true, email: true, avatar: true } },
+    },
+  });
+  return rows.map((e) => ({
+    id: e.id,
+    status: e.status,
+    origin: e.origin,
+    accessType: e.accessType,
+    progress: e.progress,
+    enrolledAt: e.enrolledAt,
+    completedAt: e.completedAt,
+    userId: e.user.id,
+    name: e.user.name,
+    email: e.user.email,
+    avatar: e.user.avatar,
+  }));
+}
+export type CourseEnrollmentRow = Awaited<ReturnType<typeof getCourseEnrollmentsAdmin>>[number];
+
+/** Recherche d'utilisateurs à inscrire à une formation (marque ceux déjà inscrits). */
+export async function searchUsersForCourse(courseId: string, q: string) {
+  await guard();
+  const query = q.trim();
+  const where: Prisma.UserWhereInput = { deletedAt: null };
+  if (query) where.OR = [{ name: { contains: query, mode: "insensitive" } }, { email: { contains: query, mode: "insensitive" } }];
+  const users = await prisma.user.findMany({
+    where,
+    orderBy: { createdAt: "desc" },
+    take: 20,
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      avatar: true,
+      enrollments: { where: { courseId, status: { in: ["ACTIVE", "COMPLETED"] } }, select: { id: true } },
+    },
+  });
+  return users.map((u) => ({ id: u.id, name: u.name, email: u.email, avatar: u.avatar, enrolled: u.enrollments.length > 0 }));
+}
+
 /** Formations du catalogue pour un sélecteur (composition de parcours, rattachement école). */
 export async function listCoursesForPicker(q?: string) {
   await guard();

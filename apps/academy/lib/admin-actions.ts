@@ -6,6 +6,7 @@ import { prisma, Prisma, type ContentStatus, type Role, type LessonType, type Qu
 import { requireAdminFresh, requireCourseEditor, currentUserFresh, isAdmin, hasRole } from "./guards";
 import { createNotification } from "./notify";
 import { revokeCertificate, restoreCertificate } from "./certification";
+import { searchUsersForCourse } from "./admin-queries";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Back-office — MUTATIONS (cahier §30, workflow §31). Chaque mutation passe
@@ -597,7 +598,68 @@ export async function adminEnrollUserInCourse(userId: string, courseId: string):
   });
 
   revalidatePath("/admin/utilisateurs");
+  revalidatePath(`/admin/formations/${course.id}`);
   return { ok: true, message: `${user.name} inscrit·e à « ${course.title} ».` };
+}
+
+/** Recherche d'utilisateurs à inscrire à une formation (pour l'onglet Inscrits). */
+export async function searchUsersForCourseAction(courseId: string, q: string) {
+  const admin = await requireAdminFresh();
+  if (!admin) return [];
+  const parsed = z.object({ courseId: z.string().min(1), q: z.string().max(120) }).safeParse({ courseId, q });
+  if (!parsed.success) return [];
+  return searchUsersForCourse(parsed.data.courseId, parsed.data.q);
+}
+
+/**
+ * Change le statut d'accès d'un apprenant à une formation (onglet Inscrits) :
+ * révoquer (CANCELLED) coupe l'accès au contenu ; réactiver (ACTIVE) le rétablit
+ * sans perdre la progression. Réservé aux administrateurs, tracé au journal.
+ */
+export async function setCourseEnrollmentStatus(
+  userId: string,
+  courseId: string,
+  status: "ACTIVE" | "CANCELLED",
+): Promise<AdminActionResult> {
+  const parsed = z
+    .object({ userId: z.string().min(1), courseId: z.string().min(1), status: z.enum(["ACTIVE", "CANCELLED"]) })
+    .safeParse({ userId, courseId, status });
+  if (!parsed.success) return { ok: false, error: "Données invalides." };
+  const admin = await requireAdminFresh();
+  if (!admin) return DENIED;
+
+  const enrollment = await prisma.enrollment.findUnique({
+    where: { userId_courseId: { userId: parsed.data.userId, courseId: parsed.data.courseId } },
+    select: { id: true, status: true, user: { select: { name: true } }, course: { select: { title: true, slug: true } } },
+  });
+  if (!enrollment) return { ok: false, error: "Inscription introuvable." };
+  if (enrollment.status === "COMPLETED") return { ok: false, error: "Cette formation est déjà terminée — accès conservé." };
+  if (enrollment.status === parsed.data.status) {
+    return { ok: false, error: parsed.data.status === "ACTIVE" ? "L'accès est déjà actif." : "L'accès est déjà révoqué." };
+  }
+
+  await prisma.enrollment.update({ where: { id: enrollment.id }, data: { status: parsed.data.status } });
+  await audit(admin.id, "enrollment.set_status", "Enrollment", `${parsed.data.userId}:${parsed.data.courseId}`, {
+    to: parsed.data.status,
+    from: enrollment.status,
+  });
+  if (parsed.data.status === "ACTIVE") {
+    await createNotification({
+      userId: parsed.data.userId,
+      type: "ENROLLMENT",
+      title: "Accès rétabli",
+      message: `Votre accès à « ${enrollment.course.title} » a été rétabli.`,
+      link: `/apprendre/${enrollment.course.slug}`,
+    });
+  }
+  revalidatePath(`/admin/formations/${parsed.data.courseId}`);
+  return {
+    ok: true,
+    message:
+      parsed.data.status === "ACTIVE"
+        ? `Accès rétabli pour ${enrollment.user.name}.`
+        : `Accès révoqué pour ${enrollment.user.name}.`,
+  };
 }
 
 /* ─── Certificats : révoquer / restaurer (délégué à certification.ts) ──────── */
