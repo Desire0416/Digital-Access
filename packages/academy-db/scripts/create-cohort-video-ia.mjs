@@ -207,11 +207,11 @@ const COHORT = {
   // fois la cohorte créée, prix / capacité / dates sont gérés depuis l'admin et
   // ne sont JAMAIS réécrits par ce script.
   startDate: at("2026-08-01T00:00"), // la formation ne s'ouvre pas avant cette date
-  endDate: at("2026-10-02T20:00"),
+  endDate: at("2026-08-30T20:00"), // programme condensé sur 1 mois (1–30 août)
   enrollmentDeadline: at("2026-08-01T18:00"),
   capacity: 20,
   price: 5000,
-  rhythm: "9 semaines · 1 module + 1 webinaire d'accompagnement par semaine",
+  rhythm: "1 mois (4 semaines) · 2 modules + 1 webinaire d'accompagnement par semaine",
   description:
     "Cette cohorte accompagne les participants dans la réalisation autonome d'une vidéo publicitaire avec l'intelligence artificielle.\n\n" +
     "La formation est suivie principalement en autonomie sur la plateforme. Chaque participant avance à travers des cours, des démonstrations, des exercices et un projet fil rouge.\n\n" +
@@ -246,10 +246,18 @@ const COHORT = {
     "Certains outils nécessitent la création d'un compte et peuvent proposer des crédits gratuits limités, un abonnement payant, ou ne pas être disponibles dans tous les pays. Le participant reste responsable des accès nécessaires à son projet ; des solutions alternatives peuvent être proposées lorsque c'est possible.",
 };
 
-/* 9 webinaires hebdomadaires d'accompagnement (jeudi 18 h 30, 1 h 30). */
-const WEBINAR_DATES = [
-  "2026-08-06", "2026-08-13", "2026-08-20", "2026-08-27",
-  "2026-09-03", "2026-09-10", "2026-09-17", "2026-09-24", "2026-10-01",
+/* 4 webinaires hebdomadaires d'accompagnement (jeudi 18 h 30, 1 h 30) sur le
+   mois d'août. Rythme : 2 modules travaillés en autonomie par semaine, chaque
+   webinaire fait le point sur les modules de la semaine. */
+const WEBINARS = [
+  { n: 1, title: "Webinaire 1 — Semaine 1 : comprendre & cadrer (modules 1–2)", date: "2026-08-06",
+    objective: "Lancement de la cohorte, diagnostic des sujets, analyse de publicités et clinique de briefs & concepts." },
+  { n: 2, title: "Webinaire 2 — Semaine 2 : scénario, storyboard & prompts (modules 3–4)", date: "2026-08-13",
+    objective: "Lecture chronométrée des scénarios, critique des storyboards et correction des prompts Veo 3." },
+  { n: 3, title: "Webinaire 3 — Semaine 3 : génération vidéo & voix off (modules 5–6)", date: "2026-08-20",
+    objective: "Démonstration d'itération avec Veo 3, diagnostic d'artefacts et écoute à l'aveugle des voix off." },
+  { n: 4, title: "Webinaire 4 — Semaine 4 : montage, finalisation & portfolio (modules 7–9)", date: "2026-08-27",
+    objective: "Revue des montages, contrôle des exports, soutenances et valorisation du projet dans le portfolio." },
 ];
 /* Salle Google Meet récurrente de la cohorte. RÉSERVÉE AUX INSCRITS : jamais
    exposée publiquement (webinaires en audience COHORT, non sélectionnée par la
@@ -348,21 +356,19 @@ async function main() {
     await prisma.cohortInstructor.upsert({ where: { cohortId_userId: { cohortId: cohort.id, userId: instructor.id } }, update: { roleLabel: "Formateur principal" }, create: { cohortId: cohort.id, userId: instructor.id, roleLabel: "Formateur principal" } });
   }
 
-  // 4) Webinaires d'accompagnement (1 par module).
+  // 4) Webinaires d'accompagnement (4 hebdomadaires — 2 modules par semaine).
   await prisma.event.deleteMany({ where: { cohortId: cohort.id } });
-  for (let i = 0; i < CONTENT.modules.length; i++) {
-    const m = CONTENT.modules[i];
-    const date = WEBINAR_DATES[i] ?? WEBINAR_DATES[WEBINAR_DATES.length - 1];
+  for (const w of WEBINARS) {
     await prisma.event.create({
       data: {
-        title: `Webinaire ${m.num} — ${m.title}`,
-        slug: `${COHORT_SLUG}-w${m.num}`,
+        title: w.title,
+        slug: `${COHORT_SLUG}-w${w.n}`,
         description:
-          `**Objectif** : ${m.webinaire}\n\n` +
-          `Séance d'accompagnement de 90 minutes (rappel actif, correction du quiz, démonstration, revue de travaux et plan d'action). ` +
+          `**Objectif** : ${w.objective}\n\n` +
+          `Séance d'accompagnement hebdomadaire de 90 minutes (rappel actif, correction des quiz, démonstration, revue de travaux et plan d'action). ` +
           `En ligne (Google Meet) — lien d'accès dans votre espace cohorte.`,
         type: "WEBINAR", audience: "COHORT",
-        startAt: at(`${date}T18:30`), endAt: at(`${date}T20:00`), timezone: "Africa/Abidjan",
+        startAt: at(`${w.date}T18:30`), endAt: at(`${w.date}T20:00`), timezone: "Africa/Abidjan",
         provider: "GOOGLE_MEET", meetingUrl: MEET_URL,
         cohortId: cohort.id, courseId: course.id, hostId: instructor?.id ?? null,
         status: "PUBLISHED",
@@ -386,7 +392,7 @@ async function main() {
   });
 
   console.log("=== COHORTE & CONTENU CRÉÉS ===");
-  console.log(JSON.stringify({ course: COURSE_SLUG, cohort: COHORT_SLUG, schools: Object.keys(bySlug), modules: CONTENT.modules.length, lessons: nLessons, quiz: nQuiz, questions: nQ, assignments: nAssign, webinars: CONTENT.modules.length, annexes: CONTENT.annexes.length, instructor: !!instructor }, null, 2));
+  console.log(JSON.stringify({ course: COURSE_SLUG, cohort: COHORT_SLUG, schools: Object.keys(bySlug), modules: CONTENT.modules.length, lessons: nLessons, quiz: nQuiz, questions: nQ, assignments: nAssign, webinars: WEBINARS.length, annexes: CONTENT.annexes.length, instructor: !!instructor }, null, 2));
   await prisma.$disconnect();
 }
 

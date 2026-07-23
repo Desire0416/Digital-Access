@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import {
   GraduationCap,
   Route,
@@ -48,12 +48,9 @@ export default async function PaiementPage({
   if (!info.ok) notFound();
   const data = info.data;
 
-  // Déjà acquis → l'apprenant a déjà l'accès : on l'y renvoie.
-  if (data.alreadyAcquired) {
-    redirect(kind === "formation" ? "/espace/formations" : kind === "cohorte" ? "/espace/cohortes" : "/espace/parcours");
-  }
-
   const levelLabel = data.level ? LEVEL_LABEL[data.level] ?? data.level : null;
+  const espaceHref =
+    kind === "formation" ? "/espace/formations" : kind === "cohorte" ? "/espace/cohortes" : "/espace/parcours";
 
   /* ─── En-tête récapitulatif (commun à tous les états) ───────────────────── */
   const recap = (
@@ -141,7 +138,31 @@ export default async function PaiementPage({
   /* ─── Contenu de droite selon l'état ────────────────────────────────────── */
   let panel: React.ReactNode;
 
-  if (!user.emailVerified) {
+  if (data.alreadyAcquired) {
+    // Déjà inscrit·e → pas de paiement. On affiche un panneau (jamais un
+    // redirect() serveur ici : rediriger vers le groupe `espace` pendant une
+    // navigation client fait planter le routeur — on laisse l'utilisateur cliquer).
+    panel = (
+      <div className="rounded-2xl border border-navy/[0.08] bg-surface-primary p-8 text-center shadow-sm">
+        <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-gradient-da text-white shadow-brand">
+          <BadgeCheck size={28} />
+        </div>
+        <h2 className="mt-5 font-display text-xl font-bold text-navy">Vous avez déjà accès</h2>
+        <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-text-secondary">
+          {kind === "cohorte"
+            ? "Vous faites déjà partie de cette cohorte. Retrouvez son espace, ses sessions et ses annonces dans votre espace apprenant."
+            : "Vous avez déjà accès à ce contenu. Retrouvez-le à tout moment dans votre espace apprenant."}
+        </p>
+        <Link
+          href={espaceHref}
+          className="mt-6 inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-gradient-da px-6 text-[0.95rem] font-medium text-white shadow-brand transition-all hover:-translate-y-0.5"
+        >
+          {kind === "cohorte" ? "Voir mes cohortes" : "Aller à mon espace"}
+          <ArrowRight size={18} />
+        </Link>
+      </div>
+    );
+  } else if (!user.emailVerified) {
     // Email non confirmé : blocage amont (le serveur refuse aussi le dépôt).
     panel = (
       <div className="rounded-2xl border border-warning/30 bg-warning/[0.06] p-8 text-center">
