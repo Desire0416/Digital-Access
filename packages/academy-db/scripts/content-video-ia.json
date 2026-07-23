@@ -1,0 +1,2045 @@
+{
+ "modules": [
+  {
+   "num": 1,
+   "title": "Comprendre la vidéo publicitaire assistée par IA",
+   "bienvenue": "BIENVENUE — Bienvenue dans le parcours. Avant d’ouvrir un outil, vous allez apprendre à reconnaître ce qui fait d’une vidéo une publicité et à situer chaque étape du processus. Vous choisirez ensuite le projet qui vous accompagnera pendant toute la formation.",
+   "dureeRow": [
+    "4 h d’autonomie + 1 h 30 de webinaire",
+    "Leçons + quiz 80 % + dépôt",
+    "Fiche de présentation : nom du projet, offre, cible principale, besoin de communication, canal envisagé et raisons du choix."
+   ],
+   "objectives": [
+    "Comprendre les caractéristiques d’une vidéo publicitaire.",
+    "Distinguer vidéo informative et vidéo publicitaire.",
+    "Identifier les formats et les étapes de production.",
+    "Comprendre le rôle des quatre outils.",
+    "Choisir et cadrer le projet fil rouge."
+   ],
+   "parcours": [
+    "Qu’est-ce qu’une vidéo publicitaire ?",
+    "Informer ou persuader",
+    "Formats publicitaires",
+    "Les étapes de production",
+    "Outils, limites et responsabilité"
+   ],
+   "sections": [
+    {
+     "key": "1.1",
+     "title": "Qu’est-ce qu’une vidéo publicitaire ?",
+     "prose": [
+      "Une vidéo publicitaire est une création audiovisuelle conçue pour influencer une perception ou provoquer une action en faveur d’une offre, d’une organisation ou d’une cause. Elle sélectionne un problème pertinent pour une audience, formule une promesse, apporte une raison d’y croire et oriente vers une étape suivante.",
+      "La qualité publicitaire ne dépend pas seulement de l’esthétique. Une belle vidéo peut rester inefficace si l’audience ne comprend pas ce qui est proposé, pourquoi cela la concerne ou ce qu’elle doit faire. À l’inverse, une réalisation simple peut être performante si elle est claire, crédible et mémorable."
+     ],
+     "retenir": [
+      "Une audience identifiable",
+      "Une promesse centrale",
+      "Une preuve ou démonstration",
+      "Un appel à l’action"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "1.2",
+     "title": "Informer ou persuader",
+     "prose": [
+      "Une vidéo informative transmet des faits ou explique un fonctionnement. Une vidéo publicitaire organise ces faits autour d’un bénéfice et d’un comportement attendu. La frontière n’est pas absolue : une démonstration peut informer et persuader, mais l’intention et la structure restent différentes.",
+      "Pour diagnostiquer une vidéo, posez quatre questions : quel changement cherche-t-elle à produire ? Quelle tension de la cible met-elle en scène ? Quelle valeur sélectionne-t-elle ? Quelle action propose-t-elle ? Si aucune réponse n’est visible, le contenu est probablement seulement informatif."
+     ],
+     "retenir": [
+      "L’information répond surtout à « quoi » et « comment ».",
+      "La publicité ajoute « pourquoi pour moi » et « que faire ensuite »."
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "1.3",
+     "title": "Formats publicitaires",
+     "prose": [
+      "Le format dépend du canal, de la phase du parcours client et du contexte de visionnage. Les formats fréquents sont la démonstration, le problème-solution, la tranche de vie, le témoignage autorisé, le avant-après, l’offre promotionnelle et le film de marque.",
+      "Le ratio de l’image influence la composition : 9:16 pour de nombreux usages mobiles verticaux, 1:1 pour certains fils sociaux et 16:9 pour les écrans horizontaux. La durée ne se choisit pas isolément : elle doit suffire à faire comprendre la promesse sans diluer l’attention."
+     ],
+     "retenir": [
+      "Choisir le canal avant le cadrage final.",
+      "Prévoir les zones occupées par l’interface.",
+      "Conserver une version maître de qualité."
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "1.4",
+     "title": "Les étapes de production",
+     "prose": [
+      "La préproduction comprend le brief, le concept, le scénario, le storyboard et la préparation des prompts. La production regroupe la génération ou le tournage des images et la création de la voix. La postproduction rassemble montage, mixage, identité visuelle, sous-titres, contrôle et export.",
+      "L’IA accélère plusieurs opérations mais ne supprime pas les dépendances. Un brief flou entraîne un scénario générique ; un scénario trop dense produit un storyboard impossible ; des prompts incohérents créent des rushes difficiles à monter. La méthode consiste à valider chaque étape avant d’investir dans la suivante."
+     ],
+     "retenir": [
+      "Préproduction",
+      "Production",
+      "Postproduction",
+      "Diffusion et mesure"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "1.5",
+     "title": "Outils, limites et responsabilité",
+     "prose": [
+      "ChatGPT aide à explorer et structurer ; Veo 3 génère des plans ; ElevenLabs transforme un texte en voix ; CapCut assemble et finalise. Aucun outil ne connaît automatiquement la stratégie, les droits disponibles ou la vérité des allégations.",
+      "Le participant reste responsable du contenu publié. Il vérifie les faits, les licences, les droits à l’image et à la voix, les règles des plateformes et les politiques des outils. Il évite les faux témoignages, l’imitation non autorisée, les allégations trompeuses et la présentation d’un contenu synthétique comme un fait réel."
+     ],
+     "retenir": [
+      "Vérifier les sorties",
+      "Documenter les sources",
+      "Conserver les versions",
+      "Obtenir les consentements"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    }
+   ],
+   "tutoTitle": "Tutoriel pas à pas — Choisir un projet exploitable",
+   "tutoSteps": [
+    "Listez trois sujets possibles que vous connaissez suffisamment pour vérifier les informations.",
+    "Pour chaque sujet, identifiez une offre claire, une audience accessible et une action réaliste.",
+    "Vérifiez que vous pouvez obtenir les logos, informations, images et autorisations nécessaires.",
+    "Évaluez la faisabilité en 30 à 60 secondes : une seule promesse, cinq à huit scènes.",
+    "Choisissez le sujet qui combine utilité, motivation personnelle et faisabilité.",
+    "Créez le dossier de projet et ses sous-dossiers : brief, scénario, storyboard, prompts, rushes, audio, montage, exports, droits, portfolio."
+   ],
+   "consigne": "CONSIGNE — Choisissez le sujet du projet fil rouge et analysez deux publicités du même secteur : promesse, preuve, émotion, CTA et format.",
+   "modalites": [
+    "Réalisez l’activité avec les informations réelles de votre projet.",
+    "Conservez les différentes versions et notez les décisions.",
+    "Effectuez l’autoévaluation avant le dépôt.",
+    "Déposez un fichier clairement nommé avant le webinaire."
+   ],
+   "prod": "PRODUCTION ATTENDUE — Fiche de présentation : nom du projet, offre, cible principale, besoin de communication, canal envisagé et raisons du choix.",
+   "criteres": [
+    "Sujet suffisamment précis",
+    "Cible décrite par une situation réelle",
+    "Besoin de communication explicite",
+    "Canal cohérent",
+    "Ressources et droits envisageables"
+   ],
+   "quiz": [
+    {
+     "n": 1,
+     "question": "Quel élément transforme principalement une vidéo informative en publicité ?",
+     "options": [
+      "Sa résolution",
+      "Une intention de persuasion et une action attendue",
+      "Le nombre de plans"
+     ],
+     "answerIndex": 1,
+     "explanation": "La publicité organise le contenu pour faire évoluer une perception ou provoquer une action."
+    },
+    {
+     "n": 2,
+     "question": "Dans quel ordre général travaille-t-on ?",
+     "options": [
+      "Montage, brief, diffusion",
+      "Préproduction, production, postproduction",
+      "Export, tournage, stratégie"
+     ],
+     "answerIndex": 1,
+     "explanation": "La préproduction sécurise les décisions avant de produire."
+    },
+    {
+     "n": 3,
+     "question": "Quel est le rôle principal de CapCut dans le parcours ?",
+     "options": [
+      "Générer la stratégie",
+      "Monter et finaliser",
+      "Créer le brief"
+     ],
+     "answerIndex": 1,
+     "explanation": "CapCut sert ici à assembler, titrer, mixer et exporter."
+    },
+    {
+     "n": 4,
+     "question": "Une bonne promesse publicitaire doit être…",
+     "options": [
+      "Multiple et exhaustive",
+      "Claire et crédible",
+      "Sans rapport avec la cible"
+     ],
+     "answerIndex": 1,
+     "explanation": "Une promesse centrale facilite compréhension et mémorisation."
+    },
+    {
+     "n": 5,
+     "question": "Qui reste responsable du contenu publié ?",
+     "options": [
+      "L’outil",
+      "Le participant ou l’organisation qui publie",
+      "Personne"
+     ],
+     "answerIndex": 1,
+     "explanation": "L’usage de l’IA ne transfère pas la responsabilité."
+    },
+    {
+     "n": 6,
+     "question": "Le meilleur projet fil rouge est…",
+     "options": [
+      "Le plus compliqué",
+      "Un sujet précis, utile et réalisable",
+      "Un sujet sans informations"
+     ],
+     "answerIndex": 1,
+     "explanation": "La faisabilité permet de progresser jusqu’au rendu final."
+    }
+   ],
+   "webinaire": "Lancement, diagnostic des sujets, analyse collective de publicités et validation des fiches projet."
+  },
+  {
+   "num": 2,
+   "title": "Définir le brief et le concept publicitaire avec ChatGPT",
+   "bienvenue": "BIENVENUE — Vous allez transformer votre sujet en problème créatif précis. Le brief sert de contrat de cohérence : il indique à qui parler, quel changement rechercher, quelle promesse défendre et quelles limites respecter.",
+   "dureeRow": [
+    "5 h + 1 h 30",
+    "Leçons + quiz 80 % + dépôt",
+    "Brief validé comprenant cible, objectif, message, promesse, preuve, ton, émotion, CTA, contraintes et concept retenu."
+   ],
+   "objectives": [
+    "Identifier le besoin du projet.",
+    "Définir la cible et sa tension.",
+    "Clarifier proposition de valeur, promesse et preuve.",
+    "Définir ton, émotion et CTA.",
+    "Utiliser ChatGPT pour comparer plusieurs concepts."
+   ],
+   "parcours": [
+    "Le rôle du brief",
+    "Objectif et cible",
+    "Proposition de valeur, promesse et preuve",
+    "Ton, émotion et appel à l’action",
+    "Bien utiliser ChatGPT",
+    "Sélectionner le concept"
+   ],
+   "sections": [
+    {
+     "key": "2.1",
+     "title": "Le rôle du brief",
+     "prose": [
+      "Le brief rassemble les informations nécessaires pour créer sans perdre l’objectif. Il ne décrit pas encore chaque scène. Il donne le cadre de décision : contexte, problème, audience, objectif, message, preuve, ton, contraintes, canal et critères de réussite.",
+      "Un brief utile tient idéalement sur une à deux pages. Il privilégie les choix aux inventaires. Si tout est prioritaire, rien ne l’est. Le formateur doit pouvoir le lire et expliquer en une phrase ce que la vidéo doit faire comprendre, ressentir et entreprendre."
+     ],
+     "retenir": [
+      "Une seule priorité",
+      "Des faits vérifiables",
+      "Des contraintes explicites",
+      "Un critère de réussite"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "2.2",
+     "title": "Objectif et cible",
+     "prose": [
+      "L’objectif formule le changement recherché : faire connaître, faire considérer, générer une visite, une inscription ou une demande. Il est différent du moyen « faire une vidéo ». L’indicateur doit correspondre à ce changement, même si la formation n’exige pas une campagne réelle.",
+      "La cible se décrit par sa situation, son besoin, son frein, son niveau de connaissance et son déclencheur. L’âge et la profession peuvent aider, mais ils ne remplacent pas l’insight. Une formulation pratique est : « Quand…, cette personne veut…, mais… »."
+     ],
+     "retenir": [
+      "Comportement attendu",
+      "Situation vécue",
+      "Frein principal",
+      "Déclencheur crédible"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "2.3",
+     "title": "Proposition de valeur, promesse et preuve",
+     "prose": [
+      "La proposition de valeur résume la valeur de l’offre pour la cible. La promesse publicitaire sélectionne le bénéfice principal à communiquer maintenant. Elle doit être spécifique, pertinente et soutenable.",
+      "La preuve répond à la question « pourquoi vous croire ? ». Elle peut être une démonstration, une caractéristique, un mécanisme, un témoignage autorisé, une donnée sourcée ou une garantie. Une preuve visuelle est particulièrement forte en vidéo parce qu’elle réduit l’effort d’explication."
+     ],
+     "retenir": [
+      "Bénéfice et non simple caractéristique",
+      "Une promesse principale",
+      "Une raison de croire",
+      "Aucune exagération invérifiable"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "2.4",
+     "title": "Ton, émotion et appel à l’action",
+     "prose": [
+      "Le ton décrit la personnalité de l’expression : chaleureux, direct, expert, ludique, premium ou rassurant. L’émotion recherchée décrit l’état du spectateur : curiosité, soulagement, envie, confiance ou urgence mesurée.",
+      "Le CTA doit être compatible avec le niveau de maturité et le canal. « Découvrir la formule » demande moins d’engagement que « Acheter maintenant ». Il est plus crédible de proposer une prochaine étape claire que de forcer une conversion prématurée."
+     ],
+     "retenir": [
+      "Ton = manière de parler",
+      "Émotion = effet recherché",
+      "CTA = prochaine étape"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "2.5",
+     "title": "Bien utiliser ChatGPT",
+     "prose": [
+      "Un bon prompt fournit le rôle attendu, le contexte, le brief, la tâche, les contraintes et le format de sortie. Demandez plusieurs concepts réellement distincts : démonstration, tranche de vie, contraste, micro-récit ou métaphore. Exigez pour chacun l’idée, l’accroche, la preuve, le CTA, le risque et la faisabilité.",
+      "ChatGPT est un partenaire d’exploration, pas un arbitre. Comparez ses propositions avec une grille et réécrivez. Vérifiez les faits et signalez les informations inconnues. L’amélioration se fait par itérations courtes : préciser une faiblesse, demander une nouvelle version, puis décider."
+     ],
+     "retenir": [
+      "Contexte précis",
+      "Contraintes explicites",
+      "Format de réponse",
+      "Comparaison",
+      "Vérification humaine"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "2.6",
+     "title": "Sélectionner le concept",
+     "prose": [
+      "Un concept est une idée directrice que l’on peut résumer en une phrase et décliner en scènes. Évaluez la pertinence pour la cible, la singularité, la crédibilité, la preuve, la faisabilité avec les ressources et la cohérence de marque.",
+      "Évitez de choisir seulement l’idée la plus spectaculaire. Le meilleur concept est celui qui rend la promesse facile à comprendre et à montrer. Conservez les concepts non retenus dans le journal : ils peuvent servir de variantes ou de points de comparaison."
+     ],
+     "retenir": [
+      "Pertinence",
+      "Clarté",
+      "Preuve",
+      "Faisabilité",
+      "Mémorisation"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    }
+   ],
+   "tutoTitle": "Tutoriel pas à pas — Prompt de conception avec ChatGPT",
+   "tutoSteps": [
+    "Collez votre fiche projet et précisez que les informations inconnues ne doivent pas être inventées.",
+    "Demandez une reformulation du problème, de l’audience, de l’objectif et de la promesse.",
+    "Corrigez les faits et fournissez les contraintes : durée, canal, ton, ressources, interdictions.",
+    "Demandez trois concepts fondés sur des mécaniques différentes.",
+    "Exigez un tableau comparant accroche, promesse, preuve, émotion, CTA, risque et faisabilité.",
+    "Notez chaque concept sur cinq critères, puis demandez une amélioration ciblée des deux meilleurs.",
+    "Rédigez vous-même la formulation finale du concept et enregistrez le prompt principal."
+   ],
+   "consigne": "CONSIGNE — Produire trois concepts publicitaires différents avec ChatGPT et organiser une comparaison argumentée.",
+   "modalites": [
+    "Réalisez l’activité avec les informations réelles de votre projet.",
+    "Conservez les différentes versions et notez les décisions.",
+    "Effectuez l’autoévaluation avant le dépôt.",
+    "Déposez un fichier clairement nommé avant le webinaire."
+   ],
+   "prod": "PRODUCTION ATTENDUE — Brief validé comprenant cible, objectif, message, promesse, preuve, ton, émotion, CTA, contraintes et concept retenu.",
+   "criteres": [
+    "Objectif observable",
+    "Cible non générique",
+    "Promesse unique",
+    "Preuve crédible",
+    "CTA cohérent",
+    "Concept visuel et réalisable"
+   ],
+   "quiz": [
+    {
+     "n": 1,
+     "question": "Le brief sert principalement à…",
+     "options": [
+      "Décorer le projet",
+      "Cadrer les décisions créatives",
+      "Remplacer le montage"
+     ],
+     "answerIndex": 1,
+     "explanation": "Le brief donne le cadre de cohérence."
+    },
+    {
+     "n": 2,
+     "question": "Un objectif correct décrit…",
+     "options": [
+      "Le logiciel utilisé",
+      "Le changement recherché",
+      "La couleur du logo"
+     ],
+     "answerIndex": 1,
+     "explanation": "L’objectif concerne l’effet attendu."
+    },
+    {
+     "n": 3,
+     "question": "Une preuve est…",
+     "options": [
+      "Une raison de croire la promesse",
+      "Un second slogan",
+      "Un effet de transition"
+     ],
+     "answerIndex": 0,
+     "explanation": "La preuve soutient la crédibilité."
+    },
+    {
+     "n": 4,
+     "question": "Le ton correspond…",
+     "options": [
+      "À la personnalité de l’expression",
+      "À la durée",
+      "Au format vidéo"
+     ],
+     "answerIndex": 0,
+     "explanation": "Le ton décrit comment la marque s’exprime."
+    },
+    {
+     "n": 5,
+     "question": "Avec ChatGPT, il faut…",
+     "options": [
+      "Accepter la première réponse",
+      "Fournir le contexte et itérer",
+      "Cacher les contraintes"
+     ],
+     "answerIndex": 1,
+     "explanation": "La qualité dépend du contexte, des critères et de la révision."
+    },
+    {
+     "n": 6,
+     "question": "Le concept retenu doit d’abord…",
+     "options": [
+      "Être spectaculaire",
+      "Servir le brief et rester faisable",
+      "Multiplier les messages"
+     ],
+     "answerIndex": 1,
+     "explanation": "La pertinence et la faisabilité priment."
+    }
+   ],
+   "webinaire": "Clinique de briefs, test de compréhension des promesses et comparaison collective des concepts."
+  },
+  {
+   "num": 3,
+   "title": "Rédiger le scénario publicitaire",
+   "bienvenue": "BIENVENUE — Le scénario transforme le concept en expérience temporelle. Vous allez décider ce que le public découvre seconde après seconde, ce qu’il voit, ce qu’il entend et à quel moment il comprend la promesse.",
+   "dureeRow": [
+    "5 h + 1 h 30",
+    "Leçons + quiz 80 % + dépôt",
+    "Scénario complet avec déroulement, scènes, dialogues éventuels, voix off, message final et CTA."
+   ],
+   "objectives": [
+    "Structurer une publicité courte.",
+    "Transformer un concept en narration.",
+    "Écrire une accroche, une preuve et un CTA.",
+    "Gérer la durée de 30 à 60 secondes.",
+    "Améliorer le scénario avec ChatGPT et une lecture critique."
+   ],
+   "parcours": [
+    "Structures narratives courtes",
+    "L’accroche",
+    "Problème, solution, bénéfice et preuve",
+    "Écriture audiovisuelle",
+    "Gérer la durée",
+    "Rédaction et amélioration avec ChatGPT"
+   ],
+   "sections": [
+    {
+     "key": "3.1",
+     "title": "Structures narratives courtes",
+     "prose": [
+      "Le problème-solution dramatise une tension puis révèle l’offre. Le avant-après montre une transformation. La démonstration-preuve-CTA convient aux produits concrets. La tranche de vie place l’offre dans une situation familière. Le micro-récit suit un personnage confronté à une tension simple.",
+      "La structure n’est pas un modèle rigide. Elle garantit que l’histoire progresse. Dans une publicité courte, chaque séquence doit produire une information ou une émotion nouvelle. Une scène redondante consomme du temps sans renforcer le message."
+     ],
+     "retenir": [
+      "Problème-solution",
+      "Avant-après",
+      "Démonstration",
+      "Tranche de vie",
+      "Micro-récit"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "3.2",
+     "title": "L’accroche",
+     "prose": [
+      "L’accroche crée une raison de continuer à regarder : image inhabituelle, tension immédiatement reconnue, question, contraste, son ou résultat montré avant l’explication. Elle doit rester honnête et liée à la promesse.",
+      "Une accroche forte n’est pas nécessairement bruyante. Pour une marque premium, un détail visuel précis peut être plus efficace qu’une rupture agressive. Écrivez plusieurs accroches et jugez-les sur compréhension, curiosité et cohérence de marque."
+     ],
+     "retenir": [
+      "Attirer sans tromper",
+      "Relier l’ouverture à la promesse",
+      "Tester plusieurs formulations"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "3.3",
+     "title": "Problème, solution, bénéfice et preuve",
+     "prose": [
+      "Le problème doit être assez concret pour que la cible se reconnaisse, mais pas exagéré au point de caricaturer. La solution apparaît lorsque l’offre devient pertinente. Le bénéfice traduit ce que la caractéristique change pour la personne.",
+      "La preuve peut être intégrée à l’action : montrer le produit en usage, faire apparaître un résultat observable ou expliquer brièvement le mécanisme. Évitez d’ajouter la preuve à la fin comme une justification abstraite."
+     ],
+     "retenir": [
+      "Tension observable",
+      "Solution au bon moment",
+      "Bénéfice vécu",
+      "Preuve intégrée"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "3.4",
+     "title": "Écriture audiovisuelle",
+     "prose": [
+      "Le scénario sépare ce que l’on voit, ce que l’on entend et ce qui apparaît sous forme de texte. La voix ne doit pas décrire mot pour mot l’image. Lorsque l’image montre la préparation rapide d’une commande, la voix peut expliquer le bénéfice plutôt que dire « voici une commande ».",
+      "Les dialogues doivent être courts et jouables. Les textes à l’écran sont limités à l’essentiel. Pour chaque scène, indiquez une durée, une action principale et une intention. Le storyboard précisera ensuite la mise en scène."
+     ],
+     "retenir": [
+      "Image",
+      "Voix ou dialogue",
+      "Musique et sons",
+      "Texte à l’écran"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "3.5",
+     "title": "Gérer la durée",
+     "prose": [
+      "Une voix française naturelle tourne souvent autour de 120 à 150 mots par minute, selon l’intention et les pauses. Une publicité de 45 secondes supporte généralement moins de 100 mots lorsque l’image doit respirer.",
+      "Chronométrez à voix haute. Ajoutez les pauses, le temps du packshot et au moins deux secondes de lisibilité pour le CTA. Si le scénario dépasse, réduisez d’abord les répétitions, les adjectifs et les informations secondaires."
+     ],
+     "retenir": [
+      "Lire à voix haute",
+      "Mesurer réellement",
+      "Réserver le CTA",
+      "Couper avant d’accélérer"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "3.6",
+     "title": "Rédaction et amélioration avec ChatGPT",
+     "prose": [
+      "Demandez deux scénarios fondés sur le même brief mais avec une structure différente. Fournissez une grille : clarté de l’accroche, progression, preuve, émotion, faisabilité et durée. Demandez ensuite une critique, pas seulement une nouvelle version.",
+      "Après l’aide de l’IA, reprenez chaque phrase. Vérifiez que le ton appartient à la marque, que les faits sont exacts et que le scénario pourra être généré et monté. La version finale doit être assumée par l’auteur."
+     ],
+     "retenir": [
+      "Comparer avant de sélectionner",
+      "Demander les faiblesses",
+      "Réécrire humainement",
+      "Chronométrer"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    }
+   ],
+   "tutoTitle": "Tutoriel pas à pas — Écrire deux versions de scénario",
+   "tutoSteps": [
+    "Fixez la durée cible et écrivez les battements : accroche, tension, solution, preuve, bénéfice, CTA.",
+    "Choisissez deux structures narratives réellement différentes.",
+    "Rédigez la version A dans un tableau temps / image / audio / texte.",
+    "Rédigez la version B sans simplement changer les mots.",
+    "Lisez et chronométrez les deux versions.",
+    "Notez-les avec la grille du brief et faites relire sans expliquer.",
+    "Conservez la meilleure structure et récupérez, si utile, un élément de l’autre version.",
+    "Réduisez le texte de 10 à 15 % et enregistrez la version validée."
+   ],
+   "consigne": "CONSIGNE — Rédiger deux scénarios du projet fil rouge, les chronométrer et sélectionner la version la plus pertinente.",
+   "modalites": [
+    "Réalisez l’activité avec les informations réelles de votre projet.",
+    "Conservez les différentes versions et notez les décisions.",
+    "Effectuez l’autoévaluation avant le dépôt.",
+    "Déposez un fichier clairement nommé avant le webinaire."
+   ],
+   "prod": "PRODUCTION ATTENDUE — Scénario complet avec déroulement, scènes, dialogues éventuels, voix off, message final et CTA.",
+   "criteres": [
+    "Durée réaliste",
+    "Accroche liée au concept",
+    "Progression claire",
+    "Preuve visible",
+    "Une promesse",
+    "CTA lisible",
+    "Faisabilité"
+   ],
+   "quiz": [
+    {
+     "n": 1,
+     "question": "Une structure narrative sert à…",
+     "options": [
+      "Créer une progression",
+      "Choisir le format d’export",
+      "Régler le volume"
+     ],
+     "answerIndex": 0,
+     "explanation": "Elle organise la découverte du message."
+    },
+    {
+     "n": 2,
+     "question": "L’accroche doit…",
+     "options": [
+      "Être trompeuse",
+      "Créer une raison de continuer et servir la promesse",
+      "Tout expliquer"
+     ],
+     "answerIndex": 1,
+     "explanation": "Elle attire sans rompre le contrat du message."
+    },
+    {
+     "n": 3,
+     "question": "Dans une écriture audiovisuelle…",
+     "options": [
+      "Image et voix se complètent",
+      "La voix décrit tout",
+      "Le texte remplace l’image"
+     ],
+     "answerIndex": 0,
+     "explanation": "Les canaux se répartissent l’information."
+    },
+    {
+     "n": 4,
+     "question": "Pour réduire la durée, il faut d’abord…",
+     "options": [
+      "Accélérer excessivement la voix",
+      "Supprimer répétitions et détails secondaires",
+      "Retirer le CTA"
+     ],
+     "answerIndex": 1,
+     "explanation": "La concision conserve l’intelligibilité."
+    },
+    {
+     "n": 5,
+     "question": "La preuve doit…",
+     "options": [
+      "Soutenir la promesse",
+      "Être inventée",
+      "Être cachée"
+     ],
+     "answerIndex": 0,
+     "explanation": "Elle crédibilise le bénéfice."
+    },
+    {
+     "n": 6,
+     "question": "Deux versions utiles doivent…",
+     "options": [
+      "Être identiques",
+      "Explorer des structures différentes",
+      "Changer seulement le nom"
+     ],
+     "answerIndex": 1,
+     "explanation": "La comparaison doit porter sur de vrais choix."
+    }
+   ],
+   "webinaire": "Lecture chronométrée, réécriture collective d’une accroche et validation des scénarios."
+  },
+  {
+   "num": 4,
+   "title": "Construire le storyboard et préparer les prompts",
+   "bienvenue": "BIENVENUE — Vous allez rendre le scénario visible avant de générer. Le storyboard réduit les essais inutiles, sécurise la continuité et transforme chaque scène en instruction exploitable par Veo 3.",
+   "dureeRow": [
+    "6 h + 1 h 30",
+    "Leçons + quiz 80 % + dépôt",
+    "Storyboard comprenant numéro, durée, description, cadrage, action, caméra, ambiance, audio/texte et prompt de génération."
+   ],
+   "objectives": [
+    "Découper le scénario en cinq à huit scènes.",
+    "Choisir cadrages et mouvements.",
+    "Définir ambiance, décors, personnages et continuité.",
+    "Rédiger un prompt par scène.",
+    "Préparer une liste de plans priorisée."
+   ],
+   "parcours": [
+    "Rôle du storyboard",
+    "Découpage scène par scène",
+    "Plans, cadrages et caméra",
+    "Ambiance visuelle",
+    "Continuité",
+    "Structure d’un prompt Veo 3",
+    "Indications à éviter"
+   ],
+   "sections": [
+    {
+     "key": "4.1",
+     "title": "Rôle du storyboard",
+     "prose": [
+      "Le storyboard est une carte de décisions. Chaque case indique ce qui doit apparaître, la fonction du plan, la durée, l’action, le cadrage, le mouvement, l’audio et le texte. Il permet de détecter une rupture de logique avant de consommer du temps et des crédits.",
+      "La qualité graphique n’est pas l’objectif principal. Des croquis simples, des images de référence légalement utilisables ou des vignettes peuvent suffire si les décisions sont compréhensibles par une autre personne."
+     ],
+     "retenir": [
+      "Visualiser",
+      "Décider",
+      "Chronométrer",
+      "Repérer les manques"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "4.2",
+     "title": "Découpage scène par scène",
+     "prose": [
+      "Découpez selon les changements d’action, de lieu, de cadrage ou de fonction narrative. Un plan peut attirer, situer, démontrer, émouvoir, relier ou conclure. Écrivez sa fonction sous la case.",
+      "Cinq à huit scènes conviennent souvent à une publicité courte, mais ce n’est pas une règle absolue. Un plan complexe est plus difficile à générer. Préférez plusieurs actions simples que l’on pourra assembler."
+     ],
+     "retenir": [
+      "Une action principale par plan",
+      "Une fonction narrative",
+      "Une durée estimée",
+      "Des raccords possibles"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "4.3",
+     "title": "Plans, cadrages et caméra",
+     "prose": [
+      "Le plan large situe l’environnement ; le plan moyen montre l’action ; le gros plan révèle un détail, une émotion ou une preuve. L’angle modifie la perception : à hauteur des yeux pour la proximité, plongée pour la vue d’ensemble, légère contre-plongée pour la puissance.",
+      "Décrivez les mouvements avec sobriété : caméra fixe, panoramique lent, travelling avant, suivi latéral ou mouvement à main stabilisée. Les demandes complexes augmentent les incohérences et compliquent le raccord."
+     ],
+     "retenir": [
+      "Choisir selon la fonction",
+      "Limiter les mouvements simultanés",
+      "Prévoir le début et la fin du plan"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "4.4",
+     "title": "Ambiance visuelle",
+     "prose": [
+      "L’ambiance se construit par la lumière, la palette, la texture, le contraste, la profondeur de champ, le décor et le rythme. Décrivez les propriétés plutôt que d’exiger l’imitation d’un artiste vivant.",
+      "Constituez une mini-charte : trois à cinq couleurs, type de lumière, niveau de réalisme, traitement du produit, type de caméra et exemples de compositions. Répétez les invariants dans chaque prompt."
+     ],
+     "retenir": [
+      "Palette",
+      "Lumière",
+      "Texture",
+      "Niveau de réalisme",
+      "Traitement de marque"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "4.5",
+     "title": "Continuité",
+     "prose": [
+      "L’IA ne conserve pas automatiquement un personnage, un vêtement, un accessoire ou un décor entre deux générations. Établissez une fiche de continuité contenant description physique non sensible, tenue, objets, main utilisée, heure, météo, lumière et positions.",
+      "Réutilisez des formulations identiques pour les éléments qui ne doivent pas changer. Si l’outil permet des images de référence, n’utilisez que des fichiers dont vous possédez les droits et vérifiez les conditions applicables."
+     ],
+     "retenir": [
+      "Invariants écrits",
+      "Références autorisées",
+      "Convention de noms",
+      "Contrôle plan à plan"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "4.6",
+     "title": "Structure d’un prompt Veo 3",
+     "prose": [
+      "Un prompt vidéo décrit sujet, action, environnement, cadrage, caméra, lumière, esthétique, durée et contraintes. Commencez par les informations indispensables et formulez une action simple. Le prompt doit décrire le plan, pas résumer toute la publicité.",
+      "Lorsque l’interface le permet, ajoutez ratio, résolution, durée, nombre de variantes ou éléments à éviter. Les options disponibles peuvent varier selon la surface d’accès. Les textes de marque et sous-titres sont généralement plus fiables lorsqu’ils sont ajoutés au montage."
+     ],
+     "retenir": [
+      "Sujet",
+      "Action",
+      "Décor",
+      "Cadrage",
+      "Caméra",
+      "Lumière",
+      "Rendu",
+      "Contraintes"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "4.7",
+     "title": "Indications à éviter",
+     "prose": [
+      "Évitez les contradictions, les actions multiples simultanées, les adjectifs vagues accumulés, le texte complexe dans l’image et les instructions impossibles à vérifier. N’utilisez pas le nom d’une personne réelle pour obtenir une imitation sans base légitime.",
+      "Un prompt négatif ne doit pas devenir une longue liste anxieuse. Décrivez d’abord positivement le résultat voulu. Après génération, diagnostiquez le défaut principal et modifiez seulement ce qui est nécessaire."
+     ],
+     "retenir": [
+      "Pas de contradiction",
+      "Pas de scénario complet dans un prompt",
+      "Pas d’imitation non autorisée",
+      "Pas de texte intégré inutile"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    }
+   ],
+   "tutoTitle": "Tutoriel pas à pas — Transformer le scénario en storyboard prompté",
+   "tutoSteps": [
+    "Découpez le scénario en cinq à huit scènes et attribuez une fonction à chacune.",
+    "Choisissez durée, échelle de plan, angle et mouvement.",
+    "Décrivez action, décor, lumière, personnage et accessoires.",
+    "Créez une fiche de continuité à copier dans tous les prompts concernés.",
+    "Rédigez un prompt par scène selon la structure recommandée.",
+    "Ajoutez une entrée et une sortie utilisables au montage.",
+    "Classez les plans : A indispensables, B utiles, C optionnels.",
+    "Créez un animatique simple avec vignettes et voix provisoire."
+   ],
+   "consigne": "CONSIGNE — Transformer le scénario en storyboard de cinq à huit scènes et rédiger un prompt pour chacune.",
+   "modalites": [
+    "Réalisez l’activité avec les informations réelles de votre projet.",
+    "Conservez les différentes versions et notez les décisions.",
+    "Effectuez l’autoévaluation avant le dépôt.",
+    "Déposez un fichier clairement nommé avant le webinaire."
+   ],
+   "prod": "PRODUCTION ATTENDUE — Storyboard comprenant numéro, durée, description, cadrage, action, caméra, ambiance, audio/texte et prompt de génération.",
+   "criteres": [
+    "Toutes les scènes servent le scénario",
+    "Durée totale cohérente",
+    "Cadrages fonctionnels",
+    "Continuité documentée",
+    "Prompts précis",
+    "Plans priorisés"
+   ],
+   "quiz": [
+    {
+     "n": 1,
+     "question": "Le storyboard sert d’abord à…",
+     "options": [
+      "Décider avant de produire",
+      "Ajouter la musique",
+      "Exporter"
+     ],
+     "answerIndex": 0,
+     "explanation": "Il formalise les décisions de préproduction."
+    },
+    {
+     "n": 2,
+     "question": "Un gros plan sert souvent à…",
+     "options": [
+      "Montrer un détail ou une émotion",
+      "Situer toute une ville",
+      "Remplacer la voix"
+     ],
+     "answerIndex": 0,
+     "explanation": "Il concentre l’attention."
+    },
+    {
+     "n": 3,
+     "question": "La continuité repose sur…",
+     "options": [
+      "Des invariants documentés",
+      "Le hasard",
+      "Des fichiers non nommés"
+     ],
+     "answerIndex": 0,
+     "explanation": "Les éléments récurrents doivent être répétés et contrôlés."
+    },
+    {
+     "n": 4,
+     "question": "Un prompt de scène doit…",
+     "options": [
+      "Raconter 60 secondes",
+      "Décrire une action principale",
+      "Multiplier les contradictions"
+     ],
+     "answerIndex": 1,
+     "explanation": "Un plan simple est plus contrôlable."
+    },
+    {
+     "n": 5,
+     "question": "Le texte de marque est généralement plus fiable…",
+     "options": [
+      "Dans le prompt vidéo",
+      "Au montage",
+      "S’il est déformé"
+     ],
+     "answerIndex": 1,
+     "explanation": "La postproduction donne un contrôle typographique."
+    },
+    {
+     "n": 6,
+     "question": "La priorité A désigne…",
+     "options": [
+      "Les plans indispensables",
+      "Les plans facultatifs",
+      "Les musiques"
+     ],
+     "answerIndex": 0,
+     "explanation": "Ils sont nécessaires à la compréhension."
+    }
+   ],
+   "webinaire": "Critique muette des storyboards, correction de prompts et validation des listes de plans."
+  },
+  {
+   "num": 5,
+   "title": "Générer les scènes vidéo avec Veo 3",
+   "bienvenue": "BIENVENUE — Vous allez produire des plans courts à partir de votre storyboard. L’objectif n’est pas d’obtenir une vidéo complète en une génération, mais de créer des rushes contrôlables, cohérents et montables.",
+   "dureeRow": [
+    "7 h + 1 h 30",
+    "Leçons + quiz 80 % + dépôt",
+    "Dossier contenant scènes générées, versions retenues, prompts, paramètres, corrections et grille de sélection."
+   ],
+   "objectives": [
+    "Générer des scènes à partir de prompts.",
+    "Contrôler sujet, mouvement, caméra et lumière.",
+    "Maintenir la cohérence entre plans.",
+    "Corriger les défauts par itérations.",
+    "Sélectionner et organiser les meilleures prises."
+   ],
+   "parcours": [
+    "Comprendre le flux Veo",
+    "Préparer le prompt",
+    "Sujet, environnement et action",
+    "Caméra, lumière et durée",
+    "Cohérence personnage et décor",
+    "Corriger les défauts",
+    "Variantes, sélection et fichiers"
+   ],
+   "sections": [
+    {
+     "key": "5.1",
+     "title": "Comprendre le flux Veo",
+     "prose": [
+      "Veo peut être accessible par différentes surfaces Google selon les comptes, régions et offres. Le principe reste le même : choisir une surface autorisée, définir les options disponibles, saisir un prompt, générer, évaluer et télécharger ou stocker la sortie.",
+      "Les modèles et capacités évoluent. Certaines versions proposent la génération audio, différents ratios, durées ou résolutions. Ne construisez pas le cours autour d’un bouton particulier : partez du storyboard, documentez les paramètres visibles et contrôlez le résultat."
+     ],
+     "retenir": [
+      "Accès selon l’offre",
+      "Paramètres variables",
+      "Génération par plan",
+      "Documentation des versions"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "5.2",
+     "title": "Préparer le prompt",
+     "prose": [
+      "Relisez le prompt comme une fiche de tournage. Le sujet est-il précis ? L’action tient-elle dans le temps ? Le décor et la lumière sont-ils cohérents ? Le mouvement de caméra est-il utile ? Les invariants sont-ils présents ?",
+      "Faites un premier test avec le minimum nécessaire. Une fois la composition correcte, ajoutez les raffinements. Cette progression évite de confondre un défaut de concept avec un défaut de formulation."
+     ],
+     "retenir": [
+      "Clarté",
+      "Action simple",
+      "Contexte visuel",
+      "Paramètres essentiels",
+      "Marge de montage"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "5.3",
+     "title": "Sujet, environnement et action",
+     "prose": [
+      "Décrivez les attributs visuellement observables : forme, matière, couleur, position, relation avec le décor. Pour un produit, précisez son intégrité et son orientation. Pour un personnage fictif, privilégiez des traits utiles à la continuité sans données sensibles inutiles.",
+      "Utilisez des verbes concrets et une séquence limitée. « Prend la tasse, ouvre la porte et marche » est plus contrôlable qu’une description abstraite de motivation. L’environnement doit soutenir le message et ne pas détourner l’attention."
+     ],
+     "retenir": [
+      "Attributs observables",
+      "Verbe concret",
+      "Une action principale",
+      "Décor au service du produit"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "5.4",
+     "title": "Caméra, lumière et durée",
+     "prose": [
+      "La caméra se décrit par l’échelle de plan, l’angle, le mouvement et éventuellement la profondeur de champ. La lumière se décrit par sa direction, sa douceur, sa température et le moment de la journée.",
+      "Produisez des plans assez longs pour offrir une entrée et une sortie, sans demander une narration entière. La durée disponible dépend de la surface et du modèle. Le montage peut raccourcir un plan, mais ne peut pas facilement inventer une action manquante."
+     ],
+     "retenir": [
+      "Échelle",
+      "Angle",
+      "Mouvement",
+      "Lumière",
+      "Durée exploitable"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "5.5",
+     "title": "Cohérence personnage et décor",
+     "prose": [
+      "Copiez les invariants de la fiche de continuité sans les reformuler à chaque fois. Contrôlez vêtements, accessoires, côté du cadre, main utilisée, heure, palette et niveau de réalisme. Utilisez les fonctions de référence uniquement avec des contenus autorisés.",
+      "Lorsque la cohérence parfaite est impossible, adaptez le montage : gros plans d’objets, plans de coupe, cadrages sans visage ou continuité thématique. La solution n’est pas toujours une régénération infinie."
+     ],
+     "retenir": [
+      "Répéter les invariants",
+      "Comparer côte à côte",
+      "Prévoir des plans de coupe",
+      "Adapter le storyboard"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "5.6",
+     "title": "Corriger les défauts",
+     "prose": [
+      "Les défauts fréquents comprennent morphing, mains incohérentes, produit déformé, physique improbable, texte illisible, caméra instable et rupture de continuité. Identifiez le défaut dominant et sa cause probable : action trop complexe, sujet ambigu, mouvement excessif ou prompt contradictoire.",
+      "Modifiez une famille de paramètres à la fois et conservez les essais. Si le plan reste instable après plusieurs tentatives, simplifiez l’action ou changez de solution visuelle. La qualité du projet vient aussi de la capacité à renoncer à une demande irréaliste."
+     ],
+     "retenir": [
+      "Diagnostiquer",
+      "Changer un facteur",
+      "Comparer",
+      "Simplifier si nécessaire"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "5.7",
+     "title": "Variantes, sélection et fichiers",
+     "prose": [
+      "Générez deux à quatre variantes pour les plans indispensables selon les ressources disponibles. Évaluez fidélité au storyboard, absence d’artefacts, émotion, continuité, marge de montage et conformité.",
+      "Nommer les fichiers immédiatement : M05_S03_Prise02_Retenue, par exemple. Conservez les prompts, paramètres et décisions dans un journal. Séparez rushes bruts, sélections et exports de travail."
+     ],
+     "retenir": [
+      "Critères explicites",
+      "Noms de fichiers",
+      "Journal de génération",
+      "Sauvegarde"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    }
+   ],
+   "tutoTitle": "Tutoriel pas à pas — Générer et sélectionner une scène",
+   "tutoSteps": [
+    "Ouvrez la surface Veo disponible et vérifiez le compte, les quotas et les conditions.",
+    "Choisissez le ratio correspondant au format principal, lorsque l’option existe.",
+    "Collez le prompt de la première scène indispensable.",
+    "Définissez les paramètres disponibles sans modifier plusieurs variables à la fois.",
+    "Générez une première prise et observez-la au moins trois fois : action, technique, continuité.",
+    "Notez le défaut dominant et ajustez seulement la partie concernée.",
+    "Générez les variantes nécessaires et comparez-les avec la grille.",
+    "Téléchargez, renommez, sauvegardez et documentez la prise retenue.",
+    "Répétez pour les scènes suivantes, en contrôlant la continuité côte à côte."
+   ],
+   "consigne": "CONSIGNE — Générer toutes les scènes du storyboard, avec au moins deux variantes pour les plans indispensables.",
+   "modalites": [
+    "Réalisez l’activité avec les informations réelles de votre projet.",
+    "Conservez les différentes versions et notez les décisions.",
+    "Effectuez l’autoévaluation avant le dépôt.",
+    "Déposez un fichier clairement nommé avant le webinaire."
+   ],
+   "prod": "PRODUCTION ATTENDUE — Dossier contenant scènes générées, versions retenues, prompts, paramètres, corrections et grille de sélection.",
+   "criteres": [
+    "Couverture du storyboard",
+    "Plans techniquement exploitables",
+    "Continuité acceptable",
+    "Artefacts maîtrisés",
+    "Organisation claire",
+    "Traçabilité complète"
+   ],
+   "quiz": [
+    {
+     "n": 1,
+     "question": "La meilleure unité de génération est…",
+     "options": [
+      "La publicité entière",
+      "Un plan court et contrôlé",
+      "Un dossier"
+     ],
+     "answerIndex": 1,
+     "explanation": "La génération par plan facilite la sélection et le montage."
+    },
+    {
+     "n": 2,
+     "question": "Pour comprendre une amélioration, il faut…",
+     "options": [
+      "Changer un facteur à la fois",
+      "Tout modifier",
+      "Effacer l’historique"
+     ],
+     "answerIndex": 0,
+     "explanation": "L’itération contrôlée rend la cause lisible."
+    },
+    {
+     "n": 3,
+     "question": "Un artefact dominant doit être…",
+     "options": [
+      "Ignoré",
+      "Diagnostiqué et traité",
+      "Masqué par du texte"
+     ],
+     "answerIndex": 1,
+     "explanation": "On corrige d’abord le problème principal."
+    },
+    {
+     "n": 4,
+     "question": "La cohérence s’améliore en…",
+     "options": [
+      "Variant toutes les descriptions",
+      "Répétant les invariants",
+      "Changeant la palette"
+     ],
+     "answerIndex": 1,
+     "explanation": "Les formulations stables donnent un cadre récurrent."
+    },
+    {
+     "n": 5,
+     "question": "Une prise retenue doit…",
+     "options": [
+      "Seulement être jolie",
+      "Servir le storyboard et être montable",
+      "Être la première"
+     ],
+     "answerIndex": 1,
+     "explanation": "La sélection suit des critères de production."
+    },
+    {
+     "n": 6,
+     "question": "Le journal de génération contient…",
+     "options": [
+      "Prompts, paramètres, versions et décisions",
+      "Uniquement la vidéo finale",
+      "Les mots de passe"
+     ],
+     "answerIndex": 0,
+     "explanation": "Il assure traçabilité et apprentissage."
+    }
+   ],
+   "webinaire": "Démonstration d’itération, diagnostic d’artefacts et revue des plans manquants."
+  },
+  {
+   "num": 6,
+   "title": "Créer la voix off avec ElevenLabs",
+   "bienvenue": "BIENVENUE — La voix off donne une personnalité au message et relie les images. Vous allez préparer un texte oral, choisir une voix adaptée et générer plusieurs interprétations sans compromettre le consentement ni les droits.",
+   "dureeRow": [
+    "4 h + 1 h 30",
+    "Leçons + quiz 80 % + dépôt",
+    "Voix off finale au format audio, texte annoté, réglages, origine de la voix et preuve de droit d’usage."
+   ],
+   "objectives": [
+    "Rédiger une voix off adaptée à la durée.",
+    "Choisir un style de narration.",
+    "Générer une voix naturelle.",
+    "Corriger rythme et prononciation.",
+    "Appliquer les précautions relatives à la voix et au consentement."
+   ],
+   "parcours": [
+    "Rôle de la voix off",
+    "Durée, rythme et pauses",
+    "Choisir une voix",
+    "Réglages et génération",
+    "Émotion et prononciation",
+    "Consentement, clonage et licences"
+   ],
+   "sections": [
+    {
+     "key": "6.1",
+     "title": "Rôle de la voix off",
+     "prose": [
+      "La voix off peut expliquer le bénéfice, guider la progression, installer une émotion ou porter l’identité de marque. Elle ne doit pas répéter systématiquement ce que l’image montre. Dans certains projets, l’absence de voix est pertinente, mais ce choix doit être argumenté.",
+      "Écrivez pour l’oreille : phrases courtes, vocabulaire concret, nombres développés, ponctuation utile et respiration. Le texte doit rester compréhensible sans sous-titre tout en acceptant qu’une partie du public regarde sans son."
+     ],
+     "retenir": [
+      "Compléter l’image",
+      "Porter le ton",
+      "Faciliter la compréhension",
+      "Rester concise"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "6.2",
+     "title": "Durée, rythme et pauses",
+     "prose": [
+      "Lisez le texte à voix haute et chronométrez-le dans les conditions de la publicité. Une vitesse excessive réduit la crédibilité et la mémorisation. Prévoyez des pauses après l’accroche, avant la preuve ou autour du CTA.",
+      "Segmentez le texte par intention. Vous pourrez régénérer une phrase sans refaire toute la voix. Conservez un silence court au début et à la fin des fichiers pour faciliter le montage."
+     ],
+     "retenir": [
+      "Chronométrer",
+      "Segmenter",
+      "Marquer les pauses",
+      "Laisser de la marge"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "6.3",
+     "title": "Choisir une voix",
+     "prose": [
+      "La voix doit correspondre à la langue, à la région, à la cible, à la marque et à l’intention. Testez une phrase neutre, une phrase émotionnelle et le nom de l’offre. Selon la documentation officielle, le choix de la voix et du modèle influence fortement le résultat.",
+      "Ne choisissez pas seulement selon une préférence personnelle. Faites écouter les tests sans annoncer votre choix et recueillez les adjectifs spontanés. Une voix naturelle mais mal alignée à la marque reste une mauvaise décision."
+     ],
+     "retenir": [
+      "Langue et accent",
+      "Timbre",
+      "Cadence",
+      "Énergie",
+      "Adéquation de marque"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "6.4",
+     "title": "Réglages et génération",
+     "prose": [
+      "Dans l’interface Text to Speech, collez le texte, choisissez la voix et le modèle disponibles, puis ajustez les réglages avec mesure. Les noms et disponibilités dépendent du modèle. La stabilité influence généralement la variabilité ; une valeur trop haute peut devenir monotone, une valeur trop basse instable.",
+      "Commencez près des valeurs par défaut, générez une référence, puis ajustez un réglage à la fois. La génération est non déterministe : deux sorties peuvent différer même avec les mêmes réglages. Enregistrez la meilleure prise."
+     ],
+     "retenir": [
+      "Valeurs de départ simples",
+      "Une variable à la fois",
+      "Plusieurs écoutes",
+      "Historique des réglages"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "6.5",
+     "title": "Émotion et prononciation",
+     "prose": [
+      "La ponctuation, la structure et, selon le modèle, certaines indications peuvent influencer l’interprétation. Testez toujours avec la voix choisie. Évitez les symboles ambigus et écrivez les nombres ou abréviations de la manière la plus prononçable.",
+      "Pour un nom propre ou un terme technique, créez une version phonétique adaptée ou utilisez les outils de prononciation disponibles. Faites valider la prononciation par la marque ou une personne compétente."
+     ],
+     "retenir": [
+      "Punctuation utile",
+      "Nombres écrits",
+      "Tests des noms propres",
+      "Validation humaine"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "6.6",
+     "title": "Consentement, clonage et licences",
+     "prose": [
+      "Ne clonez pas, n’imitez pas et ne publiez pas une voix identifiable sans consentement explicite et droit d’usage compatible. Le fait qu’un fichier soit accessible ne signifie pas qu’il peut être utilisé pour entraîner ou reproduire une voix.",
+      "Vérifiez les conditions du plan ElevenLabs pour l’usage commercial, les licences des entrées et les exigences de transparence. Archivez l’autorisation, l’identité de la voix ou son origine, le modèle, la date et les restrictions."
+     ],
+     "retenir": [
+      "Consentement documenté",
+      "Droit d’usage",
+      "Transparence",
+      "Registre des sources"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    }
+   ],
+   "tutoTitle": "Tutoriel pas à pas — Produire deux versions de voix off",
+   "tutoSteps": [
+    "Finalisez le texte et divisez-le en segments d’intention.",
+    "Choisissez deux ou trois voix adaptées à la langue et à la marque.",
+    "Générez la même phrase test pour comparer sur une base identique.",
+    "Sélectionnez une voix, un modèle et des réglages de départ.",
+    "Générez chaque segment, puis contrôlez prononciation, rythme et émotion.",
+    "Corrigez le texte avant d’exagérer les réglages.",
+    "Créez une seconde version avec une intention différente.",
+    "Écoutez au casque et sur téléphone, puis sélectionnez la version finale.",
+    "Exportez, nommez et consignez voix, réglages, licence et consentements."
+   ],
+   "consigne": "CONSIGNE — Générer au moins deux versions complètes de la voix off et organiser un test à l’aveugle.",
+   "modalites": [
+    "Réalisez l’activité avec les informations réelles de votre projet.",
+    "Conservez les différentes versions et notez les décisions.",
+    "Effectuez l’autoévaluation avant le dépôt.",
+    "Déposez un fichier clairement nommé avant le webinaire."
+   ],
+   "prod": "PRODUCTION ATTENDUE — Voix off finale au format audio, texte annoté, réglages, origine de la voix et preuve de droit d’usage.",
+   "criteres": [
+    "Durée compatible",
+    "Prononciation correcte",
+    "Intention cohérente",
+    "Intelligibilité",
+    "Fichiers propres",
+    "Consentement et licence documentés"
+   ],
+   "quiz": [
+    {
+     "n": 1,
+     "question": "Écrire pour l’oreille signifie…",
+     "options": [
+      "Allonger les phrases",
+      "Faciliter la compréhension orale",
+      "Supprimer les pauses"
+     ],
+     "answerIndex": 1,
+     "explanation": "Le texte doit sonner naturellement."
+    },
+    {
+     "n": 2,
+     "question": "Le choix de la voix dépend d’abord…",
+     "options": [
+      "De l’intention et de la marque",
+      "Du hasard",
+      "Du nombre de crédits"
+     ],
+     "answerIndex": 0,
+     "explanation": "La voix est un choix éditorial."
+    },
+    {
+     "n": 3,
+     "question": "Pour corriger un passage, il est utile de…",
+     "options": [
+      "Tout régénérer",
+      "Segmenter le texte",
+      "Supprimer le script"
+     ],
+     "answerIndex": 1,
+     "explanation": "La segmentation permet une correction locale."
+    },
+    {
+     "n": 4,
+     "question": "Les réglages doivent être modifiés…",
+     "options": [
+      "Tous ensemble",
+      "Un à la fois",
+      "Sans écouter"
+     ],
+     "answerIndex": 1,
+     "explanation": "On peut ainsi comprendre leur effet."
+    },
+    {
+     "n": 5,
+     "question": "Le clonage d’une voix identifiable exige…",
+     "options": [
+      "Un consentement et des droits adaptés",
+      "Aucune règle",
+      "Une vidéo courte"
+     ],
+     "answerIndex": 0,
+     "explanation": "La voix est un attribut personnel protégé selon les contextes."
+    },
+    {
+     "n": 6,
+     "question": "La version finale doit être testée…",
+     "options": [
+      "Sur un seul casque",
+      "Sur plusieurs conditions d’écoute",
+      "Sans son"
+     ],
+     "answerIndex": 1,
+     "explanation": "Le public utilise différents appareils."
+    }
+   ],
+   "webinaire": "Écoute à l’aveugle, correction de prononciation et revue des autorisations."
+  },
+  {
+   "num": 7,
+   "title": "Monter la publicité avec CapCut",
+   "bienvenue": "BIENVENUE — Vous allez assembler les scènes, la voix et la musique pour créer une première version complète. Le montage ne consiste pas à ajouter des effets : il organise l’attention et transforme les rushes en message.",
+   "dureeRow": [
+    "7 h + 1 h 30",
+    "Leçons + quiz 80 % + dépôt",
+    "Version provisoire avec scènes assemblées, voix off, musique, bruitages utiles et principales transitions."
+   ],
+   "objectives": [
+    "Créer et organiser un projet CapCut.",
+    "Assembler et découper les scènes.",
+    "Synchroniser voix, musique et bruitages.",
+    "Utiliser transitions, vitesse et correction avec mesure.",
+    "Construire un rythme publicitaire."
+   ],
+   "parcours": [
+    "Interface et organisation",
+    "Construire l’ours",
+    "Découpage et synchronisation",
+    "Musique et volumes",
+    "Transitions et effets",
+    "Couleur et vitesse",
+    "Bruitages et rythme"
+   ],
+   "sections": [
+    {
+     "key": "7.1",
+     "title": "Interface et organisation",
+     "prose": [
+      "Selon la version Web, mobile ou ordinateur, l’interface varie, mais on retrouve une zone de médias, une prévisualisation, une timeline et des panneaux de réglage. Pour un projet long et documenté, la version ordinateur est souvent plus confortable.",
+      "Créez le projet au bon ratio, importez des copies organisées et nommez les pistes. Ne déplacez pas les fichiers sources pendant le montage. Sauvegardez le projet et conservez une version avant toute modification majeure."
+     ],
+     "retenir": [
+      "Médias",
+      "Prévisualisation",
+      "Timeline",
+      "Réglages",
+      "Sauvegarde"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "7.2",
+     "title": "Construire l’ours",
+     "prose": [
+      "L’ours est un premier assemblage sans finition. Placez les plans dans l’ordre du scénario, ajustez grossièrement les durées et vérifiez que l’histoire se comprend. N’ajoutez pas encore toutes les transitions, couleurs ou textes.",
+      "Regardez l’ours sans la voix puis avec la voix provisoire. Si la structure ne fonctionne pas, corrigez l’ordre ou la durée avant de décorer. Les effets ne compensent pas une narration confuse."
+     ],
+     "retenir": [
+      "Ordre des plans",
+      "Compréhension",
+      "Durée globale",
+      "Pas d’effets prématurés"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "7.3",
+     "title": "Découpage et synchronisation",
+     "prose": [
+      "Coupez au moment où l’information est acquise ou l’action accomplie. Un plan trop long ralentit ; un plan trop court devient illisible. Les coupes sur une action ou un événement sonore peuvent fluidifier le passage.",
+      "Alignez la voix avec les plans qui apportent la preuve correspondante. Laissez parfois l’image précéder légèrement l’explication afin de créer une anticipation. Utilisez des marqueurs pour les temps forts et le CTA."
+     ],
+     "retenir": [
+      "Couper avec intention",
+      "Aligner preuve et message",
+      "Utiliser des marqueurs",
+      "Préserver les respirations"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "7.4",
+     "title": "Musique et volumes",
+     "prose": [
+      "La musique fixe une énergie et soutient l’identité, mais ne doit pas masquer la voix. Utilisez uniquement des pistes dont la licence couvre le contexte de diffusion. Évitez de supposer qu’une musique disponible dans une bibliothèque est autorisée pour tous les usages commerciaux.",
+      "Réglez d’abord la voix, puis réduisez la musique sous les paroles. Ajoutez des fondus et contrôlez l’absence de saturation. Écoutez sur téléphone, car une bande-son équilibrée au casque peut devenir confuse sur un petit haut-parleur."
+     ],
+     "retenir": [
+      "Licence",
+      "Voix prioritaire",
+      "Fondus",
+      "Contrôle multi-appareils"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "7.5",
+     "title": "Transitions et effets",
+     "prose": [
+      "La coupe franche est souvent la transition la plus efficace. Utilisez un fondu pour un changement de temps ou d’atmosphère, et une transition dynamique lorsque le concept la justifie. Une série de transitions différentes donne une impression amateur.",
+      "Les effets visuels doivent améliorer compréhension, marque ou émotion. Appliquez-les après le montage narratif. Comparez toujours avec une version sans effet : si le message ne perd rien, l’effet est probablement inutile."
+     ],
+     "retenir": [
+      "Cohérence",
+      "Parcimonie",
+      "Fonction",
+      "Comparaison avant-après"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "7.6",
+     "title": "Couleur et vitesse",
+     "prose": [
+      "Harmonisez exposition, balance des blancs, contraste et saturation entre des plans générés séparément. La correction vise d’abord la continuité. Un traitement créatif vient ensuite et doit respecter la charte visuelle.",
+      "Le ralentissement ou l’accélération peut ajuster le rythme, mais une modification excessive crée des artefacts ou un mouvement artificiel. Vérifiez la fluidité et le son. Il vaut parfois mieux choisir une autre prise."
+     ],
+     "retenir": [
+      "Continuité avant style",
+      "Réglages mesurés",
+      "Contrôle de fluidité"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "7.7",
+     "title": "Bruitages et rythme",
+     "prose": [
+      "Les bruitages donnent du relief, matérialisent une action et créent des raccords. Choisissez des sons cohérents avec l’espace et conservez une hiérarchie. Trop de sons concurrencent la voix.",
+      "Analysez le rythme par blocs : accroche, développement, preuve, bénéfice et CTA. Variez les durées sans rendre la vidéo chaotique. Le CTA doit rester visible et audible assez longtemps pour être compris."
+     ],
+     "retenir": [
+      "Sons motivés",
+      "Hiérarchie sonore",
+      "Progression",
+      "Temps de lecture"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    }
+   ],
+   "tutoTitle": "Tutoriel pas à pas — Réaliser la première version montée",
+   "tutoSteps": [
+    "Créez le projet au ratio principal et activez les paramètres adaptés.",
+    "Importez rushes retenus, voix, musique, bruitages et graphismes.",
+    "Assemblez un ours conforme au scénario.",
+    "Découpez les plans et synchronisez-les avec la voix.",
+    "Ajoutez la musique licenciée et réglez les volumes.",
+    "Ajoutez seulement les transitions et effets utiles.",
+    "Harmonisez couleur et vitesse avec mesure.",
+    "Ajoutez les bruitages essentiels.",
+    "Visionnez image seule, son seul, puis ensemble.",
+    "Exportez une V1 et contrôlez-la sur téléphone."
+   ],
+   "consigne": "CONSIGNE — Réaliser une première version complète, sans chercher encore la finition graphique définitive.",
+   "modalites": [
+    "Réalisez l’activité avec les informations réelles de votre projet.",
+    "Conservez les différentes versions et notez les décisions.",
+    "Effectuez l’autoévaluation avant le dépôt.",
+    "Déposez un fichier clairement nommé avant le webinaire."
+   ],
+   "prod": "PRODUCTION ATTENDUE — Version provisoire avec scènes assemblées, voix off, musique, bruitages utiles et principales transitions.",
+   "criteres": [
+    "Structure comprise",
+    "Durée proche de la cible",
+    "Rythme cohérent",
+    "Voix intelligible",
+    "Musique autorisée",
+    "Transitions cohérentes",
+    "Aucun média manquant"
+   ],
+   "quiz": [
+    {
+     "n": 1,
+     "question": "L’ours est…",
+     "options": [
+      "Une première structure sans finition",
+      "Le fichier final",
+      "Une musique"
+     ],
+     "answerIndex": 0,
+     "explanation": "Il valide le montage narratif."
+    },
+    {
+     "n": 2,
+     "question": "Les effets doivent être ajoutés…",
+     "options": [
+      "Avant le scénario",
+      "Après la compréhension du montage",
+      "À chaque coupe"
+     ],
+     "answerIndex": 1,
+     "explanation": "La structure est prioritaire."
+    },
+    {
+     "n": 3,
+     "question": "La musique doit…",
+     "options": [
+      "Masquer la voix",
+      "Soutenir sans dominer",
+      "Être utilisée sans vérifier la licence"
+     ],
+     "answerIndex": 1,
+     "explanation": "La hiérarchie sonore protège le message."
+    },
+    {
+     "n": 4,
+     "question": "La correction couleur sert d’abord à…",
+     "options": [
+      "Créer un filtre spectaculaire",
+      "Harmoniser les plans",
+      "Ajouter des sous-titres"
+     ],
+     "answerIndex": 1,
+     "explanation": "La continuité visuelle est la priorité."
+    },
+    {
+     "n": 5,
+     "question": "Une bonne coupe arrive…",
+     "options": [
+      "Quand l’information ou l’action le permet",
+      "Toujours toutes les secondes",
+      "Au hasard"
+     ],
+     "answerIndex": 0,
+     "explanation": "Le timing suit la fonction du plan."
+    },
+    {
+     "n": 6,
+     "question": "La V1 doit être contrôlée…",
+     "options": [
+      "Uniquement dans la timeline",
+      "Après export, sur plusieurs appareils",
+      "Sans l’écouter"
+     ],
+     "answerIndex": 1,
+     "explanation": "Le fichier exporté est le vrai livrable."
+    }
+   ],
+   "webinaire": "Revue de timelines, exercice de réduction de cinq secondes et correction du mix."
+  },
+  {
+   "num": 8,
+   "title": "Ajouter l’identité visuelle et finaliser la vidéo",
+   "bienvenue": "BIENVENUE — Vous allez transformer le montage provisoire en publicité prête à diffuser : identité de marque, titres, sous-titres, CTA, contrôles et exports adaptés.",
+   "dureeRow": [
+    "5 h + 1 h 30",
+    "Leçons + quiz 80 % + dépôt",
+    "Vidéo publicitaire finale de 30 à 60 secondes, miniature et fiche technique d’export."
+   ],
+   "objectives": [
+    "Ajouter logo, couleurs et typographies.",
+    "Créer des titres et sous-titres lisibles.",
+    "Construire une scène finale et un CTA.",
+    "Contrôler audio, image et orthographe.",
+    "Exporter en formats horizontal, vertical ou carré et créer une miniature."
+   ],
+   "parcours": [
+    "Intégrer l’identité de marque",
+    "Titres et informations",
+    "Sous-titres",
+    "CTA et scène finale",
+    "Contrôle qualité",
+    "Formats de diffusion",
+    "Export, compression et miniature"
+   ],
+   "sections": [
+    {
+     "key": "8.1",
+     "title": "Intégrer l’identité de marque",
+     "prose": [
+      "Utilisez les couleurs, typographies, règles de logo et ton de la marque. L’identité ne doit pas recouvrir le contenu ; elle crée une continuité reconnaissable. Limitez les styles et assurez un contraste suffisant.",
+      "Le logo doit rester net, proportionné et entouré d’un espace de respiration. Ne le placez pas dans une zone susceptible d’être masquée par l’interface de la plateforme. Si le projet est fictif, documentez la mini-charte créée."
+     ],
+     "retenir": [
+      "Logo",
+      "Palette",
+      "Typographies",
+      "Ton",
+      "Zones sûres"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "8.2",
+     "title": "Titres et informations",
+     "prose": [
+      "Un titre à l’écran doit être lu dans le temps disponible. Réduisez le nombre de mots, hiérarchisez par taille et poids, et testez sur un petit écran. Évitez plusieurs animations concurrentes.",
+      "Pour un produit ou service, choisissez les informations essentielles : nom, bénéfice, offre, condition ou contact. Les mentions nécessaires doivent être lisibles sans détourner de la promesse."
+     ],
+     "retenir": [
+      "Concision",
+      "Hiérarchie",
+      "Contraste",
+      "Temps de lecture"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "8.3",
+     "title": "Sous-titres",
+     "prose": [
+      "Les sous-titres améliorent l’accessibilité et la compréhension sans son. CapCut propose selon la version une génération automatique, mais celle-ci doit être relue mot à mot. Corrigez noms propres, ponctuation, découpage et synchronisation.",
+      "Placez-les dans une zone sûre, avec contraste, fond ou contour adapté. Évitez des lignes trop longues et ne superposez pas le CTA. Testez l’export, car une mise en page correcte dans l’éditeur peut être moins lisible sur téléphone."
+     ],
+     "retenir": [
+      "Transcription relue",
+      "Synchronisation",
+      "Deux lignes maximum si possible",
+      "Contraste",
+      "Zone sûre"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "8.4",
+     "title": "CTA et scène finale",
+     "prose": [
+      "La scène finale rassemble marque, promesse ou offre, CTA et éventuellement contact. Elle doit rester assez longtemps pour être comprise et ne pas apparaître comme une simple image de fin décorative.",
+      "Le CTA utilise un verbe et une étape réaliste : découvrir, réserver, essayer, s’inscrire ou commander. Vérifiez que l’adresse, le compte, le QR code ou le lien annoncé est exact."
+     ],
+     "retenir": [
+      "Marque",
+      "Bénéfice",
+      "Action",
+      "Destination vérifiée",
+      "Temps de lecture"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "8.5",
+     "title": "Contrôle qualité",
+     "prose": [
+      "Contrôlez l’image plan par plan : artefacts, cadrage, continuité, exposition, textes et logo. Contrôlez le son séparément : voix, musique, bruitages, coupures, saturation et silence final. Relisez tous les textes.",
+      "Regardez sans son, écoutez sans image puis regardez normalement. Faites tester à une personne non briefée. Demandez ce qu’elle comprend, à qui s’adresse la vidéo, quelle est la promesse et quelle action elle ferait."
+     ],
+     "retenir": [
+      "Image seule",
+      "Son seul",
+      "Ensemble",
+      "Test externe",
+      "Correction"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "8.6",
+     "title": "Formats de diffusion",
+     "prose": [
+      "Le 16:9, le 9:16 et le 1:1 répondent à des compositions différentes. Une déclinaison verticale demande souvent de repositionner le sujet, les textes et le logo ; un recadrage automatique peut couper l’information.",
+      "Commencez par le format principal, dupliquez le projet et adaptez chaque plan. Vérifiez les zones occupées par l’interface de la plateforme visée. Conservez le master avant compression."
+     ],
+     "retenir": [
+      "16:9 horizontal",
+      "9:16 vertical",
+      "1:1 carré",
+      "Recomposition",
+      "Master"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "8.7",
+     "title": "Export, compression et miniature",
+     "prose": [
+      "Exportez avec une résolution et une fréquence cohérentes avec les sources et le canal. Un débit trop faible dégrade les textures et les textes ; un fichier inutilement lourd ralentit le transfert. Les options exactes varient selon les versions.",
+      "Regardez chaque export de bout en bout. Créez une miniature lisible à petite taille, avec une image forte et peu de texte. Elle doit annoncer le bénéfice ou créer une curiosité cohérente avec la vidéo, sans promesse trompeuse."
+     ],
+     "retenir": [
+      "Paramètres cohérents",
+      "Contrôle post-export",
+      "Nom de fichier",
+      "Miniature lisible"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    }
+   ],
+   "tutoTitle": "Tutoriel pas à pas — Finaliser et exporter",
+   "tutoSteps": [
+    "Dupliquez la V1 et nommez-la V2_FINALISATION.",
+    "Appliquez la charte : logo, couleurs, typographies et ton.",
+    "Ajoutez les titres essentiels, le CTA et la scène finale.",
+    "Générez ou importez les sous-titres, puis corrigez-les entièrement.",
+    "Effectuez les contrôles image, audio et orthographe.",
+    "Faites un test de compréhension auprès de trois personnes.",
+    "Corrigez les problèmes bloquants avant les préférences.",
+    "Exportez le format principal et regardez le fichier complet.",
+    "Dupliquez pour au moins un second format si prévu.",
+    "Créez la miniature et archivez le master."
+   ],
+   "consigne": "CONSIGNE — Finaliser la publicité et préparer au moins un format de diffusion contrôlé.",
+   "modalites": [
+    "Réalisez l’activité avec les informations réelles de votre projet.",
+    "Conservez les différentes versions et notez les décisions.",
+    "Effectuez l’autoévaluation avant le dépôt.",
+    "Déposez un fichier clairement nommé avant le webinaire."
+   ],
+   "prod": "PRODUCTION ATTENDUE — Vidéo publicitaire finale de 30 à 60 secondes, miniature et fiche technique d’export.",
+   "criteres": [
+    "Identité cohérente",
+    "Textes lisibles",
+    "Sous-titres corrigés",
+    "CTA vérifié",
+    "Qualité audio/visuelle",
+    "Durée conforme",
+    "Export testé",
+    "Droits complets"
+   ],
+   "quiz": [
+    {
+     "n": 1,
+     "question": "Le logo doit être…",
+     "options": [
+      "Déformé",
+      "Lisible, proportionné et en zone sûre",
+      "Toujours plein écran"
+     ],
+     "answerIndex": 1,
+     "explanation": "Le respect de la marque et de la composition est essentiel."
+    },
+    {
+     "n": 2,
+     "question": "Les sous-titres automatiques…",
+     "options": [
+      "Sont toujours exacts",
+      "Doivent être relus",
+      "Remplacent le contrôle audio"
+     ],
+     "answerIndex": 1,
+     "explanation": "Les erreurs de noms et de synchronisation sont fréquentes."
+    },
+    {
+     "n": 3,
+     "question": "Le CTA doit…",
+     "options": [
+      "Indiquer une prochaine étape",
+      "Rester implicite",
+      "Être illisible"
+     ],
+     "answerIndex": 0,
+     "explanation": "Il réduit l’ambiguïté de l’action."
+    },
+    {
+     "n": 4,
+     "question": "Une déclinaison verticale…",
+     "options": [
+      "Est toujours un simple recadrage",
+      "Demande souvent une recomposition",
+      "Supprime la marque"
+     ],
+     "answerIndex": 1,
+     "explanation": "La composition doit être adaptée au ratio."
+    },
+    {
+     "n": 5,
+     "question": "Le fichier exporté doit…",
+     "options": [
+      "Être regardé de bout en bout",
+      "Être supposé correct",
+      "Écraser le master"
+     ],
+     "answerIndex": 0,
+     "explanation": "Le contrôle final porte sur le fichier livré."
+    },
+    {
+     "n": 6,
+     "question": "La miniature doit…",
+     "options": [
+      "Tromper pour attirer",
+      "Rester cohérente et lisible",
+      "Contenir tout le script"
+     ],
+     "answerIndex": 1,
+     "explanation": "Elle promet honnêtement l’expérience."
+    }
+   ],
+   "webinaire": "Test de compréhension, audit des sous-titres et contrôle croisé des exports."
+  },
+  {
+   "num": 9,
+   "title": "Présenter et valoriser son projet dans un portfolio",
+   "bienvenue": "BIENVENUE — La vidéo finale montre un résultat. Le portfolio montre aussi votre capacité à comprendre un problème, prendre des décisions, utiliser les outils de manière responsable et améliorer une création.",
+   "dureeRow": [
+    "4 h + 1 h 30",
+    "Leçons + quiz 80 % + dépôt",
+    "Fiche avec nom, contexte, objectif, cible, outils, étapes, vidéo finale, compétences et retour réflexif."
+   ],
+   "objectives": [
+    "Présenter le contexte et le besoin.",
+    "Expliquer les outils et étapes.",
+    "Argumenter les choix et difficultés.",
+    "Construire une courte étude de cas.",
+    "Préparer une publication professionnelle."
+   ],
+   "parcours": [
+    "Construire l’étude de cas",
+    "Montrer le processus",
+    "Expliquer l’usage de l’IA",
+    "Présenter les compétences",
+    "Publier professionnellement"
+   ],
+   "sections": [
+    {
+     "key": "9.1",
+     "title": "Construire l’étude de cas",
+     "prose": [
+      "Une étude de cas claire suit une logique : contexte, problème, objectif, cible, rôle, contraintes, concept, processus, résultat et apprentissages. Elle évite le journal exhaustif et sélectionne les décisions qui prouvent votre compétence.",
+      "Présentez ce qui est réel et ce qui est simulé. Si le projet est fictif, dites-le. Si aucune performance média n’est disponible, ne fabriquez pas de résultats : présentez plutôt les retours de tests de compréhension."
+     ],
+     "retenir": [
+      "Contexte",
+      "Problème",
+      "Rôle",
+      "Démarche",
+      "Résultat",
+      "Apprentissage"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "9.2",
+     "title": "Montrer le processus",
+     "prose": [
+      "Sélectionnez quelques artefacts : extrait du brief, évolution du scénario, storyboard, comparaison de prompts, rushes rejetés et timeline. Pour chacun, expliquez la décision plutôt que d’accumuler des captures.",
+      "Montrez une difficulté et la manière dont vous l’avez résolue : simplification d’un plan, correction d’une prononciation, adaptation verticale ou contrôle d’un droit. Le portfolio devient alors une preuve de méthode."
+     ],
+     "retenir": [
+      "Avant-après",
+      "Décision",
+      "Justification",
+      "Compétence"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "9.3",
+     "title": "Expliquer l’usage de l’IA",
+     "prose": [
+      "Indiquez les outils utilisés et votre rôle : recherche, direction, sélection, réécriture, montage et contrôle. Évitez de présenter l’IA comme un auteur autonome ou, à l’inverse, de dissimuler son usage lorsque cette information est pertinente.",
+      "Ne publiez pas les prompts contenant des données confidentielles. Vous pouvez montrer des extraits nettoyés, la structure du prompt et les leçons apprises."
+     ],
+     "retenir": [
+      "Transparence",
+      "Rôle humain",
+      "Confidentialité",
+      "Traçabilité"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "9.4",
+     "title": "Présenter les compétences",
+     "prose": [
+      "Reliez chaque étape à une compétence observable : analyser une cible, écrire une promesse, diriger une image, contrôler la continuité, diriger une voix, monter un récit, vérifier les droits et adapter les formats.",
+      "Utilisez des verbes d’action et des preuves. « J’ai utilisé CapCut » est plus faible que « J’ai réorganisé les plans et réduit la version de huit secondes pour renforcer l’accroche et le CTA »."
+     ],
+     "retenir": [
+      "Verbes d’action",
+      "Résultats observables",
+      "Décisions justifiées"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    },
+    {
+     "key": "9.5",
+     "title": "Publier professionnellement",
+     "prose": [
+      "Adaptez la présentation au support : page de portfolio détaillée, publication LinkedIn concise, lien vidéo protégé ou présentation orale. Obtenez les autorisations du client ou de la marque avant publication.",
+      "Ajoutez une miniature, un titre clair, une description courte, votre rôle et un appel à la discussion. Vérifiez que les liens fonctionnent, que la vidéo est accessible et que les informations confidentielles ont été supprimées."
+     ],
+     "retenir": [
+      "Autorisation de publication",
+      "Titre et miniature",
+      "Rôle",
+      "Lien testé",
+      "Accessibilité"
+     ],
+     "question": "QUESTION DE RÉFLEXION — Comment cette notion s’applique-t-elle concrètement à votre projet fil rouge ?"
+    }
+   ],
+   "tutoTitle": "Tutoriel pas à pas — Créer la fiche portfolio",
+   "tutoSteps": [
+    "Rédigez le contexte, le besoin, l’objectif et la cible en moins de 150 mots.",
+    "Décrivez votre rôle et les outils sans exagérer.",
+    "Sélectionnez cinq étapes et une preuve visuelle pour chacune.",
+    "Choisissez deux décisions créatives importantes et expliquez leur effet.",
+    "Présentez une difficulté, votre diagnostic et la solution.",
+    "Ajoutez la vidéo finale, la miniature et les formats disponibles.",
+    "Indiquez les résultats des tests sans inventer d’indicateurs.",
+    "Listez les compétences mobilisées et une prochaine amélioration.",
+    "Relisez les droits de publication et testez tous les liens."
+   ],
+   "consigne": "CONSIGNE — Préparer une fiche portfolio consacrée au projet et une présentation orale de sept minutes.",
+   "modalites": [
+    "Réalisez l’activité avec les informations réelles de votre projet.",
+    "Conservez les différentes versions et notez les décisions.",
+    "Effectuez l’autoévaluation avant le dépôt.",
+    "Déposez un fichier clairement nommé avant le webinaire."
+   ],
+   "prod": "PRODUCTION ATTENDUE — Fiche avec nom, contexte, objectif, cible, outils, étapes, vidéo finale, compétences et retour réflexif.",
+   "criteres": [
+    "Contexte compréhensible",
+    "Rôle personnel clair",
+    "Processus sélectionné",
+    "Décisions argumentées",
+    "Résultats honnêtes",
+    "Droits respectés",
+    "Présentation soignée"
+   ],
+   "quiz": [
+    {
+     "n": 1,
+     "question": "Une étude de cas montre…",
+     "options": [
+      "Seulement la vidéo",
+      "Le problème, la démarche et le résultat",
+      "Tous les fichiers bruts"
+     ],
+     "answerIndex": 1,
+     "explanation": "Le portfolio valorise la méthode autant que le résultat."
+    },
+    {
+     "n": 2,
+     "question": "Si le projet est fictif…",
+     "options": [
+      "Il faut le dire",
+      "Il faut inventer un client",
+      "Il ne peut pas être montré"
+     ],
+     "answerIndex": 0,
+     "explanation": "La transparence protège la crédibilité."
+    },
+    {
+     "n": 3,
+     "question": "Un résultat non mesuré…",
+     "options": [
+      "Doit être inventé",
+      "Peut être remplacé par un test honnête",
+      "Doit être exagéré"
+     ],
+     "answerIndex": 1,
+     "explanation": "On présente uniquement des preuves disponibles."
+    },
+    {
+     "n": 4,
+     "question": "Une bonne phrase de compétence…",
+     "options": [
+      "Cite seulement l’outil",
+      "Décrit une action et son effet",
+      "Reste vague"
+     ],
+     "answerIndex": 1,
+     "explanation": "La preuve rend la compétence visible."
+    },
+    {
+     "n": 5,
+     "question": "Les prompts confidentiels…",
+     "options": [
+      "Doivent être publiés",
+      "Doivent être nettoyés ou omis",
+      "N’existent pas"
+     ],
+     "answerIndex": 1,
+     "explanation": "Le portfolio respecte la confidentialité."
+    },
+    {
+     "n": 6,
+     "question": "Avant publication, il faut…",
+     "options": [
+      "Vérifier les droits et les liens",
+      "Supprimer la miniature",
+      "Cacher son rôle"
+     ],
+     "answerIndex": 0,
+     "explanation": "La livraison professionnelle inclut ces contrôles."
+    }
+   ],
+   "webinaire": "Soutenances, retours du jury, rétrospective de cohorte et plan de publication."
+  }
+ ],
+ "annexes": [
+  {
+   "letter": "A",
+   "title": "Fiche de présentation du projet",
+   "body": "| CHAMP | RÉPONSE DU PARTICIPANT |\n| --- | --- |\n| Nom du projet |  |\n| Produit, service ou organisation |  |\n| Cible principale |  |\n| Besoin de communication |  |\n| Canal envisagé |  |\n| Action attendue |  |\n| Ressources disponibles |  |\n| Contraintes et droits |  |"
+  },
+  {
+   "letter": "B",
+   "title": "Modèle de brief publicitaire",
+   "body": "| RUBRIQUE | CONTENU |\n| --- | --- |\n| Contexte |  |\n| Objectif et indicateur |  |\n| Cible et situation |  |\n| Problème / insight |  |\n| Proposition de valeur |  |\n| Promesse |  |\n| Preuve |  |\n| Ton et émotion |  |\n| CTA |  |\n| Canal, ratio et durée |  |\n| Éléments obligatoires |  |\n| Éléments interdits |  |\n| Concept retenu |  |"
+  },
+  {
+   "letter": "C",
+   "title": "Scénario à trois colonnes",
+   "body": "| TEMPS | IMAGE / ACTION | AUDIO / VOIX | TEXTE ÉCRAN |\n| --- | --- | --- | --- |\n| 00–05 s |  |  |  |\n| 05–10 s |  |  |  |\n| 10–15 s |  |  |  |\n| 15–20 s |  |  |  |\n| 20–25 s |  |  |  |\n| 25–30 s |  |  |  |\n| 30–35 s |  |  |  |\n| 35–40 s |  |  |  |\n| 40–45 s |  |  |  |\n| 45–50 s |  |  |  |\n| 50–55 s |  |  |  |\n| 55–60 s |  |  |  |\n\nDurée lue : ______  Nombre de mots : ______  Version : ______  Date : ______"
+  },
+  {
+   "letter": "D",
+   "title": "Storyboard et prompts",
+   "body": "| SCÈNE | DURÉE | VISUEL / CADRAGE / ACTION | AUDIO / TEXTE | PROMPT |\n| --- | --- | --- | --- | --- |\n| 1 |  |  |  |  |\n| 2 |  |  |  |  |\n| 3 |  |  |  |  |\n| 4 |  |  |  |  |\n| 5 |  |  |  |  |\n| 6 |  |  |  |  |\n| 7 |  |  |  |  |\n| 8 |  |  |  |  |"
+  },
+  {
+   "letter": "E",
+   "title": "Fiche de continuité",
+   "body": "Personnage ou sujet : ______________________________________________________________________\nTenue et accessoires : ______________________________________________________________________\nProduit et orientation : ______________________________________________________________________\nDécor : ______________________________________________________________________\nHeure, météo et lumière : ______________________________________________________________________\nPalette et réalisme : ______________________________________________________________________\nCaméra : ______________________________________________________________________\nÉléments à ne pas modifier : ______________________________________________________________________"
+  },
+  {
+   "letter": "F",
+   "title": "Formule de prompt Veo",
+   "body": "STRUCTURE — [Type de plan] de [sujet détaillé] qui [action simple] dans [décor et moment]. [Composition et angle]. [Mouvement de caméra]. [Lumière et palette]. [Rendu]. [Durée / rythme]. Contraintes : [éléments à éviter]."
+  },
+  {
+   "letter": "G",
+   "title": "Journal de génération",
+   "body": "| ID | SCÈNE | PROMPT / PARAMÈTRES | RÉSULTAT | DÉCISION |\n| --- | --- | --- | --- | --- |\n| G01 |  |  |  |  |\n| G02 |  |  |  |  |\n| G03 |  |  |  |  |\n| G04 |  |  |  |  |\n| G05 |  |  |  |  |\n| G06 |  |  |  |  |\n| G07 |  |  |  |  |\n| G08 |  |  |  |  |\n| G09 |  |  |  |  |\n| G10 |  |  |  |  |"
+  },
+  {
+   "letter": "H",
+   "title": "Script de voix off",
+   "body": "Intention : _________________________________________________________________________\nVoix, langue et registre : ___________________________________________________________\n\n| SEGMENT | TEXTE | INTENTION / PAUSE | FICHIER |\n| --- | --- | --- | --- |\n| 1 |  |  |  |\n| 2 |  |  |  |\n| 3 |  |  |  |\n| 4 |  |  |  |\n| 5 |  |  |  |\n| 6 |  |  |  |\n| 7 |  |  |  |\n| 8 |  |  |  |"
+  },
+  {
+   "letter": "I",
+   "title": "Checklist de montage et finalisation",
+   "body": "☐ Projet sauvegardé et médias accessibles.\n☐ Structure comprise sans explication.\n☐ Durée comprise entre 30 et 60 secondes.\n☐ Voix intelligible sur téléphone.\n☐ Musique et bruitages autorisés.\n☐ Plans cohérents et artefacts maîtrisés.\n☐ Logo proportionné et en zone sûre.\n☐ Textes courts, lisibles et sans faute.\n☐ Sous-titres relus et synchronisés.\n☐ CTA exact et assez long.\n☐ Export au bon ratio et regardé de bout en bout.\n☐ Master archivé avant déclinaisons."
+  },
+  {
+   "letter": "J",
+   "title": "Registre des droits",
+   "body": "| ACTIF | SOURCE / TITULAIRE | LICENCE / CONSENTEMENT | DATE / PREUVE | RESTRICTIONS |\n| --- | --- | --- | --- | --- |\n|  |  |  |  |  |\n|  |  |  |  |  |\n|  |  |  |  |  |\n|  |  |  |  |  |\n|  |  |  |  |  |\n|  |  |  |  |  |\n|  |  |  |  |  |\n|  |  |  |  |  |\n|  |  |  |  |  |\n|  |  |  |  |  |"
+  },
+  {
+   "letter": "K",
+   "title": "Fiche de test",
+   "body": "1. Qu’avez-vous compris ?\n________________________________________________________________________________\n2. À qui la vidéo s’adresse-t-elle ?\n________________________________________________________________________________\n3. Quelle est la promesse ?\n________________________________________________________________________________\n4. Quel élément rend la promesse crédible ?\n________________________________________________________________________________\n5. Quelle action feriez-vous ensuite ?\n________________________________________________________________________________\n6. Quel passage paraît confus ou peu crédible ?\n________________________________________________________________________________\n7. Quels trois mots décrivent la marque ?\n________________________________________________________________________________"
+  },
+  {
+   "letter": "L",
+   "title": "Fiche portfolio",
+   "body": "Nom du projet : ______________________________________________________________________\nContexte : ______________________________________________________________________\nObjectif : ______________________________________________________________________\nCible : ______________________________________________________________________\nMon rôle : ______________________________________________________________________\nOutils : ______________________________________________________________________\nConcept : ______________________________________________________________________\nPrincipales étapes : ______________________________________________________________________\nDeux décisions importantes : ______________________________________________________________________\nDifficulté résolue : ______________________________________________________________________\nRésultat du test : ______________________________________________________________________\nCompétences mobilisées : ______________________________________________________________________\nLien vers la vidéo : ______________________________________________________________________\nProchaine amélioration : ______________________________________________________________________"
+  },
+  {
+   "letter": "M",
+   "title": "Checklist juridique et éthique",
+   "body": "☐ Les faits et allégations ont été vérifiés.\n☐ Les images et vidéos ont un droit d’usage compatible.\n☐ Les musiques et bruitages ont un droit d’usage compatible.\n☐ Les personnes identifiables ont donné les autorisations nécessaires.\n☐ Aucune voix n’est clonée ou imitée sans consentement valable.\n☐ Les marques et logos sont utilisés légitimement.\n☐ Les témoignages sont authentiques et autorisés.\n☐ Les données confidentielles ont été retirées.\n☐ Les conditions et politiques des outils ont été vérifiées.\n☐ Le caractère synthétique est signalé lorsque requis ou pertinent.\n☐ Les preuves et versions sont archivées.\nAVERTISSEMENT — Cette checklist pédagogique ne remplace pas un conseil juridique. Les règles varient selon le pays, le secteur, le support et la date de diffusion."
+  },
+  {
+   "letter": "N",
+   "title": "Sources officielles à surveiller avant chaque cohorte",
+   "body": "OpenAI — bonnes pratiques de prompting : https://help.openai.com/en/articles/10032626-prompt-engineering-best--practices-for-chatgpt\nGoogle Cloud — génération vidéo avec Veo : https://cloud.google.com/vertex-ai/generative-ai/docs/video/generate-videos-from-text\nGoogle — aide Gemini vidéo : https://support.google.com/gemini/answer/16126339?hl=fr-FR\nElevenLabs — guide Text to Speech : https://elevenlabs.io/docs/eleven-creative/playground/text-to-speech\nElevenLabs — bonnes pratiques TTS : https://elevenlabs.io/docs/overview/capabilities/text-to-speech/best-practices\nCapCut — sous-titres : https://www.capcut.com/resource/how-to-add-subtitle-in-capcut"
+  }
+ ]
+}
