@@ -323,16 +323,51 @@ export async function removeCohortMember(cohortMemberId: string): Promise<AdminA
 
   const member = await prisma.cohortMember.findUnique({
     where: { id: parsed.data },
-    select: { id: true, cohortId: true, status: true },
+    select: {
+      id: true,
+      userId: true,
+      cohort: { select: { id: true, courseId: true, careerPathId: true } },
+    },
   });
   if (!member) return { ok: false, error: "Membre introuvable." };
+  const { userId, cohort } = member;
+  const REVOCABLE = ["ACTIVE", "PENDING", "PAUSED"] as const;
 
-  // Retrait de la cohorte SANS supprimer l'inscription pédagogique sous-jacente.
-  await prisma.cohortMember.update({ where: { id: member.id }, data: { status: "WITHDRAWN" } });
-  await audit(admin.id, "cohort.member.remove", "Cohort", member.cohortId, { cohortMemberId: member.id, from: member.status });
+  // Retrait DÉFINITIF : on supprime l'appartenance (le membre disparaît de la
+  // liste) ET on révoque l'accès pédagogique OCTROYÉ PAR LA COHORTE (origin
+  // COHORT) — formation cible, ou parcours + ses formations obligatoires. Un
+  // accès acquis autrement (achat direct, autre origine) n'est PAS touché. La
+  // progression n'est pas effacée : un ré-ajout réactive l'inscription annulée.
+  await prisma.$transaction(async (tx) => {
+    if (cohort.courseId) {
+      await tx.enrollment.updateMany({
+        where: { userId, courseId: cohort.courseId, origin: "COHORT", status: { in: [...REVOCABLE] } },
+        data: { status: "CANCELLED" },
+      });
+    }
+    if (cohort.careerPathId) {
+      await tx.careerPathEnrollment.updateMany({
+        where: { userId, careerPathId: cohort.careerPathId, status: { in: [...REVOCABLE] } },
+        data: { status: "CANCELLED" },
+      });
+      const links = await tx.careerPathCourse.findMany({
+        where: { careerPathId: cohort.careerPathId, isRequired: true },
+        select: { courseId: true },
+      });
+      const courseIds = links.map((l) => l.courseId);
+      if (courseIds.length) {
+        await tx.enrollment.updateMany({
+          where: { userId, courseId: { in: courseIds }, origin: "COHORT", status: { in: [...REVOCABLE] } },
+          data: { status: "CANCELLED" },
+        });
+      }
+    }
+    await tx.cohortMember.delete({ where: { id: member.id } });
+  });
+  await audit(admin.id, "cohort.member.remove", "Cohort", cohort.id, { userId, revokedAccess: true });
 
   revalidatePath("/admin/cohortes");
-  revalidatePath(`/admin/cohortes/${member.cohortId}`);
+  revalidatePath(`/admin/cohortes/${cohort.id}`);
   revalidatePath("/espace/cohortes");
-  return { ok: true, message: "Membre retiré de la cohorte (accès pédagogique conservé)." };
+  return { ok: true, message: "Membre retiré et accès pédagogique révoqué." };
 }

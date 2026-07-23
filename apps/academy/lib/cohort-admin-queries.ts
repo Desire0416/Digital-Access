@@ -81,6 +81,8 @@ export async function getCohortAdmin(id: string) {
         },
       },
       members: {
+        // Les membres retirés (WITHDRAWN) ne figurent plus dans la liste.
+        where: { status: { not: "WITHDRAWN" } },
         take: 200,
         orderBy: { joinedAt: "desc" },
         select: {
@@ -98,7 +100,14 @@ export async function getCohortAdmin(id: string) {
         orderBy: [{ pinned: "desc" }, { createdAt: "desc" }],
         select: { id: true, title: true, pinned: true, createdAt: true },
       },
-      _count: { select: { members: true, events: true, instructors: true, announcements: true } },
+      _count: {
+        select: {
+          members: { where: { status: { not: "WITHDRAWN" } } },
+          events: true,
+          instructors: true,
+          announcements: true,
+        },
+      },
     },
   });
 }
