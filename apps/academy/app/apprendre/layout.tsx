@@ -13,15 +13,11 @@ export const metadata: Metadata = {
 };
 
 export default function ApprendreLayout({ children }: { children: React.ReactNode }) {
-  // Hauteur EXACTE d'un viewport + clip : le corps ne peut jamais dépasser une
-  // page, donc aucun espace blanc résiduel sous la coque immersive. Base robuste
-  // `h-screen` (100vh, supportée partout) ; on n'utilise `100dvh` (barre mobile
-  // dynamique) QUE si le navigateur le prend en charge — sinon le contenu se
-  // replierait à sa hauteur naturelle et laisserait du blanc. Défilement DANS le
-  // PlayerShell.
+  // Coque immersive épinglée au viewport via `fixed inset-0` : indépendant des
+  // unités de hauteur (vh/dvh) et de la chaîne des parents, donc AUCUN espace
+  // blanc résiduel possible, sur tous les navigateurs. Le défilement se fait DANS
+  // le PlayerShell (le corps de page, lui, ne défile pas).
   return (
-    <div className="h-screen supports-[height:100dvh]:h-dvh overflow-hidden bg-surface-dark text-white">
-      {children}
-    </div>
+    <div className="fixed inset-0 overflow-hidden bg-surface-dark text-white">{children}</div>
   );
 }
