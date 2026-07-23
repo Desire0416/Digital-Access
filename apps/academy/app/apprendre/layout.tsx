@@ -13,8 +13,15 @@ export const metadata: Metadata = {
 };
 
 export default function ApprendreLayout({ children }: { children: React.ReactNode }) {
-  // Hauteur EXACTE d'un viewport (dynamique, gère la barre mobile) + clip : le
-  // corps ne peut jamais dépasser une page, donc aucun espace blanc résiduel
-  // sous la coque immersive. Le défilement se fait DANS le PlayerShell.
-  return <div className="h-dvh overflow-hidden bg-surface-dark text-white">{children}</div>;
+  // Hauteur EXACTE d'un viewport + clip : le corps ne peut jamais dépasser une
+  // page, donc aucun espace blanc résiduel sous la coque immersive. Base robuste
+  // `h-screen` (100vh, supportée partout) ; on n'utilise `100dvh` (barre mobile
+  // dynamique) QUE si le navigateur le prend en charge — sinon le contenu se
+  // replierait à sa hauteur naturelle et laisserait du blanc. Défilement DANS le
+  // PlayerShell.
+  return (
+    <div className="h-screen supports-[height:100dvh]:h-dvh overflow-hidden bg-surface-dark text-white">
+      {children}
+    </div>
+  );
 }
