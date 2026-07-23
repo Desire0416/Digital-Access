@@ -277,24 +277,32 @@ const COHORT = {
   enrollmentDeadline: at("2026-08-01T18:00"),
   capacity: 20,
   price: 50000,
-  rhythm: "Mardi et jeudi 18 h 30–20 h 30, + 2 ateliers pratiques le samedi",
+  rhythm: "Formation suivie EN AUTONOMIE selon un calendrier de 4 semaines, ponctuée de sessions live d'accompagnement (jeudi 18 h 30) et de 2 ateliers le samedi",
   description:
-    "Cohorte **hybride** de 4 semaines (≈ 40 h : 24 h en direct + 16 h de travail personnel) pour concevoir et produire une vraie publicité vidéo avec l'IA, encadrée par un formateur.\n\n**Rythme :** mardi & jeudi de 18 h 30 à 20 h 30 en ligne (Google Meet), avec deux ateliers en présentiel le samedi.\n\n**Projet fil rouge :** une publicité de 30 à 60 s pour un produit, un service ou une organisation de votre choix.\n\n> 🎁 **Offre de lancement : 40 000 FCFA** pour les toutes premières inscriptions (au lieu de 50 000 FCFA).",
+    "Une cohorte n'est pas une suite de webinaires : vous suivez la formation en autonomie (vidéos, lectures, quiz et exercices des 8 modules), à votre rythme, en respectant un calendrier de 4 semaines. Des sessions live régulières vous permettent de rencontrer le formateur et le groupe, de poser vos questions, de faire relire vos productions et de garder le cap — elles accompagnent le cours, elles ne le remplacent pas.\n\nCalendrier — à faire en autonomie, avec des rendez-vous live :\n• Semaine 1 (4–8 août) : modules 1 & 2 (pub vidéo IA, brief & concept) — lancement, live questions, atelier scénario.\n• Semaine 2 (11–15 août) : modules 3 & 4 (scénario/storyboard, visuels) — live questions.\n• Semaine 3 (18–22 août) : modules 5 & 6 (animation, voix off & son) — live questions, atelier montage.\n• Semaine 4 (25–29 août) : modules 7 & 8 (montage, diffusion) + projet final — revue des projets, soutenance.\n\nVous déposez vos exercices au fil de l'eau ; ils sont corrigés par le formateur. Projet fil rouge : une publicité de 30 à 60 s, développée progressivement. ≈ 40 h au total (travail autonome + sessions live).\n\n🎁 Offre de lancement : 40 000 FCFA pour les toutes premières inscriptions (au lieu de 50 000 FCFA).",
   rules:
     "### Conditions de participation\n- Disposer du matériel et d'une connexion suffisants.\n- Participer à au moins **80 %** des séances.\n- Réaliser les exercices et respecter les délais de remise.\n- Respecter les droits d'auteur, le droit à l'image et les règles éthiques.\n\n### Conditions de validation\n- Présence minimale de **80 %**.\n- Remise des travaux intermédiaires.\n- Note finale d'au moins **70 %**.\n- Présentation d'une vidéo publicitaire finale conforme au cahier des charges.",
 };
 
+/* Sessions live = ACCOMPAGNEMENT (rencontre, questions, ateliers, revue,
+   soutenance) — PAS des cours magistraux (le cours se suit en autonomie). */
 const SESSIONS = [
-  { n: 1, date: "2026-08-04T18:30", end: "2026-08-04T20:30", theme: "Introduction, publicité vidéo et choix du projet", online: true },
-  { n: 2, date: "2026-08-06T18:30", end: "2026-08-06T20:30", theme: "Brief, cible, message et concept créatif", online: true },
-  { n: 3, date: "2026-08-08T09:00", end: "2026-08-08T13:00", theme: "Atelier : scénario et storyboard", online: false },
-  { n: 4, date: "2026-08-11T18:30", end: "2026-08-11T20:30", theme: "Prompt engineering pour les images publicitaires", online: true },
-  { n: 5, date: "2026-08-13T18:30", end: "2026-08-13T20:30", theme: "Cohérence des personnages, décors et produits", online: true },
-  { n: 6, date: "2026-08-18T18:30", end: "2026-08-18T20:30", theme: "Animation des images et génération vidéo", online: true },
-  { n: 7, date: "2026-08-20T18:30", end: "2026-08-20T20:30", theme: "Voix off, musique et identité sonore", online: true },
-  { n: 8, date: "2026-08-25T18:30", end: "2026-08-25T20:30", theme: "Montage, transitions, sous-titrage et branding", online: true },
-  { n: 9, date: "2026-08-27T18:30", end: "2026-08-27T20:30", theme: "Corrections, formats et préparation du rendu", online: true },
-  { n: 10, date: "2026-08-29T09:00", end: "2026-08-29T13:00", theme: "Présentation des projets et évaluation finale", online: false },
+  { kind: "VIRTUAL_CLASS", title: "Lancement de la cohorte", date: "2026-08-04T18:30", end: "2026-08-04T20:00", online: true,
+    desc: "On fait connaissance, on présente le **calendrier** de progression autonome et la prise en main des outils. Vous repartez avec votre projet choisi." },
+  { kind: "QA_SESSION", title: "Live d'accompagnement — Semaine 1", date: "2026-08-06T18:30", end: "2026-08-06T19:30", online: true,
+    desc: "Vos **questions** sur les modules 1–2 (brief & concept) et point d'avancement collectif selon le calendrier." },
+  { kind: "WORKSHOP", title: "Atelier encadré — Scénario & storyboard", date: "2026-08-08T09:00", end: "2026-08-08T12:00", online: false,
+    desc: "Travail pratique en direct sur votre scénario et votre storyboard, avec retours du formateur." },
+  { kind: "QA_SESSION", title: "Live d'accompagnement — Semaine 2", date: "2026-08-13T18:30", end: "2026-08-13T19:30", online: true,
+    desc: "Vos **questions** sur les modules 3–4 (visuels & prompts) et point d'avancement." },
+  { kind: "QA_SESSION", title: "Live d'accompagnement — Semaine 3", date: "2026-08-20T18:30", end: "2026-08-20T19:30", online: true,
+    desc: "Vos **questions** sur les modules 5–6 (animation, voix off, son) et point d'avancement." },
+  { kind: "WORKSHOP", title: "Atelier encadré — Montage & finalisation", date: "2026-08-22T09:00", end: "2026-08-22T12:00", online: false,
+    desc: "Retours sur vos premières versions montées et coup de main sur la finalisation." },
+  { kind: "VIRTUAL_CLASS", title: "Revue des projets", date: "2026-08-27T18:30", end: "2026-08-27T20:00", online: true,
+    desc: "Retours individualisés sur les projets et derniers ajustements avant la soutenance." },
+  { kind: "DEFENSE", title: "Soutenance finale & remise des attestations", date: "2026-08-29T09:00", end: "2026-08-29T13:00", online: false,
+    desc: "Présentation des publicités devant le groupe, évaluation finale et remise des attestations." },
 ];
 
 /* ─── Encodage des questions (identique à l'importeur) ─── */
@@ -408,15 +416,17 @@ async function main() {
     await prisma.cohortInstructor.upsert({ where: { cohortId_userId: { cohortId: cohort.id, userId: instructor.id } }, update: { roleLabel: "Formateur principal" }, create: { cohortId: cohort.id, userId: instructor.id, roleLabel: "Formateur principal" } });
   }
 
-  // 4) Sessions live (Events) — reconstruites.
+  // 4) Sessions live d'ACCOMPAGNEMENT (Events) — reconstruites.
   await prisma.event.deleteMany({ where: { cohortId: cohort.id } });
+  let sIdx = 0;
   for (const s of SESSIONS) {
+    sIdx += 1;
     await prisma.event.create({
       data: {
-        title: `Séance ${s.n} — ${s.theme}`,
-        slug: `${COHORT_SLUG}-s${s.n}`,
-        description: s.online ? "Séance en ligne (Google Meet). Le lien de connexion est communiqué aux inscrits avant la séance." : "Atelier en présentiel à Abidjan. Le lieu exact est communiqué aux inscrits.",
-        type: "VIRTUAL_CLASS", audience: "COHORT",
+        title: s.title,
+        slug: `${COHORT_SLUG}-s${sIdx}`,
+        description: `${s.desc}${s.online ? "\n\nEn ligne (Google Meet) — le lien est communiqué aux inscrits avant la séance." : "\n\nEn présentiel à Abidjan — le lieu est communiqué aux inscrits."}`,
+        type: s.kind, audience: "COHORT",
         startAt: at(s.date), endAt: at(s.end), timezone: "Africa/Abidjan",
         provider: s.online ? "GOOGLE_MEET" : "IN_PERSON",
         meetingUrl: null,
