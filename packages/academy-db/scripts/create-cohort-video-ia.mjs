@@ -248,6 +248,10 @@ const WEBINAR_DATES = [
   "2026-08-06", "2026-08-13", "2026-08-20", "2026-08-27",
   "2026-09-03", "2026-09-10", "2026-09-17", "2026-09-24", "2026-10-01",
 ];
+/* Salle Google Meet récurrente de la cohorte. RÉSERVÉE AUX INSCRITS : jamais
+   exposée publiquement (webinaires en audience COHORT, non sélectionnée par la
+   requête publique). Affichée uniquement dans l'espace cohorte des membres. */
+const MEET_URL = "https://meet.google.com/ics-idrt-qkr";
 
 async function main() {
   await wake();
@@ -350,10 +354,10 @@ async function main() {
         description:
           `**Objectif** : ${m.webinaire}\n\n` +
           `Séance d'accompagnement de 90 minutes (rappel actif, correction du quiz, démonstration, revue de travaux et plan d'action). ` +
-          `En ligne (Google Meet) — le lien est communiqué aux inscrits avant la séance.`,
+          `En ligne (Google Meet) — lien d'accès dans votre espace cohorte.`,
         type: "WEBINAR", audience: "COHORT",
         startAt: at(`${date}T18:30`), endAt: at(`${date}T20:00`), timezone: "Africa/Abidjan",
-        provider: "GOOGLE_MEET", meetingUrl: null,
+        provider: "GOOGLE_MEET", meetingUrl: MEET_URL,
         cohortId: cohort.id, courseId: course.id, hostId: instructor?.id ?? null,
         status: "PUBLISHED",
       },
