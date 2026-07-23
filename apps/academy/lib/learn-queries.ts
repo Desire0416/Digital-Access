@@ -676,6 +676,27 @@ export async function getAcquiredCourseIds(userId: string): Promise<Set<string>>
  * verrouillage séquentiel. Règle 40.16 : un apprenant inscrit garde l'accès
  * même si la formation est archivée/suspendue.
  */
+/**
+ * Verrou de démarrage de cohorte (§23). Si l'utilisateur est membre (non retiré)
+ * d'une cohorte ciblant cette formation dont la date de début n'est pas encore
+ * atteinte, la formation ne peut pas être COMMENCÉE avant cette date — même une
+ * fois l'inscription active. Renvoie la date de démarrage, sinon null. Les
+ * inscriptions hors cohorte (achat direct, octroi admin) ne sont pas concernées.
+ */
+async function getCohortStartGate(courseId: string, userId: string | null): Promise<Date | null> {
+  if (!userId) return null;
+  const membership = await prisma.cohortMember.findFirst({
+    where: {
+      userId,
+      status: { not: "WITHDRAWN" },
+      cohort: { courseId, startDate: { gt: new Date() } },
+    },
+    orderBy: { cohort: { startDate: "asc" } },
+    select: { cohort: { select: { startDate: true } } },
+  });
+  return membership?.cohort.startDate ?? null;
+}
+
 export async function getPlayerCourse(slug: string, userId: string | null) {
   const course = await prisma.course.findUnique({
     where: { slug },
@@ -731,6 +752,10 @@ export async function getPlayerCourse(slug: string, userId: string | null) {
   // Sans inscription, seule une formation PUBLIÉE est visible (aperçus).
   if (!enrolled && course.status !== "PUBLISHED") return null;
 
+  // Verrou de démarrage de cohorte : la formation ne s'ouvre pas avant la date
+  // de début de la cohorte de l'apprenant (§23).
+  const startsAt = await getCohortStartGate(course.id, userId);
+
   const flat = course.modules.flatMap((m) => m.lessons);
   const completed = userId ? await getCompletedLessonIds(userId, flat.map((l) => l.id)) : new Set<string>();
 
@@ -749,6 +774,11 @@ export async function getPlayerCourse(slug: string, userId: string | null) {
   let blockedFromHere = false;
   const lockMap = new Map<string, boolean>();
   for (const lesson of flat) {
+    if (startsAt) {
+      // Cohorte pas encore démarrée → tout est verrouillé jusqu'à la date.
+      lockMap.set(lesson.id, true);
+      continue;
+    }
     if (!enrolled) {
       lockMap.set(lesson.id, !lesson.isPreview);
       continue;
@@ -776,6 +806,8 @@ export async function getPlayerCourse(slug: string, userId: string | null) {
     status: course.status,
     price: course.price,
     enrolled,
+    /** Date de démarrage de la cohorte si l'accès est différé, sinon null. */
+    startsAt,
     enrollment: enrollment && enrolled ? { status: enrollment.status, progress: enrollment.progress } : null,
     modules: course.modules.map((m) => ({
       id: m.id,
@@ -843,6 +875,11 @@ export async function getPlayerLesson(lessonId: string, userId: string | null) {
   let hasAccess = enrolled || (lesson.isPreview && course.status === "PUBLISHED");
   let locked = false;
 
+  // Verrou de démarrage de cohorte : contenu nullé tant que la cohorte n'a pas
+  // démarré (§23), même pour un inscrit — cohérent avec getPlayerCourse.
+  const startsAt = await getCohortStartGate(course.id, userId);
+  if (startsAt) hasAccess = false;
+
   // Verrouillage séquentiel pour l'apprenant inscrit.
   const flat = await getFlatLessons(course.id);
   const completed = userId ? await getCompletedLessonIds(userId, flat.map((l) => l.id)) : new Set<string>();
@@ -865,6 +902,8 @@ export async function getPlayerLesson(lessonId: string, userId: string | null) {
     durationMinutes: lesson.durationMinutes,
     isPreview: lesson.isPreview,
     isRequired: lesson.isRequired,
+    /** Date de démarrage de cohorte si l'accès est différé (contenu nullé). */
+    startsAt,
     // Contenu nullé sans accès — il ne quitte jamais le serveur.
     content: hasAccess ? lesson.content : null,
     videoUrl: hasAccess ? lesson.videoUrl : null,

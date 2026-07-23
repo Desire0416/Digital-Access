@@ -203,11 +203,14 @@ const COHORT = {
   name: "Création de vidéos publicitaires avec l'IA — Cohorte Août 2026",
   type: "HYBRID",
   status: "OPEN",
-  startDate: at("2026-08-03T08:00"),
+  // Valeurs par défaut À LA CRÉATION uniquement (voir upsert plus bas) : une
+  // fois la cohorte créée, prix / capacité / dates sont gérés depuis l'admin et
+  // ne sont JAMAIS réécrits par ce script.
+  startDate: at("2026-08-01T00:00"), // la formation ne s'ouvre pas avant cette date
   endDate: at("2026-10-02T20:00"),
   enrollmentDeadline: at("2026-08-01T18:00"),
   capacity: 20,
-  price: 50000,
+  price: 5000,
   rhythm: "9 semaines · 1 module + 1 webinaire d'accompagnement par semaine",
   description:
     "Cette cohorte accompagne les participants dans la réalisation autonome d'une vidéo publicitaire avec l'intelligence artificielle.\n\n" +
@@ -334,7 +337,10 @@ async function main() {
   // 3) Cohorte.
   const cohort = await prisma.cohort.upsert({
     where: { slug: COHORT_SLUG },
-    update: { name: COHORT.name, type: COHORT.type, status: COHORT.status, courseId: course.id, careerPathId: null, schoolId: primarySchoolId, startDate: COHORT.startDate, endDate: COHORT.endDate, enrollmentDeadline: COHORT.enrollmentDeadline, capacity: COHORT.capacity, price: COHORT.price, rhythm: COHORT.rhythm, description: COHORT.description, rules: COHORT.rules },
+    // UPDATE : ne (ré)écrit QUE le contenu pédagogique/éditorial. Prix, capacité
+    // et dates (startDate/endDate/enrollmentDeadline) sont volontairement OMIS
+    // pour préserver les réglages faits par l'admin dans le back-office.
+    update: { name: COHORT.name, type: COHORT.type, status: COHORT.status, courseId: course.id, careerPathId: null, schoolId: primarySchoolId, rhythm: COHORT.rhythm, description: COHORT.description, rules: COHORT.rules },
     create: { slug: COHORT_SLUG, name: COHORT.name, type: COHORT.type, status: COHORT.status, courseId: course.id, schoolId: primarySchoolId, startDate: COHORT.startDate, endDate: COHORT.endDate, enrollmentDeadline: COHORT.enrollmentDeadline, capacity: COHORT.capacity, price: COHORT.price, rhythm: COHORT.rhythm, description: COHORT.description, rules: COHORT.rules },
     select: { id: true },
   });

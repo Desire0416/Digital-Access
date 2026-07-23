@@ -13,6 +13,7 @@ import {
   Presentation,
   Video,
   Calendar,
+  CalendarClock,
   MousePointerClick,
   Clock,
   UploadCloud,
@@ -105,7 +106,9 @@ export default async function LessonPage({
           </header>
 
           {/* ── Contenu selon l'accès et le type ── */}
-          {!lesson.hasAccess ? (
+          {course.startsAt ? (
+            <NotStartedNotice startsAt={course.startsAt} slug={courseSlug} />
+          ) : !lesson.hasAccess ? (
             lesson.locked ? (
               <LockedNotice />
             ) : (
@@ -146,7 +149,9 @@ export default async function LessonPage({
             </h1>
           </header>
 
-          {!assignment || !assignment.enrolled ? (
+          {course.startsAt ? (
+            <NotStartedNotice startsAt={course.startsAt} slug={courseSlug} />
+          ) : !assignment || !assignment.enrolled ? (
             <EnrollNotice slug={courseSlug} assessment />
           ) : (
             <AssignmentSubmission assignment={assignment} />
@@ -171,7 +176,13 @@ export default async function LessonPage({
           </h1>
         </header>
 
-        {!assessment ? <EnrollNotice slug={courseSlug} assessment /> : <QuizRunner assessment={assessment} />}
+        {course.startsAt ? (
+          <NotStartedNotice startsAt={course.startsAt} slug={courseSlug} />
+        ) : !assessment ? (
+          <EnrollNotice slug={courseSlug} assessment />
+        ) : (
+          <QuizRunner assessment={assessment} />
+        )}
       </div>
     </PlayerShell>
   );
@@ -418,6 +429,30 @@ function LockedNotice() {
         Cette formation suit une progression séquentielle. Terminez d&apos;abord les leçons
         précédentes pour débloquer celle-ci.
       </p>
+    </div>
+  );
+}
+
+function NotStartedNotice({ startsAt, slug }: { startsAt: Date; slug: string }) {
+  return (
+    <div className="overflow-hidden rounded-2xl border border-brand-violet/20 bg-gradient-to-br from-brand-violet/[0.06] to-brand-cyan/[0.06] px-6 py-10 text-center">
+      <span className="mx-auto mb-4 grid h-14 w-14 place-items-center rounded-2xl bg-gradient-da text-white shadow-brand">
+        <CalendarClock size={26} aria-hidden />
+      </span>
+      <h2 className="font-display text-lg font-bold text-navy">La formation n&apos;a pas encore démarré</h2>
+      <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-text-secondary">
+        Votre cohorte commence le{" "}
+        <span className="font-semibold text-navy">{dateTimeFmt.format(new Date(startsAt))}</span>. L&apos;accès au
+        contenu s&apos;ouvrira automatiquement à cette date. En attendant, choisissez votre projet fil rouge et
+        repérez le calendrier des webinaires.
+      </p>
+      <Link
+        href={`/formations/${slug}`}
+        className={buttonClasses({ variant: "outline", size: "lg", className: "mt-5 inline-flex" })}
+      >
+        <FolderKanban size={18} aria-hidden />
+        Revenir à la fiche
+      </Link>
     </div>
   );
 }
