@@ -151,10 +151,10 @@ export default async function LessonPage({
 
           {course.startsAt ? (
             <NotStartedNotice startsAt={course.startsAt} slug={courseSlug} />
-          ) : !assignment || !assignment.enrolled ? (
-            <EnrollNotice slug={courseSlug} assessment />
-          ) : (
+          ) : assignment && (assignment.enrolled || assignment.preview) ? (
             <AssignmentSubmission assignment={assignment} />
+          ) : (
+            <EnrollNotice slug={courseSlug} assessment />
           )}
         </div>
       </PlayerShell>

@@ -17,6 +17,7 @@ import {
   AlertTriangle,
   ChevronUp,
   ChevronDown,
+  Eye,
 } from "lucide-react";
 import { buttonClasses, cn } from "@da/ui";
 import { submitQuiz, type SubmitQuizResult, type QuizCorrection } from "@/lib/learn-actions";
@@ -87,6 +88,7 @@ export function QuizRunner({ assessment }: { assessment: AssessmentForTaking }) 
   const [result, setResult] = React.useState<Extract<SubmitQuizResult, { ok: true }> | null>(null);
   const [attemptsLeft, setAttemptsLeft] = React.useState<number | null>(assessment.attemptsRemaining);
 
+  const preview = !!assessment.preview;
   const exhausted = attemptsLeft !== null && attemptsLeft <= 0;
   const corrections = React.useMemo(
     () => new Map((result?.corrections ?? []).map((c) => [c.questionId, c])),
@@ -161,6 +163,12 @@ export function QuizRunner({ assessment }: { assessment: AssessmentForTaking }) 
 
   return (
     <div className="space-y-6">
+      {preview && (
+        <div className="flex items-center gap-2 rounded-xl border border-brand-violet/25 bg-brand-violet/[0.06] px-4 py-3 text-sm font-medium text-brand-blue-royal">
+          <Eye size={16} aria-hidden />
+          Aperçu administrateur — vous consultez l&apos;évaluation ; la soumission est désactivée.
+        </div>
+      )}
       {/* ── Bandeau d'état / résultat ── */}
       <AnimatePresence mode="wait">
         {result ? (
@@ -222,7 +230,11 @@ export function QuizRunner({ assessment }: { assessment: AssessmentForTaking }) 
         </p>
       )}
 
-      {!result ? (
+      {preview ? (
+        <p className="rounded-xl border border-navy/[0.08] bg-surface-secondary/70 px-4 py-3 text-center text-sm text-text-secondary">
+          Soumission désactivée en aperçu. Pour modifier cette évaluation, ouvrez-la dans le studio.
+        </p>
+      ) : !result ? (
         <div className="flex flex-col items-center gap-2">
           <motion.button
             type="button"

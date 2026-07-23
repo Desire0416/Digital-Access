@@ -15,6 +15,7 @@ import {
   X,
   RotateCcw,
   Award,
+  Eye,
   Download,
 } from "lucide-react";
 import { Button, Field, Input, Textarea, cn } from "@da/ui";
@@ -54,6 +55,7 @@ export function AssignmentSubmission({ assignment }: { assignment: LearnerAssign
   const router = useRouter();
   const { attempts, attemptsAllowed, passingScore } = assignment;
   const latest = attempts[0] ?? null;
+  const preview = !!assignment.preview;
 
   const hasPassed = attempts.some((a) => a.status === "PASSED");
   const hasPending = attempts.some((a) => a.status === "SUBMITTED");
@@ -102,6 +104,12 @@ export function AssignmentSubmission({ assignment }: { assignment: LearnerAssign
 
   return (
     <div className="space-y-6">
+      {preview && (
+        <div className="flex items-center gap-2 rounded-xl border border-brand-violet/25 bg-brand-violet/[0.06] px-4 py-3 text-sm font-medium text-brand-blue-royal">
+          <Eye size={16} aria-hidden />
+          Aperçu administrateur — vous consultez les consignes ; le dépôt est désactivé.
+        </div>
+      )}
       {/* Consignes */}
       <div className="overflow-hidden rounded-2xl border border-brand-blue-vif/20 bg-gradient-to-br from-brand-blue-vif/[0.05] to-brand-cyan/[0.05] p-6">
         <span className="mb-3 grid h-12 w-12 place-items-center rounded-2xl bg-gradient-da text-white shadow-brand">
@@ -143,8 +151,8 @@ export function AssignmentSubmission({ assignment }: { assignment: LearnerAssign
         </details>
       )}
 
-      {/* Formulaire de dépôt */}
-      {canSubmit ? (
+      {/* Formulaire de dépôt (désactivé en aperçu administrateur) */}
+      {preview ? null : canSubmit ? (
         showForm ? (
           <form onSubmit={handleSubmit} className="space-y-5 rounded-2xl border border-navy/[0.08] bg-surface-primary p-5">
             <h3 className="font-display text-base font-bold text-navy">

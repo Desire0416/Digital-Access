@@ -2,6 +2,22 @@ import "server-only";
 import { prisma, type EnrollmentStatus, type QuestionType } from "@da/academy-db/client";
 import { ACQUIRED_STATUSES } from "./pricing";
 import { getPrerequisiteStatus, type PrerequisiteStatus } from "./prerequisites";
+import { isAdmin } from "./guards";
+
+/**
+ * Accès privilégié au lecteur : un ADMINISTRATEUR ou le FORMATEUR assigné à la
+ * formation peut la parcourir SANS restriction (aucun verrou de démarrage, de
+ * progression séquentielle ni d'inscription ; brouillons visibles). Fondé sur
+ * l'id de l'utilisateur EFFECTIF (respecte l'impersonation : un super admin qui
+ * « agit en tant que » apprenant voit l'expérience apprenant, sans privilège).
+ */
+async function isCoursePreviewer(userId: string | null, courseId: string): Promise<boolean> {
+  if (!userId) return false;
+  const u = await prisma.user.findUnique({ where: { id: userId }, select: { roles: true } });
+  if (isAdmin(u)) return true;
+  const link = await prisma.courseInstructor.findFirst({ where: { courseId, userId }, select: { id: true } });
+  return !!link;
+}
 
 /* ══════════════════════════════════════════════════════════════════════════
    Espace apprenant & lecteur — LECTURES (cahier §16, §17).
@@ -744,14 +760,16 @@ export async function getPlayerCourse(slug: string, userId: string | null) {
       })
     : null;
   const enrolled = !!enrollment && ACQUIRED.includes(enrollment.status);
+  const privileged = await isCoursePreviewer(userId, course.id);
 
-  // Sans inscription, seule une formation PUBLIÉE est visible (aperçus).
-  if (!enrolled && course.status !== "PUBLISHED") return null;
+  // Sans inscription (et hors admin/formateur), seule une formation PUBLIÉE est
+  // visible (aperçus). Un admin/formateur voit aussi les brouillons.
+  if (!enrolled && !privileged && course.status !== "PUBLISHED") return null;
 
   // Verrou de démarrage de cohorte : une formation délivrée en cohorte ne
   // s'ouvre pas avant la date de début, pour TOUT apprenant inscrit — cohorte
-  // comme inscription directe (§23). Les aperçus (non inscrits) restent ouverts.
-  const startsAt = enrolled ? await getCourseCohortStart(course.id) : null;
+  // comme inscription directe (§23). IGNORÉ pour un admin/formateur.
+  const startsAt = !privileged && enrolled ? await getCourseCohortStart(course.id) : null;
 
   const flat = course.modules.flatMap((m) => m.lessons);
   const completed = userId ? await getCompletedLessonIds(userId, flat.map((l) => l.id)) : new Set<string>();
@@ -771,6 +789,11 @@ export async function getPlayerCourse(slug: string, userId: string | null) {
   let blockedFromHere = false;
   const lockMap = new Map<string, boolean>();
   for (const lesson of flat) {
+    if (privileged) {
+      // Admin/formateur : accès libre, rien n'est verrouillé.
+      lockMap.set(lesson.id, false);
+      continue;
+    }
     if (startsAt) {
       // Cohorte pas encore démarrée → tout est verrouillé jusqu'à la date.
       lockMap.set(lesson.id, true);
@@ -803,6 +826,8 @@ export async function getPlayerCourse(slug: string, userId: string | null) {
     status: course.status,
     price: course.price,
     enrolled,
+    /** Admin/formateur en accès libre (aperçu sans restriction). */
+    privileged,
     /** Date de démarrage de la cohorte si l'accès est différé, sinon null. */
     startsAt,
     enrollment: enrollment && enrolled ? { status: enrollment.status, progress: enrollment.progress } : null,
@@ -867,21 +892,22 @@ export async function getPlayerLesson(lessonId: string, userId: string | null) {
       })
     : null;
   const enrolled = !!enrollment && ACQUIRED.includes(enrollment.status);
+  const privileged = await isCoursePreviewer(userId, course.id);
 
-  // Aperçu public uniquement sur une formation publiée.
-  let hasAccess = enrolled || (lesson.isPreview && course.status === "PUBLISHED");
+  // Aperçu public sur formation publiée ; accès libre pour admin/formateur.
+  let hasAccess = enrolled || privileged || (lesson.isPreview && course.status === "PUBLISHED");
   let locked = false;
 
   // Verrou de démarrage de cohorte : contenu nullé tant que la cohorte n'a pas
   // démarré (§23), pour TOUT inscrit (cohorte ou direct) — cohérent avec
-  // getPlayerCourse. Non appliqué aux aperçus (non inscrits).
-  const startsAt = enrolled ? await getCourseCohortStart(course.id) : null;
+  // getPlayerCourse. IGNORÉ pour un admin/formateur ; hors aperçus non inscrits.
+  const startsAt = !privileged && enrolled ? await getCourseCohortStart(course.id) : null;
   if (startsAt) hasAccess = false;
 
-  // Verrouillage séquentiel pour l'apprenant inscrit.
+  // Verrouillage séquentiel pour l'apprenant inscrit (jamais pour admin/formateur).
   const flat = await getFlatLessons(course.id);
   const completed = userId ? await getCompletedLessonIds(userId, flat.map((l) => l.id)) : new Set<string>();
-  if (enrolled && course.unlockMode === "SEQUENTIAL") {
+  if (enrolled && !privileged && course.unlockMode === "SEQUENTIAL") {
     for (const l of flat) {
       if (l.id === lesson.id) break;
       if (l.isRequired && !completed.has(l.id)) {
@@ -964,6 +990,8 @@ export async function getAssignmentForLearner(assessmentId: string, userId: stri
       })
     : null;
   const enrolled = !!enrollment && ACQUIRED.includes(enrollment.status);
+  // Aperçu admin/formateur : consignes visibles sans inscription (dépôt désactivé).
+  const preview = !enrolled && (await isCoursePreviewer(userId, a.courseId));
 
   const rawAttempts =
     userId && enrolled
@@ -994,6 +1022,8 @@ export async function getAssignmentForLearner(assessmentId: string, userId: stri
     isRequired: a.isRequired,
     moduleTitle: a.module?.title ?? null,
     enrolled,
+    /** Aperçu administrateur/formateur : lecture seule, dépôt désactivé. */
+    preview,
     attempts: rawAttempts.map((att) => ({
       id: att.id,
       attemptNumber: att.attemptNumber,
@@ -1059,7 +1089,10 @@ export async function getAssessmentForTaking(assessmentId: string, userId: strin
     where: { userId_courseId: { userId, courseId: assessment.courseId } },
     select: { status: true },
   });
-  if (!enrollment || !ACQUIRED.includes(enrollment.status)) return null;
+  const enrolled = !!enrollment && ACQUIRED.includes(enrollment.status);
+  // Admin/formateur : aperçu des questions sans inscription (soumission désactivée).
+  const preview = !enrolled && (await isCoursePreviewer(userId, assessment.courseId));
+  if (!enrolled && !preview) return null;
 
   const attemptsUsed = await prisma.assessmentAttempt.count({ where: { assessmentId, userId } });
   const plainQuestions: TakingQuestion[] = assessment.questions.map((q) => {
@@ -1104,6 +1137,8 @@ export async function getAssessmentForTaking(assessmentId: string, userId: strin
     questions,
     attemptsUsed,
     attemptsRemaining: assessment.attemptsAllowed > 0 ? Math.max(0, assessment.attemptsAllowed - attemptsUsed) : null,
+    /** Aperçu administrateur/formateur : questions visibles, soumission désactivée. */
+    preview,
   };
 }
 
