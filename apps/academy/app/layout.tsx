@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import { siteConfig } from "@/lib/site";
+import { ImpersonationBanner } from "@/components/ImpersonationBanner";
 import "./globals.css";
 
 // Plateforme vivante : rendu dynamique (données réelles à chaque requête).
@@ -49,6 +50,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fr" className={`${inter.variable} ${jakarta.variable} ${jetbrains.variable}`}>
       <body className="min-h-screen bg-surface-primary font-sans text-text-primary antialiased">
+        <ImpersonationBanner />
         {children}
       </body>
     </html>

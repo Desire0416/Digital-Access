@@ -172,6 +172,7 @@ export async function listUsersAdmin(filters: { q?: string; role?: Role } = {}) 
       roles: true,
       emailVerified: true,
       isActive: true,
+      deletedAt: true,
       lastActiveAt: true,
       createdAt: true,
       _count: { select: { enrollments: true, certificates: true, payments: true } },

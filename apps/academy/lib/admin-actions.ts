@@ -506,6 +506,46 @@ export async function toggleUserActive(userId: string): Promise<AdminActionResul
   return { ok: true, message: `${target.name} ${next ? "réactivé(e)" : "désactivé(e)"}.` };
 }
 
+/** Suppression LOGIQUE d'un compte (rétention). Réservé au SUPER_ADMIN. */
+export async function deleteUser(userId: string): Promise<AdminActionResult> {
+  const parsed = z.string().min(1).safeParse(userId);
+  if (!parsed.success) return { ok: false, error: "Utilisateur invalide." };
+  const admin = await requireAdminFresh();
+  if (!admin) return DENIED;
+  if (!admin.roles.includes("SUPER_ADMIN")) return { ok: false, error: "Seul un super administrateur peut supprimer un compte." };
+
+  const target = await prisma.user.findUnique({ where: { id: parsed.data }, select: { id: true, name: true, roles: true, deletedAt: true } });
+  if (!target) return { ok: false, error: "Utilisateur introuvable." };
+  if (target.id === admin.id) return { ok: false, error: "Vous ne pouvez pas supprimer votre propre compte." };
+  if (target.roles.includes("SUPER_ADMIN")) return { ok: false, error: "Un super administrateur ne peut pas être supprimé — retirez-lui d'abord ce rôle." };
+  if (target.deletedAt) return { ok: false, error: "Ce compte est déjà supprimé." };
+
+  await prisma.user.update({ where: { id: target.id }, data: { deletedAt: new Date(), isActive: false } });
+  await audit(admin.id, "user.delete", "User", target.id, { name: target.name, roles: target.roles });
+
+  revalidatePath("/admin/utilisateurs");
+  return { ok: true, message: `Compte de ${target.name} supprimé (récupérable pendant la période de rétention).` };
+}
+
+/** Restaure un compte supprimé (annule le soft-delete). Réservé au SUPER_ADMIN. */
+export async function restoreUser(userId: string): Promise<AdminActionResult> {
+  const parsed = z.string().min(1).safeParse(userId);
+  if (!parsed.success) return { ok: false, error: "Utilisateur invalide." };
+  const admin = await requireAdminFresh();
+  if (!admin) return DENIED;
+  if (!admin.roles.includes("SUPER_ADMIN")) return { ok: false, error: "Seul un super administrateur peut restaurer un compte." };
+
+  const target = await prisma.user.findUnique({ where: { id: parsed.data }, select: { id: true, name: true, deletedAt: true } });
+  if (!target) return { ok: false, error: "Utilisateur introuvable." };
+  if (!target.deletedAt) return { ok: false, error: "Ce compte n'est pas supprimé." };
+
+  await prisma.user.update({ where: { id: target.id }, data: { deletedAt: null } });
+  await audit(admin.id, "user.restore", "User", target.id, { name: target.name });
+
+  revalidatePath("/admin/utilisateurs");
+  return { ok: true, message: `Compte de ${target.name} restauré.` };
+}
+
 /* ─── Certificats : révoquer / restaurer (délégué à certification.ts) ──────── */
 
 export async function revokeCertificateAction(certificateId: string, reason: string): Promise<AdminActionResult> {

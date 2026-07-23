@@ -2,10 +2,16 @@ import "server-only";
 import { redirect } from "next/navigation";
 import { auth } from "./auth";
 import { prisma, type Role } from "@da/academy-db/client";
+import { readActAs } from "./impersonation";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Gardes serveur — contrôle d'accès par rôle (cahier §7 / §46).
    `currentUser` lit la session JWT ; les gardes redirigent proprement.
+   « Agir en tant que » (§12) : un SUPER_ADMIN peut, via un cookie SIGNÉ,
+   soit agir en tant qu'un utilisateur, soit prévisualiser un rôle. L'override
+   n'est appliqué QUE dans currentUser() et QUE si la vraie session est
+   SUPER_ADMIN — les actions de mutation utilisent realUser()/currentUserFresh()
+   et restent donc protégées.
    ══════════════════════════════════════════════════════════════════════════ */
 
 export interface SessionUser {
@@ -17,8 +23,8 @@ export interface SessionUser {
   emailVerified: Date | null;
 }
 
-/** Utilisateur courant (ou null). Ne touche la base que pour rafraîchir les rôles. */
-export async function currentUser(): Promise<SessionUser | null> {
+/** VRAI utilisateur de la session JWT (jamais impersonné). Base de toute la sécurité. */
+export async function realUser(): Promise<SessionUser | null> {
   const session = await auth();
   const su = session?.user as unknown as
     | { id?: string; name?: string; email?: string; roles?: Role[]; emailVerified?: string | Date | null }
@@ -34,15 +40,63 @@ export async function currentUser(): Promise<SessionUser | null> {
   };
 }
 
+/** Utilisateur AGISSANT (peut être un compte impersonné / un rôle prévisualisé). */
+export async function currentUser(): Promise<SessionUser | null> {
+  const real = await realUser();
+  if (!real) return null;
+  // « Agir en tant que » : réservé au SUPER_ADMIN, cookie émis pour LUI (by===id).
+  if (real.roles.includes("SUPER_ADMIN")) {
+    const actAs = await readActAs();
+    if (actAs && actAs.by === real.id) {
+      if (actAs.k === "role") {
+        return { ...real, roles: [actAs.role] };
+      }
+      if (actAs.k === "user" && actAs.sub !== real.id) {
+        const t = await prisma.user.findUnique({
+          where: { id: actAs.sub },
+          select: { id: true, name: true, email: true, avatar: true, roles: true, emailVerified: true, deletedAt: true },
+        });
+        if (t && !t.deletedAt) {
+          return { id: t.id, name: t.name, email: t.email, avatar: t.avatar, roles: t.roles, emailVerified: t.emailVerified };
+        }
+      }
+    }
+  }
+  return real;
+}
+
+export interface ImpersonationState {
+  real: { id: string; name: string; email: string };
+  mode: "user" | "role";
+  targetName?: string;
+  targetEmail?: string;
+  role?: Role;
+}
+
+/** État « agir en tant que » pour le bandeau (null si inactif). */
+export async function getImpersonation(): Promise<ImpersonationState | null> {
+  const real = await realUser();
+  if (!real || !real.roles.includes("SUPER_ADMIN")) return null;
+  const actAs = await readActAs();
+  if (!actAs || actAs.by !== real.id) return null;
+  const base = { real: { id: real.id, name: real.name, email: real.email } };
+  if (actAs.k === "role") return { ...base, mode: "role", role: actAs.role };
+  if (actAs.sub === real.id) return null;
+  const t = await prisma.user.findUnique({ where: { id: actAs.sub }, select: { name: true, email: true, deletedAt: true } });
+  if (!t || t.deletedAt) return null;
+  return { ...base, mode: "user", targetName: t.name, targetEmail: t.email };
+}
+
 /** Version « fraîche » depuis la base (pour les mutations sensibles). */
 export async function currentUserFresh(): Promise<SessionUser | null> {
   const s = await currentUser();
   if (!s) return null;
   const db = await prisma.user.findUnique({
     where: { id: s.id },
-    select: { id: true, name: true, email: true, avatar: true, roles: true, emailVerified: true, isActive: true },
+    select: { id: true, name: true, email: true, avatar: true, roles: true, emailVerified: true, isActive: true, deletedAt: true },
   });
   if (!db) return null;
+  if (db.deletedAt) return null; // compte supprimé
   if (db.emailVerified && !db.isActive) return null; // désactivé
   return { id: db.id, name: db.name, email: db.email, avatar: db.avatar, roles: db.roles, emailVerified: db.emailVerified };
 }

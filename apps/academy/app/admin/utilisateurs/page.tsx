@@ -6,6 +6,7 @@ import { listUsersAdmin } from "@/lib/admin-queries";
 import { currentUser } from "@/lib/guards";
 import { AdminPageHeader, AdminCard, StatusPill, AdminEmpty } from "@/components/admin/ui";
 import { UserActions } from "./UserActions";
+import { ViewAsRole } from "./ViewAsRole";
 
 export const metadata: Metadata = { title: "Utilisateurs — Administration" };
 
@@ -120,6 +121,8 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
         </div>
       </div>
 
+      {actorIsSuper && <ViewAsRole />}
+
       <p className="text-xs text-text-muted">
         {users.length} utilisateur{users.length > 1 ? "s" : ""}
         {q && <> pour « {q} »</>}
@@ -162,8 +165,8 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
                       <td className="px-4 py-3"><RoleChips roles={u.roles} /></td>
                       <td className="px-4 py-3">
                         <StatusPill
-                          label={u.isActive ? "Actif" : "Inactif"}
-                          tone={u.isActive ? "success" : "neutral"}
+                          label={u.deletedAt ? "Supprimé" : u.isActive ? "Actif" : "Inactif"}
+                          tone={u.deletedAt ? "danger" : u.isActive ? "success" : "neutral"}
                         />
                       </td>
                       <td className="px-4 py-3 text-xs text-text-secondary">
@@ -172,7 +175,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
                       <td className="px-4 py-3 text-xs text-text-secondary">{dateFmt.format(u.createdAt)}</td>
                       <td className="px-5 py-3">
                         <UserActions
-                          user={{ id: u.id, name: u.name, roles: u.roles, isActive: u.isActive }}
+                          user={{ id: u.id, name: u.name, roles: u.roles, isActive: u.isActive, isDeleted: !!u.deletedAt }}
                           actorIsSuper={actorIsSuper}
                           isSelf={u.id === me?.id}
                         />
@@ -194,7 +197,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
                       <p className="truncate text-xs text-text-muted">{u.email}</p>
                       <div className="mt-2"><RoleChips roles={u.roles} /></div>
                       <div className="mt-2 flex items-center gap-2 text-xs text-text-secondary">
-                        <StatusPill label={u.isActive ? "Actif" : "Inactif"} tone={u.isActive ? "success" : "neutral"} />
+                        <StatusPill label={u.deletedAt ? "Supprimé" : u.isActive ? "Actif" : "Inactif"} tone={u.deletedAt ? "danger" : u.isActive ? "success" : "neutral"} />
                         <span>·</span>
                         <span>{dateFmt.format(u.createdAt)}</span>
                       </div>
@@ -202,7 +205,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
                   </div>
                   <div className="mt-3">
                     <UserActions
-                      user={{ id: u.id, name: u.name, roles: u.roles, isActive: u.isActive }}
+                      user={{ id: u.id, name: u.name, roles: u.roles, isActive: u.isActive, isDeleted: !!u.deletedAt }}
                       actorIsSuper={actorIsSuper}
                       isSelf={u.id === me?.id}
                     />

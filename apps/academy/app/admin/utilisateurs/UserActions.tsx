@@ -1,11 +1,13 @@
 "use client";
 
 import * as React from "react";
+import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { SlidersHorizontal, Power, Loader2, Check, X, ShieldAlert } from "lucide-react";
+import { SlidersHorizontal, Power, Loader2, Check, X, ShieldAlert, UserCog, Trash2, RotateCcw } from "lucide-react";
 import { cn } from "@da/ui";
-import { setUserRoles, toggleUserActive } from "@/lib/admin-actions";
+import { setUserRoles, toggleUserActive, deleteUser, restoreUser } from "@/lib/admin-actions";
+import { startImpersonation } from "@/lib/impersonation-actions";
 import type { Role } from "@da/academy-db/client";
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -49,18 +51,23 @@ export function UserActions({
   actorIsSuper,
   isSelf,
 }: {
-  user: { id: string; name: string; roles: Role[]; isActive: boolean };
+  user: { id: string; name: string; roles: Role[]; isActive: boolean; isDeleted?: boolean };
   actorIsSuper: boolean;
   isSelf: boolean;
 }) {
+  const router = useRouter();
   const [open, setOpen] = React.useState(false);
   const [selected, setSelected] = React.useState<Role[]>(user.roles);
   const [pending, startTransition] = React.useTransition();
   const [msg, setMsg] = React.useState<{ ok: boolean; text: string } | null>(null);
 
   const targetIsSuper = user.roles.includes("SUPER_ADMIN");
+  const isDeleted = !!user.isDeleted;
   // Un non-super ne peut pas gérer un super admin ni octroyer le rôle super.
   const lockedTarget = targetIsSuper && !actorIsSuper;
+  // Impersonation / suppression : super admin uniquement, jamais soi-même.
+  const canImpersonate = actorIsSuper && !isSelf && !isDeleted;
+  const canDelete = actorIsSuper && !isSelf && !targetIsSuper && !isDeleted;
 
   React.useEffect(() => {
     if (open) {
@@ -97,6 +104,29 @@ export function UserActions({
     });
   }
 
+  function impersonate() {
+    startTransition(async () => {
+      const res = await startImpersonation(user.id);
+      if (res.ok) router.push("/");
+      else setMsg({ ok: false, text: res.error });
+    });
+  }
+
+  function remove() {
+    if (!window.confirm(`Supprimer le compte de ${user.name} ? Il ne pourra plus se connecter (récupérable pendant la période de rétention).`)) return;
+    startTransition(async () => {
+      const res = await deleteUser(user.id);
+      setMsg(res.ok ? { ok: true, text: res.message ?? "Compte supprimé." } : { ok: false, text: res.error });
+    });
+  }
+
+  function restore() {
+    startTransition(async () => {
+      const res = await restoreUser(user.id);
+      setMsg(res.ok ? { ok: true, text: res.message ?? "Compte restauré." } : { ok: false, text: res.error });
+    });
+  }
+
   return (
     <div className="flex items-center justify-end gap-1.5">
       <button
@@ -128,6 +158,42 @@ export function UserActions({
       >
         {pending ? <Loader2 size={14} className="animate-spin" /> : <Power size={14} />}
       </button>
+
+      {/* Se connecter en tant que (impersonation) — super admin */}
+      {canImpersonate && (
+        <button
+          type="button"
+          onClick={impersonate}
+          disabled={pending}
+          title={`Se connecter en tant que ${user.name}`}
+          className="inline-flex h-[30px] w-[30px] items-center justify-center rounded-lg border border-navy/10 text-brand-blue-royal transition-colors hover:border-brand-blue-vif/40 hover:bg-brand-blue-vif/[0.06] disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          <UserCog size={14} />
+        </button>
+      )}
+
+      {/* Supprimer / Restaurer le compte — super admin */}
+      {isDeleted && actorIsSuper ? (
+        <button
+          type="button"
+          onClick={restore}
+          disabled={pending}
+          title="Restaurer le compte"
+          className="inline-flex h-[30px] w-[30px] items-center justify-center rounded-lg border border-success/20 text-success transition-colors hover:bg-success/[0.06] disabled:opacity-40"
+        >
+          <RotateCcw size={14} />
+        </button>
+      ) : canDelete ? (
+        <button
+          type="button"
+          onClick={remove}
+          disabled={pending}
+          title={`Supprimer le compte de ${user.name}`}
+          className="inline-flex h-[30px] w-[30px] items-center justify-center rounded-lg border border-error/20 text-error transition-colors hover:bg-error/[0.06] disabled:opacity-40"
+        >
+          <Trash2 size={14} />
+        </button>
+      ) : null}
 
       {/* Modale d'édition des rôles */}
       {typeof document !== "undefined" &&

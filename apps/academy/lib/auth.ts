@@ -29,10 +29,11 @@ const providers: NextAuthConfig["providers"] = [
         where: { email: email.toLowerCase() },
         select: {
           id: true, name: true, email: true, password: true, avatar: true,
-          roles: true, emailVerified: true, isActive: true,
+          roles: true, emailVerified: true, isActive: true, deletedAt: true,
         },
       });
       if (!user || !user.password) return null;
+      if (user.deletedAt) return null; // compte supprimé : connexion refusée
 
       const valid = await bcrypt.compare(password, user.password);
       if (!valid) return null;

@@ -54,6 +54,8 @@ model User {
   roles           Role[]    @default([LEARNER])
   emailVerified   DateTime?
   isActive        Boolean   @default(false)
+  /// Suppression logique (rétention). Un compte non nul est traité comme supprimé.
+  deletedAt       DateTime?
   lastActiveAt    DateTime?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
