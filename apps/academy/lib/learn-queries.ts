@@ -677,24 +677,20 @@ export async function getAcquiredCourseIds(userId: string): Promise<Set<string>>
  * même si la formation est archivée/suspendue.
  */
 /**
- * Verrou de démarrage de cohorte (§23). Si l'utilisateur est membre (non retiré)
- * d'une cohorte ciblant cette formation dont la date de début n'est pas encore
- * atteinte, la formation ne peut pas être COMMENCÉE avant cette date — même une
- * fois l'inscription active. Renvoie la date de démarrage, sinon null. Les
- * inscriptions hors cohorte (achat direct, octroi admin) ne sont pas concernées.
+ * Verrou de démarrage de cohorte (§23). Si la formation est délivrée par une
+ * cohorte OUVERTE dont la date de début n'est pas encore atteinte, elle ne peut
+ * pas être COMMENCÉE avant cette date. Le verrou s'applique à TOUT apprenant
+ * inscrit — via la cohorte OU par inscription directe (octroi admin) — mais
+ * jamais aux aperçus publics : l'appelant ne pose le verrou que si `enrolled`.
+ * Renvoie la date de démarrage la plus proche, sinon null.
  */
-async function getCohortStartGate(courseId: string, userId: string | null): Promise<Date | null> {
-  if (!userId) return null;
-  const membership = await prisma.cohortMember.findFirst({
-    where: {
-      userId,
-      status: { not: "WITHDRAWN" },
-      cohort: { courseId, startDate: { gt: new Date() } },
-    },
-    orderBy: { cohort: { startDate: "asc" } },
-    select: { cohort: { select: { startDate: true } } },
+async function getCourseCohortStart(courseId: string): Promise<Date | null> {
+  const c = await prisma.cohort.findFirst({
+    where: { courseId, status: "OPEN", startDate: { gt: new Date() } },
+    orderBy: { startDate: "asc" },
+    select: { startDate: true },
   });
-  return membership?.cohort.startDate ?? null;
+  return c?.startDate ?? null;
 }
 
 export async function getPlayerCourse(slug: string, userId: string | null) {
@@ -752,9 +748,10 @@ export async function getPlayerCourse(slug: string, userId: string | null) {
   // Sans inscription, seule une formation PUBLIÉE est visible (aperçus).
   if (!enrolled && course.status !== "PUBLISHED") return null;
 
-  // Verrou de démarrage de cohorte : la formation ne s'ouvre pas avant la date
-  // de début de la cohorte de l'apprenant (§23).
-  const startsAt = await getCohortStartGate(course.id, userId);
+  // Verrou de démarrage de cohorte : une formation délivrée en cohorte ne
+  // s'ouvre pas avant la date de début, pour TOUT apprenant inscrit — cohorte
+  // comme inscription directe (§23). Les aperçus (non inscrits) restent ouverts.
+  const startsAt = enrolled ? await getCourseCohortStart(course.id) : null;
 
   const flat = course.modules.flatMap((m) => m.lessons);
   const completed = userId ? await getCompletedLessonIds(userId, flat.map((l) => l.id)) : new Set<string>();
@@ -876,8 +873,9 @@ export async function getPlayerLesson(lessonId: string, userId: string | null) {
   let locked = false;
 
   // Verrou de démarrage de cohorte : contenu nullé tant que la cohorte n'a pas
-  // démarré (§23), même pour un inscrit — cohérent avec getPlayerCourse.
-  const startsAt = await getCohortStartGate(course.id, userId);
+  // démarré (§23), pour TOUT inscrit (cohorte ou direct) — cohérent avec
+  // getPlayerCourse. Non appliqué aux aperçus (non inscrits).
+  const startsAt = enrolled ? await getCourseCohortStart(course.id) : null;
   if (startsAt) hasAccess = false;
 
   // Verrouillage séquentiel pour l'apprenant inscrit.
