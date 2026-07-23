@@ -427,6 +427,29 @@ async function main() {
     });
   }
 
+  // 5) Événement PUBLIC de promotion (apparaît sur /evenements).
+  await prisma.event.create({
+    data: {
+      title: "Session d'info — Créez des publicités vidéo avec l'IA",
+      slug: `${COHORT_SLUG}-info`,
+      description:
+        "Présentation gratuite de la cohorte « Création de vidéos publicitaires avec l'IA » (Août 2026) : programme, outils, projet fil rouge, tarif et modalités d'inscription. Posez vos questions en direct, puis rejoignez la cohorte.",
+      type: "WEBINAR",
+      audience: "PUBLIC",
+      startAt: at("2026-07-30T18:30"),
+      endAt: at("2026-07-30T19:30"),
+      timezone: "Africa/Abidjan",
+      provider: "GOOGLE_MEET",
+      meetingUrl: null,
+      speakerName: "Koffi N'Guessan",
+      cohortId: cohort.id,
+      courseId: course.id,
+      schoolId: primarySchoolId,
+      hostId: instructor?.id ?? null,
+      status: "PUBLISHED",
+    },
+  });
+
   console.log("=== COHORTE CRÉÉE ===");
   console.log(JSON.stringify({ course: COURSE_SLUG, cohort: COHORT_SLUG, schools: Object.keys(bySlug), modules: mOrder, lessons: nLessons, quiz: nQuiz, questions: nQ, assignments: nAssign, sessions: SESSIONS.length, instructor: !!instructor }, null, 2));
   await prisma.$disconnect();

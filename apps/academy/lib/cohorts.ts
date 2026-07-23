@@ -79,57 +79,85 @@ export async function getOpenCohorts(target: {
     where,
     orderBy: { startDate: "asc" },
     take: 50,
-    select: {
-      id: true,
-      code: true,
-      name: true,
-      slug: true,
-      type: true,
-      description: true,
-      startDate: true,
-      endDate: true,
-      enrollmentDeadline: true,
-      rhythm: true,
-      coverImage: true,
-      capacity: true,
-      price: true,
-      course: { select: { slug: true, title: true, price: true } },
-      careerPath: { select: { slug: true, title: true, price: true } },
-      instructors: {
-        orderBy: { roleLabel: "asc" },
-        select: { roleLabel: true, user: { select: { name: true } } },
-      },
-      _count: { select: { members: { where: { status: "ACTIVE" } } } },
-    },
+    select: PUBLIC_COHORT_SELECT,
   });
 
-  return rows.map((c) => {
-    const seatsTaken = c._count.members;
-    const targetPrice = c.course?.price ?? c.careerPath?.price ?? 0;
-    const effectivePrice = c.price ?? targetPrice;
-    const seatsLeft = c.capacity != null ? Math.max(0, c.capacity - seatsTaken) : null;
-    const isFull = c.capacity != null && seatsTaken >= c.capacity;
-    return {
-      id: c.id,
-      code: c.code,
-      name: c.name,
-      slug: c.slug,
-      type: c.type,
-      description: c.description,
-      startDate: c.startDate,
-      endDate: c.endDate,
-      enrollmentDeadline: c.enrollmentDeadline,
-      rhythm: c.rhythm,
-      coverImage: c.coverImage,
-      capacity: c.capacity,
-      effectivePrice,
-      seatsTaken,
-      seatsLeft,
-      isFull,
-      target: toTarget(c.course, c.careerPath),
-      instructors: c.instructors.map((i) => ({ name: i.user.name, roleLabel: i.roleLabel })),
-    };
+  return rows.map(mapPublicCohort);
+}
+
+/** Sélection Prisma partagée pour les cohortes publiques. */
+const PUBLIC_COHORT_SELECT = {
+  id: true,
+  code: true,
+  name: true,
+  slug: true,
+  type: true,
+  description: true,
+  startDate: true,
+  endDate: true,
+  enrollmentDeadline: true,
+  rhythm: true,
+  coverImage: true,
+  capacity: true,
+  price: true,
+  course: { select: { slug: true, title: true, price: true } },
+  careerPath: { select: { slug: true, title: true, price: true } },
+  instructors: {
+    orderBy: { roleLabel: "asc" as const },
+    select: { roleLabel: true, user: { select: { name: true } } },
+  },
+  _count: { select: { members: { where: { status: "ACTIVE" as const } } } },
+} satisfies Prisma.CohortSelect;
+
+type PublicCohortRow = Prisma.CohortGetPayload<{ select: typeof PUBLIC_COHORT_SELECT }>;
+
+function mapPublicCohort(c: PublicCohortRow): PublicCohort {
+  const seatsTaken = c._count.members;
+  const targetPrice = c.course?.price ?? c.careerPath?.price ?? 0;
+  const effectivePrice = c.price ?? targetPrice;
+  const seatsLeft = c.capacity != null ? Math.max(0, c.capacity - seatsTaken) : null;
+  const isFull = c.capacity != null && seatsTaken >= c.capacity;
+  return {
+    id: c.id,
+    code: c.code,
+    name: c.name,
+    slug: c.slug,
+    type: c.type,
+    description: c.description,
+    startDate: c.startDate,
+    endDate: c.endDate,
+    enrollmentDeadline: c.enrollmentDeadline,
+    rhythm: c.rhythm,
+    coverImage: c.coverImage,
+    capacity: c.capacity,
+    effectivePrice,
+    seatsTaken,
+    seatsLeft,
+    isFull,
+    target: toTarget(c.course, c.careerPath),
+    instructors: c.instructors.map((i) => ({ name: i.user.name, roleLabel: i.roleLabel })),
+  };
+}
+
+/**
+ * TOUTES les cohortes ouvertes (catalogue public /cohortes + promo accueil).
+ * Mêmes critères d'ouverture que getOpenCohorts, sans filtre de cible.
+ */
+export async function getAllOpenCohorts(take = 24): Promise<PublicCohort[]> {
+  const now = new Date();
+  const rows = await prisma.cohort.findMany({
+    where: {
+      status: "OPEN",
+      AND: [
+        { OR: [{ enrollmentDeadline: null }, { enrollmentDeadline: { gte: now } }] },
+        { OR: [{ endDate: null }, { endDate: { gte: now } }] },
+      ],
+    },
+    orderBy: { startDate: "asc" },
+    take,
+    select: PUBLIC_COHORT_SELECT,
   });
+  return rows.map(mapPublicCohort);
 }
 
 /* ─── Mes cohortes (§16.1, §23.5) ──────────────────────────────────────────── */

@@ -19,6 +19,7 @@ export const mainNav = [
   { label: "Accueil", href: "/" },
   { label: "Formations", href: "/formations" },
   { label: "Parcours métiers", href: "/parcours-metiers" },
+  { label: "Cohortes", href: "/cohortes" },
   { label: "Écoles", href: "/ecoles" },
   { label: "Événements", href: "/evenements" },
   { label: "Certifications", href: "/certifications" },

@@ -84,6 +84,7 @@ const MOBILE_NAV_GROUPS: { title: string; items: { label: string; href: string }
     items: [
       { label: "Formations", href: "/formations" },
       { label: "Parcours métiers", href: "/parcours-metiers" },
+      { label: "Cohortes", href: "/cohortes" },
       { label: "Écoles", href: "/ecoles" },
       { label: "Événements", href: "/evenements" },
     ],

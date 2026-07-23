@@ -30,6 +30,8 @@ import { getHomeData } from "@/lib/catalogue";
 import { CourseCard, CareerPathCard, SchoolCard } from "@/components/cards";
 import { SectionHeading } from "@/components/SectionHeading";
 import HeroSection from "@/components/home/HeroSection";
+import { getAllOpenCohorts } from "@/lib/cohorts";
+import { CohortOpenSessions } from "@/components/cohort/CohortOpenSessions";
 
 export const metadata: Metadata = {
   title: "Apprenez une compétence. Préparez-vous à un métier.",
@@ -145,7 +147,10 @@ const ORIENTATION = [
 ] as const;
 
 export default async function HomePage() {
-  const { featuredPaths, popularCourses, schools, stats } = await getHomeData();
+  const [{ featuredPaths, popularCourses, schools, stats }, openCohorts] = await Promise.all([
+    getHomeData(),
+    getAllOpenCohorts(3),
+  ]);
 
   // Données sérialisables pour le hero (composant client) — §9.1
   const heroCourses = popularCourses.map((c) => ({
@@ -223,6 +228,32 @@ export default async function HomePage() {
           </StaggerGroup>
         </Container>
       </Section>
+
+      {/* ═══════════════════ COHORTES EN DIRECT (promo) ═══════════════════ */}
+      {openCohorts.length > 0 && (
+        <Section tone="default" spacing="md">
+          <Container>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <SectionHeading
+                eyebrow="Nouveau · Sessions encadrées"
+                title="Apprenez en direct, en"
+                gradient="cohorte"
+                subtitle="Un formateur, des séances live, des ateliers pratiques et un projet réel — en groupe et à dates fixes. Places limitées."
+              />
+              <Link
+                href="/cohortes"
+                className="hidden shrink-0 items-center gap-1.5 text-sm font-semibold text-brand-blue-royal hover:underline sm:inline-flex"
+              >
+                Toutes les cohortes
+                <ArrowRight size={15} />
+              </Link>
+            </div>
+            <div className="mt-10">
+              <CohortOpenSessions cohorts={openCohorts} />
+            </div>
+          </Container>
+        </Section>
+      )}
 
       {/* ═══════════════════════ PARCOURS VEDETTES §9.3 ═══════════════════════ */}
       {featuredPaths.length > 0 && (
