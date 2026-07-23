@@ -1,5 +1,5 @@
 // Crée la formation « Création de vidéos publicitaires avec l'IA » + sa cohorte
-// « Août 2026 » (sessions live, leçons vidéo/à lire, quiz, exercices pratiques).
+// « Août 2026 » (parcours autonome en 9 modules + webinaires d'accompagnement).
 // Idempotent : reconstruit intégralement à chaque exécution (upsert par slug).
 //   node --env-file=../../.env scripts/create-cohort-video-ia.mjs
 import { createRequire } from "node:module";
@@ -33,47 +33,63 @@ const FICHE = {
   code: "DES-019",
   title: "Création de vidéos publicitaires avec l'intelligence artificielle",
   subtitle:
-    "Concevez et produisez, de A à Z, une vraie publicité vidéo (30–60 s) avec l'IA : concept, scénario, visuels, animation, voix off, montage et diffusion.",
+    "Concevez et produisez, en autonomie, une vraie publicité vidéo (30–60 s) avec ChatGPT, Veo 3, ElevenLabs et CapCut — du brief au montage final, prête pour votre portfolio.",
   description:
-    "Cette formation pratique vous accompagne dans la conception et la réalisation complète d'une **vidéo publicitaire professionnelle** à l'aide d'outils d'intelligence artificielle. À partir d'un produit, d'un service, d'une entreprise ou d'un projet réel, vous apprendrez à définir un concept, rédiger un scénario, créer un storyboard, générer des visuels cohérents, animer les scènes, produire une voix off, composer une ambiance musicale et réaliser le montage final.\n\nLa pédagogie repose sur un **projet fil rouge** : à la fin, chaque participant présente une publicité de 30 à 60 secondes, cohérente avec l'identité de la marque choisie et adaptée aux réseaux sociaux. Chaque module alterne **vidéos**, **ressources à lire**, **quiz** de validation et **exercices pratiques** à déposer pour correction ; la cohorte y ajoute des **séances live (Google Meet)** et deux ateliers en présentiel.",
+    "## Présentation\n\n" +
+    "Cette formation permet d'apprendre, **en toute autonomie**, à concevoir et produire une vidéo publicitaire complète à l'aide d'outils d'intelligence artificielle et de montage vidéo.\n\n" +
+    "Le parcours couvre toutes les étapes de production : définition du besoin publicitaire, identification de la cible, concept et scénario, storyboard, génération des scènes vidéo, voix off, montage, habillage sonore et export de la vidéo finale.\n\n" +
+    "## Les outils\n\n" +
+    "- **ChatGPT** — réflexion créative, brief, scénario, storyboard et prompts ;\n" +
+    "- **Veo 3** — génération et animation des scènes vidéo ;\n" +
+    "- **ElevenLabs** — création de la voix off ;\n" +
+    "- **CapCut** — montage, mixage, sous-titres et export final.\n\n" +
+    "## Un projet fil rouge\n\n" +
+    "Dès le début, chaque participant choisit un produit, un service, une entreprise, une association ou un projet à promouvoir. Chaque module produit une partie de ce projet unique : vous ne réalisez pas des exercices isolés, vous construisez progressivement une seule production complète.\n\n" +
+    "À la fin, vous disposez d'une **vidéo publicitaire professionnelle (30–60 s)** que vous pouvez présenter dans votre portfolio ou utiliser pour promouvoir votre projet.\n\n" +
+    "| Étape | Production attendue | Module |\n|---|---|---|\n" +
+    "| 1 | Choix du projet | Module 1 |\n| 2 | Brief publicitaire | Module 2 |\n| 3 | Scénario | Module 3 |\n" +
+    "| 4 | Storyboard & prompts | Module 4 |\n| 5 | Scènes vidéo générées | Module 5 |\n| 6 | Voix off | Module 6 |\n" +
+    "| 7 | Première version montée | Module 7 |\n| 8 | Vidéo finale | Module 8 |\n| 9 | Présentation portfolio | Module 9 |",
   objectives: [
-    "Analyser un besoin de communication et définir la cible et la promesse publicitaire",
-    "Rédiger un brief créatif et un concept publicitaire",
-    "Construire un scénario court (30–60 s) et un storyboard exploitable",
-    "Générer et animer des images cohérentes avec l'IA (personnage, décor, produit)",
-    "Rédiger des prompts précis pour l'image et la vidéo",
-    "Produire une voix off naturelle et une musique d'ambiance adaptée",
-    "Réaliser le montage, le mixage, le sous-titrage et l'export",
-    "Adapter la vidéo aux formats des réseaux sociaux (horizontal, vertical, carré)",
-    "Respecter les droits d'auteur, le droit à l'image et les règles éthiques",
-    "Produire de façon autonome une publicité vidéo professionnelle complète",
+    "Analyser un besoin de communication publicitaire",
+    "Définir la cible d'une publicité",
+    "Déterminer le message principal et l'appel à l'action",
+    "Rédiger un brief créatif",
+    "Concevoir un concept publicitaire avec ChatGPT",
+    "Rédiger un scénario adapté à une vidéo courte",
+    "Transformer le scénario en storyboard",
+    "Rédiger des prompts de génération vidéo",
+    "Générer des scènes avec Veo 3",
+    "Améliorer la cohérence entre plusieurs scènes",
+    "Rédiger un texte de voix off",
+    "Générer une voix off avec ElevenLabs",
+    "Monter une publicité dans CapCut",
+    "Synchroniser les scènes, la voix et la musique",
+    "Ajouter des textes, sous-titres, logos et appels à l'action",
+    "Exporter une vidéo adaptée aux réseaux sociaux",
+    "Présenter une réalisation professionnelle dans un portfolio",
   ],
   targetAudience: [
-    "Entrepreneurs et responsables de petites entreprises",
-    "Community managers et chargés de communication",
-    "Créateurs de contenu et infographistes",
-    "Freelances et agences digitales",
-    "Étudiants en communication, marketing ou audiovisuel",
-    "Responsables d'associations, d'écoles ou d'institutions",
+    "Entrepreneurs et responsables de petites et moyennes entreprises",
+    "Créateurs de contenu et community managers",
+    "Responsables de communication et chargés de marketing",
+    "Responsables d'associations et promoteurs de projets",
+    "Formateurs, freelances et infographistes",
+    "Étudiants souhaitant développer des compétences en création de contenu",
   ],
   prerequisitesText: [
-    "Maîtriser les usages de base d'un ordinateur et naviguer sur Internet",
-    "Disposer d'un ordinateur portable fonctionnel et d'une connexion stable",
-    "Venir avec une idée de produit, service, marque ou projet à promouvoir",
-    "Installer les applications demandées et prévoir un casque audio",
-    "Connaître Canva ou CapCut est un plus (non obligatoire)",
+    "Savoir utiliser un ordinateur et naviguer sur Internet",
+    "Disposer d'une adresse électronique et pouvoir créer des comptes sur les outils utilisés",
+    "Disposer d'un ordinateur (portable ou de bureau) et d'une connexion Internet stable",
+    "Savoir télécharger et organiser des fichiers",
+    "Prévoir des écouteurs ou un casque audio",
+    "Avoir un produit, un service, une organisation ou un projet à promouvoir",
+    "Connaître les bases de CapCut est un plus (non obligatoire)",
   ],
-  tools: [
-    "Générateurs d'images IA (Midjourney, DALL·E, Leonardo)",
-    "Génération vidéo IA (Runway, Kling, Pika)",
-    "Voix off IA (ElevenLabs)",
-    "Musique & sons (Suno, banques libres de droits)",
-    "Montage (CapCut, Adobe Premiere Pro)",
-    "Design & miniatures (Canva)",
-  ],
-  level: "INTERMEDIATE",
+  tools: ["ChatGPT", "Veo 3", "ElevenLabs", "CapCut"],
+  level: "BEGINNER",
   price: 50000,
-  durationHours: 40,
+  durationHours: 30,
   certificateTitle: "Certificat de réussite — Création de vidéos publicitaires avec l'intelligence artificielle",
 };
 
@@ -88,196 +104,342 @@ const video = (title, desc) => ({
 const read = (title, content) => ({ type: "TEXT", title, content, durationMinutes: 18 });
 const link = (title, url, content) => ({ type: "EXTERNAL_LINK", title, externalUrl: url, content, durationMinutes: 8 });
 
+/* Leçon « plan du module » construite à partir de l'ossature (objectifs +
+   contenus + activité). Le contenu détaillé et les démonstrations vidéo seront
+   mis en ligne par le formateur — d'où le rappel en bas de leçon. */
+const planLesson = (objectives, contents, activity) =>
+  read(
+    "Plan et notions clés du module",
+    `## Objectifs\n\n${objectives.map((o) => `- ${o}`).join("\n")}\n\n` +
+      `## Au programme\n\n${contents.map((c) => `- ${c}`).join("\n")}\n\n` +
+      `## Activité pratique\n\n${activity}\n\n` +
+      `> 📚 Le contenu détaillé (leçons pas à pas et démonstrations vidéo) de ce module sera mis en ligne par le formateur.`,
+  );
+/* Emplacement de la vidéo de démonstration (URL à fournir via le studio). */
+const demoLesson = (theme) =>
+  video(`Démonstration — ${theme}`, `Démonstration pratique : ${theme}.`);
+
 /* ─── Question helpers (encodage identique à import-content.mjs) ─── */
 const scq = (question, options, correctIndex, explanation) => ({ type: "SINGLE_CHOICE", question, options, correctIndex, explanation, points: 1 });
 const mcq = (question, options, correctIndexes, explanation) => ({ type: "MULTIPLE_CHOICE", question, options, correctIndexes, explanation, points: 2 });
 const tf = (question, correctTrue, explanation) => ({ type: "TRUE_FALSE", question, correctTrue, explanation, points: 1 });
 
-/* ────────────────────────────── 8 modules ────────────────────────────────── */
+/* Construit un module à partir de l'ossature pédagogique (squelette fourni).
+   Le contenu détaillé des leçons sera fourni ensuite par le formateur : ici on
+   pose la structure (plan + emplacement vidéo), l'autoévaluation et le livrable. */
+const mod = ({ title, description, theme, objectives, contents, activity, quiz, assignment }) => ({
+  title,
+  description,
+  objectives,
+  lessons: [planLesson(objectives, contents, activity), demoLesson(theme)],
+  quiz,
+  assignment,
+});
+
+/* ───────────────── 9 modules (ossature — projet fil rouge) ─────────────────── */
 const MODULES = [
-  {
-    title: "Module 1 — Comprendre la publicité vidéo assistée par IA",
-    description: "Comprendre le processus complet de création d'une publicité vidéo avec l'IA et choisir son projet fil rouge.",
-    objectives: ["Distinguer contenu promotionnel et publicité structurée", "Maîtriser le schéma cible–problème–promesse–preuve–CTA", "Situer les étapes d'une production assistée par IA"],
-    lessons: [
-      video("Panorama : créer une pub vidéo avec l'IA", "Cette vidéo présente le parcours complet — du brief au montage — et montre des exemples de publicités réalisées avec l'IA."),
-      read(
-        "À lire — Les fondamentaux d'une publicité vidéo efficace",
-        "## Ce qui fait une bonne publicité vidéo\n\nUne publicité n'est pas un simple contenu promotionnel : c'est un **message structuré** qui vise une action précise.\n\n### Le schéma AIDA appliqué à la vidéo courte\n\n1. **Cible** — à qui parle-t-on ? (âge, besoin, contexte)\n2. **Problème** — quelle frustration vit la cible ?\n3. **Promesse** — quelle transformation propose votre produit ?\n4. **Preuve** — pourquoi vous croire ? (démonstration, chiffre, témoignage)\n5. **Appel à l'action (CTA)** — que doit faire le spectateur maintenant ?\n\n> **Règle des 3 secondes** : sur les réseaux, l'accroche des 3 premières secondes décide si l'on regarde la suite.\n\n### Contenu promotionnel vs publicité structurée\n\n| Contenu promotionnel | Publicité structurée |\n|---|---|\n| « Voici notre produit » | « Voici votre problème, et comment on le résout » |\n| Centré sur la marque | Centré sur le client |\n| Pas d'objectif mesurable | Un CTA clair et unique |\n\n### Les grandes étapes d'une production IA\n\nBrief → concept → scénario → storyboard → visuels → animation → voix off & musique → montage → déclinaisons.",
-      ),
-      link("À préparer — Créer vos comptes outils", "https://www.canva.com", "Avant la première séance pratique, créez vos comptes sur les outils que nous utiliserons (Canva, CapCut, un générateur d'images, ElevenLabs). Des alternatives gratuites seront proposées quand un outil est payant."),
+  mod({
+    title: "Module 1 — Comprendre la vidéo publicitaire assistée par IA",
+    description: "Comprendre ce qu'est une vidéo publicitaire, ses étapes de production et le rôle de chaque outil, puis choisir le sujet de son projet fil rouge.",
+    theme: "panorama et outils de la publicité vidéo IA",
+    objectives: [
+      "Comprendre les caractéristiques d'une vidéo publicitaire",
+      "Identifier les différentes étapes de production",
+      "Découvrir le rôle de chaque outil (ChatGPT, Veo 3, ElevenLabs, CapCut)",
+      "Choisir le sujet du projet fil rouge",
     ],
+    contents: [
+      "Qu'est-ce qu'une vidéo publicitaire ?",
+      "Différence entre vidéo informative et vidéo publicitaire",
+      "Les principaux formats publicitaires",
+      "Les étapes de création d'une publicité",
+      "Présentation de ChatGPT, Veo 3, ElevenLabs et CapCut",
+      "Limites et responsabilités liées à l'utilisation de l'IA",
+      "Présentation du projet final",
+    ],
+    activity: "Choisir le produit, le service ou le projet qui sera utilisé pendant toute la formation.",
     quiz: {
-      title: "Quiz — Fondamentaux de la publicité vidéo",
+      title: "Autoévaluation — Comprendre la publicité vidéo IA",
       questions: [
-        scq("Quel élément conclut une publicité efficace en indiquant quoi faire ?", ["La preuve", "L'appel à l'action (CTA)", "La musique", "Le logo"], 1, "Le CTA invite le spectateur à passer à l'action."),
-        mcq("Quels éléments composent le schéma d'un message publicitaire structuré ?", ["Cible", "Problème", "Promesse", "Durée du fichier"], [0, 1, 2], "Cible, problème, promesse, preuve et CTA — la durée du fichier n'en fait pas partie."),
-        tf("Les 3 premières secondes d'une vidéo sociale sont décisives pour retenir l'attention.", true, "L'accroche initiale détermine la rétention."),
-        scq("Une publicité structurée est avant tout centrée sur…", ["la marque", "le client et son problème", "les fonctionnalités techniques", "le budget"], 1, "On part du besoin du client, pas de la marque."),
+        scq("Qu'est-ce qui distingue une vidéo publicitaire d'une vidéo simplement informative ?", ["Sa durée", "Elle vise une action précise de la cible", "La qualité de l'image", "Le format du fichier"], 1, "La publicité cherche à déclencher une action (le fameux appel à l'action)."),
+        mcq("Quels outils sont utilisés dans cette formation ?", ["ChatGPT", "Veo 3", "Photoshop", "CapCut"], [0, 1, 3], "ChatGPT, Veo 3, ElevenLabs et CapCut — pas Photoshop."),
+        tf("Une vidéo publicitaire efficace se termine généralement par un appel à l'action.", true, "Le CTA indique au spectateur quoi faire ensuite."),
       ],
     },
-    assignment: { title: "Exercice — Choisir votre projet", description: "**Livrable du module 1.** Choisissez le produit, le service, la marque ou le projet que vous promouvrez tout au long de la formation. Déposez une note (½ page) : nom du produit, à qui il s'adresse, et pourquoi vous le choisissez. Formats acceptés : PDF, DOCX ou texte." },
-  },
-  {
-    title: "Module 2 — Construire le brief et le concept publicitaire",
-    description: "Transformer un besoin commercial en concept créatif exploitable.",
-    objectives: ["Identifier la cible et l'objectif de campagne", "Formuler une proposition de valeur et un message principal", "Explorer plusieurs concepts avec l'IA"],
-    lessons: [
-      video("Explorer des concepts publicitaires avec l'IA", "Démonstration : utiliser un assistant IA pour générer et comparer plusieurs angles créatifs à partir d'un même brief."),
-      read(
-        "À lire — Le brief créatif, étape par étape",
-        "## Du besoin au concept\n\nLe **brief** est la colonne vertébrale de votre campagne. Un bon brief tient sur une page et répond à :\n\n- **Cible** : persona précis (qui, où, quels usages).\n- **Objectif** : notoriété, trafic, vente, inscription…\n- **Proposition de valeur** : le bénéfice n°1, en une phrase.\n- **Message principal** : ce que la cible doit retenir.\n- **Ton & émotion** : sérieux, fun, inspirant, rassurant…\n- **Identité visuelle** : couleurs, logo, style.\n- **Format & canal** : vertical TikTok, carré Instagram, 30 ou 60 s.\n\n### Utiliser l'IA pour diverger\n\nDonnez votre brief à un assistant IA et demandez **5 concepts différents** (angle émotionnel, angle démonstration, angle témoignage…). Vous choisirez ensuite le plus fort.\n\n> **Astuce** : un bon concept se résume en une phrase — « Montrer [transformation] pour [cible] grâce à [produit] ».",
-      ),
+    assignment: { title: "Livrable — Fiche de présentation du projet", description: "**Livrable du module 1.** Déposez une fiche de présentation de votre projet fil rouge comportant : le nom du projet ; le produit ou service concerné ; la cible principale ; le besoin de communication ; le canal de diffusion envisagé. Formats acceptés : PDF, DOCX ou texte." },
+  }),
+  mod({
+    title: "Module 2 — Définir le brief et le concept publicitaire avec ChatGPT",
+    description: "Transformer un besoin en concept créatif : cible, promesse, ton et appel à l'action, en explorant plusieurs idées avec ChatGPT.",
+    theme: "brief et concept avec ChatGPT",
+    objectives: [
+      "Identifier le besoin du client ou du projet",
+      "Définir la cible",
+      "Clarifier la promesse publicitaire",
+      "Construire un concept créatif",
     ],
+    contents: [
+      "Le rôle du brief publicitaire",
+      "L'objectif de communication",
+      "La cible principale",
+      "Le problème ou besoin de la cible",
+      "La proposition de valeur",
+      "La promesse publicitaire",
+      "Le ton de communication et l'émotion recherchée",
+      "L'appel à l'action",
+      "Utiliser ChatGPT pour explorer plusieurs idées",
+      "Comparer et sélectionner un concept",
+    ],
+    activity: "Utiliser ChatGPT pour produire trois concepts publicitaires différents à partir du projet choisi.",
     quiz: {
-      title: "Quiz — Brief & concept",
+      title: "Autoévaluation — Brief & concept",
       questions: [
-        scq("La proposition de valeur, c'est…", ["la liste des fonctionnalités", "le bénéfice n°1 pour la cible", "le budget de campagne", "le format d'export"], 1, "C'est le principal bénéfice, formulé simplement."),
-        tf("Un bon brief publicitaire peut tenir sur une seule page.", true, "La concision force la clarté."),
-        mcq("Que doit préciser un brief avant la production ?", ["La cible", "Le ton et l'émotion", "Le format et le canal", "Le nom du monteur"], [0, 1, 2], "Cible, ton, format/canal : oui. Le nom du monteur n'est pas un élément de brief."),
+        scq("La proposition de valeur exprime avant tout…", ["le prix du produit", "le principal bénéfice pour la cible", "le format d'export", "le nom de la marque"], 1, "C'est le bénéfice n°1 pour la cible, formulé simplement."),
+        tf("Un même brief peut donner lieu à plusieurs concepts créatifs différents.", true, "On diverge avant de sélectionner le concept le plus fort."),
+        scq("À l'étape du concept, ChatGPT sert surtout à…", ["monter la vidéo", "explorer et comparer plusieurs idées créatives", "générer la voix off", "exporter la vidéo"], 1, "ChatGPT aide à générer et comparer des angles créatifs."),
       ],
     },
-    assignment: { title: "Exercice — Votre brief publicitaire", description: "**Livrable du module 2.** Rédigez le brief de votre projet : cible, objectif, proposition de valeur, message principal, ton, identité visuelle, format et canal. Déposez le document (PDF/DOCX) — il servira de base à tout le reste de la formation." },
-  },
-  {
-    title: "Module 3 — Scénario, narration et storyboard",
-    description: "Structurer une publicité courte et convaincante, scène par scène.",
-    objectives: ["Écrire une structure narrative en 30–60 s", "Rédiger une voix off", "Produire un storyboard continu"],
-    lessons: [
-      video("Créer un storyboard exploitable", "Comment découper votre pub en scènes et décrire chaque plan (cadrage, mouvement, action) pour guider la génération d'images."),
-      read(
-        "À lire — Raconter en 30 à 60 secondes",
-        "## La structure d'une pub courte\n\n**Accroche → Problème → Transformation → Solution → Appel à l'action.**\n\nChaque scène dure 2 à 5 secondes. Pour 40 s, prévoyez 8 à 12 scènes.\n\n### La voix off\n\n- Une idée par phrase, phrases courtes.\n- ~2,5 mots par seconde → **≈ 100 mots pour 40 s**.\n- Terminez toujours par le CTA.\n\n### Le storyboard\n\nPour chaque scène, notez : **le plan** (large, moyen, gros plan), **l'action**, **le texte/voix off**, **l'ambiance**. La *continuité* (même personnage, même univers) est essentielle : gardez une fiche de référence de votre personnage et de votre décor.",
-      ),
+    assignment: { title: "Livrable — Brief publicitaire", description: "**Livrable du module 2.** Déposez un brief publicitaire validé comprenant : la cible ; l'objectif ; le message principal ; la promesse ; le ton ; l'appel à l'action ; le concept retenu. PDF ou DOCX." },
+  }),
+  mod({
+    title: "Module 3 — Rédiger le scénario publicitaire",
+    description: "Structurer une publicité courte (30–60 s) et transformer l'idée en narration, avec l'aide de ChatGPT.",
+    theme: "écriture du scénario publicitaire",
+    objectives: [
+      "Structurer une publicité courte",
+      "Transformer une idée en narration",
+      "Rédiger un scénario adapté à une durée de 30 à 60 secondes",
     ],
+    contents: [
+      "Les différentes structures narratives",
+      "L'accroche publicitaire",
+      "La présentation du problème",
+      "La mise en situation",
+      "La découverte de la solution",
+      "La transformation ou le bénéfice",
+      "La preuve",
+      "L'appel à l'action",
+      "La gestion de la durée",
+      "La rédaction avec ChatGPT",
+      "La vérification et l'amélioration du scénario",
+    ],
+    activity: "Rédiger deux versions du scénario du projet fil rouge, puis sélectionner la version la plus pertinente.",
     quiz: {
-      title: "Quiz — Scénario & storyboard",
+      title: "Autoévaluation — Scénario",
       questions: [
-        scq("Pour une voix off de 40 s, visez environ…", ["40 mots", "100 mots", "250 mots", "500 mots"], 1, "≈ 2,5 mots/seconde → ~100 mots."),
-        tf("La continuité du personnage et du décor est essentielle entre les scènes.", true, "Sans continuité, la vidéo paraît incohérente."),
-        scq("Quelle est une structure narrative adaptée à une pub courte ?", ["Introduction–développement–conclusion académique", "Accroche–problème–transformation–solution–CTA", "Générique–crédits–remerciements", "FAQ–tarifs–contact"], 1, "C'est la structure publicitaire efficace."),
+        scq("Où se situe l'accroche dans une publicité ?", ["à la fin", "au tout début", "au générique", "elle est facultative"], 1, "L'accroche ouvre la vidéo et retient l'attention."),
+        tf("Pour une vidéo de 30 à 60 s, le scénario doit rester court et aller à l'essentiel.", true, "La durée impose la concision."),
+        scq("Que doit contenir la fin d'un scénario publicitaire ?", ["le budget", "un appel à l'action", "les crédits", "la liste des outils"], 1, "On termine sur le CTA."),
       ],
     },
-    assignment: { title: "Exercice — Scénario + storyboard", description: "**Livrable du module 3** (préparé lors de l'atelier présentiel du samedi). Déposez votre scénario complet (voix off incluse) et votre storyboard scène par scène (tableau ou planche). PDF, images ou document." },
-  },
-  {
-    title: "Module 4 — Génération des visuels publicitaires",
-    description: "Créer des scènes visuelles réalistes et cohérentes avec l'IA.",
-    objectives: ["Écrire un prompt d'image structuré", "Maintenir la cohérence d'un personnage", "Corriger les erreurs fréquentes de génération"],
-    lessons: [
-      video("Générer un personnage cohérent", "Techniques pour obtenir le même visage, la même tenue et le même décor d'une image à l'autre."),
-      read(
-        "À lire — Anatomie d'un prompt d'image",
-        "## Décrire pour mieux générer\n\nUn prompt efficace précise, dans l'ordre : **sujet → action → cadrage → lumière → décor → style**.\n\n> Exemple : « Jeune entrepreneuse ivoirienne souriante, plan moyen, lumière naturelle douce, bureau moderne lumineux, style photographie réaliste ».\n\n### Cohérence\n\n- Fixez une **fiche personnage** (âge, tenue, coiffure) et réutilisez-la.\n- Variez seulement le cadrage : plan large, plan moyen, gros plan, plan par-dessus l'épaule.\n\n### Erreurs fréquentes et parades\n\n| Problème | Parade |\n|---|---|\n| Mains déformées | Cadrer plus serré, régénérer, retoucher |\n| Texte illisible | Ajouter le texte au montage, pas dans l'image |\n| Écrans/produits incohérents | Intégrer le vrai visuel produit en post-production |\n\nSélectionnez toujours 2–3 variantes par scène avant d'animer.",
-      ),
+    assignment: { title: "Livrable — Scénario", description: "**Livrable du module 3.** Déposez un scénario complet précisant : le déroulement de la publicité ; le contenu de chaque scène ; les dialogues éventuels ; la voix off ; le message final ; l'appel à l'action." },
+  }),
+  mod({
+    title: "Module 4 — Construire le storyboard et préparer les prompts",
+    description: "Découper le scénario en scènes, définir les plans et préparer les prompts de génération vidéo.",
+    theme: "storyboard et préparation des prompts",
+    objectives: [
+      "Découper le scénario en scènes",
+      "Définir les plans",
+      "Préparer les instructions nécessaires à la génération vidéo",
     ],
+    contents: [
+      "Le rôle du storyboard",
+      "Le découpage scène par scène",
+      "Les types de plans et le cadrage",
+      "Les mouvements de caméra",
+      "L'ambiance visuelle, les décors et la lumière",
+      "Les personnages, vêtements et accessoires",
+      "La continuité entre les scènes",
+      "La structure d'un prompt pour Veo 3",
+      "Les indications à éviter",
+      "La préparation d'un prompt par scène",
+    ],
+    activity: "Transformer le scénario en storyboard de cinq à huit scènes.",
     quiz: {
-      title: "Quiz — Visuels IA",
+      title: "Autoévaluation — Storyboard & prompts",
       questions: [
-        mcq("Que préciser dans un bon prompt d'image ?", ["Le sujet et l'action", "Le cadrage et la lumière", "Le décor et le style", "Le prix du produit"], [0, 1, 2], "Sujet, action, cadrage, lumière, décor, style — pas le prix."),
-        tf("Il vaut mieux ajouter les textes au montage plutôt que de les faire générer dans l'image.", true, "L'IA gère mal le texte dans l'image."),
-        scq("Pour garder le même personnage entre les scènes, on…", ["change de style à chaque image", "réutilise une fiche personnage de référence", "génère une seule image", "évite les gros plans"], 1, "La fiche de référence assure la cohérence."),
+        scq("À quoi sert le storyboard ?", ["à monter la vidéo", "à découper la publicité scène par scène avant la génération", "à générer la voix off", "à publier sur les réseaux"], 1, "Le storyboard planifie chaque plan avant la génération."),
+        tf("La continuité (personnage, décor) entre les scènes est importante pour la cohérence.", true, "Sans continuité, la vidéo paraît décousue."),
+        scq("Un bon prompt de génération vidéo décrit notamment…", ["le prix", "le sujet, l'action, le cadrage et l'ambiance", "le nom du monteur", "le nombre de vues"], 1, "On décrit le contenu visuel de la scène."),
       ],
     },
-    assignment: { title: "Exercice — Vos images fixes", description: "**Livrable du module 4.** Générez et déposez l'ensemble des images fixes nécessaires à votre publicité (une par scène du storyboard), avec un personnage et un univers cohérents. Déposez les images (ou un PDF planche-contact) + les prompts utilisés." },
-  },
-  {
-    title: "Module 5 — Animation et génération vidéo",
-    description: "Transformer les images fixes en scènes animées.",
-    objectives: ["Écrire un prompt d'animation", "Contrôler le rythme et la durée", "Assembler les meilleures prises"],
-    lessons: [
-      video("Animer des images fixes", "Passer de l'image à la vidéo : mouvement de personnage, mouvement de caméra, durée et cohérence."),
-      read(
-        "À lire — Du fixe à l'animé\n",
-        "## Prompt d'animation\n\nPrécisez le **type de mouvement** (léger zoom avant, panoramique, marche du personnage), sa **vitesse** et sa **durée**. Restez sobre : un mouvement subtil rend mieux qu'un effet spectaculaire raté.\n\n### Bonnes pratiques\n\n- Générez des clips courts (3–5 s) puis assemblez.\n- Gardez la **cohérence visuelle** (même personnage, même lumière).\n- Prévoyez plusieurs prises : la génération vidéo est aléatoire, sélectionnez la meilleure.\n- Animer un produit ou une interface : mouvements lents et nets.\n\n> **Astuce budget** : beaucoup d'outils offrent des crédits limités. Générez en priorité les scènes clés (accroche + CTA).",
-      ),
+    assignment: { title: "Livrable — Storyboard & prompts", description: "**Livrable du module 4.** Déposez un storyboard précisant, pour chaque scène : le numéro ; la durée estimée ; la description visuelle ; le cadrage ; l'action ; le mouvement de caméra ; l'ambiance ; le texte ou la voix off ; le prompt de génération." },
+  }),
+  mod({
+    title: "Module 5 — Générer les scènes vidéo avec Veo 3",
+    description: "Générer les scènes à partir des prompts, contrôler le mouvement et l'ambiance, puis sélectionner les meilleures prises.",
+    theme: "génération des scènes avec Veo 3",
+    objectives: [
+      "Générer des scènes vidéo à partir des prompts",
+      "Contrôler le mouvement et l'ambiance",
+      "Sélectionner les meilleures générations",
     ],
+    contents: [
+      "Présentation de Veo 3",
+      "Préparation d'un prompt vidéo",
+      "Description du sujet et de l'environnement",
+      "Actions et mouvements",
+      "Position et mouvement de caméra",
+      "Lumière et rendu visuel",
+      "Durée des scènes",
+      "Maintien de la cohérence du personnage et du décor",
+      "Correction des défauts fréquents",
+      "Multiplication des variantes et sélection des meilleures prises",
+      "Organisation des fichiers générés",
+    ],
+    activity: "Générer les différentes scènes du storyboard.",
     quiz: {
-      title: "Quiz — Animation",
+      title: "Autoévaluation — Génération avec Veo 3",
       questions: [
-        tf("Un mouvement subtil est souvent préférable à un effet spectaculaire mal maîtrisé.", true, "La sobriété est plus professionnelle."),
-        scq("Face au caractère aléatoire de la génération vidéo, il faut…", ["ne générer qu'une seule prise", "générer plusieurs prises et sélectionner la meilleure", "éviter d'animer", "tout animer manuellement"], 1, "On multiplie les prises puis on choisit."),
-        scq("Un prompt d'animation doit préciser…", ["uniquement la couleur", "le type, la vitesse et la durée du mouvement", "le prix de l'outil", "le nombre de spectateurs"], 1, "Type, vitesse et durée du mouvement."),
+        tf("La génération vidéo étant variable, il est utile de produire plusieurs variantes puis de sélectionner la meilleure.", true, "On multiplie les prises puis on choisit."),
+        scq("Que faut-il maintenir d'une scène à l'autre ?", ["rien", "la cohérence du personnage et du décor", "le même prompt exact", "la même durée que le fichier"], 1, "La cohérence assure une vidéo homogène."),
+        scq("Veo 3 sert principalement à…", ["monter la vidéo", "générer et animer les scènes vidéo", "écrire le scénario", "créer la voix off"], 1, "Veo 3 génère les scènes vidéo."),
       ],
     },
-    assignment: { title: "Exercice — Séquences animées", description: "**Livrable du module 5.** Déposez les séquences animées de votre projet (clips courts issus de vos images), prêtes à être montées. Indiquez l'outil utilisé et joignez éventuellement les prompts d'animation." },
-  },
-  {
-    title: "Module 6 — Voix off, musique et identité sonore",
-    description: "Construire une ambiance sonore professionnelle.",
-    objectives: ["Générer une voix off naturelle", "Choisir une musique adaptée", "Synchroniser voix, musique et images"],
-    lessons: [
-      video("Générer une voix off naturelle", "Régler le ton, le rythme et l'intention d'une voix off IA (ElevenLabs) et corriger les défauts de prononciation."),
-      read(
-        "À lire — L'ambiance sonore\n",
-        "## Voix off\n\n- Adaptez le texte à la durée (relisez à voix haute, chronométrez).\n- Choisissez un **ton** cohérent avec la marque (chaleureux, dynamique, premium).\n- Ajoutez des indications d'intention et corrigez les mots mal prononcés (orthographe phonétique).\n\n## Musique & effets\n\n- La musique porte l'émotion et le **rythme** ; elle ne doit jamais couvrir la voix.\n- Ajoutez des effets discrets (whoosh, clic) pour marquer les transitions.\n\n## Droits\n\nUtilisez des voix, musiques et sons **libres de droits** ou générés par IA dont la licence autorise l'usage commercial. La **synchronisation** voix/musique/images se règle au montage.",
-      ),
+    assignment: { title: "Livrable — Scènes vidéo générées", description: "**Livrable du module 5.** Déposez un dossier contenant : les scènes générées ; les versions retenues ; les prompts utilisés ; les éventuelles corrections apportées." },
+  }),
+  mod({
+    title: "Module 6 — Créer la voix off avec ElevenLabs",
+    description: "Rédiger et générer une voix off naturelle, adaptée au ton de la publicité, avec ElevenLabs.",
+    theme: "voix off avec ElevenLabs",
+    objectives: [
+      "Rédiger une voix off adaptée à la publicité",
+      "Choisir un style de narration",
+      "Générer une voix naturelle",
     ],
+    contents: [
+      "Le rôle de la voix off",
+      "La relation entre scénario et narration",
+      "La durée du texte",
+      "Le choix de la voix",
+      "Le rythme, le ton et les émotions",
+      "Les pauses et les indications d'interprétation",
+      "La génération avec ElevenLabs",
+      "La comparaison de plusieurs versions",
+      "La correction de la prononciation",
+      "Les précautions relatives aux voix et au consentement",
+    ],
+    activity: "Générer au moins deux versions de la voix off du projet.",
     quiz: {
-      title: "Quiz — Son & voix off",
+      title: "Autoévaluation — Voix off",
       questions: [
-        tf("La musique ne doit jamais couvrir la voix off.", true, "La voix porte le message ; la musique l'accompagne."),
-        mcq("Que vérifier pour la bande sonore d'une publicité commerciale ?", ["Les droits d'utilisation", "L'équilibre voix/musique", "La synchronisation avec l'image", "La marque de l'ordinateur"], [0, 1, 2], "Droits, équilibre et synchro — pas la marque de l'ordinateur."),
-        scq("Pour corriger un mot mal prononcé par une voix off IA, on peut…", ["changer de projet", "écrire le mot phonétiquement", "supprimer la voix off", "augmenter le volume"], 1, "L'orthographe phonétique guide la prononciation."),
+        tf("Le texte de la voix off doit être adapté à la durée de la vidéo.", true, "On chronomètre le texte pour tenir dans la durée."),
+        scq("Comment corriger un mot mal prononcé par une voix off IA ?", ["changer d'outil", "écrire le mot phonétiquement", "supprimer la voix", "augmenter le volume"], 1, "L'orthographe phonétique guide la prononciation."),
+        scq("Quelle précaution éthique concerne la voix off ?", ["aucune", "le consentement pour l'utilisation d'une voix", "la couleur de la vidéo", "la taille du fichier"], 1, "On n'utilise pas la voix d'un tiers sans consentement."),
       ],
     },
-    assignment: { title: "Exercice — Voix off + bande sonore", description: "**Livrable du module 6.** Déposez la voix off générée et la musique/effets de votre projet (fichiers audio), ainsi que le texte final de la voix off. Vérifiez les droits d'usage." },
-  },
-  {
-    title: "Module 7 — Montage de la vidéo publicitaire",
-    description: "Assembler tous les éléments en une publicité cohérente.",
-    objectives: ["Organiser et monter les scènes", "Synchroniser voix, musique et sous-titres", "Exporter en haute qualité"],
-    lessons: [
-      video("Montage pas à pas (CapCut / Premiere)", "Import, ordre des scènes, transitions, synchronisation de la voix off, mixage, logo, sous-titres, colorimétrie et export."),
-      read(
-        "À lire — Monter comme un pro\n",
-        "## Méthode de montage\n\n1. **Organisez** vos fichiers (scènes, voix, musique, logo).\n2. **Posez** les scènes dans l'ordre du storyboard.\n3. Réglez le **rythme** : plans courts sur l'accroche et le CTA.\n4. Ajoutez des **transitions** simples (cut, fondu léger).\n5. **Synchronisez** la voix off avec l'image ; calez la musique.\n6. Incrustez **logo, titres, sous-titres et CTA**.\n7. **Corrigez les couleurs** pour une image homogène.\n8. **Exportez** en haute qualité (1080p, bon débit).\n\n> **Accessibilité** : sur les réseaux, la majorité regarde **sans le son** → les sous-titres sont indispensables.",
-      ),
+    assignment: { title: "Livrable — Voix off", description: "**Livrable du module 6.** Déposez la voix off finale au format audio, accompagnée du texte utilisé. Vérifiez les droits et le consentement liés à la voix." },
+  }),
+  mod({
+    title: "Module 7 — Monter la publicité avec CapCut",
+    description: "Assembler les scènes, ajouter la voix off et la musique, et régler le rythme de la publicité dans CapCut.",
+    theme: "montage avec CapCut",
+    objectives: [
+      "Assembler les scènes",
+      "Ajouter la voix off et la musique",
+      "Améliorer le rythme général de la publicité",
     ],
+    contents: [
+      "Présentation de l'interface de CapCut",
+      "Création d'un projet",
+      "Importation des vidéos et fichiers audio",
+      "Organisation de la timeline",
+      "Découpage des scènes",
+      "Synchronisation de la voix off",
+      "Choix de la musique et réglage des volumes",
+      "Transitions et effets visuels",
+      "Correction des couleurs",
+      "Ralentissement ou accélération et ajout de bruitages",
+      "Gestion du rythme publicitaire",
+    ],
+    activity: "Réaliser une première version montée de la vidéo.",
     quiz: {
-      title: "Quiz — Montage",
+      title: "Autoévaluation — Montage CapCut",
+      questions: [
+        tf("La voix off et la musique doivent être équilibrées pour ne pas couvrir le message.", true, "La musique accompagne la voix, elle ne la couvre pas."),
+        scq("Dans CapCut, la timeline sert à…", ["exporter uniquement", "organiser et synchroniser les scènes et l'audio", "générer les scènes", "écrire le scénario"], 1, "La timeline organise le montage."),
+        scq("Le rythme d'une publicité se règle notamment par…", ["la durée des plans et les transitions", "la couleur du logo", "le nombre d'outils", "le prix"], 0, "Des plans plus courts accélèrent le rythme."),
+      ],
+    },
+    assignment: { title: "Livrable — Première version montée", description: "**Livrable du module 7.** Déposez une version provisoire de la publicité avec : les scènes assemblées ; la voix off ; la musique ; les principales transitions. Fichier vidéo ou lien." },
+  }),
+  mod({
+    title: "Module 8 — Ajouter l'identité visuelle et finaliser la vidéo",
+    description: "Ajouter les éléments de marque, améliorer la lisibilité et exporter la vidéo pour la diffusion.",
+    theme: "identité visuelle, finalisation et export",
+    objectives: [
+      "Ajouter les éléments de marque",
+      "Améliorer la lisibilité",
+      "Préparer la diffusion",
+    ],
+    contents: [
+      "Ajout du logo et des couleurs de la marque",
+      "Ajout des titres et des sous-titres",
+      "Présentation d'un produit ou service",
+      "Affichage de l'appel à l'action et des informations de contact",
+      "Création d'une scène finale",
+      "Contrôle de la qualité audio et visuelle",
+      "Vérification de l'orthographe",
+      "Export horizontal, vertical et carré",
+      "Compression et qualité",
+      "Création d'une miniature",
+    ],
+    activity: "Finaliser la publicité et préparer au moins un format de diffusion.",
+    quiz: {
+      title: "Autoévaluation — Finalisation & export",
       questions: [
         tf("Sur les réseaux sociaux, les sous-titres sont importants car beaucoup regardent sans le son.", true, "Le sous-titrage améliore la rétention et l'accessibilité."),
-        scq("Où placer les plans les plus courts ?", ["Nulle part", "Sur l'accroche et le CTA", "Uniquement au générique", "Partout de façon identique"], 1, "Le rythme se resserre sur l'accroche et le CTA."),
-        mcq("Quelles étapes font partie du montage final ?", ["Synchroniser la voix off", "Ajouter les sous-titres", "Corriger les couleurs", "Rédiger le brief"], [0, 1, 2], "Le brief appartient au début de la production, pas au montage."),
+        mcq("Quels éléments d'identité visuelle ajoute-t-on à la finalisation ?", ["Le logo", "Les couleurs de la marque", "L'appel à l'action", "Le prix de l'outil"], [0, 1, 2], "Logo, couleurs et CTA — pas le prix de l'outil."),
+        scq("Quel format convient le mieux à TikTok et aux Reels ?", ["horizontal 16:9", "vertical 9:16", "carré 1:1", "panoramique 21:9"], 1, "Le vertical 9:16 est le standard mobile."),
       ],
     },
-    assignment: { title: "Exercice — Première version montée", description: "**Livrable du module 7.** Déposez la première version complète de votre publicité montée (fichier vidéo ou lien). Elle doit inclure voix off, musique, sous-titres, logo et CTA." },
-  },
-  {
-    title: "Module 8 — Adaptation, diffusion et projet final",
-    description: "Finaliser et présenter une campagne exploitable, déclinée pour les réseaux.",
-    objectives: ["Décliner la vidéo aux formats des réseaux", "Préparer un kit de diffusion", "Présenter et défendre son projet"],
-    lessons: [
-      video("Exporter pour chaque plateforme", "Décliner la vidéo en horizontal (YouTube), vertical (TikTok/Reels) et carré (feed), créer une miniature et rédiger le texte de publication."),
-      read(
-        "À lire — Décliner et diffuser\n",
-        "## Un master, plusieurs formats\n\n| Format | Ratio | Plateformes |\n|---|---|---|\n| Horizontal | 16:9 | YouTube, LinkedIn |\n| Vertical | 9:16 | TikTok, Reels, Shorts, Stories |\n| Carré | 1:1 | Feed Instagram/Facebook |\n\nRecadrez en gardant le sujet centré et les textes visibles dans chaque format.\n\n## Kit de diffusion\n\n- **Miniature** accrocheuse (visage + bénéfice).\n- **Texte de publication** avec le CTA et les hashtags.\n- **Contrôle qualité** : son, lisibilité, durée, logo, CTA.\n\n## Présentation finale\n\nLors de la dernière séance (présentiel), vous présentez votre publicité, expliquez vos choix et recevez les retours du groupe et du formateur.",
-      ),
+    assignment: { title: "Livrable — Vidéo publicitaire finale", description: "**Livrable du module 8.** Déposez la vidéo publicitaire finale (30–60 s), avec logo, titres/sous-titres, appel à l'action, exportée en bonne qualité et adaptée à au moins un canal de diffusion. Fichier vidéo ou lien." },
+  }),
+  mod({
+    title: "Module 9 — Présenter et valoriser son projet dans un portfolio",
+    description: "Présenter sa démarche de création, valoriser les compétences acquises et intégrer la réalisation à un portfolio.",
+    theme: "présentation et valorisation dans un portfolio",
+    objectives: [
+      "Présenter sa démarche de création",
+      "Valoriser les compétences acquises",
+      "Intégrer la réalisation dans un portfolio",
     ],
+    contents: [
+      "Présenter le contexte du projet",
+      "Expliquer le besoin de communication",
+      "Présenter les outils utilisés",
+      "Montrer les étapes de production",
+      "Présenter les difficultés rencontrées",
+      "Expliquer les choix créatifs",
+      "Ajouter la vidéo à un portfolio",
+      "Rédiger une courte étude de cas",
+      "Publier le projet sur les réseaux professionnels",
+    ],
+    activity: "Préparer une fiche portfolio consacrée au projet réalisé.",
     quiz: {
-      title: "Quiz — Diffusion & formats",
+      title: "Autoévaluation — Portfolio",
       questions: [
-        scq("Quel format convient le mieux à TikTok et aux Reels ?", ["Horizontal 16:9", "Vertical 9:16", "Carré 1:1", "Panoramique 21:9"], 1, "Le vertical 9:16 est le standard mobile."),
-        mcq("Que contient un kit de diffusion ?", ["Une miniature", "Le texte de publication avec CTA", "Les déclinaisons de formats", "Le contrat de travail du client"], [0, 1, 2], "Miniature, texte/CTA, déclinaisons — pas de contrat."),
-        tf("On peut réutiliser un même master vidéo pour générer plusieurs formats adaptés aux réseaux.", true, "On décline le master en 16:9, 9:16 et 1:1."),
+        tf("Présenter sa démarche (contexte, choix, étapes) valorise le projet dans un portfolio.", true, "L'étude de cas montre les compétences mobilisées."),
+        scq("Une étude de cas de projet explique notamment…", ["uniquement le prix", "le contexte, les choix créatifs et les étapes de production", "le nom du formateur", "la marque de l'ordinateur"], 1, "Elle raconte la démarche et les choix."),
+        scq("Où valoriser la vidéo réalisée ?", ["nulle part", "dans un portfolio et sur les réseaux professionnels", "seulement en local", "dans un tableur"], 1, "Portfolio + réseaux professionnels."),
       ],
     },
-    assignment: { title: "Projet final — Publicité vidéo + kit de diffusion", description: "**Projet final (évalué).** Déposez votre publicité définitive (30–60 s) et son kit de diffusion : déclinaisons de formats, miniature et texte de publication. Critères : cible identifiable, message clair, cohérence visuelle, voix off audible, musique équilibrée, logo + CTA, respect des droits. À présenter lors de la séance finale du 29 août." },
-  },
+    assignment: { title: "Projet final — Fiche portfolio", description: "**Livrable du module 9 (projet final).** Déposez une fiche de présentation comportant : le nom du projet ; le contexte ; l'objectif ; la cible ; les outils utilisés ; les principales étapes ; la vidéo finale ; les compétences mobilisées." },
+  }),
 ];
 
-/* ─────────────────────── Cohorte & sessions live (Events) ─────────────────── */
+/* ─────────────────────── Cohorte & webinaires (Events) ────────────────────── */
 const COHORT = {
   name: "Création de vidéos publicitaires avec l'IA — Cohorte Août 2026",
   type: "HYBRID",
   status: "OPEN",
-  startDate: at("2026-08-04T18:30"),
-  endDate: at("2026-08-29T13:00"),
+  startDate: at("2026-08-04T08:00"),
+  endDate: at("2026-08-30T20:00"),
   enrollmentDeadline: at("2026-08-01T18:00"),
-  capacity: 20,
+  capacity: 25,
   price: 50000,
-  rhythm: "Formation en autonomie sur 4 semaines · 1 webinaire d'accompagnement par semaine",
+  rhythm: "Formation en autonomie (4 semaines) · 1 webinaire d'accompagnement par semaine",
   description:
     "Cette cohorte accompagne les participants dans la réalisation autonome d'une vidéo publicitaire avec l'intelligence artificielle.\n\n" +
     "La formation est suivie principalement en autonomie sur la plateforme. Chaque participant avance à travers des cours, des démonstrations, des exercices et un projet fil rouge.\n\n" +
@@ -287,64 +449,60 @@ const COHORT = {
     "À la fin de la formation, chaque participant réalise une vidéo publicitaire de 30 à 60 secondes et prépare une fiche de présentation pouvant être intégrée à son portfolio.",
   rules:
     "### Conditions de participation\n\n" +
-    "- Disposer d'un ordinateur fonctionnel.\n" +
-    "- Disposer d'une connexion Internet stable.\n" +
-    "- Savoir utiliser les fonctions de base d'un ordinateur et d'un navigateur.\n" +
-    "- Créer les comptes nécessaires sur les outils utilisés.\n" +
-    "- Choisir un produit, un service, une entreprise ou un projet à promouvoir.\n" +
-    "- Prévoir un casque ou des écouteurs.\n\n" +
-    "### Organisation du travail\n\n" +
-    "- La formation est suivie principalement en autonomie.\n" +
-    "- Chaque participant doit progresser régulièrement dans les modules.\n" +
-    "- Les activités du parcours contribuent à la réalisation du projet final.\n" +
-    "- Un webinaire d'accompagnement est organisé chaque semaine.\n" +
-    "- Les participants doivent consulter les modules prévus avant le webinaire correspondant.\n" +
-    "- Les questions peuvent être préparées et transmises avant les rencontres.\n\n" +
-    "### Validation de la formation\n\n" +
+    "- Disposer d'un ordinateur et d'une connexion Internet stable.\n" +
+    "- Savoir utiliser un ordinateur, naviguer sur Internet et organiser des fichiers.\n" +
+    "- Créer les comptes nécessaires sur les outils (ChatGPT, Veo 3, ElevenLabs, CapCut).\n" +
+    "- Prévoir des écouteurs ou un casque audio.\n" +
+    "- Avoir un produit, un service, une organisation ou un projet à promouvoir.\n\n" +
+    "### Organisation & engagement\n\n" +
+    "Le participant s'engage à :\n\n" +
+    "- progresser régulièrement dans les modules et respecter le calendrier de la cohorte ;\n" +
+    "- réaliser les exercices et soumettre les étapes obligatoires de son projet ;\n" +
+    "- consulter les modules et préparer ses questions avant chaque webinaire ;\n" +
+    "- produire un projet personnel et vérifier les droits des contenus utilisés ;\n" +
+    "- respecter les autres participants et accepter les retours constructifs.\n\n" +
+    "### Évaluation\n\n" +
+    "L'évaluation porte principalement sur la réalisation progressive du **projet fil rouge**, et non sur la simple mémorisation.\n\n" +
+    "| Évaluation | Pondération |\n|---|---|\n" +
+    "| Quiz et activités d'autoévaluation | 10 % |\n" +
+    "| Brief publicitaire | 10 % |\n" +
+    "| Scénario et storyboard | 20 % |\n" +
+    "| Scènes vidéo et voix off | 20 % |\n" +
+    "| Vidéo publicitaire finale | 30 % |\n" +
+    "| Présentation portfolio | 10 % |\n\n" +
+    "### Conditions de réussite\n\n" +
     "Pour valider la formation, le participant doit :\n\n" +
-    "- consulter les modules obligatoires ;\n" +
+    "- consulter l'ensemble des modules obligatoires ;\n" +
     "- réaliser les activités principales ;\n" +
-    "- remettre les différentes étapes du projet ;\n" +
-    "- produire une vidéo publicitaire finale ;\n" +
+    "- remettre les étapes obligatoires du projet ;\n" +
+    "- soumettre une vidéo publicitaire finale ;\n" +
     "- obtenir une note globale d'au moins **70 %**.\n\n" +
-    "### Utilisation responsable\n\n" +
-    "Les participants doivent respecter :\n\n" +
-    "- les droits d'auteur ;\n" +
-    "- le droit à l'image ;\n" +
-    "- les droits liés aux marques ;\n" +
-    "- le consentement relatif à l'utilisation d'une voix ;\n" +
-    "- les conditions d'utilisation des outils employés.\n\n" +
-    "Les contenus trompeurs, frauduleux, diffamatoires ou portant atteinte à une personne sont interdits.\n\n" +
-    "### Certificat\n\n" +
-    "À l'issue de la formation, les participants ayant satisfait aux conditions de réussite peuvent recevoir le **Certificat de réussite — Création de vidéos publicitaires avec l'intelligence artificielle**.\n\n" +
-    "Le certificat peut mentionner les compétences principales :\n\n" +
-    "- conception d'un brief publicitaire ;\n" +
-    "- écriture d'un scénario ;\n" +
-    "- préparation d'un storyboard ;\n" +
-    "- génération vidéo avec l'IA ;\n" +
-    "- création d'une voix off ;\n" +
-    "- montage et finalisation d'une publicité.",
+    "La participation aux webinaires est fortement recommandée ; un rattrapage reste possible via l'enregistrement lorsqu'il est disponible.\n\n" +
+    "### La vidéo finale doit…\n\n" +
+    "- durer entre 30 et 60 secondes ;\n" +
+    "- comporter une accroche identifiable et un message principal clair ;\n" +
+    "- présenter un produit, un service ou un projet ;\n" +
+    "- inclure une voix off ou une narration pertinente ;\n" +
+    "- disposer d'un montage fluide et d'une cohérence visuelle suffisante ;\n" +
+    "- intégrer un appel à l'action et être exportée en bonne qualité, adaptée à au moins un canal de diffusion.\n\n" +
+    "### Utilisation responsable de l'intelligence artificielle\n\n" +
+    "Les outils ne doivent pas servir à : usurper l'identité d'une personne ; créer des contenus frauduleux ou une publicité mensongère ; porter atteinte à la réputation d'autrui ; utiliser sans autorisation la voix ou l'image d'un tiers ; reproduire illégalement une marque ou une œuvre protégée ; diffuser des contenus discriminatoires ou préjudiciables.\n\n" +
+    "### Outils & coûts\n\n" +
+    "Certains outils nécessitent la création d'un compte et peuvent proposer des crédits gratuits limités, un abonnement payant, ou ne pas être disponibles dans tous les pays. Le participant reste responsable des abonnements ou crédits nécessaires à son projet ; des solutions alternatives peuvent être proposées lorsque c'est possible.",
 };
 
-/* Sessions live = ACCOMPAGNEMENT (rencontre, questions, ateliers, revue,
-   soutenance) — PAS des cours magistraux (le cours se suit en autonomie). */
+/* Webinaires hebdomadaires d'ACCOMPAGNEMENT (jeudi 18 h 30). Ce ne sont PAS des
+   cours magistraux : le cours se suit en autonomie, ces séances répondent aux
+   questions, corrigent et guident l'avancement du projet (§ modèle pédagogique). */
 const SESSIONS = [
-  { kind: "VIRTUAL_CLASS", title: "Lancement de la cohorte", date: "2026-08-04T18:30", end: "2026-08-04T20:00", online: true,
-    desc: "On fait connaissance, on présente le **calendrier** de progression autonome et la prise en main des outils. Vous repartez avec votre projet choisi." },
-  { kind: "QA_SESSION", title: "Live d'accompagnement — Semaine 1", date: "2026-08-06T18:30", end: "2026-08-06T19:30", online: true,
-    desc: "Vos **questions** sur les modules 1–2 (brief & concept) et point d'avancement collectif selon le calendrier." },
-  { kind: "WORKSHOP", title: "Atelier encadré — Scénario & storyboard", date: "2026-08-08T09:00", end: "2026-08-08T12:00", online: false,
-    desc: "Travail pratique en direct sur votre scénario et votre storyboard, avec retours du formateur." },
-  { kind: "QA_SESSION", title: "Live d'accompagnement — Semaine 2", date: "2026-08-13T18:30", end: "2026-08-13T19:30", online: true,
-    desc: "Vos **questions** sur les modules 3–4 (visuels & prompts) et point d'avancement." },
-  { kind: "QA_SESSION", title: "Live d'accompagnement — Semaine 3", date: "2026-08-20T18:30", end: "2026-08-20T19:30", online: true,
-    desc: "Vos **questions** sur les modules 5–6 (animation, voix off, son) et point d'avancement." },
-  { kind: "WORKSHOP", title: "Atelier encadré — Montage & finalisation", date: "2026-08-22T09:00", end: "2026-08-22T12:00", online: false,
-    desc: "Retours sur vos premières versions montées et coup de main sur la finalisation." },
-  { kind: "VIRTUAL_CLASS", title: "Revue des projets", date: "2026-08-27T18:30", end: "2026-08-27T20:00", online: true,
-    desc: "Retours individualisés sur les projets et derniers ajustements avant la soutenance." },
-  { kind: "DEFENSE", title: "Soutenance finale & remise des attestations", date: "2026-08-29T09:00", end: "2026-08-29T13:00", online: false,
-    desc: "Présentation des publicités devant le groupe, évaluation finale et remise des attestations." },
+  { kind: "WEBINAR", title: "Webinaire 1 — Lancement de la cohorte", date: "2026-08-06T18:30", end: "2026-08-06T20:00", online: true,
+    desc: "Présentation du fonctionnement de la formation et du projet fil rouge, aide au choix du sujet, vérification de l'accès aux outils et premières questions. **Modules 1 & 2.**" },
+  { kind: "WEBINAR", title: "Webinaire 2 — Scénario, storyboard et prompts", date: "2026-08-13T18:30", end: "2026-08-13T19:30", online: true,
+    desc: "Questions sur le brief, corrections de scénarios, amélioration des storyboards, analyse d'exemples de prompts et préparation de la génération avec Veo 3. **Modules 3 & 4.**" },
+  { kind: "WEBINAR", title: "Webinaire 3 — Génération vidéo et voix off", date: "2026-08-20T18:30", end: "2026-08-20T19:30", online: true,
+    desc: "Difficultés liées à Veo 3, problèmes de cohérence, correction de prompts, sélection des scènes et questions sur ElevenLabs. **Modules 5 & 6.**" },
+  { kind: "WEBINAR", title: "Webinaire 4 — Montage et présentation finale", date: "2026-08-27T18:30", end: "2026-08-27T20:00", online: true,
+    desc: "Questions sur CapCut, analyse de premières versions, corrections collectives, vérification de l'appel à l'action, préparation de l'export et du portfolio. **Modules 7, 8 & 9.**" },
 ];
 
 /* ─── Encodage des questions (identique à l'importeur) ─── */
@@ -401,14 +559,14 @@ async function main() {
 
   // 2) Modules + leçons + quiz + exercices.
   let mOrder = 0, firstPreview = false, nLessons = 0, nQuiz = 0, nAssign = 0, nQ = 0;
-  for (const mod of MODULES) {
+  for (const m of MODULES) {
     mOrder += 1;
     const createdModule = await prisma.module.create({
-      data: { courseId: course.id, title: mod.title, description: mod.description, objectives: mod.objectives, order: mOrder, status: "PUBLISHED" },
+      data: { courseId: course.id, title: m.title, description: m.description, objectives: m.objectives, order: mOrder, status: "PUBLISHED" },
       select: { id: true },
     });
     let lOrder = 0;
-    for (const les of mod.lessons) {
+    for (const les of m.lessons) {
       lOrder += 1;
       const isPreview = !firstPreview;
       firstPreview = true;
@@ -421,14 +579,14 @@ async function main() {
       });
       nLessons += 1;
     }
-    // Quiz de fin de module.
-    if (mod.quiz?.questions?.length) {
+    // Quiz d'autoévaluation de fin de module.
+    if (m.quiz?.questions?.length) {
       const assessment = await prisma.assessment.create({
-        data: { courseId: course.id, moduleId: createdModule.id, title: mod.quiz.title, type: "QUIZ", passingScore: 70, attemptsAllowed: 0, weight: 1, isRequired: true, order: mOrder, status: "PUBLISHED" },
+        data: { courseId: course.id, moduleId: createdModule.id, title: m.quiz.title, type: "QUIZ", passingScore: 70, attemptsAllowed: 0, weight: 1, isRequired: true, order: mOrder, status: "PUBLISHED" },
         select: { id: true },
       });
       let qOrder = 0;
-      for (const q of mod.quiz.questions) {
+      for (const q of m.quiz.questions) {
         const enc = encodeQuestion(q, ++qOrder);
         if (!enc) continue;
         await prisma.question.create({ data: { assessmentId: assessment.id, type: enc.type, question: enc.question, options: enc.options, correctAnswer: enc.correctAnswer, explanation: enc.explanation, points: enc.points, order: enc.order } });
@@ -436,10 +594,10 @@ async function main() {
       }
       nQuiz += 1;
     }
-    // Exercice pratique (dépôt de fichiers).
-    if (mod.assignment) {
+    // Exercice pratique / livrable du projet fil rouge (dépôt de fichiers).
+    if (m.assignment) {
       await prisma.assessment.create({
-        data: { courseId: course.id, moduleId: createdModule.id, title: mod.assignment.title, description: mod.assignment.description, type: "ASSIGNMENT", passingScore: 70, attemptsAllowed: 0, weight: 1, isRequired: true, order: 100 + mOrder, status: "PUBLISHED" },
+        data: { courseId: course.id, moduleId: createdModule.id, title: m.assignment.title, description: m.assignment.description, type: "ASSIGNMENT", passingScore: 70, attemptsAllowed: 0, weight: 1, isRequired: true, order: 100 + mOrder, status: "PUBLISHED" },
       });
       nAssign += 1;
     }
@@ -458,7 +616,7 @@ async function main() {
     await prisma.cohortInstructor.upsert({ where: { cohortId_userId: { cohortId: cohort.id, userId: instructor.id } }, update: { roleLabel: "Formateur principal" }, create: { cohortId: cohort.id, userId: instructor.id, roleLabel: "Formateur principal" } });
   }
 
-  // 4) Sessions live d'ACCOMPAGNEMENT (Events) — reconstruites.
+  // 4) Webinaires d'accompagnement (Events) — reconstruits.
   await prisma.event.deleteMany({ where: { cohortId: cohort.id } });
   let sIdx = 0;
   for (const s of SESSIONS) {
@@ -503,7 +661,7 @@ async function main() {
   });
 
   console.log("=== COHORTE CRÉÉE ===");
-  console.log(JSON.stringify({ course: COURSE_SLUG, cohort: COHORT_SLUG, schools: Object.keys(bySlug), modules: mOrder, lessons: nLessons, quiz: nQuiz, questions: nQ, assignments: nAssign, sessions: SESSIONS.length, instructor: !!instructor }, null, 2));
+  console.log(JSON.stringify({ course: COURSE_SLUG, cohort: COHORT_SLUG, schools: Object.keys(bySlug), modules: mOrder, lessons: nLessons, quiz: nQuiz, questions: nQ, assignments: nAssign, webinars: SESSIONS.length, instructor: !!instructor }, null, 2));
   await prisma.$disconnect();
 }
 
