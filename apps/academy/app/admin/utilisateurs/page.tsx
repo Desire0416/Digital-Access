@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Search, Users } from "lucide-react";
 import { Avatar } from "@da/ui";
 import type { Role } from "@da/academy-db/client";
-import { listUsersAdmin } from "@/lib/admin-queries";
+import { listUsersAdmin, listCoursesForPicker } from "@/lib/admin-queries";
 import { currentUser } from "@/lib/guards";
 import { AdminPageHeader, AdminCard, StatusPill, AdminEmpty } from "@/components/admin/ui";
 import { UserActions } from "./UserActions";
@@ -70,8 +70,13 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
   const roleParam = one(sp.role) as Role | undefined;
   const role = roleParam && VALID_ROLES.has(roleParam) ? roleParam : undefined;
 
-  const [me, users] = await Promise.all([currentUser(), listUsersAdmin({ q, role })]);
+  const [me, users, courseOptions] = await Promise.all([
+    currentUser(),
+    listUsersAdmin({ q, role }),
+    listCoursesForPicker(),
+  ]);
   const actorIsSuper = !!me?.roles.includes("SUPER_ADMIN");
+  const enrollCourses = courseOptions.map((c) => ({ id: c.id, title: c.title, level: c.level, price: c.price }));
 
   return (
     <div className="space-y-6">
@@ -178,6 +183,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
                           user={{ id: u.id, name: u.name, roles: u.roles, isActive: u.isActive, isDeleted: !!u.deletedAt }}
                           actorIsSuper={actorIsSuper}
                           isSelf={u.id === me?.id}
+                          courses={enrollCourses}
                         />
                       </td>
                     </tr>
@@ -208,6 +214,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
                       user={{ id: u.id, name: u.name, roles: u.roles, isActive: u.isActive, isDeleted: !!u.deletedAt }}
                       actorIsSuper={actorIsSuper}
                       isSelf={u.id === me?.id}
+                      courses={enrollCourses}
                     />
                   </div>
                 </li>

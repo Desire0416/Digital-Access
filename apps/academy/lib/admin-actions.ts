@@ -546,6 +546,60 @@ export async function restoreUser(userId: string): Promise<AdminActionResult> {
   return { ok: true, message: `Compte de ${target.name} restauré.` };
 }
 
+/* ─── Inscription manuelle d'un apprenant à une formation (par un admin) ────── */
+
+/**
+ * Inscrit manuellement un utilisateur à une formation (accès administrateur).
+ * Crée une Enrollment ACTIVE (origin DIRECT, accessType MANUAL) de façon
+ * idempotente. Ne rétrograde JAMAIS une inscription déjà acquise (règle 40.6) :
+ * si l'apprenant a déjà accès (ACTIVE/COMPLETED), l'action le signale sans rien
+ * modifier. Réactive une inscription annulée/expirée. Tracée + notifie l'apprenant.
+ */
+export async function adminEnrollUserInCourse(userId: string, courseId: string): Promise<AdminActionResult> {
+  const parsed = z.object({ userId: z.string().min(1), courseId: z.string().min(1) }).safeParse({ userId, courseId });
+  if (!parsed.success) return { ok: false, error: "Données invalides." };
+  const admin = await requireAdminFresh();
+  if (!admin) return DENIED;
+
+  const [user, course] = await Promise.all([
+    prisma.user.findFirst({ where: { id: parsed.data.userId, deletedAt: null }, select: { id: true, name: true } }),
+    prisma.course.findUnique({ where: { id: parsed.data.courseId }, select: { id: true, title: true, slug: true } }),
+  ]);
+  if (!user) return { ok: false, error: "Utilisateur introuvable ou supprimé." };
+  if (!course) return { ok: false, error: "Formation introuvable." };
+
+  const existing = await prisma.enrollment.findUnique({
+    where: { userId_courseId: { userId: user.id, courseId: course.id } },
+    select: { id: true, status: true },
+  });
+  // Déjà acquise (ACTIVE / COMPLETED) → ne rien rétrograder ni dupliquer.
+  if (existing && (existing.status === "ACTIVE" || existing.status === "COMPLETED")) {
+    return { ok: false, error: `${user.name} a déjà accès à « ${course.title} ».` };
+  }
+  if (existing) {
+    await prisma.enrollment.update({
+      where: { id: existing.id },
+      data: { status: "ACTIVE", origin: "DIRECT", accessType: "MANUAL", enrolledAt: new Date() },
+    });
+  } else {
+    await prisma.enrollment.create({
+      data: { userId: user.id, courseId: course.id, status: "ACTIVE", origin: "DIRECT", accessType: "MANUAL" },
+    });
+  }
+
+  await audit(admin.id, "enrollment.admin_create", "Enrollment", `${user.id}:${course.id}`, { courseTitle: course.title, userName: user.name });
+  await createNotification({
+    userId: user.id,
+    type: "ENROLLMENT",
+    title: "Nouvel accès à une formation",
+    message: `Un administrateur vous a inscrit·e à « ${course.title} ». Bonne formation !`,
+    link: `/apprendre/${course.slug}`,
+  });
+
+  revalidatePath("/admin/utilisateurs");
+  return { ok: true, message: `${user.name} inscrit·e à « ${course.title} ».` };
+}
+
 /* ─── Certificats : révoquer / restaurer (délégué à certification.ts) ──────── */
 
 export async function revokeCertificateAction(certificateId: string, reason: string): Promise<AdminActionResult> {
