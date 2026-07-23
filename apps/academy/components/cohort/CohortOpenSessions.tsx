@@ -103,10 +103,21 @@ function CohortRow({ cohort }: { cohort: PublicCohort }) {
             {cohort.isFull && <Badge variant="warning">Complète</Badge>}
           </div>
 
-          <h3 className="mt-2.5 font-display text-base font-bold leading-snug text-navy">{cohort.name}</h3>
+          <h3 className="mt-2.5 font-display text-base font-bold leading-snug text-navy">
+            <Link href={`/cohortes/${cohort.slug}`} className="transition-colors hover:text-brand-blue-royal">
+              {cohort.name}
+            </Link>
+          </h3>
           {cohort.description && (
             <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-text-secondary">{cohort.description}</p>
           )}
+          <Link
+            href={`/cohortes/${cohort.slug}`}
+            className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-brand-blue-royal transition-colors hover:text-brand-violet"
+          >
+            Programme &amp; conditions
+            <ArrowRight size={12} aria-hidden />
+          </Link>
 
           {/* Méta */}
           <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-text-secondary">

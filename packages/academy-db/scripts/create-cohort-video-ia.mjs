@@ -74,7 +74,7 @@ const FICHE = {
   level: "INTERMEDIATE",
   price: 50000,
   durationHours: 40,
-  certificateTitle: "Attestation de réussite — Création de vidéos publicitaires avec l'IA",
+  certificateTitle: "Certificat de réussite — Création de vidéos publicitaires avec l'intelligence artificielle",
 };
 
 /* Aide : leçon vidéo (URL à fournir par le formateur via le studio). */
@@ -277,11 +277,53 @@ const COHORT = {
   enrollmentDeadline: at("2026-08-01T18:00"),
   capacity: 20,
   price: 50000,
-  rhythm: "Formation suivie EN AUTONOMIE selon un calendrier de 4 semaines, ponctuée de sessions live d'accompagnement (jeudi 18 h 30) et de 2 ateliers le samedi",
+  rhythm: "Formation en autonomie sur 4 semaines · 1 webinaire d'accompagnement par semaine",
   description:
-    "Une cohorte n'est pas une suite de webinaires : vous suivez la formation en autonomie (vidéos, lectures, quiz et exercices des 8 modules), à votre rythme, en respectant un calendrier de 4 semaines. Des sessions live régulières vous permettent de rencontrer le formateur et le groupe, de poser vos questions, de faire relire vos productions et de garder le cap — elles accompagnent le cours, elles ne le remplacent pas.\n\nCalendrier — à faire en autonomie, avec des rendez-vous live :\n• Semaine 1 (4–8 août) : modules 1 & 2 (pub vidéo IA, brief & concept) — lancement, live questions, atelier scénario.\n• Semaine 2 (11–15 août) : modules 3 & 4 (scénario/storyboard, visuels) — live questions.\n• Semaine 3 (18–22 août) : modules 5 & 6 (animation, voix off & son) — live questions, atelier montage.\n• Semaine 4 (25–29 août) : modules 7 & 8 (montage, diffusion) + projet final — revue des projets, soutenance.\n\nVous déposez vos exercices au fil de l'eau ; ils sont corrigés par le formateur. Projet fil rouge : une publicité de 30 à 60 s, développée progressivement. ≈ 40 h au total (travail autonome + sessions live).\n\n🎁 Offre de lancement : 40 000 FCFA pour les toutes premières inscriptions (au lieu de 50 000 FCFA).",
+    "Cette cohorte accompagne les participants dans la réalisation autonome d'une vidéo publicitaire avec l'intelligence artificielle.\n\n" +
+    "La formation est suivie principalement en autonomie sur la plateforme. Chaque participant avance à travers des cours, des démonstrations, des exercices et un projet fil rouge.\n\n" +
+    "Tout au long du parcours, les activités permettent de construire progressivement une publicité complète : brief, concept, scénario, storyboard, prompts, scènes vidéo, voix off et montage final.\n\n" +
+    "Les principaux outils utilisés sont ChatGPT, Veo 3, ElevenLabs et CapCut.\n\n" +
+    "Un webinaire d'accompagnement est organisé chaque semaine. Ces rencontres permettent au formateur de répondre aux questions, résoudre les difficultés techniques, effectuer des démonstrations complémentaires et commenter les productions des participants.\n\n" +
+    "À la fin de la formation, chaque participant réalise une vidéo publicitaire de 30 à 60 secondes et prépare une fiche de présentation pouvant être intégrée à son portfolio.",
   rules:
-    "### Conditions de participation\n- Disposer du matériel et d'une connexion suffisants.\n- Participer à au moins **80 %** des séances.\n- Réaliser les exercices et respecter les délais de remise.\n- Respecter les droits d'auteur, le droit à l'image et les règles éthiques.\n\n### Conditions de validation\n- Présence minimale de **80 %**.\n- Remise des travaux intermédiaires.\n- Note finale d'au moins **70 %**.\n- Présentation d'une vidéo publicitaire finale conforme au cahier des charges.",
+    "### Conditions de participation\n\n" +
+    "- Disposer d'un ordinateur fonctionnel.\n" +
+    "- Disposer d'une connexion Internet stable.\n" +
+    "- Savoir utiliser les fonctions de base d'un ordinateur et d'un navigateur.\n" +
+    "- Créer les comptes nécessaires sur les outils utilisés.\n" +
+    "- Choisir un produit, un service, une entreprise ou un projet à promouvoir.\n" +
+    "- Prévoir un casque ou des écouteurs.\n\n" +
+    "### Organisation du travail\n\n" +
+    "- La formation est suivie principalement en autonomie.\n" +
+    "- Chaque participant doit progresser régulièrement dans les modules.\n" +
+    "- Les activités du parcours contribuent à la réalisation du projet final.\n" +
+    "- Un webinaire d'accompagnement est organisé chaque semaine.\n" +
+    "- Les participants doivent consulter les modules prévus avant le webinaire correspondant.\n" +
+    "- Les questions peuvent être préparées et transmises avant les rencontres.\n\n" +
+    "### Validation de la formation\n\n" +
+    "Pour valider la formation, le participant doit :\n\n" +
+    "- consulter les modules obligatoires ;\n" +
+    "- réaliser les activités principales ;\n" +
+    "- remettre les différentes étapes du projet ;\n" +
+    "- produire une vidéo publicitaire finale ;\n" +
+    "- obtenir une note globale d'au moins **70 %**.\n\n" +
+    "### Utilisation responsable\n\n" +
+    "Les participants doivent respecter :\n\n" +
+    "- les droits d'auteur ;\n" +
+    "- le droit à l'image ;\n" +
+    "- les droits liés aux marques ;\n" +
+    "- le consentement relatif à l'utilisation d'une voix ;\n" +
+    "- les conditions d'utilisation des outils employés.\n\n" +
+    "Les contenus trompeurs, frauduleux, diffamatoires ou portant atteinte à une personne sont interdits.\n\n" +
+    "### Certificat\n\n" +
+    "À l'issue de la formation, les participants ayant satisfait aux conditions de réussite peuvent recevoir le **Certificat de réussite — Création de vidéos publicitaires avec l'intelligence artificielle**.\n\n" +
+    "Le certificat peut mentionner les compétences principales :\n\n" +
+    "- conception d'un brief publicitaire ;\n" +
+    "- écriture d'un scénario ;\n" +
+    "- préparation d'un storyboard ;\n" +
+    "- génération vidéo avec l'IA ;\n" +
+    "- création d'une voix off ;\n" +
+    "- montage et finalisation d'une publicité.",
 };
 
 /* Sessions live = ACCOMPAGNEMENT (rencontre, questions, ateliers, revue,

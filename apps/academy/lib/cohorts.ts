@@ -160,6 +160,78 @@ export async function getAllOpenCohorts(take = 24): Promise<PublicCohort[]> {
   return rows.map(mapPublicCohort);
 }
 
+/* ─── Fiche publique détaillée d'une cohorte (/cohortes/[slug]) ─────────────── */
+
+/** Rendez-vous live affiché publiquement — SANS le lien de réunion (réservé aux
+ *  inscrits). On expose seulement l'intitulé, le type, l'horaire et le mode. */
+export interface PublicCohortSession {
+  id: string;
+  title: string;
+  type: EventType;
+  startAt: Date;
+  endAt: Date | null;
+  online: boolean;
+}
+
+export interface PublicCohortDetail extends PublicCohort {
+  rules: string | null;
+  courseSubtitle: string | null;
+  /** Calendrier des rendez-vous live (info + accompagnement), du 1er au dernier. */
+  sessions: PublicCohortSession[];
+}
+
+/** Sélection Prisma de la fiche détaillée. NE JAMAIS sélectionner `meetingUrl`
+ *  ni la localisation exacte : ces informations sont réservées aux inscrits. */
+const PUBLIC_COHORT_DETAIL_SELECT = {
+  ...PUBLIC_COHORT_SELECT,
+  rules: true,
+  course: { select: { slug: true, title: true, subtitle: true, price: true } },
+  events: {
+    // Uniquement les rendez-vous d'accompagnement de la cohorte — jamais les
+    // événements PUBLIC de promotion rattachés au même cohortId (sinon la
+    // « Session d'info » marketing apparaîtrait dans le calendrier des séances).
+    where: { status: "PUBLISHED" as const, audience: "COHORT" as const },
+    orderBy: { startAt: "asc" as const },
+    select: { id: true, title: true, type: true, startAt: true, endAt: true, provider: true },
+  },
+} satisfies Prisma.CohortSelect;
+
+/**
+ * Fiche publique complète d'une cohorte par slug (présentation + règles +
+ * calendrier des rendez-vous live). Ne renvoie que les cohortes OUVERTES à
+ * l'inscription (statut OPEN, deadline/fin non dépassées) — sinon null (404).
+ */
+export async function getPublicCohortBySlug(slug: string): Promise<PublicCohortDetail | null> {
+  const now = new Date();
+  const c = await prisma.cohort.findFirst({
+    where: {
+      slug,
+      status: "OPEN",
+      AND: [
+        { OR: [{ enrollmentDeadline: null }, { enrollmentDeadline: { gte: now } }] },
+        { OR: [{ endDate: null }, { endDate: { gte: now } }] },
+      ],
+    },
+    select: PUBLIC_COHORT_DETAIL_SELECT,
+  });
+  if (!c) return null;
+
+  const base = mapPublicCohort(c);
+  return {
+    ...base,
+    rules: c.rules,
+    courseSubtitle: c.course?.subtitle ?? null,
+    sessions: c.events.map((e) => ({
+      id: e.id,
+      title: e.title,
+      type: e.type,
+      startAt: e.startAt,
+      endAt: e.endAt,
+      online: e.provider !== "IN_PERSON",
+    })),
+  };
+}
+
 /* ─── Mes cohortes (§16.1, §23.5) ──────────────────────────────────────────── */
 
 export interface MyCohort {
