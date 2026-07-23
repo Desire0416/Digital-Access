@@ -15,8 +15,13 @@ import {
 export { sendEmail } from "./src/send";
 export type { SendResult } from "./src/send";
 
-const ACADEMY_URL = () => process.env.NEXT_PUBLIC_ACADEMY_URL || "https://academy.digitalaccess.ci";
-const WEB_URL = () => process.env.NEXT_PUBLIC_WEB_URL || "https://digitalaccess.ci";
+/** Domaine canonique : une URL de déploiement Vercel n'a rien à faire dans un email. */
+const canonical = (value: string | undefined, fallback: string) => {
+  const v = value?.trim().replace(/\/+$/, "");
+  return v && !v.includes("vercel.app") ? v : fallback;
+};
+const ACADEMY_URL = () => canonical(process.env.NEXT_PUBLIC_ACADEMY_URL, "https://academy.digitalaccess.ci");
+const WEB_URL = () => canonical(process.env.NEXT_PUBLIC_WEB_URL, "https://digitalaccess.ci");
 
 export function sendVerificationEmail(to: string, data: { name: string; url: string }) {
   const { subject, html } = verificationEmail(data);

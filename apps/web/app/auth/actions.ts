@@ -21,18 +21,31 @@ export type ActionResult =
  * les liens email pointent vers digitalaccess.ci — et non vers l'URL *.vercel.app —
  * quel que soit NEXT_PUBLIC_WEB_URL. Repli : env puis localhost.
  */
+/**
+ * Base des liens envoyés par email. Ils doivent TOUJOURS pointer vers le domaine
+ * canonique : se fier à l'hôte de la requête plaçait l'URL de déploiement Vercel
+ * (*.vercel.app) dans les mails dès qu'on ouvrait le site par cette adresse.
+ * Ordre : hôte local (dev) → NEXT_PUBLIC_WEB_URL → hôte de requête non-Vercel →
+ * domaine canonique. Un *.vercel.app n'est jamais retenu.
+ */
 async function webBaseUrl(): Promise<string> {
+  const CANONICAL = "https://digitalaccess.ci";
+  const isVercel = (v: string) => v.includes("vercel.app");
+  let host: string | null = null;
+  let proto = "https";
   try {
     const h = await headers();
-    const host = h.get("x-forwarded-host") ?? h.get("host");
-    if (host) {
-      const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
-      return `${proto}://${host}`;
-    }
+    host = h.get("x-forwarded-host") ?? h.get("host");
+    proto = h.get("x-forwarded-proto") ?? (host?.startsWith("localhost") ? "http" : "https");
   } catch {
     /* hors contexte requête */
   }
-  return process.env.NEXT_PUBLIC_WEB_URL || "http://localhost:3000";
+  // Développement : on suit l'hôte local.
+  if (host && (host.startsWith("localhost") || host.startsWith("127.0.0.1"))) return `${proto}://${host}`;
+  const configured = process.env.NEXT_PUBLIC_WEB_URL?.trim().replace(/\/+$/, "");
+  if (configured && !isVercel(configured)) return configured;
+  if (host && !isVercel(host)) return `${proto}://${host}`;
+  return CANONICAL;
 }
 
 function fieldErrorsFrom(error: z.ZodError): Record<string, string> {

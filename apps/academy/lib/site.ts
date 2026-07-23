@@ -3,11 +3,21 @@
    charges fonctionnel (racine du repo). Navigation §8, URLs §44.
    ══════════════════════════════════════════════════════════════════════════ */
 
+/**
+ * URL canonique : ignore une valeur d'environnement pointant sur un déploiement
+ * Vercel (*.vercel.app). Sinon les liens des emails transactionnels partaient
+ * avec l'URL de déploiement au lieu du domaine.
+ */
+function canonicalUrl(value: string | undefined, fallback: string): string {
+  const v = value?.trim().replace(/\/+$/, "");
+  return v && !v.includes("vercel.app") ? v : fallback;
+}
+
 export const siteConfig = {
   name: "Access Academy",
   legalName: "Digital Access",
-  url: process.env.NEXT_PUBLIC_ACADEMY_URL || "https://academy.digitalaccess.ci",
-  webUrl: process.env.NEXT_PUBLIC_WEB_URL || "https://digitalaccess.ci",
+  url: canonicalUrl(process.env.NEXT_PUBLIC_ACADEMY_URL, "https://academy.digitalaccess.ci"),
+  webUrl: canonicalUrl(process.env.NEXT_PUBLIC_WEB_URL, "https://digitalaccess.ci"),
   description:
     "Académie numérique de formation, de certification et de préparation aux métiers. Apprenez une compétence, préparez-vous à un métier, explorez un domaine.",
   contactEmail: "contact@digitalaccess.ci",

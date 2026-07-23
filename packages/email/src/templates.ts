@@ -14,9 +14,11 @@ const BRAND = {
   hair: "#ECEDF3",
   bg: "#F4F5FA",
   tagline: "Le numérique accessible, utile et stratégique",
-  // Logo officiel (PNG hébergé) — servi depuis le domaine canonique, rendu fiable en mail.
-  logoUrl: "https://digitalaccess.ci/brand/da-logo-color.png",
-  logoWhiteUrl: "https://digitalaccess.ci/brand/da-logo-white.png",
+  // Logo officiel (PNG hébergé) — servi depuis le domaine canonique, rendu fiable
+  // en mail. Le suffixe ?v= force les relais d'images (proxy Gmail/Outlook) à
+  // re-télécharger : un échec mis en cache affichait un logo cassé indéfiniment.
+  logoUrl: "https://digitalaccess.ci/brand/da-logo-color.png?v=2",
+  logoWhiteUrl: "https://digitalaccess.ci/brand/da-logo-white.png?v=2",
 };
 
 /** Coordonnées officielles Digital Access (source de vérité des emails). */
@@ -30,10 +32,15 @@ const CONTACT = {
   address: "Cocody, Abidjan — Côte d'Ivoire",
 };
 
-/** Logo officiel Digital Access (image PNG hébergée), centré. */
+/**
+ * Logo officiel Digital Access (image PNG hébergée), centré. Le style porté par
+ * la balise <img> habille AUSSI le texte alternatif : si le client bloque les
+ * images distantes (cas courant), on lit « Digital Access » en typo de marque
+ * au lieu d'une icône cassée.
+ */
 function logoLockup(): string {
   return `<div style="text-align:center;">
-    <img src="${BRAND.logoUrl}" alt="Digital Access" width="94" height="78" style="width:94px;height:78px;display:inline-block;border:0;outline:none;text-decoration:none;" />
+    <img src="${BRAND.logoUrl}" alt="Digital Access" width="94" height="78" style="width:94px;height:78px;display:inline-block;border:0;outline:none;text-decoration:none;font-family:'Segoe UI',Helvetica,Arial,sans-serif;font-size:17px;font-weight:800;color:${BRAND.navy};line-height:78px;" />
   </div>`;
 }
 
