@@ -25,7 +25,9 @@ export function RecommendationGrid({
   recommendations: Recommendation[];
   columns?: 2 | 3;
 }) {
-  const grid = columns === 2 ? "sm:grid-cols-2" : "sm:grid-cols-2 xl:grid-cols-3";
+  // `grid-cols-1` de base = piste minmax(0,1fr) : sans elle, la piste implicite
+  // `auto` du mobile respecte le min-content des cartes et déborde le viewport.
+  const grid = columns === 2 ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1 sm:grid-cols-2 xl:grid-cols-3";
   return (
     <StaggerGroup className={`grid gap-5 ${grid}`}>
       {recommendations.map((r) => {

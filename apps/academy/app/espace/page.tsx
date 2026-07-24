@@ -164,7 +164,7 @@ export default async function EspaceDashboardPage() {
             </Link>
           }
         >
-          <ul className="grid gap-3 sm:grid-cols-2">
+          <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {agenda.map((it) => (
               <li key={it.id} className="flex items-center gap-3 rounded-xl border border-navy/[0.06] p-3">
                 <span className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-gradient-da text-white" aria-hidden>
@@ -193,7 +193,7 @@ export default async function EspaceDashboardPage() {
         </Panel>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* ── Colonne principale ── */}
         <div className="space-y-6 lg:col-span-2">
           {/* Formations en cours */}

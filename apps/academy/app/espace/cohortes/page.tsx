@@ -75,7 +75,7 @@ export default async function MyCohortsPage() {
           action={{ label: "Découvrir les formations", href: "/formations" }}
         />
       ) : (
-        <StaggerGroup className="grid gap-5 sm:grid-cols-2">
+        <StaggerGroup className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           {cohorts.map((c) => {
             const isPath = c.target?.kind === "careerPath";
             return (

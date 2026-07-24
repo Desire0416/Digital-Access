@@ -29,7 +29,7 @@ export default async function MyProjectsPage() {
           action={{ label: "Parcourir les formations", href: "/formations" }}
         />
       ) : (
-        <StaggerGroup className="grid gap-5 sm:grid-cols-2">
+        <StaggerGroup className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           {projects.map((p) => {
             const sub = p.latestSubmission;
             const meta = sub ? SUBMISSION_META[sub.status] ?? NOT_SUBMITTED : NOT_SUBMITTED;

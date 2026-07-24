@@ -31,7 +31,7 @@ export default async function MyCoursesPage() {
           action={{ label: "Parcourir les formations", href: "/formations" }}
         />
       ) : (
-        <StaggerGroup className="grid gap-5 sm:grid-cols-2">
+        <StaggerGroup className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           {courses.map((item) => {
             const done = item.status === "COMPLETED";
             const started = item.progress > 0 || item.status !== "ACTIVE";

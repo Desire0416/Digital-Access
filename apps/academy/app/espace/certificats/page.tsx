@@ -69,7 +69,7 @@ export default async function MyCertificatesPage() {
       ) : (
         <div className="space-y-10">
           {formal.length > 0 && (
-            <StaggerGroup className="grid gap-5 sm:grid-cols-2">
+            <StaggerGroup className="grid grid-cols-1 gap-5 sm:grid-cols-2">
               {formal.map((cert) => (
                 <StaggerItem key={cert.id}>
                   <CertificateCard cert={cert} />
@@ -89,7 +89,7 @@ export default async function MyCertificatesPage() {
                   <p className="text-xs text-text-secondary">Décernés à la validation d'une formation — chacun est vérifiable.</p>
                 </div>
               </div>
-              <StaggerGroup className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <StaggerGroup className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {badges.map((cert) => (
                   <StaggerItem key={cert.id}>
                     <BadgeCard cert={cert} />
