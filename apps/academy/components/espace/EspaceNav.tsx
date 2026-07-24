@@ -108,9 +108,9 @@ export function EspaceNav({
           collapsed ? "lg:w-[68px]" : "lg:w-[248px]",
         )}
       >
-        {/* Mobile : onglets défilables */}
+        {/* Mobile : onglets défilables (plein-bord aligné sur le padding du Container : px-5). */}
         <div className="lg:hidden">
-          <div className="-mx-4 mb-1 flex items-center gap-3 px-4 pb-4">
+          <div className="-mx-5 mb-1 flex items-center gap-3 px-5 pb-4">
             <Avatar name={user.name} src={user.avatar ?? undefined} className="h-11 w-11 shrink-0" />
             <div className="min-w-0">
               <p className="truncate font-display text-sm font-bold text-navy">{user.name}</p>
@@ -119,7 +119,7 @@ export function EspaceNav({
           </div>
           <nav
             aria-label="Navigation de l'espace"
-            className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             {items.map((item) => {
               const Icon = NAV_ICONS[item.href] ?? LayoutDashboard;
@@ -214,7 +214,10 @@ export function EspaceNav({
       </div>
 
       {/* ── Contenu (occupe tout l'espace restant) ── */}
-      <div className="min-w-0 flex-1">
+      {/* overflow-x-clip UNIQUEMENT sur mobile : empêche tout débordement
+          horizontal accidentel du contenu (barre latérale masquée ici) sans
+          casser le `position: sticky` de la barre desktop (dans le rail). */}
+      <div className="min-w-0 flex-1 overflow-x-clip lg:overflow-x-visible">
         <PageTransition>{children}</PageTransition>
       </div>
     </div>
