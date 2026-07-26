@@ -14,10 +14,11 @@ const tones = {
   dark: "bg-surface-dark text-white",
 };
 
+// Rythme mobile-first : plus compact sur téléphone (< sm), généreux dès sm.
 const spacings = {
-  sm: "py-14 sm:py-16",
-  md: "py-20 sm:py-24",
-  lg: "py-24 sm:py-32",
+  sm: "py-10 sm:py-16",
+  md: "py-12 sm:py-24",
+  lg: "py-16 sm:py-32",
 };
 
 /** Section de page — respiration généreuse, fonds alternés (jamais tout blanc). */

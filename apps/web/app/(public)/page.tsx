@@ -81,7 +81,7 @@ export default async function HomePage() {
             }
             subtitle="Du simple site vitrine à la plateforme e-learning complète, nous vous accompagnons à chaque étape de votre présence numérique."
           />
-          <StaggerGroup className="mt-14 grid items-stretch gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-8 lg:pt-4">
+          <StaggerGroup className="mt-8 grid grid-cols-1 items-stretch gap-6 sm:mt-14 md:grid-cols-2 lg:grid-cols-3 lg:gap-8 lg:pt-4">
             {homeServices.map((pack) => (
               <StaggerItem key={pack.id} className="h-full">
                 <ServicePlanCard pack={pack} />
@@ -112,7 +112,7 @@ export default async function HomePage() {
               }
               subtitle="Nous ne livrons pas seulement du code : nous construisons des outils qui servent réellement votre activité."
             />
-            <StaggerGroup className="grid gap-5 sm:grid-cols-2">
+            <StaggerGroup className="grid grid-cols-1 gap-5 sm:grid-cols-2">
               {whyChoose.map((f) => (
                 <StaggerItem
                   key={f.title}
@@ -146,7 +146,7 @@ export default async function HomePage() {
             }
             subtitle="Un processus clair et rassurant, pensé pour vous garder informé et impliqué à chaque étape."
           />
-          <StaggerGroup className="relative mt-14 grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+          <StaggerGroup className="relative mt-8 grid grid-cols-1 gap-8 sm:mt-14 md:grid-cols-2 lg:grid-cols-4">
             {processSteps.map((step) => (
               <StaggerItem key={step.number} className="relative">
                 <span className="font-display text-5xl font-extrabold text-gradient-da">
@@ -188,7 +188,7 @@ export default async function HomePage() {
               </Link>
             </Reveal>
           </div>
-          <StaggerGroup className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <StaggerGroup className="mt-8 grid grid-cols-1 gap-6 sm:mt-12 md:grid-cols-2 lg:grid-cols-3">
             {featuredWork.map((item, i) => (
               <StaggerItem key={item.id}>
                 <PortfolioCard item={item} index={i} />
@@ -213,7 +213,7 @@ export default async function HomePage() {
             }
             subtitle="La satisfaction de nos clients est notre plus belle réalisation."
           />
-          <StaggerGroup className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <StaggerGroup className="mt-8 grid grid-cols-1 gap-6 sm:mt-14 md:grid-cols-2 lg:grid-cols-3">
             {featuredTestimonials.map((t) => (
               <StaggerItem key={t.id}>
                 <TestimonialCard testimonial={t} />

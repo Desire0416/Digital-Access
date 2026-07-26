@@ -227,7 +227,7 @@ export function ChatBot() {
             transition={{ type: "spring", stiffness: 260, damping: 20 }}
             whileHover={reduce ? undefined : { scale: 1.06 }}
             whileTap={reduce ? undefined : { scale: 0.94 }}
-            className="group fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom))] right-4 z-50 inline-flex h-14 w-14 items-center justify-center rounded-full bg-gradient-da text-white shadow-lg shadow-brand-violet/30 sm:right-6 lg:bottom-6"
+            className="group fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom))] right-4 z-50 inline-flex h-12 w-12 items-center justify-center rounded-full bg-gradient-da text-white shadow-lg shadow-brand-violet/30 sm:right-6 sm:h-14 sm:w-14 lg:bottom-6"
           >
             {!reduce && (
               <span

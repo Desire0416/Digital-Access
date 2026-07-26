@@ -13,14 +13,14 @@ const highlights = [
 
 export function AcademyPromo() {
   return (
-    <section className="py-20 sm:py-24">
+    <section className="py-12 sm:py-24">
       <Container>
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="relative overflow-hidden rounded-3xl border border-white/10 bg-surface-dark px-8 py-12 sm:px-14 sm:py-16"
+          className="relative overflow-hidden rounded-3xl border border-white/10 bg-surface-dark px-5 py-8 sm:px-14 sm:py-16"
         >
           <div aria-hidden className="absolute inset-0 bg-grid opacity-25" />
           <div
@@ -32,17 +32,17 @@ export function AcademyPromo() {
             className="pointer-events-none absolute -bottom-24 -left-16 h-80 w-80 rounded-full bg-brand-cyan/20 blur-3xl"
           />
 
-          <div className="relative grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+          <div className="relative grid grid-cols-1 gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
             <div>
               <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.16em] text-brand-cyan">
                 <GraduationCap size={15} />
                 Access Academy
               </span>
-              <h2 className="mt-5 font-display text-3xl font-extrabold leading-tight text-white sm:text-4xl">
+              <h2 className="mt-5 font-display text-[1.75rem] font-extrabold leading-tight text-white sm:text-4xl">
                 Formez-vous aux métiers du{" "}
                 <span className="text-gradient-da">numérique</span>
               </h2>
-              <p className="mt-4 max-w-lg text-lg text-white/70">
+              <p className="mt-4 max-w-lg text-base leading-relaxed text-white/70 sm:text-lg">
                 Notre plateforme e-learning vous ouvre les portes du développement,
                 du design et du marketing digital — à votre rythme, avec
                 certification à la clé.
@@ -60,10 +60,10 @@ export function AcademyPromo() {
                 ))}
               </div>
 
-              <div className="mt-8 flex flex-wrap gap-3">
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <Link
                   href="/academy"
-                  className={buttonClasses({ variant: "primary", size: "lg" })}
+                  className={cn(buttonClasses({ variant: "primary", size: "lg" }), "w-full justify-center sm:w-auto")}
                 >
                   Explorer les formations
                   <ArrowRight size={18} />
@@ -72,7 +72,7 @@ export function AcademyPromo() {
                   href="https://academy.digitalaccess.ci"
                   className={cn(
                     buttonClasses({ variant: "ghost", size: "lg" }),
-                    "text-white hover:bg-white/10",
+                    "w-full justify-center text-white hover:bg-white/10 sm:w-auto",
                   )}
                 >
                   Voir le catalogue
