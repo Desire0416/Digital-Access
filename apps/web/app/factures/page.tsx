@@ -71,7 +71,7 @@ export default async function FacturesPage() {
       <Section spacing="md" className="pt-0">
         <Container size="full">
           {/* Récapitulatif */}
-          <div className="grid gap-5 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <div className="relative overflow-hidden rounded-2xl border border-navy/[0.07] bg-surface-primary p-6">
               <div className="flex items-center justify-between">
                 <IconBadge tone="soft" className="bg-success/12 text-success">
@@ -238,7 +238,7 @@ export default async function FacturesPage() {
               </div>
             </div>
           ) : (
-            <div className="mt-10 rounded-2xl border border-dashed border-navy/15 bg-surface-secondary/50 p-12 text-center">
+            <div className="mt-10 rounded-2xl border border-dashed border-navy/15 bg-surface-secondary/50 p-8 text-center sm:p-12">
               <IconBadge tone="gradient" size="lg" className="mx-auto">
                 <FileText size={24} />
               </IconBadge>

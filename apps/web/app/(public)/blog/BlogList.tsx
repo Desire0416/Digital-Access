@@ -68,7 +68,7 @@ export function BlogList({ posts }: { posts: BlogPostPreview[] }) {
       </div>
 
       {/* Grille filtrée */}
-      <motion.div layout className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <motion.div layout className="mt-8 grid grid-cols-1 gap-6 sm:mt-12 md:grid-cols-2 lg:grid-cols-3">
         <AnimatePresence mode="popLayout">
           {filtered.map((post, i) => (
             <motion.div
@@ -86,7 +86,7 @@ export function BlogList({ posts }: { posts: BlogPostPreview[] }) {
       </motion.div>
 
       {filtered.length === 0 && (
-        <p className="mt-16 text-center text-text-secondary">
+        <p className="mt-8 text-center text-text-secondary sm:mt-16">
           Aucun article dans cette catégorie pour l'instant.
         </p>
       )}
@@ -107,7 +107,7 @@ export function FeaturedPost({ post, index = 0 }: { post: BlogPostPreview; index
         viewport={{ once: true, margin: "-80px" }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         whileHover={{ y: -4 }}
-        className="grid overflow-hidden rounded-3xl border border-navy/[0.07] bg-surface-primary transition-shadow hover:shadow-xl lg:grid-cols-2"
+        className="grid grid-cols-1 overflow-hidden rounded-3xl border border-navy/[0.07] bg-surface-primary transition-shadow hover:shadow-xl lg:grid-cols-2"
       >
         {/* Couverture dégradé */}
         <div
@@ -138,7 +138,7 @@ export function FeaturedPost({ post, index = 0 }: { post: BlogPostPreview; index
         </div>
 
         {/* Contenu */}
-        <div className="flex flex-col justify-center p-8 sm:p-10 lg:p-12">
+        <div className="flex flex-col justify-center p-6 sm:p-10 lg:p-12">
           <div className="flex items-center gap-3 text-xs font-medium text-text-muted">
             <span>{formatDate(post.publishedAt)}</span>
             <span className="h-1 w-1 rounded-full bg-text-muted/50" />

@@ -45,12 +45,12 @@ export default function CguPage() {
             <LegalTOC sections={sections} />
 
             <div>
-              <p className="mb-12 inline-flex items-center gap-2 rounded-full border border-navy/[0.08] bg-surface-secondary px-4 py-1.5 text-xs font-medium text-text-secondary">
+              <p className="mb-8 inline-flex items-center gap-2 rounded-full border border-navy/[0.08] bg-surface-secondary px-4 py-1.5 text-xs font-medium text-text-secondary sm:mb-12">
                 <span className="h-1.5 w-1.5 rounded-full bg-gradient-da" />
                 En vigueur depuis le {LAST_UPDATE}
               </p>
 
-              <div className="space-y-14">
+              <div className="space-y-10 sm:space-y-14">
                 <LegalArticle index={1} id="objet" title="Objet">
                   <p>
                     Les présentes Conditions Générales d'Utilisation (ci-après

@@ -117,7 +117,7 @@ export default function TarifsPage() {
             }
             subtitle="Trois formules pour couvrir chaque étape de votre présence en ligne. Tous nos prix sont indiqués « à partir de » et affinés dans le devis selon vos besoins précis."
           />
-          <div className="mt-16">
+          <div className="mt-8 sm:mt-16">
             <PricingGrid packs={mainPacks} />
           </div>
 
@@ -146,7 +146,7 @@ export default function TarifsPage() {
             }
             subtitle="Un récapitulatif complet des livrables pour choisir en toute confiance. Survolez une ligne ou une colonne pour comparer sans vous perdre."
           />
-          <div className="mt-14">
+          <div className="mt-8 sm:mt-14">
             <ComparisonTable packs={comparisonPacks} rows={comparisonRows} />
           </div>
         </Container>
@@ -166,7 +166,7 @@ export default function TarifsPage() {
             subtitle="Au-delà des sites web, nous vous accompagnons sur la durée et sur des projets à forte valeur ajoutée."
             className="max-w-xl"
           />
-          <div className="mt-12 grid gap-6 md:grid-cols-2">
+          <div className="mt-8 grid grid-cols-1 gap-6 sm:mt-12 md:grid-cols-2">
             {extraPacks.map((pack) => (
               <ExtraPackCard key={pack.id} pack={pack} />
             ))}
@@ -184,7 +184,7 @@ export default function TarifsPage() {
             </>
           }
           subtitle="Le Mobile Money d'abord, mais aussi le virement et le paiement échelonné pour les projets d'envergure."
-          className="mb-14"
+          className="mb-8 sm:mb-14"
         />
         <PaymentNote />
       </Section>
@@ -201,7 +201,7 @@ export default function TarifsPage() {
             }
             subtitle="Les réponses aux questions que l'on nous pose le plus souvent sur les prix et le paiement."
           />
-          <div className="mt-14">
+          <div className="mt-8 sm:mt-14">
             <PricingFaq items={pricingFaq} />
           </div>
 
@@ -241,7 +241,7 @@ function ExtraPackCard({
 }) {
   return (
     <Reveal className="group h-full">
-      <div className="flex h-full flex-col rounded-2xl border border-navy/[0.08] bg-surface-primary p-7 transition-shadow hover:shadow-lg sm:p-8">
+      <div className="flex h-full flex-col rounded-2xl border border-navy/[0.08] bg-surface-primary p-5 transition-shadow hover:shadow-lg sm:p-8">
         <div className="flex items-center gap-2">
           <Badge variant="soft">
             <Sparkles size={12} />
@@ -255,7 +255,7 @@ function ExtraPackCard({
           {pack.description}
         </p>
 
-        <ul className="mt-5 grid flex-1 gap-2.5 sm:grid-cols-2">
+        <ul className="mt-5 grid grid-cols-1 flex-1 gap-2.5 sm:grid-cols-2 [&>li:nth-child(n+4)]:hidden sm:[&>li:nth-child(n+4)]:flex">
           {pack.features.map((f) => (
             <li
               key={f}

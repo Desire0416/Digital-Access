@@ -129,7 +129,7 @@ export default async function MaintenancePage() {
       <Section spacing="md" className="pt-0">
         <Container size="full">
           {hasContracts ? (
-            <div className="grid gap-6">
+            <div className="grid grid-cols-1 gap-6">
               {contracts.map((c) => {
                 const cfg = planConfig[c.plan];
                 const PlanIcon = cfg.icon;
@@ -195,7 +195,7 @@ export default async function MaintenancePage() {
                         </Link>
 
                         {/* Période */}
-                        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
                           <div className="rounded-xl border border-navy/[0.07] px-4 py-3.5">
                             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-text-muted">
                               <CalendarDays size={14} />
@@ -225,7 +225,7 @@ export default async function MaintenancePage() {
                             />
                             Services inclus dans votre formule
                           </h3>
-                          <ul className="mt-3 grid gap-2.5 sm:grid-cols-2">
+                          <ul className="mt-3 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
                             {c.services.map((service) => (
                               <li
                                 key={service}
@@ -251,7 +251,7 @@ export default async function MaintenancePage() {
                           <p className="text-xs font-bold uppercase tracking-[0.16em] text-text-muted">
                             Montant mensuel
                           </p>
-                          <p className="mt-1.5 font-display text-4xl font-extrabold leading-none text-navy">
+                          <p className="mt-1.5 font-display text-[2rem] font-extrabold leading-none text-navy sm:text-4xl">
                             {formatFCFA(c.monthlyAmount)}
                           </p>
                           <p className="mt-1 text-sm text-text-secondary">
@@ -310,7 +310,7 @@ export default async function MaintenancePage() {
                     formules de maintenance vous libèrent de cette charge.
                   </p>
 
-                  <div className="mx-auto mt-8 grid max-w-lg gap-3 text-left sm:grid-cols-3">
+                  <div className="mx-auto mt-8 grid grid-cols-1 max-w-lg gap-3 text-left sm:grid-cols-3">
                     {[
                       { icon: Rocket, label: "Mises à jour", desc: "CMS, plugins et sécurité" },
                       { icon: DatabaseBackup, label: "Sauvegardes", desc: "Restauration en un clic" },
@@ -355,7 +355,7 @@ export default async function MaintenancePage() {
           )}
 
           {/* ── Comparatif des formules ────────────────────────────────────── */}
-          <div className="mt-16">
+          <div className="mt-8 sm:mt-16">
             <div className="text-center">
               <span className="inline-flex items-center gap-2 rounded-full border border-brand-blue-vif/20 bg-brand-blue-vif/5 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.16em] text-brand-blue-royal">
                 <span className="h-1.5 w-1.5 rounded-full bg-gradient-da" />
@@ -372,7 +372,7 @@ export default async function MaintenancePage() {
               </p>
             </div>
 
-            <div className="mt-10 grid items-stretch gap-6 lg:grid-cols-3">
+            <div className="mt-10 grid grid-cols-1 items-stretch gap-6 lg:grid-cols-3">
               {planCompare.map((p) => {
                 const cfg = planConfig[p.plan];
                 const Icon = p.icon;
@@ -380,7 +380,7 @@ export default async function MaintenancePage() {
                   <div
                     key={p.plan}
                     className={cn(
-                      "relative flex flex-col rounded-2xl bg-surface-primary p-6 transition-all hover:-translate-y-1 hover:shadow-xl",
+                      "relative flex flex-col rounded-2xl bg-surface-primary p-5 transition-all hover:-translate-y-1 hover:shadow-xl sm:p-6",
                       p.featured
                         ? "card-gradient-border shadow-lg lg:-mt-3"
                         : "border border-navy/[0.09]",
@@ -410,7 +410,7 @@ export default async function MaintenancePage() {
                     <p className="mt-4 font-display text-base font-bold text-navy">
                       {p.price}
                     </p>
-                    <ul className="mt-5 flex-1 space-y-2.5 border-t border-navy/[0.07] pt-5">
+                    <ul className="mt-5 flex-1 space-y-2.5 border-t border-navy/[0.07] pt-5 [&>li:nth-child(n+4)]:hidden sm:[&>li:nth-child(n+4)]:flex">
                       {p.features.map((f) => (
                         <li
                           key={f}

@@ -72,7 +72,7 @@ export default async function MesProjetsPage() {
             </>
           ) : (
             /* État vide brandé */
-            <div className="mx-auto max-w-xl rounded-2xl border border-dashed border-navy/15 bg-surface-secondary/50 p-12 text-center">
+            <div className="mx-auto max-w-xl rounded-2xl border border-dashed border-navy/15 bg-surface-secondary/50 p-8 text-center sm:p-12">
               <IconBadge tone="gradient" size="lg" className="mx-auto">
                 <Sparkles size={26} />
               </IconBadge>

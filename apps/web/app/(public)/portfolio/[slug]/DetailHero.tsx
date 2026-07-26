@@ -117,7 +117,7 @@ export function DetailHero({
                 href={item.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-8 inline-flex h-12 items-center gap-2 rounded-lg bg-white px-6 text-[0.95rem] font-semibold text-navy shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.98]"
+                className="mt-8 inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-white px-6 text-[0.95rem] font-semibold text-navy shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.98] sm:w-auto sm:justify-start"
               >
                 Voir le site
                 <ArrowUpRight size={18} />

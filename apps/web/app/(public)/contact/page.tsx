@@ -143,7 +143,7 @@ export default function ContactPage() {
                 </div>
               </Reveal>
 
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 {contactCards.map((card, i) => (
                   <Reveal key={card.label} delay={i * 0.06}>
                     <Link
@@ -293,7 +293,7 @@ export default function ContactPage() {
                 </span>
               </div>
 
-              <div className="relative flex flex-col gap-6 p-8 sm:p-12 lg:flex-row lg:items-end lg:justify-between">
+              <div className="relative flex flex-col gap-6 p-6 sm:p-12 lg:flex-row lg:items-end lg:justify-between">
                 <div className="max-w-md text-white">
                   <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-white backdrop-blur">
                     <MapPin size={14} />

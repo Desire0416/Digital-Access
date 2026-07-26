@@ -19,7 +19,7 @@ export function FounderCard() {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className="relative overflow-hidden rounded-3xl border border-white/10 bg-surface-dark px-8 py-12 sm:px-14 sm:py-16"
+      className="relative overflow-hidden rounded-3xl border border-white/10 bg-surface-dark px-6 py-10 sm:px-14 sm:py-16"
     >
       <div aria-hidden className="absolute inset-0 bg-grid opacity-20" />
       <div

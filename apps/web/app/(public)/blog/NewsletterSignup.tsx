@@ -28,7 +28,7 @@ export function NewsletterSignup() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="relative overflow-hidden rounded-3xl border border-navy/[0.06] bg-surface-secondary px-8 py-12 sm:px-12 sm:py-14"
+          className="relative overflow-hidden rounded-3xl border border-navy/[0.06] bg-surface-secondary px-6 py-10 sm:px-12 sm:py-14"
         >
           <Monogram
             size={200}

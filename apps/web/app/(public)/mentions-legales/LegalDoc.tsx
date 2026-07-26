@@ -73,7 +73,7 @@ export function LegalSection({
           {title}
         </h2>
       </div>
-      <div className="legal-prose mt-4 space-y-4 border-l border-navy/[0.07] pl-8 text-[15px] leading-relaxed text-text-secondary">
+      <div className="legal-prose mt-4 space-y-4 border-l border-navy/[0.07] pl-5 text-[15px] leading-relaxed text-text-secondary sm:pl-8">
         {children}
       </div>
     </motion.section>
@@ -91,7 +91,7 @@ export function LegalInfoGrid({
   return (
     <dl
       className={cn(
-        "grid gap-px overflow-hidden rounded-xl border border-navy/[0.08] bg-navy/[0.06] sm:grid-cols-2",
+        "grid grid-cols-1 gap-px overflow-hidden rounded-xl border border-navy/[0.08] bg-navy/[0.06] sm:grid-cols-2",
         className,
       )}
     >

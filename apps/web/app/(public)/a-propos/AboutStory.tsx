@@ -45,7 +45,7 @@ export function AboutStory() {
         </div>
 
         {/* Mission / Vision */}
-        <div className="mt-9 grid gap-5 sm:grid-cols-2">
+        <div className="mt-9 grid grid-cols-1 gap-5 sm:grid-cols-2">
           <div className="rounded-xl border border-navy/[0.07] bg-surface-primary p-5">
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-brand-blue-royal">
               Notre mission

@@ -84,7 +84,7 @@ export function PortfolioGallery({ items }: { items: PortfolioItem[] }) {
       </div>
 
       {/* Grille filtrée animée */}
-      <div className="mt-12 min-h-[20rem]">
+      <div className="mt-8 min-h-[20rem] sm:mt-12">
         <AnimatePresence mode="wait">
           <motion.div
             key={active}
@@ -92,7 +92,7 @@ export function PortfolioGallery({ items }: { items: PortfolioItem[] }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+            className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
           >
             {filtered.map((item, i) => (
               <motion.div

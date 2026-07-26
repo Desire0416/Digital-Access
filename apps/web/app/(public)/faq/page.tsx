@@ -37,7 +37,7 @@ export default function FaqPage() {
           <FaqAccordion items={faqItems} />
 
           {/* Encart « une autre question ? » */}
-          <Reveal className="mx-auto mt-16 max-w-3xl">
+          <Reveal className="mx-auto mt-8 max-w-3xl sm:mt-16">
             <div className="relative overflow-hidden rounded-2xl border border-navy/[0.08] bg-surface-secondary px-6 py-8 sm:px-10">
               <div
                 aria-hidden
@@ -58,10 +58,10 @@ export default function FaqPage() {
                     </p>
                   </div>
                 </div>
-                <div className="flex shrink-0 flex-wrap gap-3">
+                <div className="flex w-full shrink-0 flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap">
                   <Link
                     href="/contact"
-                    className={buttonClasses({ variant: "primary", size: "md" })}
+                    className={`${buttonClasses({ variant: "primary", size: "md" })} w-full justify-center sm:w-auto`}
                   >
                     Nous contacter
                     <ArrowRight size={17} />
@@ -70,7 +70,7 @@ export default function FaqPage() {
                     href={`https://wa.me/${siteConfig.contact.whatsapp}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={buttonClasses({ variant: "outline", size: "md" })}
+                    className={`${buttonClasses({ variant: "outline", size: "md" })} w-full justify-center sm:w-auto`}
                   >
                     WhatsApp
                   </a>

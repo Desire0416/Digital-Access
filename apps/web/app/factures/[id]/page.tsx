@@ -124,7 +124,7 @@ export default async function InvoiceDetailPage({
             </header>
 
             {/* Parties + méta */}
-            <div className="grid gap-8 border-b border-navy/[0.08] px-8 py-8 sm:grid-cols-2 sm:px-12">
+            <div className="grid grid-cols-1 gap-8 border-b border-navy/[0.08] px-8 py-8 sm:grid-cols-2 sm:px-12">
               <div>
                 <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-text-muted">
                   Émetteur

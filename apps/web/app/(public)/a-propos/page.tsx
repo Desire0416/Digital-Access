@@ -70,7 +70,7 @@ export default function AboutPage() {
             }
             subtitle="Quatre principes guident chacune de nos décisions, du premier échange jusqu'à la livraison de votre projet."
           />
-          <StaggerGroup className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <StaggerGroup className="mt-8 grid grid-cols-1 gap-6 sm:mt-14 sm:grid-cols-2 lg:grid-cols-4">
             {values.map((value) => (
               <StaggerItem
                 key={value.title}
@@ -103,7 +103,7 @@ export default function AboutPage() {
               </>
             }
             subtitle="Derrière Digital Access, une histoire personnelle et une ambition collective pour le numérique ivoirien."
-            className="mb-12"
+            className="mb-8 sm:mb-12"
           />
           <FounderCard />
         </Container>
@@ -121,7 +121,7 @@ export default function AboutPage() {
             }
             subtitle="Depuis notre création à Abidjan, chaque année a marqué une nouvelle étape dans notre engagement pour un numérique accessible."
           />
-          <div className="mt-16">
+          <div className="mt-8 sm:mt-16">
             <Timeline />
           </div>
         </Container>
@@ -139,7 +139,7 @@ export default function AboutPage() {
             }
             subtitle="Un processus clair et rassurant, pensé pour vous garder informé et impliqué à chaque étape."
           />
-          <StaggerGroup className="mt-14 grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+          <StaggerGroup className="mt-8 grid grid-cols-1 gap-8 sm:mt-14 md:grid-cols-2 lg:grid-cols-4">
             {processSteps.map((step) => (
               <StaggerItem key={step.number} className="relative">
                 <span className="font-display text-5xl font-extrabold text-gradient-da">
@@ -155,7 +155,7 @@ export default function AboutPage() {
             ))}
           </StaggerGroup>
 
-          <Reveal className="mt-14 text-center text-sm text-text-secondary">
+          <Reveal className="mt-8 text-center text-sm text-text-secondary sm:mt-14">
             Une question sur notre façon de travailler ?{" "}
             <a
               href="/contact"

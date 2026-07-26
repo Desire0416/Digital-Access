@@ -60,7 +60,7 @@ export default async function BlogPage() {
             }
             subtitle="Filtrez par thématique pour trouver rapidement ce qui vous intéresse."
           />
-          <div className="mt-12">
+          <div className="mt-8 sm:mt-12">
             <BlogList posts={rest.length > 0 ? rest : posts} />
           </div>
         </Container>

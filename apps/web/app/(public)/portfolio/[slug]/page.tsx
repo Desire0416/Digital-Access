@@ -190,7 +190,7 @@ export default async function PortfolioDetailPage({
             }
             subtitle="Au-delà du design, chaque réalisation repose sur des fondations solides."
           />
-          <StaggerGroup className="mt-14 grid gap-6 md:grid-cols-3">
+          <StaggerGroup className="mt-8 grid grid-cols-1 gap-6 sm:mt-14 md:grid-cols-3">
             {highlights.map((h) => (
               <StaggerItem
                 key={h.title}
@@ -223,7 +223,7 @@ export default async function PortfolioDetailPage({
                 </>
               }
             />
-            <Reveal className="mx-auto mt-12 max-w-2xl">
+            <Reveal className="mx-auto mt-8 max-w-2xl sm:mt-12">
               <TestimonialCard testimonial={relatedTestimonial} />
             </Reveal>
           </Container>
@@ -244,7 +244,7 @@ export default async function PortfolioDetailPage({
               }
               className="max-w-xl"
             />
-            <StaggerGroup className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <StaggerGroup className="mt-8 grid grid-cols-1 gap-6 sm:mt-12 md:grid-cols-2 lg:grid-cols-3">
               {relatedProjects.map((related, i) => (
                 <StaggerItem key={related.id}>
                   <PortfolioCard item={related} index={i} />

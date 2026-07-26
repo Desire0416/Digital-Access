@@ -44,7 +44,7 @@ export function PaymentNote() {
       >
         <div className="grid lg:grid-cols-[1.05fr_0.95fr]">
           {/* Volet dégradé — Mobile Money */}
-          <div className="relative overflow-hidden bg-gradient-da p-8 sm:p-10 lg:p-12">
+          <div className="relative overflow-hidden bg-gradient-da p-6 sm:p-10 lg:p-12">
             <div aria-hidden className="absolute inset-0 bg-grid opacity-20" />
             <Monogram
               variant="white"
@@ -89,7 +89,7 @@ export function PaymentNote() {
           </div>
 
           {/* Volet clair — facilités de règlement */}
-          <div className="p-8 sm:p-10 lg:p-12">
+          <div className="p-6 sm:p-10 lg:p-12">
             <ul className="space-y-6">
               {perks.map((perk) => (
                 <li key={perk.title} className="flex gap-4">

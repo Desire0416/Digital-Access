@@ -21,7 +21,7 @@ import type { ServicePack } from "@/lib/content";
  */
 export function PricingGrid({ packs }: { packs: ServicePack[] }) {
   return (
-    <StaggerGroup className="grid gap-6 lg:grid-cols-3">
+    <StaggerGroup className="grid grid-cols-1 gap-6 lg:grid-cols-3">
       {packs.map((pack) => (
         <StaggerItem key={pack.id} className="h-full">
           <PricingCard pack={pack} />
@@ -39,7 +39,7 @@ function PricingCard({ pack }: { pack: ServicePack }) {
       whileHover={{ y: -8 }}
       transition={{ type: "spring", stiffness: 300, damping: 22 }}
       className={cn(
-        "group relative flex h-full flex-col rounded-2xl p-7 sm:p-8",
+        "group relative flex h-full flex-col rounded-2xl p-5 sm:p-8",
         featured
           ? "card-gradient-border shadow-brand-lg lg:-my-4 lg:py-12"
           : "border border-navy/[0.08] bg-surface-primary",
@@ -81,7 +81,7 @@ function PricingCard({ pack }: { pack: ServicePack }) {
         <span className="text-xs uppercase tracking-wide text-text-muted">
           {pack.priceLabel}
         </span>
-        <p className="mt-0.5 font-display text-3xl font-extrabold text-navy">
+        <p className="mt-0.5 font-display text-2xl font-extrabold text-navy sm:text-3xl">
           {featured ? (
             <span className="text-gradient-da">{formatFCFA(pack.price)}</span>
           ) : (
@@ -90,7 +90,7 @@ function PricingCard({ pack }: { pack: ServicePack }) {
         </p>
       </div>
 
-      <ul className="relative mt-6 flex-1 space-y-3">
+      <ul className="relative mt-6 flex-1 space-y-3 [&>li:nth-child(n+4)]:hidden sm:[&>li:nth-child(n+4)]:flex">
         {pack.features.map((feature) => (
           <li
             key={feature}

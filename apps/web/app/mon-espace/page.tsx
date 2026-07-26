@@ -110,7 +110,7 @@ export default async function MonEspacePage() {
         )}
 
         {/* Stats */}
-        <div className="mt-8 grid gap-5 sm:grid-cols-3">
+        <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-3">
           <div className="rounded-xl border border-navy/[0.07] bg-surface-primary p-6">
             <div className="flex items-center justify-between">
               <IconBadge tone="gradient"><FolderKanban size={20} /></IconBadge>

@@ -53,7 +53,7 @@ export function ArticleHero({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           className={cn(
-            "relative mt-6 overflow-hidden rounded-3xl bg-gradient-to-br px-7 py-12 sm:px-12 sm:py-16",
+            "relative mt-6 overflow-hidden rounded-3xl bg-gradient-to-br px-6 py-10 sm:px-12 sm:py-16",
             covers[index % covers.length],
           )}
         >

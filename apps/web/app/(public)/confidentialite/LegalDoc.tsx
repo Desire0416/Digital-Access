@@ -68,7 +68,7 @@ export function LegalSection({
           {title}
         </h2>
       </div>
-      <div className="mt-4 space-y-4 border-l border-navy/[0.07] pl-8 text-[15px] leading-relaxed text-text-secondary">
+      <div className="mt-4 space-y-4 border-l border-navy/[0.07] pl-5 text-[15px] leading-relaxed text-text-secondary sm:pl-8">
         {children}
       </div>
     </motion.section>
@@ -82,7 +82,7 @@ export function DataCards({
   items: { icon: string; title: string; description: string }[];
 }) {
   return (
-    <div className="not-prose grid gap-4 sm:grid-cols-2">
+    <div className="not-prose grid grid-cols-1 gap-4 sm:grid-cols-2">
       {items.map((it, i) => (
         <motion.div
           key={it.title}
@@ -114,7 +114,7 @@ export function RightsCards({
   items: { title: string; description: string }[];
 }) {
   return (
-    <div className="not-prose grid gap-3 sm:grid-cols-2">
+    <div className="not-prose grid grid-cols-1 gap-3 sm:grid-cols-2">
       {items.map((it, i) => (
         <motion.div
           key={it.title}

@@ -288,7 +288,7 @@ export default async function BlogPostPage({
               subtitle="Poursuivez votre lecture avec ces publications sélectionnées pour vous."
               className="max-w-xl"
             />
-            <StaggerGroup className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <StaggerGroup className="mt-8 grid grid-cols-1 gap-6 sm:mt-12 md:grid-cols-2 lg:grid-cols-3">
               {related.map((rel, i) => (
                 <StaggerItem key={rel.id}>
                   <BlogCard post={rel} index={i} />

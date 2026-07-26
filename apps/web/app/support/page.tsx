@@ -140,7 +140,7 @@ function EmptyState({
   return (
     <div className="relative overflow-hidden rounded-3xl border border-navy/[0.08] bg-surface-primary">
       <div className="absolute inset-x-0 top-0 h-1 bg-gradient-da" />
-      <div className="grid gap-8 p-8 sm:p-12 lg:grid-cols-2 lg:items-center">
+      <div className="grid grid-cols-1 gap-8 p-8 sm:p-12 lg:grid-cols-2 lg:items-center">
         <div>
           <IconBadge tone="gradient" size="lg">
             <LifeBuoy size={26} />
