@@ -21,7 +21,7 @@ export default async function SettingsPage() {
 
       <div className="space-y-6">
         {/* Compte (lecture seule) */}
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="flex items-center gap-3 rounded-2xl border border-navy/[0.07] bg-surface-primary p-4">
             <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-navy/[0.04] text-brand-blue-royal" aria-hidden>
               <Mail size={18} />

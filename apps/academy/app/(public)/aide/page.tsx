@@ -39,7 +39,7 @@ export default async function AidePage() {
 
       <Container className="max-w-3xl">
         {/* Canaux de contact (§35.3) */}
-        <div className="mt-8 grid gap-3 sm:grid-cols-3">
+        <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-3">
           <Link
             href="/espace/support"
             className="group flex items-center gap-3 rounded-xl border border-navy/[0.08] bg-surface-primary p-4 transition-all hover:border-brand-blue-vif/40 hover:shadow-sm"

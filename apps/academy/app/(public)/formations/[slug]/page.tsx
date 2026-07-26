@@ -343,7 +343,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
           </aside>
 
           {/* ── Contenu principal ── */}
-          <div className="order-2 space-y-12 py-10 lg:order-1 lg:py-12">
+          <div className="order-2 space-y-10 py-10 sm:space-y-12 lg:order-1 lg:py-12">
             {/* À propos */}
             <Block icon={Sparkles} title="À propos de cette formation">
               <Markdown className="prose-sm sm:prose-base">{course.description}</Markdown>
@@ -352,7 +352,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
             {/* Objectifs */}
             {course.objectives.length > 0 && (
               <Block icon={ListChecks} title="Ce que vous allez apprendre">
-                <ul className="grid gap-3 sm:grid-cols-2">
+                <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {course.objectives.map((o, i) => (
                     <li key={i} className="flex items-start gap-2.5 rounded-xl border border-navy/[0.07] bg-surface-secondary/50 p-3.5">
                       <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-gradient-da text-white" aria-hidden>
@@ -391,7 +391,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
             {/* Public & prérequis (§11.2) */}
             {(course.targetAudience.length > 0 || course.prerequisitesText.length > 0 || course.requires.length > 0) && (
               <Block icon={UserCheck} title="À qui s'adresse cette formation">
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   {course.targetAudience.length > 0 && (
                     <div className="rounded-xl border border-navy/[0.07] bg-surface-primary p-5">
                       <h3 className="mb-3 font-display text-sm font-bold text-navy">Public cible</h3>
@@ -539,7 +539,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
             {/* Évaluations (§11.6) — sans réponses */}
             {course.assessments.length > 0 && (
               <Block icon={ClipboardCheck} title="Évaluations">
-                <div className="grid gap-3 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {course.assessments.map((a) => (
                     <div key={a.id} className="rounded-xl border border-navy/[0.08] bg-surface-primary p-4">
                       <div className="flex items-center justify-between gap-2">
@@ -573,7 +573,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
 
             {/* Certification (§11.7) */}
             <Block icon={BadgeCheck} title="Certification">
-              <div className="relative overflow-hidden rounded-2xl border border-brand-violet/20 bg-gradient-to-br from-brand-violet/[0.06] to-brand-cyan/[0.06] p-6">
+              <div className="relative overflow-hidden rounded-2xl border border-brand-violet/20 bg-gradient-to-br from-brand-violet/[0.06] to-brand-cyan/[0.06] p-5 sm:p-6">
                 <span className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gradient-da opacity-10 blur-2xl" aria-hidden />
                 <div className="relative flex items-start gap-4">
                   <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-gradient-da text-white shadow-brand" aria-hidden>
@@ -602,7 +602,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
             {/* Formateurs (§11.8) */}
             {course.instructors.length > 0 && (
               <Block icon={GraduationCap} title={course.instructors.length > 1 ? "Vos formateurs" : "Votre formateur"}>
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   {course.instructors.map((ins) => (
                     <div key={ins.user.id} className="flex gap-4 rounded-xl border border-navy/[0.07] bg-surface-primary p-5">
                       <Avatar name={ins.user.name} src={ins.user.avatar ?? undefined} className="h-14 w-14 shrink-0" />
@@ -620,7 +620,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
             {/* Appartenances (§11.9) */}
             {course.careerPaths.length > 0 && (
               <Block icon={Route} title="Cette formation fait partie de">
-                <StaggerGroup className="grid gap-5 sm:grid-cols-2">
+                <StaggerGroup className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                   {course.careerPaths.map((cp) => (
                     <CareerPathCard
                       key={cp.careerPath.slug}
@@ -656,7 +656,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
                     </p>
                   </div>
                 </div>
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   {course.reviews.map((r) => (
                     <Reveal key={r.id}>
                       <figure className="h-full rounded-xl border border-navy/[0.07] bg-surface-primary p-5">

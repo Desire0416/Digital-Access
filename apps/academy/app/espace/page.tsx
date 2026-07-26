@@ -65,7 +65,7 @@ export default async function EspaceDashboardPage() {
     : null;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <EspaceHeader
         title={`Bonjour, ${user.name.split(" ")[0]} 👋`}
         subtitle="Voici l'essentiel de votre progression."

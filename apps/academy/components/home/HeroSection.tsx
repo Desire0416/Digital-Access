@@ -150,7 +150,7 @@ export default function HeroSection({ courses }: HeroSectionProps) {
 
             <motion.h1
               {...fadeUp(0.08)}
-              className="mt-6 font-display text-[2.6rem] font-extrabold leading-[1.05] tracking-tight sm:text-6xl lg:text-[4.25rem]"
+              className="mt-6 font-display text-[2.15rem] font-extrabold leading-[1.05] tracking-tight sm:text-6xl lg:text-[4.25rem]"
             >
               Apprenez des compétences.
               <br />

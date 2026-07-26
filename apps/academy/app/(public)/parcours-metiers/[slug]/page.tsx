@@ -344,7 +344,7 @@ export default async function CareerPathDetailPage({ params }: { params: Promise
             {/* Missions du métier (§13.4) */}
             {path.missions.length > 0 && (
               <Block icon={Briefcase} title={`Le métier de ${path.targetJob}`}>
-                <ul className="grid gap-3 sm:grid-cols-2">
+                <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {path.missions.map((m, i) => (
                     <li
                       key={i}
@@ -483,7 +483,7 @@ export default async function CareerPathDetailPage({ params }: { params: Promise
                       </p>
                     </div>
                   </div>
-                  <ul className="mt-4 grid gap-2.5 sm:grid-cols-2">
+                  <ul className="mt-4 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
                     <CertCondition>Valider toutes les formations obligatoires du parcours</CertCondition>
                     {path.courses.some((c) => !c.isRequired) && (
                       <CertCondition>Valider le nombre minimal de formations optionnelles</CertCondition>

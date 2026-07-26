@@ -61,7 +61,7 @@ export default function AboutPage() {
       <section className="relative overflow-hidden bg-surface-dark text-white">
         <span className="pointer-events-none absolute inset-0 bg-grid opacity-[0.12]" aria-hidden />
         <span className="pointer-events-none absolute -right-32 -top-24 h-96 w-96 rounded-full bg-brand-violet opacity-25 blur-[120px]" aria-hidden />
-        <Container className="relative py-20 sm:py-24">
+        <Container className="relative py-14 sm:py-24">
           <div className="max-w-3xl">
             <Reveal>
               <Badge variant="gradient" className="mb-5">
@@ -70,7 +70,7 @@ export default function AboutPage() {
               </Badge>
             </Reveal>
             <Reveal delay={0.05}>
-              <h1 className="font-display text-4xl font-extrabold leading-[1.1] tracking-tight sm:text-5xl">
+              <h1 className="font-display text-[2rem] font-extrabold leading-[1.1] tracking-tight sm:text-5xl">
                 Bien plus qu'une bibliothèque de vidéos :{" "}
                 <GradientText>une académie complète</GradientText>
               </h1>
@@ -99,7 +99,7 @@ export default function AboutPage() {
             subtitle="Access Academy n'est pas une simple bibliothèque de contenus. C'est un environnement complet qui mène l'apprenant de la compétence au métier."
             className="mx-auto"
           />
-          <StaggerGroup className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <StaggerGroup className="mt-8 grid grid-cols-1 gap-6 sm:mt-12 sm:grid-cols-2 lg:grid-cols-3">
             {PILLARS.map((p) => (
               <StaggerItem key={p.title} className="h-full">
                 <div className="flex h-full flex-col rounded-xl border border-navy/[0.08] bg-surface-primary p-6 transition-shadow duration-300 hover:shadow-brand-lg">
@@ -118,7 +118,7 @@ export default function AboutPage() {
       {/* PORTEUR — DIGITAL ACCESS */}
       <Section tone="muted" spacing="md">
         <Container>
-          <div className="grid items-center gap-10 lg:grid-cols-2">
+          <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-2">
             <Reveal>
               <SectionHeading
                 eyebrow="Porté par Digital Access"
@@ -127,17 +127,17 @@ export default function AboutPage() {
                 subtitle="Digital Access conçoit des solutions numériques pour les organisations en Côte d'Ivoire. Access Academy prolonge cette mission : transmettre les compétences numériques et professionnelles qui comptent, avec la même exigence de qualité."
               />
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <Link href="/formations" className={buttonClasses({})}>
+                <Link href="/formations" className={buttonClasses({ className: "w-full justify-center sm:w-auto" })}>
                   Découvrir les formations
                   <ArrowRight size={16} />
                 </Link>
-                <Link href="/contact" className={buttonClasses({ variant: "outline" })}>
+                <Link href="/contact" className={buttonClasses({ variant: "outline", className: "w-full justify-center sm:w-auto" })}>
                   Nous contacter
                 </Link>
               </div>
             </Reveal>
             <Reveal delay={0.1}>
-              <div className="relative overflow-hidden rounded-2xl border border-navy/[0.08] bg-surface-primary p-8">
+              <div className="relative overflow-hidden rounded-2xl border border-navy/[0.08] bg-surface-primary p-6 sm:p-8">
                 <span className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-gradient-da opacity-[0.08] blur-2xl" aria-hidden />
                 <div className="relative grid grid-cols-2 gap-6">
                   {[
@@ -169,7 +169,7 @@ export default function AboutPage() {
             gradient="guident"
             className="mx-auto"
           />
-          <StaggerGroup className="mt-12 grid gap-6 sm:grid-cols-2">
+          <StaggerGroup className="mt-8 grid grid-cols-1 gap-6 sm:mt-12 sm:grid-cols-2">
             {VALUES.map((v) => (
               <StaggerItem key={v.title}>
                 <div className="flex gap-4 rounded-xl border border-navy/[0.08] bg-surface-primary p-6">
@@ -190,7 +190,7 @@ export default function AboutPage() {
       {/* CTA */}
       <Section tone="muted" spacing="sm">
         <Container>
-          <div className="flex flex-col items-center justify-between gap-6 rounded-2xl border border-navy/[0.08] bg-surface-primary p-8 text-center sm:flex-row sm:text-left">
+          <div className="flex flex-col items-center justify-between gap-6 rounded-2xl border border-navy/[0.08] bg-surface-primary p-6 text-center sm:flex-row sm:p-8 sm:text-left">
             <div>
               <h2 className="font-display text-xl font-bold text-navy">
                 Vous formez une équipe ou une organisation ?
@@ -199,7 +199,7 @@ export default function AboutPage() {
                 Découvrez comment Access Academy accompagne la montée en compétences des entreprises.
               </p>
             </div>
-            <Link href="/entreprises" className={buttonClasses({ className: "shrink-0" })}>
+            <Link href="/entreprises" className={buttonClasses({ className: "w-full justify-center shrink-0 sm:w-auto" })}>
               <Building2 size={16} />
               Offre entreprise
               <ArrowRight size={16} />

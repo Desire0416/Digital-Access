@@ -40,7 +40,7 @@ export default function ContactPage() {
       <section className="relative overflow-hidden bg-surface-dark text-white">
         <span className="pointer-events-none absolute inset-0 bg-grid opacity-[0.12]" aria-hidden />
         <span className="pointer-events-none absolute -right-32 -top-24 h-96 w-96 rounded-full bg-brand-cyan opacity-20 blur-[120px]" aria-hidden />
-        <Container className="relative py-20 sm:py-24">
+        <Container className="relative py-14 sm:py-24">
           <div className="max-w-2xl">
             <Reveal>
               <Badge variant="gradient" className="mb-5">
@@ -49,7 +49,7 @@ export default function ContactPage() {
               </Badge>
             </Reveal>
             <Reveal delay={0.05}>
-              <h1 className="font-display text-4xl font-extrabold leading-[1.1] tracking-tight sm:text-5xl">
+              <h1 className="font-display text-[2rem] font-extrabold leading-[1.1] tracking-tight sm:text-5xl">
                 Une question ? <GradientText>Parlons-en</GradientText>
               </h1>
             </Reveal>

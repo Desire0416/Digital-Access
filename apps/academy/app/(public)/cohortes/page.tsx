@@ -23,12 +23,12 @@ export default async function CohortesPage() {
         <span className="pointer-events-none absolute inset-0 bg-grid opacity-[0.12]" aria-hidden />
         <span className="pointer-events-none absolute -left-32 top-0 h-96 w-96 rounded-full bg-brand-violet opacity-30 blur-[120px]" aria-hidden />
         <span className="pointer-events-none absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-brand-cyan opacity-20 blur-[120px]" aria-hidden />
-        <Container className="relative py-16 text-center sm:py-20">
+        <Container className="relative py-12 text-center sm:py-20">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.06] px-4 py-1.5 text-sm font-medium text-white/85 backdrop-blur-sm">
             <Radio size={14} className="text-brand-cyan" />
             Sessions encadrées, en groupe
           </span>
-          <h1 className="mx-auto mt-6 max-w-3xl font-display text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl">
+          <h1 className="mx-auto mt-6 max-w-3xl font-display text-[2rem] font-extrabold leading-tight tracking-tight sm:text-5xl">
             Les cohortes en direct
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-white/75">
@@ -55,7 +55,7 @@ export default async function CohortesPage() {
               <CohortOpenSessions cohorts={cohorts} />
             </>
           ) : (
-            <div className="mx-auto max-w-lg rounded-2xl border border-navy/[0.08] bg-surface-secondary/60 p-10 text-center">
+            <div className="mx-auto max-w-lg rounded-2xl border border-navy/[0.08] bg-surface-secondary/60 p-8 text-center sm:p-10">
               <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-gradient-da text-white shadow-brand">
                 <CalendarDays size={26} />
               </span>

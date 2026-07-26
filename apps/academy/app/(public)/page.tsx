@@ -198,12 +198,12 @@ export default async function HomePage() {
             subtitle="Que vous cherchiez une compétence précise, un métier complet ou un domaine à explorer, il y a un chemin fait pour vous."
             className="mx-auto"
           />
-          <StaggerGroup className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <StaggerGroup className="mt-8 grid grid-cols-1 gap-6 sm:mt-12 sm:grid-cols-2 lg:grid-cols-3">
             {ORIENTATION.map((o) => (
               <StaggerItem key={o.href}>
                 <Link
                   href={o.href}
-                  className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-navy/[0.08] bg-surface-primary p-7 transition-shadow duration-300 hover:shadow-brand-lg"
+                  className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-navy/[0.08] bg-surface-primary p-5 transition-shadow duration-300 hover:shadow-brand-lg sm:p-7"
                 >
                   <span
                     className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full opacity-[0.1] blur-2xl transition-opacity group-hover:opacity-20"
@@ -274,7 +274,7 @@ export default async function HomePage() {
                 <ArrowRight size={15} />
               </Link>
             </div>
-            <StaggerGroup className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <StaggerGroup className="mt-8 grid grid-cols-1 gap-6 sm:mt-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {featuredPaths.map((p) => (
                 <StaggerItem key={p.id} className="h-full">
                   <CareerPathCard
@@ -319,7 +319,7 @@ export default async function HomePage() {
                 <ArrowRight size={15} />
               </Link>
             </div>
-            <StaggerGroup className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <StaggerGroup className="mt-8 grid grid-cols-1 gap-6 sm:mt-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {popularCourses.map((c) => (
                 <StaggerItem key={c.id} className="h-full">
                   <CourseCard
@@ -358,7 +358,7 @@ export default async function HomePage() {
               subtitle="Chaque école regroupe formations et parcours autour d'un domaine professionnel."
               className="mx-auto"
             />
-            <StaggerGroup className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <StaggerGroup className="mt-8 grid grid-cols-1 gap-6 sm:mt-12 sm:grid-cols-2 lg:grid-cols-3">
               {schools.map((s) => (
                 <StaggerItem key={s.id} className="h-full">
                   <SchoolCard
@@ -393,13 +393,13 @@ export default async function HomePage() {
             subtitle="Un parcours d'apprentissage clair, en quatre étapes."
             className="mx-auto"
           />
-          <div className="relative mt-14">
+          <div className="relative mt-8 sm:mt-14">
             {/* Ligne de progression dégradée (desktop) */}
             <span
               className="pointer-events-none absolute left-0 right-0 top-7 hidden h-0.5 bg-gradient-da opacity-30 lg:block"
               aria-hidden
             />
-            <StaggerGroup className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            <StaggerGroup className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
               {STEPS.map((s, i) => (
                 <StaggerItem key={s.title} className="relative text-center">
                   <div className="relative mx-auto grid h-14 w-14 place-items-center rounded-full bg-gradient-da text-white shadow-brand">
@@ -422,7 +422,7 @@ export default async function HomePage() {
       {/* ═══════════════════════ CERTIFICATIONS §9.8 ═══════════════════════ */}
       <Section tone="muted" spacing="md">
         <Container>
-          <div className="grid grid-cols-1 gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-12">
             <Reveal>
               <SectionHeading
                 eyebrow="Reconnaissance"
@@ -435,7 +435,7 @@ export default async function HomePage() {
                 <ArrowRight size={16} />
               </Link>
             </Reveal>
-            <StaggerGroup className="grid gap-4 sm:grid-cols-2">
+            <StaggerGroup className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               {CERTIFICATION_LEVELS.map((c) => (
                 <StaggerItem key={c.title}>
                   <div className="flex h-full flex-col rounded-xl border border-navy/[0.08] bg-surface-primary p-5">
@@ -462,10 +462,10 @@ export default async function HomePage() {
             gradient="carrière"
             className="mx-auto"
           />
-          <StaggerGroup className="mt-12 grid gap-6 lg:grid-cols-3">
+          <StaggerGroup className="mt-8 grid grid-cols-1 gap-6 sm:mt-12 lg:grid-cols-3">
             {TESTIMONIALS.map((t) => (
               <StaggerItem key={t.name} className="h-full">
-                <figure className="flex h-full flex-col rounded-xl border border-navy/[0.08] bg-surface-secondary/60 p-7">
+                <figure className="flex h-full flex-col rounded-xl border border-navy/[0.08] bg-surface-secondary/60 p-6 sm:p-7">
                   <Quote size={28} className="text-brand-blue-vif/40" aria-hidden />
                   <div className="mt-3 flex gap-0.5" aria-label={`${t.rating} sur 5`}>
                     {Array.from({ length: t.rating }).map((_, i) => (
@@ -494,7 +494,7 @@ export default async function HomePage() {
       {/* ═══════════════════════ CTA FINAL §9.11 ═══════════════════════ */}
       <Section tone="default" spacing="md">
         <Container>
-          <div className="relative overflow-hidden rounded-3xl bg-surface-dark px-6 py-16 text-center text-white sm:px-12 sm:py-20">
+          <div className="relative overflow-hidden rounded-3xl bg-surface-dark px-6 py-12 text-center text-white sm:px-12 sm:py-20">
             <span className="pointer-events-none absolute inset-0 bg-grid opacity-[0.12]" aria-hidden />
             <span className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-brand-violet opacity-30 blur-[100px]" aria-hidden />
             <span className="pointer-events-none absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-brand-cyan opacity-25 blur-[100px]" aria-hidden />

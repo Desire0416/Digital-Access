@@ -86,7 +86,7 @@ export default async function AgendaPage() {
           action={{ label: "Parcourir les événements", href: "/evenements" }}
         />
       ) : (
-        <div className="space-y-10">
+        <div className="space-y-8 sm:space-y-10">
           {/* ── Prochains rendez-vous ── */}
           <section>
             <div className="mb-4 flex items-center gap-2.5">

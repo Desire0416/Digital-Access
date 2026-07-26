@@ -70,7 +70,7 @@ export function ProfileForm({ initial }: { initial: ProfileInitial }) {
 
       <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-start">
         <ImageUpload variant="avatar" value={avatar} onChange={setAvatar} folder="avatars" fallback={initial.name} />
-        <div className="grid w-full gap-4 sm:grid-cols-2">
+        <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2">
           <Field label="Prénom" htmlFor="firstName">
             <Input id="firstName" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="Votre prénom" />
           </Field>
@@ -84,7 +84,7 @@ export function ProfileForm({ initial }: { initial: ProfileInitial }) {
         <Textarea id="bio" value={bio} onChange={(e) => setBio(e.target.value)} rows={3} placeholder="Ex. Développeuse web passionnée par la data…" />
       </Field>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Field label="Pays" htmlFor="country">
           <Input id="country" value={country} onChange={(e) => setCountry(e.target.value)} placeholder="Côte d'Ivoire" />
         </Field>

@@ -361,7 +361,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
             {/* Ressources (inscrits / passés) */}
             {ev.resources.length > 0 && (
               <Block icon={FileText} title="Ressources">
-                <ul className="grid gap-3 sm:grid-cols-2">
+                <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {ev.resources.map((r, i) => (
                     <li key={i}>
                       <a

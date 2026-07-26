@@ -70,7 +70,7 @@ export default function EntreprisesPage() {
         <span className="pointer-events-none absolute inset-0 bg-grid opacity-[0.12]" aria-hidden />
         <span className="pointer-events-none absolute -left-32 -top-24 h-96 w-96 rounded-full bg-brand-blue-royal opacity-30 blur-[120px]" aria-hidden />
         <span className="pointer-events-none absolute -right-32 bottom-0 h-96 w-96 rounded-full bg-brand-cyan opacity-20 blur-[120px]" aria-hidden />
-        <Container className="relative py-20 sm:py-24">
+        <Container className="relative py-14 sm:py-24">
           <div className="max-w-3xl">
             <Reveal>
               <Badge variant="gradient" className="mb-5">
@@ -79,7 +79,7 @@ export default function EntreprisesPage() {
               </Badge>
             </Reveal>
             <Reveal delay={0.05}>
-              <h1 className="font-display text-4xl font-extrabold leading-[1.1] tracking-tight sm:text-5xl">
+              <h1 className="font-display text-[2rem] font-extrabold leading-[1.1] tracking-tight sm:text-5xl">
                 Faites monter vos équipes en <GradientText>compétences</GradientText>
               </h1>
             </Reveal>
@@ -92,7 +92,7 @@ export default function EntreprisesPage() {
             </Reveal>
             <Reveal delay={0.15}>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <a href={mailtoHref} className={buttonClasses({ variant: "white", size: "lg" })}>
+                <a href={mailtoHref} className={buttonClasses({ variant: "white", size: "lg", className: "w-full justify-center sm:w-auto" })}>
                   <Mail size={18} />
                   Contacter l'équipe commerciale
                 </a>
@@ -100,7 +100,7 @@ export default function EntreprisesPage() {
                   href={whatsappHref}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={buttonClasses({ size: "lg" })}
+                  className={buttonClasses({ size: "lg", className: "w-full justify-center sm:w-auto" })}
                 >
                   <MessageCircle size={18} />
                   WhatsApp
@@ -122,7 +122,7 @@ export default function EntreprisesPage() {
             subtitle="Tout ce dont votre organisation a besoin pour développer les compétences de ses équipes."
             className="mx-auto"
           />
-          <StaggerGroup className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <StaggerGroup className="mt-8 grid grid-cols-1 gap-6 sm:mt-12 sm:grid-cols-2 lg:grid-cols-3">
             {OFFERS.map((o) => (
               <StaggerItem key={o.title} className="h-full">
                 <div className="flex h-full flex-col rounded-xl border border-navy/[0.08] bg-surface-primary p-6 transition-shadow duration-300 hover:shadow-brand-lg">
@@ -141,7 +141,7 @@ export default function EntreprisesPage() {
       {/* PARCOURS PERSONNALISÉ §28.3 */}
       <Section tone="muted" spacing="md">
         <Container>
-          <div className="grid items-center gap-10 lg:grid-cols-2">
+          <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-2">
             <Reveal>
               <SectionHeading
                 eyebrow="Sur mesure"
@@ -164,7 +164,7 @@ export default function EntreprisesPage() {
               </ul>
             </Reveal>
             <Reveal delay={0.1}>
-              <div className="rounded-2xl border border-navy/[0.08] bg-surface-primary p-8">
+              <div className="rounded-2xl border border-navy/[0.08] bg-surface-primary p-6 sm:p-8">
                 <div className="flex items-center gap-3">
                   <span className="grid h-11 w-11 place-items-center rounded-xl bg-brand-violet/10 text-brand-violet">
                     <Layers size={22} />
@@ -193,7 +193,7 @@ export default function EntreprisesPage() {
       {/* CTA CONTACT COMMERCIAL */}
       <Section tone="default" spacing="md">
         <Container>
-          <div className="relative overflow-hidden rounded-3xl bg-surface-dark px-6 py-16 text-center text-white sm:px-12">
+          <div className="relative overflow-hidden rounded-3xl bg-surface-dark px-6 py-12 text-center text-white sm:px-12 sm:py-16">
             <span className="pointer-events-none absolute inset-0 bg-grid opacity-[0.12]" aria-hidden />
             <span className="pointer-events-none absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-brand-cyan opacity-25 blur-[100px]" aria-hidden />
             <div className="relative mx-auto max-w-2xl">
@@ -209,7 +209,7 @@ export default function EntreprisesPage() {
                 votre organisation.
               </p>
               <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-                <a href={mailtoHref} className={buttonClasses({ variant: "white", size: "lg" })}>
+                <a href={mailtoHref} className={buttonClasses({ variant: "white", size: "lg", className: "w-full justify-center sm:w-auto" })}>
                   <Mail size={18} />
                   {siteConfig.contactEmail}
                 </a>
@@ -217,7 +217,7 @@ export default function EntreprisesPage() {
                   href={whatsappHref}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={buttonClasses({ size: "lg" })}
+                  className={buttonClasses({ size: "lg", className: "w-full justify-center sm:w-auto" })}
                 >
                   <MessageCircle size={18} />
                   Écrire sur WhatsApp

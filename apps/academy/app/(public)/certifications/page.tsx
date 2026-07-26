@@ -78,7 +78,7 @@ export default function CertificationsPage() {
         <span className="pointer-events-none absolute inset-0 bg-grid opacity-[0.12]" aria-hidden />
         <span className="pointer-events-none absolute -left-32 -top-24 h-96 w-96 rounded-full bg-brand-violet opacity-25 blur-[120px]" aria-hidden />
         <span className="pointer-events-none absolute -right-24 bottom-0 h-80 w-80 rounded-full bg-brand-cyan opacity-20 blur-[110px]" aria-hidden />
-        <Container className="relative py-20 sm:py-24">
+        <Container className="relative py-14 sm:py-24">
           <div className="max-w-3xl">
             <Reveal>
               <Badge variant="gradient" className="mb-5">
@@ -87,7 +87,7 @@ export default function CertificationsPage() {
               </Badge>
             </Reveal>
             <Reveal delay={0.05}>
-              <h1 className="font-display text-4xl font-extrabold leading-[1.1] tracking-tight sm:text-5xl">
+              <h1 className="font-display text-[2rem] font-extrabold leading-[1.1] tracking-tight sm:text-5xl">
                 Des certificats <GradientText>vérifiables</GradientText> qui prouvent vos compétences
               </h1>
             </Reveal>
@@ -125,7 +125,7 @@ export default function CertificationsPage() {
             subtitle="Selon le programme suivi et les conditions remplies, différents niveaux de reconnaissance vous sont délivrés."
             className="mx-auto"
           />
-          <StaggerGroup className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <StaggerGroup className="mt-8 grid grid-cols-1 gap-6 sm:mt-12 sm:grid-cols-2 lg:grid-cols-3">
             {TYPES.map((t) => (
               <StaggerItem key={t.title} className="h-full">
                 <div className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-navy/[0.08] bg-surface-primary p-6 transition-shadow duration-300 hover:shadow-brand-lg">
@@ -152,7 +152,7 @@ export default function CertificationsPage() {
       {/* CONDITIONS §20.2 + CONTENU §20.3 */}
       <Section tone="muted" spacing="md">
         <Container>
-          <div className="grid gap-10 lg:grid-cols-2 lg:gap-14">
+          <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-14">
             {/* Conditions */}
             <Reveal>
               <SectionHeading
@@ -217,7 +217,7 @@ export default function CertificationsPage() {
       {/* VÉRIFICATION §20.4 — CTA */}
       <Section tone="default" spacing="md">
         <Container>
-          <div className="relative overflow-hidden rounded-3xl bg-surface-dark px-6 py-16 text-center text-white sm:px-12">
+          <div className="relative overflow-hidden rounded-3xl bg-surface-dark px-6 py-12 text-center text-white sm:px-12 sm:py-16">
             <span className="pointer-events-none absolute inset-0 bg-grid opacity-[0.12]" aria-hidden />
             <span className="pointer-events-none absolute -left-24 -bottom-24 h-72 w-72 rounded-full bg-brand-violet opacity-30 blur-[100px]" aria-hidden />
             <div className="relative mx-auto max-w-2xl">

@@ -174,7 +174,7 @@ export default async function SchoolDetailPage({ params }: { params: Promise<{ s
         </Container>
       </section>
 
-      <Container className="relative space-y-16 py-12 sm:py-16">
+      <Container className="relative space-y-12 py-12 sm:space-y-16 sm:py-16">
         {/* ══════════════════ Parcours rattachés ══════════════════ */}
         {school.careerPaths.length > 0 && (
           <section>

@@ -195,7 +195,7 @@ export default async function EvenementsPage({ searchParams }: { searchParams: P
 
         {/* ══════════════════ Replays & passés ══════════════════ */}
         {past.length > 0 && (
-          <section className="mt-14">
+          <section className="mt-10 sm:mt-14">
             <div className="mb-6 flex items-center gap-2.5">
               <span className="grid h-9 w-9 place-items-center rounded-lg bg-navy text-white" aria-hidden>
                 <History size={18} />

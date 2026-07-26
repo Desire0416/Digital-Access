@@ -290,7 +290,7 @@ export function PortfolioEditor({
             />
           </Field>
 
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <Field label="GitHub" htmlFor="github">
               <div className="relative">
                 <Code2 size={15} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" aria-hidden />
@@ -575,7 +575,7 @@ function ItemForm({
         )}
       </AnimatePresence>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {!item && (
           <div>
             <label className="mb-1.5 block text-sm font-semibold text-navy">Type</label>
@@ -596,7 +596,7 @@ function ItemForm({
         <Textarea id="item-desc" value={description} onChange={(e) => setDescription(e.target.value)} rows={3} placeholder="Décrivez le contexte, votre rôle, les résultats…" />
       </Field>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Field label="Lien" htmlFor="item-url" hint="URL de la réalisation (optionnel).">
           <div className="relative">
             <Link2 size={15} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" aria-hidden />
