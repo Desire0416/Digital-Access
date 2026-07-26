@@ -22,7 +22,7 @@ export function ServicePlanCard({ pack }: { pack: ServicePack }) {
       whileHover={{ y: -6 }}
       transition={{ type: "spring", stiffness: 300, damping: 22 }}
       className={cn(
-        "relative flex h-full flex-col rounded-3xl p-7 sm:p-8",
+        "relative flex h-full flex-col rounded-2xl p-5 sm:rounded-3xl sm:p-8",
         featured
           ? "bg-gradient-da text-white shadow-brand-lg lg:-my-4 lg:py-12"
           : "border border-navy/[0.08] bg-surface-primary text-navy transition-shadow hover:shadow-xl",
@@ -46,7 +46,7 @@ export function ServicePlanCard({ pack }: { pack: ServicePack }) {
         </span>
       )}
 
-      <h3 className={cn("mt-5 font-display text-xl font-bold", featured ? "text-white" : "text-navy")}>
+      <h3 className={cn("mt-4 font-display text-xl font-bold sm:mt-5", featured ? "text-white" : "text-navy")}>
         {pack.name}
       </h3>
       <p className={cn("mt-1 text-sm font-medium", featured ? "text-white/80" : "text-brand-blue-royal")}>
@@ -54,7 +54,7 @@ export function ServicePlanCard({ pack }: { pack: ServicePack }) {
       </p>
 
       {/* Prix */}
-      <div className="mt-6">
+      <div className="mt-4 sm:mt-6">
         <span
           className={cn(
             "text-xs uppercase tracking-wide",
@@ -63,7 +63,7 @@ export function ServicePlanCard({ pack }: { pack: ServicePack }) {
         >
           {pack.priceLabel}
         </span>
-        <p className={cn("font-display text-3xl font-extrabold", featured ? "text-white" : "text-navy")}>
+        <p className={cn("font-display text-[1.75rem] font-extrabold sm:text-3xl", featured ? "text-white" : "text-navy")}>
           {formatFCFA(pack.price)}
         </p>
       </div>
@@ -72,24 +72,24 @@ export function ServicePlanCard({ pack }: { pack: ServicePack }) {
       {featured ? (
         <Link
           href="/devis"
-          className="mt-6 inline-flex w-full items-center justify-center rounded-lg bg-white px-5 py-3 text-sm font-semibold text-brand-violet shadow-sm transition-colors hover:bg-white/90"
+          className="mt-5 inline-flex w-full items-center justify-center rounded-lg bg-white px-5 py-3 text-sm font-semibold text-brand-violet shadow-sm transition-colors hover:bg-white/90 sm:mt-6"
         >
           {pack.cta}
         </Link>
       ) : (
         <Link
           href="/devis"
-          className={cn(buttonClasses({ variant: "primary", size: "md" }), "mt-6 w-full")}
+          className={cn(buttonClasses({ variant: "primary", size: "md" }), "mt-5 w-full sm:mt-6")}
         >
           {pack.cta}
         </Link>
       )}
 
       {/* Séparateur */}
-      <div className={cn("mt-7 border-t", featured ? "border-white/20" : "border-navy/[0.08]")} />
+      <div className={cn("mt-5 border-t sm:mt-7", featured ? "border-white/20" : "border-navy/[0.08]")} />
 
-      {/* Livrables */}
-      <ul className="mt-6 flex-1 space-y-3">
+      {/* Livrables — sur mobile, aperçu des 3 premiers (le reste sur /tarifs). */}
+      <ul className="mt-5 flex-1 space-y-2.5 sm:mt-6 sm:space-y-3 [&>li:nth-child(n+4)]:hidden sm:[&>li:nth-child(n+4)]:flex">
         {pack.features.map((feature) => (
           <li
             key={feature}
@@ -115,7 +115,7 @@ export function ServicePlanCard({ pack }: { pack: ServicePack }) {
       <Link
         href="/tarifs"
         className={cn(
-          "group mt-7 inline-flex items-center gap-1.5 text-sm font-semibold",
+          "group mt-5 inline-flex items-center gap-1.5 text-sm font-semibold sm:mt-7",
           featured ? "text-white" : "text-brand-blue-royal",
         )}
       >
