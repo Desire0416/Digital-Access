@@ -53,4 +53,5 @@ export { AnimatedCounter } from "./components/AnimatedCounter";
 // Coquille mobile / PWA
 export { Sheet, type SheetProps } from "./components/Sheet";
 export { MobileTabBar, type MobileTab, type MobileTabBarProps } from "./components/MobileTabBar";
+export { MobileAppBar, type MobileAppBarProps } from "./components/MobileAppBar";
 export { InstallPrompt, type InstallPromptProps } from "./components/InstallPrompt";

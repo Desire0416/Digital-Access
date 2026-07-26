@@ -554,14 +554,15 @@ export function SiteHeader({ user, notifications }: SiteHeaderProps) {
             </>
           )}
 
-          {/* Burger mobile */}
+          {/* Burger : uniquement en [lg, xl) — sous lg la barre d'onglets mobile
+              prend le relais (nav + « Menu »), au-delà de xl la nav desktop. */}
           <button
             type="button"
             onClick={() => setMobileOpen(true)}
             aria-label="Ouvrir le menu"
             aria-expanded={mobileOpen}
             className={cn(
-              "grid h-10 w-10 place-items-center rounded-lg transition-colors xl:hidden",
+              "hidden h-10 w-10 place-items-center rounded-lg transition-colors lg:grid xl:hidden",
               overHero ? "text-white hover:bg-white/10" : "text-navy hover:bg-navy/[0.05]",
             )}
           >

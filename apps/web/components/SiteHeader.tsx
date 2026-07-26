@@ -2,10 +2,10 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { AnimatePresence, motion } from "framer-motion";
-import { Menu, X, Phone, Mail, MapPin } from "lucide-react";
+import { motion } from "framer-motion";
+import { ChevronLeft, Phone, Mail, MapPin } from "lucide-react";
 import { Logo, Avatar, buttonClasses, cn, useScrolled } from "@da/ui";
 import { siteConfig, mainNav, clientNav } from "@/lib/site";
 import { LogoutButton } from "./LogoutButton";
@@ -45,8 +45,8 @@ const SOCIALS = [
 
 export function SiteHeader({ initialUser }: { initialUser?: HeaderUser | null }) {
   const pathname = usePathname();
+  const router = useRouter();
   const scrolled = useScrolled(10);
-  const [open, setOpen] = React.useState(false);
   const { data: session } = useSession();
   // Session serveur (initialUser, résolue par requête) prioritaire ; useSession
   // n'assure que les mises à jour réactives sans rechargement.
@@ -55,26 +55,18 @@ export function SiteHeader({ initialUser }: { initialUser?: HeaderUser | null })
   const isAdmin = Boolean(user?.roles?.some((r) => r === "ADMIN" || r === "SUPER_ADMIN"));
   const nav = isClient ? clientNav : mainNav;
 
-  // Espaces connectés (portail client) : largeur d'application élargie.
-  const PORTAL_PREFIXES = ["/mon-espace", "/mes-projets", "/factures", "/maintenance", "/support"];
-  const isPortal = PORTAL_PREFIXES.some((p) => pathname.startsWith(p));
+  // Espaces connectés (portail client) : largeur d'application élargie + barre
+  // d'app contextuelle (retour + titre) sur mobile, à la place du logo.
+  const PORTAL_PREFIXES = ["/mon-espace", "/mes-projets", "/factures", "/maintenance", "/support", "/profil"];
+  const portalBase = PORTAL_PREFIXES.find((p) => pathname === p || pathname.startsWith(p + "/"));
+  const isPortal = Boolean(portalBase);
+  const portalTitle =
+    clientNav.find((i) => i.href === portalBase)?.label ?? (portalBase === "/profil" ? "Mon profil" : "Mon espace");
+  const isPortalDetail = Boolean(portalBase) && pathname !== portalBase;
   const shellWidth = isPortal ? "max-w-[1600px]" : "max-w-7xl";
 
   // Accueil au repos : le header se pose en clair sur le hero sombre.
-  const overHero = pathname === "/" && !scrolled && !open;
-
-  React.useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
-
-  React.useEffect(() => {
-    if (!open) return;
-    const previous = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = previous;
-    };
-  }, [open]);
+  const overHero = pathname === "/" && !scrolled;
 
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
 
@@ -126,15 +118,38 @@ export function SiteHeader({ initialUser }: { initialUser?: HeaderUser | null })
       <header
         className={cn(
           "sticky top-0 z-50 transition-all duration-300",
-          scrolled || open
+          scrolled || isPortal
             ? "border-b border-navy/[0.06] bg-surface-primary/90 shadow-[0_4px_24px_-12px_rgba(26,26,46,0.15)] backdrop-blur-xl"
             : "bg-transparent",
         )}
       >
         <div className={cn("relative z-50 mx-auto flex h-18 items-center justify-between px-5 sm:px-8 lg:px-10", shellWidth)}>
-          <Link href="/" aria-label="Digital Access — accueil" className="shrink-0">
-            <Logo variant={overHero ? "white" : "color"} height={46} />
-          </Link>
+          {isPortal ? (
+            <>
+              {/* Mobile : barre d'app contextuelle (retour + titre de la page) */}
+              <div className="flex min-w-0 items-center gap-1.5 lg:hidden">
+                {isPortalDetail && (
+                  <button
+                    type="button"
+                    onClick={() => router.back()}
+                    aria-label="Retour"
+                    className="-ml-1.5 grid h-9 w-9 shrink-0 place-items-center rounded-lg text-navy transition-transform hover:bg-navy/[0.05] active:scale-90"
+                  >
+                    <ChevronLeft size={22} aria-hidden />
+                  </button>
+                )}
+                <span className="min-w-0 truncate font-display text-lg font-bold text-navy">{portalTitle}</span>
+              </div>
+              {/* Desktop : logo */}
+              <Link href="/" aria-label="Digital Access — accueil" className="hidden shrink-0 lg:block">
+                <Logo variant="color" height={46} />
+              </Link>
+            </>
+          ) : (
+            <Link href="/" aria-label="Digital Access — accueil" className="shrink-0">
+              <Logo variant={overHero ? "white" : "color"} height={46} />
+            </Link>
+          )}
 
           {/* Nav desktop */}
           <nav className="hidden items-center gap-1 lg:flex">
@@ -203,99 +218,7 @@ export function SiteHeader({ initialUser }: { initialUser?: HeaderUser | null })
             )}
           </div>
 
-          {/* Toggle mobile */}
-          <button
-            type="button"
-            onClick={() => setOpen((v) => !v)}
-            className={cn(
-              "inline-flex h-11 w-11 items-center justify-center rounded-lg transition-colors lg:hidden",
-              overHero ? "text-white hover:bg-white/10" : "text-navy hover:bg-navy/5",
-            )}
-            aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
-            aria-expanded={open}
-          >
-            {open ? <X size={24} /> : <Menu size={24} />}
-          </button>
         </div>
-
-        {/* Menu mobile — superposition */}
-        <AnimatePresence>
-          {open && (
-            <>
-              <motion.button
-                key="menu-scrim"
-                type="button"
-                aria-label="Fermer le menu"
-                tabIndex={-1}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                onClick={() => setOpen(false)}
-                className="absolute inset-x-0 top-full z-40 h-[100dvh] bg-navy/40 backdrop-blur-sm lg:hidden"
-              />
-              <motion.div
-                key="menu-panel"
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute inset-x-0 top-full z-50 max-h-[calc(100dvh-4.5rem)] overflow-y-auto bg-surface-primary shadow-xl lg:hidden"
-              >
-                <nav className={cn("mx-auto flex flex-col gap-1 px-5 py-4 sm:px-8", shellWidth)}>
-                  {nav.map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className={cn(
-                        "rounded-lg px-4 py-3 text-base font-medium transition-colors",
-                        isActive(item.href)
-                          ? "bg-brand-blue-vif/10 text-brand-blue-royal"
-                          : "text-navy hover:bg-navy/5",
-                      )}
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                  <div className="mt-3 flex flex-col gap-2">
-                    {user ? (
-                      <>
-                        <Link
-                          href={isAdmin ? "/admin/dashboard" : "/mon-espace"}
-                          className={cn(buttonClasses({ variant: "primary", size: "md" }), "gap-2")}
-                        >
-                          <Avatar name={user.name ?? user.email ?? "Vous"} className="h-6 w-6 text-[0.6rem]" />
-                          {user.name ?? "Mon tableau de bord"}
-                        </Link>
-                        <LogoutButton variant="ghost" size="md" className="justify-center" />
-                      </>
-                    ) : (
-                      <>
-                        <Link href="/auth/login" className={buttonClasses({ variant: "outline", size: "md" })}>
-                          Connexion
-                        </Link>
-                        <Link href="/devis" className={buttonClasses({ variant: "primary", size: "md" })}>
-                          Devis gratuit
-                        </Link>
-                      </>
-                    )}
-                  </div>
-                  {/* Contact rapide dans le tiroir mobile */}
-                  <div className="mt-4 flex flex-col gap-2 border-t border-navy/[0.06] pt-4 text-sm text-text-secondary">
-                    <a href={`tel:${siteConfig.contact.phone.replace(/\s/g, "")}`} className="inline-flex items-center gap-2 hover:text-navy">
-                      <Phone size={15} className="text-brand-blue-vif" />
-                      {siteConfig.contact.phone}
-                    </a>
-                    <a href={`mailto:${siteConfig.contact.email}`} className="inline-flex items-center gap-2 hover:text-navy">
-                      <Mail size={15} className="text-brand-blue-vif" />
-                      {siteConfig.contact.email}
-                    </a>
-                  </div>
-                </nav>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
       </header>
     </>
   );

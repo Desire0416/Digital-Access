@@ -101,49 +101,14 @@ export function EspaceNav({
 
   return (
     <div className="flex flex-col gap-6 lg:flex-row lg:gap-8">
-      {/* ── Rail de navigation ── */}
+      {/* ── Rail de navigation (desktop uniquement ; sur mobile la barre
+             d'onglets basse + la barre d'app contextuelle prennent le relais) ── */}
       <div
         className={cn(
-          "lg:shrink-0 lg:transition-[width] lg:duration-300 lg:ease-in-out",
+          "hidden lg:block lg:shrink-0 lg:transition-[width] lg:duration-300 lg:ease-in-out",
           collapsed ? "lg:w-[68px]" : "lg:w-[248px]",
         )}
       >
-        {/* Mobile : onglets défilables (plein-bord aligné sur le padding du Container : px-5). */}
-        <div className="lg:hidden">
-          <div className="-mx-5 mb-1 flex items-center gap-3 px-5 pb-4">
-            <Avatar name={user.name} src={user.avatar ?? undefined} className="h-11 w-11 shrink-0" />
-            <div className="min-w-0">
-              <p className="truncate font-display text-sm font-bold text-navy">{user.name}</p>
-              <p className="truncate text-xs text-text-secondary">{user.email}</p>
-            </div>
-          </div>
-          <nav
-            aria-label="Navigation de l'espace"
-            className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-          >
-            {items.map((item) => {
-              const Icon = NAV_ICONS[item.href] ?? LayoutDashboard;
-              const active = isActive(pathname, item.href);
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  aria-current={active ? "page" : undefined}
-                  className={cn(
-                    "inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-colors",
-                    active
-                      ? "bg-gradient-da text-white shadow-brand"
-                      : "border border-navy/[0.08] bg-surface-primary text-navy/70 hover:text-navy",
-                  )}
-                >
-                  <Icon size={15} aria-hidden />
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
-
         {/* Desktop : barre latérale sticky repliable */}
         <aside className="hidden lg:block">
           <div className="sticky top-24">

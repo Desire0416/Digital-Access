@@ -5,6 +5,7 @@ import { Container } from "@da/ui";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { EspaceNav } from "@/components/espace/EspaceNav";
+import { EspaceMobileBar } from "@/components/espace/EspaceMobileBar";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Coquille de l'espace apprenant (§16). Gardée : requireUser redirige les
@@ -22,6 +23,7 @@ export default async function EspaceLayout({ children }: { children: React.React
         user={{ name: user.name, avatar: user.avatar, roles: user.roles }}
         notifications={{ items: notif.notifications, unreadCount: notif.unreadCount }}
       />
+      <EspaceMobileBar />
 
       <main className="flex-1 bg-surface-secondary/40">
         <Container className="py-6 sm:py-8 lg:py-10">
