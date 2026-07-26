@@ -18,7 +18,7 @@ export function PageHero({
   children?: React.ReactNode;
 }) {
   return (
-    <section className="relative isolate overflow-hidden pb-16 pt-28 sm:pt-32">
+    <section className="relative isolate overflow-hidden pb-10 pt-20 sm:pb-16 sm:pt-32">
       <HeroBackground />
       <Container>
         <div className="mx-auto max-w-3xl text-center">
@@ -27,7 +27,7 @@ export function PageHero({
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="mb-5 inline-flex items-center gap-2 rounded-full border border-brand-blue-vif/20 bg-brand-blue-vif/5 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.18em] text-brand-blue-royal"
+              className="mb-4 inline-flex items-center gap-2 rounded-full border border-brand-blue-vif/20 bg-brand-blue-vif/5 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-brand-blue-royal sm:mb-5 sm:text-xs sm:tracking-[0.18em]"
             >
               <span className="h-1.5 w-1.5 rounded-full bg-gradient-da" />
               {eyebrow}
@@ -37,7 +37,7 @@ export function PageHero({
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="font-display text-4xl font-extrabold leading-[1.05] tracking-tight text-navy sm:text-5xl lg:text-6xl"
+            className="font-display text-[2rem] font-extrabold leading-[1.08] tracking-tight text-navy sm:text-5xl sm:leading-[1.05] lg:text-6xl"
           >
             {title}
           </motion.h1>
@@ -46,7 +46,7 @@ export function PageHero({
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-              className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-text-secondary"
+              className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-text-secondary sm:mt-6 sm:text-lg"
             >
               {description}
             </motion.p>

@@ -43,7 +43,7 @@ export function ServiceCard({ pack }: { pack: ServicePack }) {
         </p>
       </div>
 
-      <ul className="mt-5 flex-1 space-y-2.5">
+      <ul className="mt-5 flex-1 space-y-2.5 [&>li:nth-child(n+4)]:hidden sm:[&>li:nth-child(n+4)]:flex">
         {pack.features.slice(0, 5).map((f) => (
           <li key={f} className="flex items-start gap-2.5 text-sm text-text-secondary">
             <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-success/10 text-success">

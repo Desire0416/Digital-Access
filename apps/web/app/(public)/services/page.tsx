@@ -121,7 +121,7 @@ export default function ServicesPage() {
             }
             subtitle="Du premier site à la plateforme sur-mesure, chaque offre est claire, sans surprise, et pensée pour le marché ivoirien."
           />
-          <StaggerGroup className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <StaggerGroup className="mt-8 grid grid-cols-1 gap-6 sm:mt-14 md:grid-cols-2 lg:grid-cols-3">
             {servicePacks.map((pack) => {
               const alias = anchorAliases[pack.slug];
               return (
@@ -170,7 +170,7 @@ export default function ServicesPage() {
             }
             subtitle="Une vue d'ensemble pour choisir en confiance. Rien n'est figé : tout se personnalise."
           />
-          <div className="mt-12">
+          <div className="mt-8 sm:mt-12">
             <ComparisonMatrix
               firstColLabel="Ce que comprend chaque pack"
               columns={servicePacks.map((pack) => ({
@@ -200,7 +200,7 @@ export default function ServicesPage() {
             }
             subtitle="Un processus limpide et rassurant : vous gardez la main et la visibilité à chaque étape."
           />
-          <StaggerGroup className="relative mt-16 grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+          <StaggerGroup className="relative mt-8 grid grid-cols-1 gap-8 sm:mt-16 sm:gap-10 md:grid-cols-2 lg:grid-cols-4">
             {/* Filet dégradé reliant les étapes (desktop) */}
             <span
               aria-hidden
@@ -238,7 +238,7 @@ export default function ServicesPage() {
               }
               subtitle="Nous construisons des outils qui servent réellement votre activité, avec un accompagnement humain et durable."
             />
-            <StaggerGroup className="grid gap-5 sm:grid-cols-2">
+            <StaggerGroup className="grid grid-cols-1 gap-5 sm:grid-cols-2">
               {whyChoose.map((f) => (
                 <StaggerItem
                   key={f.title}
