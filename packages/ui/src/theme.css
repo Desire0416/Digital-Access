@@ -92,6 +92,27 @@
   background-size: 22px 22px;
 }
 
+/* ── Safe-area (encoche / home-indicator) — nécessite viewport-fit=cover ──
+   Utilisés par la coquille mobile (barre d'onglets, en-têtes app, sheets).
+   Sans effet sur les appareils sans zone système : env() vaut alors 0. */
+@utility pt-safe {
+  padding-top: env(safe-area-inset-top);
+}
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+@utility pl-safe {
+  padding-left: env(safe-area-inset-left);
+}
+@utility pr-safe {
+  padding-right: env(safe-area-inset-right);
+}
+/* Réserve d'espace bas quand la barre d'onglets mobile est montée
+   (classe posée sur <body> par la coquille mobile). Barre ≈ 3.75rem. */
+@utility min-h-touch {
+  min-height: 2.75rem;
+}
+
 /* ──────────────────────────────── Base ───────────────────────────────────── */
 @layer base {
   html {
@@ -143,6 +164,29 @@
   :focus-visible {
     outline: 2px solid var(--color-brand-blue-vif);
     outline-offset: 2px;
+  }
+}
+
+/* ─────────────────────── Coquille mobile façon application ─────────────────
+   La coquille mobile pose `has-mobile-tabbar` sur <body> quand la barre
+   d'onglets est montée : on réserve l'espace bas pour que le dernier contenu
+   ne passe pas sous la barre (barre ≈ 3.5rem + safe-area). Uniquement < lg.
+   ⚠️ padding, jamais overflow — l'avertissement du bloc `html` reste valable. */
+@media (max-width: 1023px) {
+  body.has-mobile-tabbar {
+    padding-bottom: calc(3.75rem + env(safe-area-inset-bottom));
+  }
+}
+
+/* Bascule de chrome selon le mode d'affichage PWA (installée vs navigateur). */
+@media all and (display-mode: standalone) {
+  .browser-only {
+    display: none !important;
+  }
+}
+@media not all and (display-mode: standalone) {
+  .app-only {
+    display: none !important;
   }
 }
 

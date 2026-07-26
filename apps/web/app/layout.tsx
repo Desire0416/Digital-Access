@@ -6,6 +6,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { PageTransition } from "@/components/PageTransition";
 import { ChatBot } from "@/components/ChatBot";
 import { ChromeGate } from "@/components/ChromeGate";
+import { MobileChrome } from "@/components/MobileChrome";
 import { Providers } from "@/components/Providers";
 import { InactivityLogout } from "@/components/InactivityLogout";
 import { VisitTracker } from "@/components/VisitTracker";
@@ -66,12 +67,16 @@ export const metadata: Metadata = {
     description: siteConfig.description,
   },
   robots: { index: true, follow: true },
+  appleWebApp: { capable: true, statusBarStyle: "default", title: siteConfig.name },
 };
 
 export const viewport: Viewport = {
   themeColor: "#2B3A8C",
   width: "device-width",
   initialScale: 1,
+  // Nécessaire pour exploiter env(safe-area-inset-*) en mode installé (encoche
+  // / home-indicator) — la barre d'onglets mobile en dépend.
+  viewportFit: "cover",
 };
 
 export default async function RootLayout({
@@ -113,6 +118,7 @@ export default async function RootLayout({
             <SiteFooter />
             <ChatBot />
           </ChromeGate>
+          <MobileChrome initialUser={initialUser} />
         </Providers>
         <Analytics />
         <SpeedInsights />

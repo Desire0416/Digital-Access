@@ -215,7 +215,7 @@ export function ChatBot() {
             transition={{ type: "spring", stiffness: 260, damping: 20 }}
             whileHover={reduce ? undefined : { scale: 1.06 }}
             whileTap={reduce ? undefined : { scale: 0.94 }}
-            className="group fixed bottom-4 right-4 z-50 inline-flex h-14 w-14 items-center justify-center rounded-full bg-gradient-da text-white shadow-lg shadow-brand-violet/30 sm:bottom-6 sm:right-6"
+            className="group fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom))] right-4 z-50 inline-flex h-14 w-14 items-center justify-center rounded-full bg-gradient-da text-white shadow-lg shadow-brand-violet/30 sm:right-6 lg:bottom-6"
           >
             {!reduce && (
               <span
@@ -242,7 +242,7 @@ export function ChatBot() {
             animate={reduce ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
             exit={reduce ? { opacity: 0 } : { opacity: 0, y: 20, scale: 0.96 }}
             transition={{ type: "spring", stiffness: 320, damping: 30 }}
-            className="fixed bottom-4 right-4 z-50 flex h-[min(70vh,600px)] w-[calc(100vw-2rem)] max-w-[400px] flex-col overflow-hidden rounded-2xl border border-navy/[0.08] bg-surface-primary shadow-2xl sm:bottom-6 sm:right-6"
+            className="fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom))] right-4 z-50 flex h-[min(70vh,600px)] w-[calc(100vw-2rem)] max-w-[400px] flex-col overflow-hidden rounded-2xl border border-navy/[0.08] bg-surface-primary shadow-2xl sm:right-6 lg:bottom-6"
           >
             {/* En-tête */}
             <div className="relative flex items-center gap-3 bg-gradient-da px-4 py-3.5 text-white">

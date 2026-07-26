@@ -20,6 +20,12 @@ export * from "./animations/variants";
 // Hooks
 export { useMediaQuery, useIsMobile, useIsDesktop } from "./hooks/useMediaQuery";
 export { useScrolled } from "./hooks/useScrolled";
+export {
+  useIsStandalone,
+  useInstallPrompt,
+  type InstallPromptState,
+  type InstallOutcome,
+} from "./hooks/usePwa";
 
 // Marque
 export { Monogram, type MonogramProps } from "./components/Monogram";
@@ -43,3 +49,8 @@ export { SectionHeading } from "./components/SectionHeading";
 export { Reveal } from "./components/Reveal";
 export { StaggerGroup, StaggerItem } from "./components/Stagger";
 export { AnimatedCounter } from "./components/AnimatedCounter";
+
+// Coquille mobile / PWA
+export { Sheet, type SheetProps } from "./components/Sheet";
+export { MobileTabBar, type MobileTab, type MobileTabBarProps } from "./components/MobileTabBar";
+export { InstallPrompt, type InstallPromptProps } from "./components/InstallPrompt";
