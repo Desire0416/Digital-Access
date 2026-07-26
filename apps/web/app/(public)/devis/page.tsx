@@ -40,40 +40,58 @@ const reassurance: { icon: string; title: string; text: string }[] = [
 export default function DevisPage() {
   return (
     <>
-      <PageHero
-        eyebrow="Demande de devis"
-        title={
-          <>
-            Estimons votre projet
-            <br className="hidden sm:block" /> ensemble
-          </>
-        }
-        description="Répondez à quelques questions simples : plus vous nous en dites, plus votre devis sera précis. C'est gratuit et sans engagement."
-      />
+      {/* Intro — desktop : hero magazine ; mobile : en-tête d'app compact,
+          aligné à gauche, pour atteindre le formulaire immédiatement. */}
+      <div className="hidden lg:block">
+        <PageHero
+          eyebrow="Demande de devis"
+          title={
+            <>
+              Estimons votre projet
+              <br className="hidden sm:block" /> ensemble
+            </>
+          }
+          description="Répondez à quelques questions simples : plus vous nous en dites, plus votre devis sera précis. C'est gratuit et sans engagement."
+        />
+      </div>
+      <div className="px-5 pb-3 pt-6 lg:hidden">
+        <span className="inline-flex items-center gap-2 rounded-full border border-brand-blue-vif/20 bg-brand-blue-vif/5 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-brand-blue-royal">
+          <span className="h-1.5 w-1.5 rounded-full bg-gradient-da" aria-hidden />
+          Devis gratuit
+        </span>
+        <h1 className="mt-3 font-display text-[1.75rem] font-extrabold leading-[1.1] tracking-tight text-navy">
+          Estimons votre projet
+        </h1>
+        <p className="mt-1.5 text-sm leading-relaxed text-text-secondary">
+          Quelques questions simples — réponse et devis gratuit sous 48h, sans engagement.
+        </p>
+      </div>
 
-      {/* Wizard */}
+      {/* Wizard — plein écran sur mobile (aucun cadre), carte sur desktop. */}
       <Section spacing="sm" className="!pt-0">
-        <Container size="md">
+        <div className="mx-auto w-full max-w-3xl sm:px-6 lg:px-8">
           <DevisWizard />
-        </Container>
+        </div>
       </Section>
 
       {/* Rassurance */}
-      <Section tone="muted">
+      <Section tone="muted" spacing="sm">
         <Container>
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             {reassurance.map((item, i) => (
               <Reveal key={item.title} delay={i * 0.08}>
-                <div className="flex h-full flex-col rounded-xl border border-navy/[0.07] bg-surface-primary p-6 transition-shadow hover:shadow-lg">
-                  <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-blue-vif/10 text-brand-blue-royal">
+                <div className="flex h-full items-start gap-4 rounded-2xl border border-navy/[0.07] bg-surface-primary p-4 transition-shadow hover:shadow-lg md:flex-col md:gap-0 md:p-6">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-blue-vif/10 text-brand-blue-royal md:h-12 md:w-12">
                     <Icon name={item.icon} size={22} />
                   </span>
-                  <h3 className="mt-4 font-display text-lg font-bold text-navy">
-                    {item.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-text-secondary">
-                    {item.text}
-                  </p>
+                  <div className="md:mt-4">
+                    <h3 className="font-display text-base font-bold text-navy md:text-lg">
+                      {item.title}
+                    </h3>
+                    <p className="mt-1 text-sm leading-relaxed text-text-secondary md:mt-2">
+                      {item.text}
+                    </p>
+                  </div>
                 </div>
               </Reveal>
             ))}

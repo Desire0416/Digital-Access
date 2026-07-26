@@ -146,10 +146,10 @@ export function DevisWizard() {
 
   return (
     <div className="relative">
-      {/* Carte du wizard */}
-      <div className="card-gradient-border overflow-hidden rounded-2xl bg-surface-primary shadow-[0_10px_40px_-12px_rgba(26,26,46,0.18)]">
+      {/* Carte du wizard — plein écran sans cadre sur mobile, carte sur desktop. */}
+      <div className="overflow-hidden bg-surface-primary sm:card-gradient-border sm:rounded-2xl sm:shadow-[0_10px_40px_-12px_rgba(26,26,46,0.18)]">
         {/* En-tête : progression */}
-        <div className="border-b border-navy/[0.06] bg-surface-secondary/60 px-6 pb-5 pt-6 sm:px-9">
+        <div className="border-b border-navy/[0.06] bg-surface-secondary/60 px-5 pb-4 pt-5 sm:px-9 sm:pb-5 sm:pt-6">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-[0.16em] text-brand-blue-royal">
               Étape {step} / {TOTAL}
@@ -203,12 +203,12 @@ export function DevisWizard() {
         </div>
 
         {/* Corps : étapes animées */}
-        <div className="px-6 py-8 sm:px-9 sm:py-10">
-          <h2 className="font-display text-xl font-bold text-navy sm:text-2xl">
+        <div className="px-5 py-6 sm:px-9 sm:py-10">
+          <h2 className="font-display text-2xl font-bold leading-tight text-navy">
             {STEPS[step - 1].title}
           </h2>
 
-          <div className="relative mt-7 min-h-[18rem]">
+          <div className="relative mt-6 min-h-[15rem] sm:mt-7 sm:min-h-[18rem]">
             <AnimatePresence mode="wait" custom={direction}>
               <motion.div
                 key={step}
@@ -267,16 +267,17 @@ export function DevisWizard() {
           </AnimatePresence>
         </div>
 
-        {/* Pied : navigation */}
-        <div className="flex items-center justify-between gap-3 border-t border-navy/[0.06] bg-surface-secondary/40 px-6 py-5 sm:px-9">
+        {/* Pied : navigation — empilé avec action principale pleine largeur sur
+            mobile (pouce), en ligne sur desktop. */}
+        <div className="flex flex-col-reverse gap-2.5 border-t border-navy/[0.06] bg-surface-secondary/40 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-9 sm:py-5">
           <button
             type="button"
             onClick={goPrev}
             disabled={step === 1 || isPending}
             className={cn(
               buttonClasses({ variant: "ghost", size: "md" }),
-              "gap-2",
-              step === 1 && "pointer-events-none opacity-0",
+              "w-full justify-center gap-2 sm:w-auto",
+              step === 1 && "hidden sm:inline-flex sm:pointer-events-none sm:opacity-0",
             )}
           >
             <ArrowLeft size={17} />
@@ -289,7 +290,7 @@ export function DevisWizard() {
               size="md"
               onClick={goNext}
               disabled={!stepValid}
-              className="gap-2"
+              className="w-full justify-center gap-2 sm:w-auto"
             >
               Suivant
               <ArrowRight size={17} />
@@ -301,7 +302,7 @@ export function DevisWizard() {
               onClick={submit}
               loading={isPending}
               disabled={!stepValid || isPending}
-              className="gap-2"
+              className="w-full justify-center gap-2 sm:w-auto"
             >
               {!isPending && <Send size={16} />}
               Envoyer ma demande
@@ -311,7 +312,7 @@ export function DevisWizard() {
       </div>
 
       {/* Rassurance sous la carte */}
-      <p className="mt-5 text-center text-sm text-text-muted">
+      <p className="mt-5 px-5 text-center text-sm text-text-muted sm:px-0">
         <Sparkles size={14} className="mr-1 inline text-brand-blue-vif" />
         Réponse sous 48h — devis gratuit et sans engagement.
       </p>
@@ -342,7 +343,7 @@ function StepProject({
         Sélectionnez ce qui correspond le mieux à votre besoin. Vous pourrez
         préciser juste après.
       </p>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {devisProjectTypes.map((type) => {
           const selected = value === type.value;
           return (
@@ -350,12 +351,11 @@ function StepProject({
               key={type.value}
               type="button"
               onClick={() => onSelect(type.value)}
-              whileHover={{ y: -3 }}
               whileTap={{ scale: 0.98 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
               aria-pressed={selected}
               className={cn(
-                "group relative flex flex-col items-start gap-3 overflow-hidden rounded-xl border p-5 text-left transition-colors",
+                "group relative flex items-center gap-4 overflow-hidden rounded-2xl border p-4 pr-12 text-left transition-colors sm:flex-col sm:items-start sm:gap-3 sm:rounded-xl sm:p-5 sm:pr-5",
                 selected
                   ? "border-transparent bg-gradient-da text-white shadow-brand"
                   : "border-navy/10 bg-surface-primary hover:border-brand-blue-vif/40",
@@ -363,17 +363,17 @@ function StepProject({
             >
               <span
                 className={cn(
-                  "flex h-11 w-11 items-center justify-center rounded-lg transition-colors",
+                  "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-colors sm:h-11 sm:w-11 sm:rounded-lg",
                   selected
                     ? "bg-white/15 text-white"
                     : "bg-brand-blue-vif/10 text-brand-blue-royal group-hover:bg-brand-blue-vif/15",
                 )}
               >
-                <Icon name={type.icon} size={22} />
+                <Icon name={type.icon} size={24} />
               </span>
               <span
                 className={cn(
-                  "font-display text-base font-bold leading-tight",
+                  "font-display text-base font-bold leading-tight sm:text-base",
                   selected ? "text-white" : "text-navy",
                 )}
               >
@@ -387,7 +387,7 @@ function StepProject({
                     initial={{ scale: 0, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0, opacity: 0 }}
-                    className="absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-full bg-white text-brand-blue-royal"
+                    className="absolute right-4 top-1/2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full bg-white text-brand-blue-royal sm:right-3 sm:top-3 sm:translate-y-0"
                   >
                     <Check size={14} strokeWidth={3} />
                   </motion.span>

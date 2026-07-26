@@ -2,12 +2,16 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Sparkles, Send, X, MessageSquare } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { cn } from "@da/ui";
+import { cn, useIsDesktop } from "@da/ui";
 import { siteConfig } from "@/lib/site";
+
+/** Routes où le FAB masque l'action principale sur mobile (formulaires plein écran). */
+const SUPPRESS_FAB_ON_MOBILE = ["/devis"];
 
 /* ══════════════════════════════════════════════════════════════════════════
    Assistant IA du site — bouton flottant + panneau de chat (remplace le FAB
@@ -97,6 +101,8 @@ export function ChatBot() {
   const [busy, setBusy] = React.useState(false);
 
   const reduce = useReducedMotion();
+  const pathname = usePathname();
+  const isDesktop = useIsDesktop();
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
   const abortRef = React.useRef<AbortController | null>(null);
@@ -199,6 +205,12 @@ export function ChatBot() {
     messages.length > 0 &&
     messages[messages.length - 1].role === "assistant" &&
     messages[messages.length - 1].content === "";
+
+  // Sur mobile, on masque le FAB là où il chevaucherait l'action principale
+  // (formulaires plein écran). Le desktop garde l'assistant.
+  if (!isDesktop && !open && SUPPRESS_FAB_ON_MOBILE.some((p) => pathname?.startsWith(p))) {
+    return null;
+  }
 
   return (
     <>
