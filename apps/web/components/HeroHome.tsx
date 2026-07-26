@@ -72,7 +72,7 @@ export function HeroHome() {
         />
 
         <Container className="relative">
-          <div className="grid items-center gap-8 pb-36 pt-28 sm:pt-32 lg:min-h-[620px] lg:grid-cols-2 lg:pb-44 lg:pt-36">
+          <div className="grid items-center gap-8 pb-24 pt-24 sm:pb-36 sm:pt-32 lg:min-h-[620px] lg:grid-cols-2 lg:pb-44 lg:pt-36">
             <div className="max-w-xl">
               <motion.span
                 {...fade(0)}
@@ -133,18 +133,19 @@ export function HeroHome() {
         <Container>
           <motion.div
             {...fade(0.32)}
-            className="relative z-10 -mt-24 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:-mt-28 lg:grid-cols-5"
+            className="relative z-10 -mt-14 grid grid-cols-2 gap-2.5 sm:-mt-24 sm:grid-cols-3 sm:gap-3 lg:-mt-28 lg:grid-cols-5"
           >
             {SERVICES.map((s) => (
               <Link
                 key={s.name}
                 href={s.href}
-                className="group flex flex-col items-center gap-3 rounded-2xl border border-navy/[0.06] bg-white p-5 text-center shadow-[0_20px_50px_-20px_rgba(27,42,90,0.4)] outline-none transition-all hover:-translate-y-1 hover:shadow-brand-lg focus-visible:ring-2 focus-visible:ring-brand-blue-vif"
+                className="group flex items-center gap-3 rounded-2xl border border-navy/[0.06] bg-white p-3 text-left shadow-[0_16px_40px_-20px_rgba(27,42,90,0.4)] outline-none transition-all hover:-translate-y-1 hover:shadow-brand-lg focus-visible:ring-2 focus-visible:ring-brand-blue-vif sm:flex-col sm:items-center sm:gap-3 sm:p-5 sm:text-center"
               >
-                <span className="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-da text-white shadow-brand transition-transform group-hover:scale-105">
-                  <s.icon size={26} aria-hidden />
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-da text-white shadow-brand transition-transform group-hover:scale-105 sm:h-14 sm:w-14 sm:rounded-2xl">
+                  <s.icon size={20} aria-hidden className="sm:hidden" />
+                  <s.icon size={26} aria-hidden className="hidden sm:block" />
                 </span>
-                <span className="text-sm font-bold leading-snug text-navy group-hover:text-brand-blue-royal">
+                <span className="text-[13px] font-bold leading-snug text-navy group-hover:text-brand-blue-royal sm:text-sm">
                   {s.name}
                 </span>
               </Link>
@@ -152,7 +153,7 @@ export function HeroHome() {
           </motion.div>
 
           {/* Bande de confiance */}
-          <div className="flex flex-col items-center gap-5 py-9 sm:flex-row sm:justify-between">
+          <div className="flex flex-col items-center gap-5 py-6 sm:flex-row sm:justify-between sm:py-9">
             <p className="shrink-0 text-sm font-semibold text-navy">
               Ils nous font confiance ·{" "}
               <span className="text-gradient-da">+35 clients satisfaits</span>
