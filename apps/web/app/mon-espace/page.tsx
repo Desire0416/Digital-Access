@@ -63,7 +63,7 @@ export default async function MonEspacePage() {
   const hasProjects = (data?.projects.length ?? 0) > 0;
 
   return (
-    <Section spacing="md" className="min-h-[80vh] pt-28">
+    <Section spacing="md" className="min-h-[80vh] pt-6 sm:pt-28">
       <Container size="full">
         {/* En-tête */}
         <div className="flex flex-wrap items-center justify-between gap-6">

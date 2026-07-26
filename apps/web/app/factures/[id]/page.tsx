@@ -75,7 +75,7 @@ export default async function InvoiceDetailPage({
         }}
       />
 
-      <div className="invoice-shell bg-surface-secondary pb-20 pt-28 sm:pt-32">
+      <div className="invoice-shell bg-surface-secondary pb-20 pt-6 sm:pt-32">
         <Container>
           {/* Navette + actions (masqués à l'impression) */}
           <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-4 print:hidden">

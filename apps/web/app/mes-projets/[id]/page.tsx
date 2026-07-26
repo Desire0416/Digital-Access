@@ -99,7 +99,7 @@ export default async function ProjectDetailPage({
   const typeLabel = typeLabels[project.type] ?? project.type;
 
   return (
-    <Section spacing="md" className="min-h-[80vh] pt-28">
+    <Section spacing="md" className="min-h-[80vh] pt-6 sm:pt-28">
       <Container>
         {/* Fil d'ariane */}
         <Link

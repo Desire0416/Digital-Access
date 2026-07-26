@@ -17,7 +17,7 @@ export default async function ProfilPage() {
   if (!p) redirect("/auth/login?callbackUrl=/profil");
 
   return (
-    <Section spacing="md" className="min-h-[80vh] pt-28">
+    <Section spacing="md" className="min-h-[80vh] pt-6 sm:pt-28">
       <Container size="lg">
         {/* En-tête brandé */}
         <div className="flex items-center gap-4">
