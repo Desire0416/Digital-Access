@@ -62,20 +62,22 @@ export default function MentionsLegalesPage() {
                     <span className="font-semibold text-navy">
                       digitalaccess.ci
                     </span>{" "}
-                    est édité par <strong>Digital Access</strong>, agence
-                    spécialisée dans la conception de sites web, d'applications
-                    et de plateformes e-learning.
+                    est édité par <strong>Digital Access</strong>, projet
+                    entrepreneurial ivoirien de solutions numériques (conception
+                    de sites web, d'applications et de plateformes e-learning),{" "}
+                    <strong>actuellement en cours de formalisation</strong>.
                   </p>
                   <LegalInfoGrid
                     className="not-prose"
                     items={[
                       { label: "Dénomination", value: siteConfig.name },
                       {
-                        label: "Forme",
-                        value: "Entreprise de services numériques",
+                        label: "Statut",
+                        value:
+                          "Projet entrepreneurial en cours de formalisation",
                       },
                       {
-                        label: "Siège social",
+                        label: "Adresse de contact",
                         value: siteConfig.contact.address,
                       },
                       {

@@ -31,11 +31,12 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { SectionHeading } from "@/components/SectionHeading";
+import { CertificateDisclaimer } from "@/components/CertificateDisclaimer";
 
 export const metadata: Metadata = {
-  title: "Certifications",
+  title: "Certificats",
   description:
-    "Les certifications Access Academy : de l'attestation de participation à la certification de parcours métier. Certificats vérifiables publiquement avec QR code et numéro unique.",
+    "Les certificats internes Access Academy : de l'attestation de participation au certificat de parcours métier. Certificats non diplômants, vérifiables publiquement avec QR code et numéro unique.",
   alternates: { canonical: "/certifications" },
 };
 
@@ -46,8 +47,8 @@ const TYPES = [
   { icon: Award, title: "Certificat de formation", text: "Valide la maîtrise des compétences d'une formation complète.", tone: "#2b5cc6" },
   { icon: Sparkles, title: "Certificat de spécialisation", text: "Atteste d'une expertise approfondie sur un ensemble de compétences.", tone: "#5b3fa8" },
   { icon: Star, title: "Certificat d'expertise", text: "Distingue un niveau d'excellence sur un domaine avancé.", tone: "#7c3aed" },
-  { icon: Route, title: "Certification de parcours métier", text: "La reconnaissance la plus complète : vous êtes prêt·e à exercer le métier.", tone: "#00bcd4" },
-  { icon: ShieldCheck, title: "Badge de compétence", text: "Une reconnaissance ciblée pour une compétence précise, à collectionner.", tone: "#059669" },
+  { icon: Route, title: "Certification de parcours métier", text: "Le certificat interne le plus complet : il atteste des compétences validées sur l'ensemble d'un parcours métier.", tone: "#00bcd4" },
+  { icon: ShieldCheck, title: "Badge de compétence", text: "Une attestation ciblée sur une compétence précise, à collectionner.", tone: "#059669" },
 ] as const;
 
 const CONDITIONS = [
@@ -93,9 +94,9 @@ export default function CertificationsPage() {
             </Reveal>
             <Reveal delay={0.1}>
               <p className="mt-6 text-lg leading-relaxed text-white/70">
-                De l'attestation de participation à la certification de parcours métier, chaque
-                certificat délivré par Access Academy est unique, sécurisé et vérifiable en ligne à
-                tout moment.
+                De l'attestation de participation au certificat de parcours métier, chaque certificat
+                interne délivré par Access Academy est unique, sécurisé et vérifiable en ligne à tout
+                moment.
               </p>
             </Reveal>
             <Reveal delay={0.15}>
@@ -119,10 +120,10 @@ export default function CertificationsPage() {
         <Container>
           <SectionHeading
             align="center"
-            eyebrow="Niveaux de reconnaissance"
+            eyebrow="Niveaux de certificat"
             title="Un certificat adapté à chaque"
             gradient="réussite"
-            subtitle="Selon le programme suivi et les conditions remplies, différents niveaux de reconnaissance vous sont délivrés."
+            subtitle="Selon le programme suivi et les conditions remplies, différents niveaux de certificat interne vous sont délivrés."
             className="mx-auto"
           />
           <StaggerGroup className="mt-8 grid grid-cols-1 gap-6 sm:mt-12 sm:grid-cols-2 lg:grid-cols-3">
@@ -146,6 +147,11 @@ export default function CertificationsPage() {
               </StaggerItem>
             ))}
           </StaggerGroup>
+
+          {/* Portée légale des certificats — encart obligatoire */}
+          <Reveal>
+            <CertificateDisclaimer variant="card" className="mx-auto mt-8 max-w-3xl sm:mt-10" />
+          </Reveal>
         </Container>
       </Section>
 

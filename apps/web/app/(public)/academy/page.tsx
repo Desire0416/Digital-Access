@@ -31,7 +31,7 @@ export const metadata = buildMetadata({
     "formation numérique Abidjan",
     "e-learning développement web Abidjan",
     "formation marketing digital Côte d'Ivoire",
-    "cours en ligne certifiants Abidjan",
+    "cours en ligne Abidjan",
   ],
 });
 
@@ -77,7 +77,7 @@ export default function AcademyLandingPage() {
                   Les formations les plus <GradientText>suivies</GradientText>
                 </>
               }
-              subtitle="Une sélection de cours plébiscités par notre communauté d'apprenants."
+              subtitle="Une sélection de formations pour démarrer ou approfondir vos compétences."
               className="max-w-xl"
             />
             <Reveal>

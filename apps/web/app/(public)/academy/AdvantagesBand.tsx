@@ -8,7 +8,7 @@ const advantages = [
     icon: ShieldCheck,
     title: "Certificats vérifiables",
     description:
-      "Un certificat officiel avec QR code, authentifiable en ligne par tout recruteur.",
+      "Un certificat numérique délivré par Access Academy, avec QR code et numéro unique, authentifiable en ligne.",
   },
   {
     icon: Smartphone,

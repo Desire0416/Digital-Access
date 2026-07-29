@@ -7,6 +7,12 @@ import type {
   Stat,
 } from "./types";
 
+/* ⚠️ DONNÉES DE DÉMONSTRATION — NE PAS AFFICHER PUBLIQUEMENT.
+   Ces chiffres et témoignages sont fictifs : les publier comme réels expose à
+   un risque juridique (publicité trompeuse). Ils ont été retirés des pages
+   publiques (accueil, à-propos, landing Academy) en juillet 2026. Ne les
+   réintroduire QUE remplacés par des données réelles et vérifiables. */
+
 // ─────────────────────────────── Chiffres clés ──────────────────────────────
 export const stats: Stat[] = [
   { id: "s1", label: "Projets livrés", value: 48, suffix: "+" },

@@ -31,7 +31,7 @@ import { siteConfig } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Entreprises — Formez vos équipes",
   description:
-    "Access Academy pour les entreprises : formation des équipes, parcours personnalisés, suivi de progression, rapports détaillés et certifications reconnues. Contactez notre équipe commerciale.",
+    "Access Academy pour les entreprises : formation des équipes, parcours personnalisés, suivi de progression, rapports détaillés et certificats vérifiables. Contactez notre équipe commerciale.",
   alternates: { canonical: "/entreprises" },
 };
 
@@ -42,7 +42,7 @@ const OFFERS = [
   { icon: Route, title: "Parcours personnalisés", text: "Nous construisons des parcours sur mesure alignés sur vos besoins métiers et vos objectifs de montée en compétences." },
   { icon: LineChart, title: "Suivi de progression", text: "Suivez en temps réel l'avancement de chaque collaborateur et de chaque cohorte depuis un espace dédié." },
   { icon: FileBarChart, title: "Rapports détaillés", text: "Exportez des rapports clairs sur l'activité, la progression et les résultats pour piloter vos actions de formation." },
-  { icon: Award, title: "Certifications reconnues", text: "Vos équipes obtiennent des certificats vérifiables qui valorisent leurs nouvelles compétences." },
+  { icon: Award, title: "Certificats vérifiables", text: "Vos équipes obtiennent un certificat numérique délivré par Access Academy, vérifiable en ligne grâce à un QR code et un numéro unique." },
   { icon: UserCog, title: "Responsables dédiés", text: "Désignez des responsables internes pour gérer les membres, les licences et les affectations." },
 ] as const;
 
@@ -86,8 +86,8 @@ export default function EntreprisesPage() {
             <Reveal delay={0.1}>
               <p className="mt-6 text-lg leading-relaxed text-white/70">
                 Formez vos collaborateurs sur des compétences numériques et professionnelles
-                concrètes. Parcours personnalisés, suivi de progression, rapports et certifications :
-                tout pour piloter la formation de vos équipes en toute sérénité.
+                concrètes. Parcours personnalisés, suivi de progression, rapports et certificats
+                vérifiables : tout pour piloter la formation de vos équipes en toute sérénité.
               </p>
             </Reveal>
             <Reveal delay={0.15}>

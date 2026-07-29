@@ -8,31 +8,32 @@ import { Monogram } from "@da/ui";
    mot de passe. Server Component (présentationnel, aucun hook).
    ══════════════════════════════════════════════════════════════════════════ */
 
+/** Panneau visuel : accroche + puces. `quote` reste optionnel pour un
+ *  témoignage RÉEL (aucun avis de démonstration ne doit être publié). */
+interface AuthAside {
+  heading: string;
+  points: string[];
+  quote?: { text: string; author: string; role: string };
+}
+
 interface AuthShellProps {
   title: string;
   subtitle?: string;
   children: React.ReactNode;
   footer?: React.ReactNode;
-  /** Aperçu du panneau visuel : accroche + puces mises en avant. */
-  aside?: {
-    heading: string;
-    points: string[];
-    quote?: { text: string; author: string; role: string };
-  };
+  aside?: AuthAside;
 }
 
-const DEFAULT_ASIDE = {
+const DEFAULT_ASIDE: AuthAside = {
   heading: "Apprenez une compétence, préparez-vous à un métier.",
   points: [
     "Des formations pensées pour l'employabilité en Côte d'Ivoire",
     "Des projets concrets validés par des professionnels",
-    "Des certificats vérifiables reconnus par les entreprises",
+    "Des certificats numériques vérifiables délivrés par Access Academy",
   ],
-  quote: {
-    text: "Access Academy m'a permis de décrocher mon premier emploi dans la data en trois mois.",
-    author: "Aïcha K.",
-    role: "Analyste de données, promotion 2025",
-  },
+  /* Conformité : le témoignage par défaut a été retiré — il s'agissait d'un avis
+     de démonstration (personne fictive), non vérifiable. La prop `quote` reste
+     disponible pour afficher un témoignage réel, une fois recueilli. */
 };
 
 export function AuthShell({ title, subtitle, children, footer, aside }: AuthShellProps) {

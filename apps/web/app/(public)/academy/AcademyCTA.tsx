@@ -38,8 +38,8 @@ export function AcademyCTA() {
               Prêt à faire décoller vos compétences ?
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-lg text-white/85">
-              Rejoignez plus de 1 200 apprenants sur academy.digitalaccess.ci et
-              transformez votre avenir professionnel dès aujourd'hui.
+              Rejoignez Access Academy sur academy.digitalaccess.ci et faites
+              progresser vos compétences dès aujourd'hui.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <a

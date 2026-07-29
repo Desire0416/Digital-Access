@@ -20,7 +20,7 @@ import { FiltersBar } from "./FiltersBar";
 export const metadata: Metadata = {
   title: "Formations — Apprenez une compétence",
   description:
-    "Explorez le catalogue Access Academy : formations certifiantes en développement, data, design et marketing. Filtrez par école, niveau et tarif.",
+    "Explorez le catalogue Access Academy : formations professionnelles courtes en développement, data, design et marketing. Filtrez par école, niveau et tarif.",
   alternates: { canonical: `${siteConfig.url}/formations` },
   openGraph: {
     title: "Formations Access Academy",

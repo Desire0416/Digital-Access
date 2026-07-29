@@ -11,17 +11,12 @@ import {
   GradientText,
   buttonClasses,
 } from "@da/ui";
-import { stats } from "@da/db";
-import { getVisitCount } from "@/lib/visits";
 import { getPublicPortfolio } from "@/lib/public-portfolio";
-import { getFeaturedTestimonials } from "@/lib/public-testimonials";
 import { buildMetadata } from "@/lib/seo";
 import { servicePacks, whyChoose, processSteps } from "@/lib/content";
 import { HeroHome } from "@/components/HeroHome";
-import { StatsBand } from "@/components/StatsBand";
 import { ServicePlanCard } from "@/components/ServicePlanCard";
 import { PortfolioCard } from "@/components/PortfolioCard";
-import { TestimonialCard } from "@/components/TestimonialCard";
 import { CTABanner } from "@/components/CTABanner";
 import { AcademyPromo } from "@/components/AcademyPromo";
 import { Icon } from "@/components/Icon";
@@ -50,24 +45,17 @@ export default async function HomePage() {
     featuredPack && restPacks.length === 2
       ? [restPacks[0], featuredPack, restPacks[1]]
       : top3;
-  const [portfolio, featuredTestimonials, visits] = await Promise.all([
-    getPublicPortfolio(),
-    getFeaturedTestimonials(3),
-    getVisitCount(),
-  ]);
+  const portfolio = await getPublicPortfolio();
   const featuredWork = portfolio.filter((p) => p.featured).slice(0, 3);
 
-  // Compteur de visites RÉEL (base) ajouté au bandeau de statistiques.
-  const statsWithVisits = [
-    ...stats,
-    { id: "visits", label: "Visites du site", value: visits, suffix: "" },
-  ];
+  /* Conformité : le bandeau de statistiques et la section témoignages ont été
+     retirés — les chiffres affichés (projets livrés, clients, apprenants, taux
+     de satisfaction) et les avis provenaient de données de démonstration, non
+     vérifiables. Ils ne seront réintroduits qu'avec des données réelles. */
 
   return (
     <>
       <HeroHome />
-
-      <StatsBand stats={statsWithVisits} />
 
       {/* Services */}
       <Section tone="muted">
@@ -200,28 +188,6 @@ export default async function HomePage() {
 
       {/* Academy */}
       <AcademyPromo />
-
-      {/* Témoignages */}
-      <Section tone="muted">
-        <Container>
-          <SectionHeading
-            eyebrow="Ils nous font confiance"
-            title={
-              <>
-                Ce que disent <GradientText>nos clients</GradientText>
-              </>
-            }
-            subtitle="La satisfaction de nos clients est notre plus belle réalisation."
-          />
-          <StaggerGroup className="mt-8 grid grid-cols-1 gap-6 sm:mt-14 md:grid-cols-2 lg:grid-cols-3">
-            {featuredTestimonials.map((t) => (
-              <StaggerItem key={t.id}>
-                <TestimonialCard testimonial={t} />
-              </StaggerItem>
-            ))}
-          </StaggerGroup>
-        </Container>
-      </Section>
 
       <CTABanner secondary={{ label: "Découvrir Academy", href: "/academy" }} />
     </>

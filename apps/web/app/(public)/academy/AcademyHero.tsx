@@ -6,15 +6,12 @@ import { GraduationCap, ArrowRight, PlayCircle, Award, Users } from "lucide-reac
 import { Container, buttonClasses, cn, Monogram, GradientText } from "@da/ui";
 import { siteConfig } from "@/lib/site";
 
-const floatingStats = [
-  { value: "40+", label: "formations" },
-  { value: "1200+", label: "apprenants" },
-  { value: "98%", label: "réussite" },
-];
+/* Conformité : les vignettes chiffrées (« 40+ formations », « 1200+ apprenants »,
+   « 98% réussite ») ont été retirées — données non vérifiables. */
 
 const heroHighlights = [
   { icon: PlayCircle, label: "Cours vidéo & interactifs" },
-  { icon: Award, label: "Certificats vérifiables" },
+  { icon: Award, label: "Certificats numériques vérifiables" },
   { icon: Users, label: "Communauté active" },
 ];
 
@@ -76,8 +73,8 @@ export function AcademyHero() {
             >
               La plateforme e-learning de Digital Access vous ouvre les portes du
               développement web, du design, du marketing et de la data. Des cours
-              conçus en Côte d'Ivoire, accessibles sur mobile, avec certification à
-              la clé.
+              conçus en Côte d'Ivoire, accessibles sur mobile, avec un certificat
+              numérique vérifiable à la clé.
             </motion.p>
 
             <motion.div
@@ -144,27 +141,6 @@ export function AcademyHero() {
               <GraduationCap size={130} className="relative text-white" strokeWidth={1.4} />
             </motion.div>
 
-            {floatingStats.map((s, i) => (
-              <motion.div
-                key={s.label}
-                animate={{ y: [0, i % 2 === 0 ? 12 : -12, 0] }}
-                transition={{
-                  duration: 6 + i * 0.5,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: i * 0.4,
-                }}
-                className={cn(
-                  "absolute rounded-xl border border-white/15 bg-white/10 px-4 py-3 backdrop-blur",
-                  i === 0 && "right-0 top-8",
-                  i === 1 && "-bottom-1 left-2",
-                  i === 2 && "left-1/2 top-0 -translate-x-1/2",
-                )}
-              >
-                <p className="font-display text-2xl font-extrabold text-white">{s.value}</p>
-                <p className="text-xs text-white/70">{s.label}</p>
-              </motion.div>
-            ))}
           </motion.div>
         </div>
       </Container>

@@ -33,11 +33,7 @@ export default async function InscriptionPage({
           "Suivez votre progression, vos projets et vos certificats",
           "Rejoignez une communauté d'apprenants en Côte d'Ivoire",
         ],
-        quote: {
-          text: "J'ai monté en compétences en data tout en travaillant. Les projets font vraiment la différence.",
-          author: "Koffi B.",
-          role: "Développeur, promotion 2025",
-        },
+        /* Conformité : témoignage de démonstration (personne fictive) retiré. */
       }}
       footer={
         <>

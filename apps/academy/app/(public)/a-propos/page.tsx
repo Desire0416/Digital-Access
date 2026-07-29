@@ -42,7 +42,7 @@ const PILLARS = [
   { icon: Target, title: "Compétences concrètes", text: "Chaque formation vise des savoir-faire immédiatement applicables, pas de la théorie hors-sol." },
   { icon: Route, title: "Préparation aux métiers", text: "Nos parcours métiers assemblent les formations dans le bon ordre pour rendre opérationnel." },
   { icon: FolderKanban, title: "Projets pratiques", text: "On apprend en faisant : des projets réels qui prouvent vos compétences et nourrissent votre portfolio." },
-  { icon: Award, title: "Certification", text: "Des certificats vérifiables publiquement, avec QR code et numéro unique, reconnus et partageables." },
+  { icon: Award, title: "Certification", text: "Des certificats internes de réussite, vérifiables publiquement grâce à un QR code et un numéro unique, et partageables." },
   { icon: Briefcase, title: "Employabilité", text: "Tout est pensé pour rapprocher l'apprentissage du marché du travail et de ses attentes réelles." },
   { icon: RefreshCw, title: "Formation continue", text: "Un espace d'apprentissage durable pour monter en compétences tout au long de sa carrière." },
 ] as const;

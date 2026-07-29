@@ -283,7 +283,7 @@ export function certificateEmail(opts: {
       preheader: `Votre certificat de réussite pour « ${opts.courseTitle} » est disponible.`,
       heading: `Bravo ${opts.name}, c'est validé ! 🎓`,
       body: `
-        ${p(`Vous avez complété avec succès la formation <b>${opts.courseTitle}</b>. Votre certificat de réussite Access Academy est officiellement délivré.`)}
+        ${p(`Vous avez complété avec succès la formation <b>${opts.courseTitle}</b>. Votre certificat interne de réussite, délivré par Access Academy, est disponible.`)}
         <div style="background:#F9FAFB;border:1px solid #eee;border-radius:12px;padding:14px 16px;margin:0 0 18px;">
           <p style="margin:0;font-size:13px;color:#9CA3AF;">Code de vérification</p>
           <p style="margin:4px 0 0;font-size:18px;font-weight:800;letter-spacing:.08em;color:${BRAND.navy};">${opts.code}</p>
@@ -291,6 +291,7 @@ export function certificateEmail(opts: {
         ${p("Téléchargez-le en PDF, partagez-le sur LinkedIn, ou laissez un employeur vérifier son authenticité en ligne à tout moment.")}
         <div style="margin:24px 0;">${button(opts.certificatesUrl, "Voir mon certificat")}</div>
         ${p(`<span style='color:#9CA3AF;font-size:13px;'>Vérification publique : <a href="${opts.verifyUrl}" style="color:#2072E8;word-break:break-all;">${opts.verifyUrl}</a></span>`)}
+        ${p("<span style='color:#9CA3AF;font-size:12px;'>Ce document est un certificat interne de réussite délivré par Access Academy, non diplômant. Il atteste du suivi et de la validation d'une formation professionnelle courte et ne constitue pas une certification professionnelle reconnue par l'État.</span>")}
       `,
     }),
   };

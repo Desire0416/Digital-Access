@@ -143,8 +143,9 @@ export default function ConfidentialitePage() {
                 >
                   <p>
                     Le responsable du traitement des données est{" "}
-                    <strong>{siteConfig.name}</strong>, dont le siège est situé
-                    à {siteConfig.contact.address}. Pour toute question relative
+                    <strong>{siteConfig.name}</strong>, joignable à l'adresse de
+                    contact suivante : {siteConfig.contact.address}. Pour toute
+                    question relative
                     à vos données, vous pouvez écrire à{" "}
                     <a
                       href={`mailto:${siteConfig.contact.email}`}

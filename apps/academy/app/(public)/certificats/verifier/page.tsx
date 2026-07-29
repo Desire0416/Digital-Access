@@ -13,6 +13,7 @@ import { Container, GradientText } from "@da/ui";
 import { verifyCertificate, type CertificateVerification } from "@/lib/certification";
 import { CERTIFICATE_TYPE_LABEL } from "@/lib/certificate-types";
 import { VerifyForm } from "@/components/certificate/VerifyForm";
+import { CertificateDisclaimer } from "@/components/CertificateDisclaimer";
 
 export const metadata: Metadata = {
   title: "Vérifier un certificat",
@@ -168,7 +169,7 @@ export default async function VerifierCertificatPage({
         <div className="mx-auto max-w-3xl text-center">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-navy/10 bg-surface-primary px-3 py-1 text-xs font-semibold text-brand-blue-royal">
             <ShieldCheck size={14} />
-            Vérification officielle
+            Vérification d&apos;authenticité
           </span>
           <h1 className="mt-4 font-display text-3xl font-bold tracking-tight text-navy sm:text-4xl">
             Vérifiez un <GradientText>certificat</GradientText>
@@ -184,6 +185,9 @@ export default async function VerifierCertificatPage({
         </div>
 
         {result && (result.valid ? <ValidCard r={result} /> : <InvalidCard r={result} />)}
+
+        {/* Portée légale du certificat — mention obligatoire */}
+        <CertificateDisclaimer variant="card" className="mx-auto mt-8 max-w-2xl" />
       </Container>
     </div>
   );

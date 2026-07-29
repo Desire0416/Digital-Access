@@ -20,8 +20,6 @@ import {
   FolderKanban,
   Award,
   Sparkles,
-  Quote,
-  Star,
   Users,
   BadgeCheck,
   Building2,
@@ -36,7 +34,7 @@ import { CohortOpenSessions } from "@/components/cohort/CohortOpenSessions";
 export const metadata: Metadata = {
   title: "Apprenez une compétence. Préparez-vous à un métier.",
   description:
-    "Access Academy est l'académie numérique de Digital Access : formations certifiantes, parcours métiers et projets pratiques pour développer des compétences concrètes et booster votre employabilité en Côte d'Ivoire.",
+    "Access Academy est l'académie numérique de Digital Access : formations professionnelles courtes, parcours métiers et projets pratiques pour développer des compétences concrètes et valoriser votre profil en Côte d'Ivoire.",
   alternates: { canonical: "/" },
 };
 
@@ -66,7 +64,7 @@ const STEPS = [
   {
     icon: Award,
     title: "Certifier",
-    text: "Obtenez un certificat vérifiable avec QR code, reconnu et partageable sur vos réseaux.",
+    text: "Obtenez un certificat vérifiable avec QR code, partageable sur vos réseaux.",
   },
 ] as const;
 
@@ -88,32 +86,8 @@ const CERTIFICATION_LEVELS = [
   },
   {
     icon: Route,
-    title: "Certification de parcours métier",
-    text: "La reconnaissance la plus complète : vous êtes prêt·e à exercer le métier visé.",
-  },
-] as const;
-
-const TESTIMONIALS = [
-  {
-    name: "Awa Traoré",
-    role: "Analyste de données, Abidjan",
-    quote:
-      "Le parcours métier m'a fait passer de débutante à un poste d'analyste en quelques mois. Les projets pratiques ont fait toute la différence lors de mes entretiens.",
-    rating: 5,
-  },
-  {
-    name: "Koffi N'Guessan",
-    role: "Développeur web freelance",
-    quote:
-      "J'ai apprécié de ne payer qu'une seule fois chaque formation, même en suivant plusieurs parcours. Le certificat vérifiable rassure vraiment mes clients.",
-    rating: 5,
-  },
-  {
-    name: "Fatoumata Bamba",
-    role: "Responsable RH, PME industrielle",
-    quote:
-      "Nous formons nos équipes sur Access Academy. Le suivi de progression et les rapports nous permettent de piloter la montée en compétences sereinement.",
-    rating: 5,
+    title: "Certificat de parcours métier",
+    text: "Atteste l'achèvement complet du parcours et des projets associés.",
   },
 ] as const;
 
@@ -425,10 +399,10 @@ export default async function HomePage() {
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-12">
             <Reveal>
               <SectionHeading
-                eyebrow="Reconnaissance"
+                eyebrow="Vos certificats"
                 title="Des certificats qui"
-                gradient="ont de la valeur"
-                subtitle="Selon votre programme, différents niveaux de reconnaissance attestent de vos compétences. Chaque certificat est vérifiable publiquement grâce à un QR code et un numéro unique."
+                gradient="valorisent votre profil"
+                subtitle="Selon votre programme, différents niveaux de certificats internes attestent des compétences validées. Chaque certificat est délivré par Access Academy et vérifiable publiquement grâce à un QR code et un numéro unique."
               />
               <Link href="/certifications" className={buttonClasses({ variant: "outline", className: "mt-8" })}>
                 En savoir plus sur les certifications
@@ -449,45 +423,6 @@ export default async function HomePage() {
               ))}
             </StaggerGroup>
           </div>
-        </Container>
-      </Section>
-
-      {/* ═══════════════════════ TÉMOIGNAGES §9.9 ═══════════════════════ */}
-      <Section tone="default" spacing="md">
-        <Container>
-          <SectionHeading
-            align="center"
-            eyebrow="Témoignages"
-            title="Ils ont transformé leur"
-            gradient="carrière"
-            className="mx-auto"
-          />
-          <StaggerGroup className="mt-8 grid grid-cols-1 gap-6 sm:mt-12 lg:grid-cols-3">
-            {TESTIMONIALS.map((t) => (
-              <StaggerItem key={t.name} className="h-full">
-                <figure className="flex h-full flex-col rounded-xl border border-navy/[0.08] bg-surface-secondary/60 p-6 sm:p-7">
-                  <Quote size={28} className="text-brand-blue-vif/40" aria-hidden />
-                  <div className="mt-3 flex gap-0.5" aria-label={`${t.rating} sur 5`}>
-                    {Array.from({ length: t.rating }).map((_, i) => (
-                      <Star key={i} size={15} className="fill-warning text-warning" aria-hidden />
-                    ))}
-                  </div>
-                  <blockquote className="mt-3 flex-1 text-sm leading-relaxed text-text-primary">
-                    « {t.quote} »
-                  </blockquote>
-                  <figcaption className="mt-5 flex items-center gap-3 border-t border-navy/[0.06] pt-4">
-                    <span className="grid h-10 w-10 place-items-center rounded-full bg-gradient-da font-display text-sm font-bold text-white">
-                      {t.name.charAt(0)}
-                    </span>
-                    <span>
-                      <span className="block font-display text-sm font-bold text-navy">{t.name}</span>
-                      <span className="block text-xs text-text-secondary">{t.role}</span>
-                    </span>
-                  </figcaption>
-                </figure>
-              </StaggerItem>
-            ))}
-          </StaggerGroup>
         </Container>
       </Section>
 

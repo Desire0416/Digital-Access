@@ -27,7 +27,7 @@ const perks = [
     icon: ShieldCheck,
     title: "Transactions sécurisées",
     description:
-      "Encaissements chiffrés via nos partenaires agréés. Vos données de paiement ne transitent jamais en clair.",
+      "Paiements effectués directement via les opérateurs Mobile Money. Nous ne stockons aucune donnée bancaire.",
   },
 ];
 

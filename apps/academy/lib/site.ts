@@ -19,7 +19,7 @@ export const siteConfig = {
   url: canonicalUrl(process.env.NEXT_PUBLIC_ACADEMY_URL, "https://academy.digitalaccess.ci"),
   webUrl: canonicalUrl(process.env.NEXT_PUBLIC_WEB_URL, "https://digitalaccess.ci"),
   description:
-    "Académie numérique de formation, de certification et de préparation aux métiers. Apprenez une compétence, préparez-vous à un métier, explorez un domaine.",
+    "Académie numérique de formation professionnelle courte, de certification interne et de préparation aux métiers. Apprenez une compétence, préparez-vous à un métier, explorez un domaine.",
   contactEmail: "contact@digitalaccess.ci",
   whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "+2250564452692",
 } as const;

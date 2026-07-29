@@ -88,8 +88,8 @@ const PILLARS = [
   },
   {
     icon: Award,
-    title: "Certifications reconnues",
-    text: "Des certificats vérifiables qui valorisent votre profil.",
+    title: "Certificats vérifiables",
+    text: "Un certificat numérique vérifiable, délivré par Access Academy.",
     href: "/certifications",
   },
   {

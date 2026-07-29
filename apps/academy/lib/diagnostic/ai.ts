@@ -172,7 +172,7 @@ Règles :
   · DIRECT_ACCESS si le candidat a le niveau pour suivre la formation normalement.
   · PREPARATORY s'il lui manque des bases : conseille une remise à niveau / des ressources avant de commencer.
   · ORIENTATION si la formation ne semble pas adaptée à son profil ou son objectif : suggère une meilleure direction.
-  · DISPENSATION s'il maîtrise déjà l'essentiel : oriente vers les modules avancés, le projet certifiant, ou une formation de niveau supérieur — sans le décourager.
+  · DISPENSATION s'il maîtrise déjà l'essentiel : oriente vers les modules avancés, le projet de validation, ou une formation de niveau supérieur — sans le décourager.
 - La formation a son propre niveau (fourni) et une liste ordonnée de modules (fournie). Dans "recommendation" et "startingPoint", réfère-toi aux MODULES RÉELS (ex. « démarrez au Module 4 »).
 - Ton bienveillant, personnalisé, vouvoiement, français, concret. Pas de blabla.`;
 

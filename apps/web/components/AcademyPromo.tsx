@@ -5,10 +5,12 @@ import { motion } from "framer-motion";
 import { GraduationCap, ArrowRight, Award, PlayCircle, Users } from "lucide-react";
 import { Container, buttonClasses, cn } from "@da/ui";
 
+/* Conformité : les chiffres non vérifiables (« 1200+ apprenants ») et les
+   mentions de reconnaissance officielle ont été retirés. */
 const highlights = [
   { icon: PlayCircle, label: "Cours vidéo & interactifs" },
-  { icon: Award, label: "Certificats vérifiables" },
-  { icon: Users, label: "1200+ apprenants" },
+  { icon: Award, label: "Certificats numériques vérifiables" },
+  { icon: Users, label: "Communauté & mentorat" },
 ];
 
 export function AcademyPromo() {
@@ -89,22 +91,8 @@ export function AcademyPromo() {
               >
                 <GraduationCap size={120} className="text-white" strokeWidth={1.4} />
               </motion.div>
-              <motion.div
-                animate={{ y: [0, 12, 0] }}
-                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute right-2 top-6 rounded-xl border border-white/15 bg-white/10 px-4 py-3 backdrop-blur"
-              >
-                <p className="text-2xl font-extrabold text-white">40+</p>
-                <p className="text-xs text-white/70">formations</p>
-              </motion.div>
-              <motion.div
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 6.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-                className="absolute -bottom-1 left-2 rounded-xl border border-white/15 bg-white/10 px-4 py-3 backdrop-blur"
-              >
-                <p className="text-2xl font-extrabold text-white">98%</p>
-                <p className="text-xs text-white/70">réussite</p>
-              </motion.div>
+              {/* Conformité : les vignettes chiffrées « 40+ formations » et
+                  « 98% réussite » (données non vérifiables) ont été retirées. */}
             </div>
           </div>
         </motion.div>

@@ -410,7 +410,7 @@ export function CertificateDocument(data: CertificateData) {
         <View style={s.centerRow}>
           <View style={[s.badge, { marginRight: 30 }]}>
             <Seal />
-            <Text style={s.badgeCaption}>SCEAU OFFICIEL</Text>
+            <Text style={s.badgeCaption}>SCEAU ACCESS ACADEMY</Text>
           </View>
           <View style={s.badge}>
             {data.qrDataUrl ? <Image src={data.qrDataUrl} style={s.qr} /> : null}

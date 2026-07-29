@@ -154,9 +154,11 @@ export function HeroHome() {
 
           {/* Bande de confiance */}
           <div className="flex flex-col items-center gap-5 py-6 sm:flex-row sm:justify-between sm:py-9">
+            {/* Conformité : le compteur « +35 clients satisfaits » (donnée non
+                vérifiable) a été retiré. Les logos affichés sont ceux de
+                structures réellement accompagnées. */}
             <p className="shrink-0 text-sm font-semibold text-navy">
-              Ils nous font confiance ·{" "}
-              <span className="text-gradient-da">+35 clients satisfaits</span>
+              Ils nous font <span className="text-gradient-da">confiance</span>
             </p>
             <div className="flex flex-wrap items-center justify-center gap-x-7 gap-y-4 sm:justify-end">
               {CLIENTS.map((src) => (

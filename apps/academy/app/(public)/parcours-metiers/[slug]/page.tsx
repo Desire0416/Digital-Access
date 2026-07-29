@@ -30,6 +30,7 @@ import { currentUser } from "@/lib/guards";
 import { siteConfig, formatFCFA, LEVEL_LABEL } from "@/lib/site";
 import { Markdown } from "@/components/Markdown";
 import { CohortOpenSessions } from "@/components/cohort/CohortOpenSessions";
+import { CertificateDisclaimer } from "@/components/CertificateDisclaimer";
 import { PathEnrollPanel } from "./PathEnrollPanel";
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -320,7 +321,7 @@ export default async function CareerPathDetailPage({ params }: { params: Promise
                   <ul className="mt-5 space-y-2.5 border-t border-navy/[0.06] pt-5 text-sm text-navy/85">
                     <li className="flex items-start gap-2.5">
                       <Award size={16} className="mt-0.5 shrink-0 text-brand-violet" aria-hidden />
-                      <span>{path.certificationTitle ?? "Certification métier vérifiable"}</span>
+                      <span>{path.certificationTitle ?? "Certificat interne de parcours métier, vérifiable"}</span>
                     </li>
                     <li className="flex items-start gap-2.5">
                       <Layers size={16} className="mt-0.5 shrink-0 text-brand-blue-vif" aria-hidden />
@@ -476,10 +477,11 @@ export default async function CareerPathDetailPage({ params }: { params: Promise
                     </span>
                     <div>
                       <h3 className="font-display text-base font-bold text-navy">
-                        {path.certificationTitle ?? `Certification ${path.targetJob}`}
+                        {path.certificationTitle ?? `Certificat de parcours ${path.targetJob}`}
                       </h3>
                       <p className="mt-1 text-sm leading-relaxed text-navy/75">
-                        Pour obtenir votre certification métier, vous devez remplir les conditions suivantes :
+                        Pour obtenir votre certificat interne de parcours métier, vous devez remplir les conditions
+                        suivantes :
                       </p>
                     </div>
                   </div>
@@ -498,6 +500,11 @@ export default async function CareerPathDetailPage({ params }: { params: Promise
                     Vérifier un certificat
                     <ChevronRight size={14} aria-hidden />
                   </Link>
+                  {/* Portée légale du certificat — mention obligatoire */}
+                  <CertificateDisclaimer
+                    variant="inline"
+                    className="mt-4 border-t border-navy/[0.08] pt-3.5"
+                  />
                 </div>
               </div>
             </Block>

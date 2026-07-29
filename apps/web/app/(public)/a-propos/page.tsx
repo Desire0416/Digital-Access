@@ -8,10 +8,8 @@ import {
   IconBadge,
   Reveal,
 } from "@da/ui";
-import { stats } from "@da/db";
 import { values, processSteps } from "@/lib/content";
 import { PageHero } from "@/components/PageHero";
-import { StatsBand } from "@/components/StatsBand";
 import { CTABanner } from "@/components/CTABanner";
 import { Icon } from "@/components/Icon";
 import { AboutStory } from "./AboutStory";
@@ -55,8 +53,9 @@ export default function AboutPage() {
         </Container>
       </Section>
 
-      {/* Chiffres clés */}
-      <StatsBand stats={stats} />
+      {/* Conformité : le bandeau « Chiffres clés » a été retiré — les valeurs
+          affichées (projets livrés, clients, apprenants, taux de satisfaction)
+          provenaient de données de démonstration, non vérifiables. */}
 
       {/* Valeurs */}
       <Section tone="muted">

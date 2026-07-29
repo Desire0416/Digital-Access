@@ -34,6 +34,7 @@ import { Markdown } from "@/components/Markdown";
 import { CareerPathCard } from "@/components/cards";
 import { CohortOpenSessions } from "@/components/cohort/CohortOpenSessions";
 import { DiagnosticTest } from "@/components/DiagnosticTest";
+import { CertificateDisclaimer } from "@/components/CertificateDisclaimer";
 import { getEquivalenceEligibility } from "@/lib/equivalences";
 import { EquivalenceRequestForm } from "@/components/equivalence/EquivalenceRequestForm";
 import { EnrollPanel } from "./EnrollPanel";
@@ -310,7 +311,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
                   <ul className="mt-5 space-y-2.5 border-t border-navy/[0.06] pt-5 text-sm text-navy/85">
                     <li className="flex items-start gap-2.5">
                       <Award size={16} className="mt-0.5 shrink-0 text-brand-violet" aria-hidden />
-                      <span>{course.certificateTitle ?? "Certificat de réussite vérifiable"}</span>
+                      <span>{course.certificateTitle ?? "Certificat interne de réussite, vérifiable"}</span>
                     </li>
                     {course.projects.length > 0 && (
                       <li className="flex items-start gap-2.5">
@@ -581,11 +582,11 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
                   </span>
                   <div>
                     <h3 className="font-display text-base font-bold text-navy">
-                      {course.certificateTitle ?? "Certificat de réussite Access Academy"}
+                      {course.certificateTitle ?? "Certificat interne de réussite Access Academy"}
                     </h3>
                     <p className="mt-1 text-sm leading-relaxed text-navy/75">
-                      À la fin de la formation, vous obtenez un certificat nominatif, doté d&apos;un code de vérification public
-                      et téléchargeable en PDF — à valoriser sur votre CV et LinkedIn.
+                      À la fin de la formation, vous obtenez un certificat interne de réussite, nominatif, doté d&apos;un
+                      code de vérification public et téléchargeable en PDF — à valoriser sur votre CV et LinkedIn.
                     </p>
                     <Link
                       href="/certificats/verifier"
@@ -596,6 +597,11 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
                     </Link>
                   </div>
                 </div>
+                {/* Portée légale du certificat — mention obligatoire */}
+                <CertificateDisclaimer
+                  variant="inline"
+                  className="relative mt-4 border-t border-navy/[0.08] pt-3.5"
+                />
               </div>
             </Block>
 
