@@ -34,7 +34,7 @@ const dateFmt = new Intl.DateTimeFormat("fr-FR", {
 
 export default async function CorrectionDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const user = await requireRole(["GRADER", "INSTRUCTOR", "ACADEMIC_ADMIN", "SALES_ADMIN"], `/correction/${id}`);
+  const user = await requireRole(["INSTRUCTOR", "ACADEMIC_ADMIN", "SALES_ADMIN"], `/correction/${id}`);
   const sub = await getSubmissionForReview(id, user);
   if (!sub) notFound();
 

@@ -18,12 +18,11 @@ import {
   LogOut,
   GraduationCap,
   ShieldCheck,
-  ClipboardCheck,
   ChevronRight,
   X,
 } from "lucide-react";
 import { MobileTabBar, InstallPrompt, Sheet, cn, type MobileTab } from "@da/ui";
-import { mainNav, userNavGroups } from "@/lib/site";
+import { mainNav, navGroupsForRole } from "@/lib/site";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Coquille mobile d'Access Academy — barre d'onglets basse façon application +
@@ -59,34 +58,40 @@ export function MobileChrome({ roles, authed }: { roles: string[]; authed: boole
   // Ferme le menu à chaque navigation.
   React.useEffect(() => setMenuOpen(false), [pathname]);
 
+  const isInstructor = roles.includes("INSTRUCTOR");
+  const isAdminRole = hasAny(roles, ADMIN_ROLES);
+
   const tabs: MobileTab[] = React.useMemo(() => {
     const menuTab: MobileTab = { key: "menu", label: "Menu", icon: MenuIcon, onClick: () => setMenuOpen(true) };
-    if (authed) {
+    if (!authed) {
       return [
-        { key: "espace", label: "Espace", href: "/espace", icon: LayoutDashboard },
-        { key: "formations", label: "Formations", href: "/espace/formations", icon: BookOpen },
-        { key: "agenda", label: "Agenda", href: "/espace/agenda", icon: CalendarDays },
-        { key: "communaute", label: "Communauté", href: "/espace/communaute", icon: MessagesSquare },
+        { key: "home", label: "Accueil", href: "/", icon: Home },
+        { key: "formations", label: "Formations", href: "/formations", icon: BookOpen },
+        { key: "parcours", label: "Parcours", href: "/parcours-metiers", icon: Route },
+        { key: "cohortes", label: "Cohortes", href: "/cohortes", icon: UsersRound },
+        menuTab,
+      ];
+    }
+    if (isAdminRole || isInstructor) {
+      return [
+        { key: "studio", label: "Studio", href: "/formateur", icon: LayoutDashboard },
+        { key: "formations", label: "Formations", href: "/formateur/formations", icon: BookOpen },
+        { key: "apprenants", label: "Apprenants", href: "/formateur/apprenants", icon: UsersRound },
+        { key: "cohortes", label: "Cohortes", href: "/formateur/cohortes", icon: GraduationCap },
         menuTab,
       ];
     }
     return [
-      { key: "home", label: "Accueil", href: "/", icon: Home },
-      { key: "formations", label: "Formations", href: "/formations", icon: BookOpen },
-      { key: "parcours", label: "Parcours", href: "/parcours-metiers", icon: Route },
-      { key: "cohortes", label: "Cohortes", href: "/cohortes", icon: UsersRound },
+      { key: "espace", label: "Espace", href: "/espace", icon: LayoutDashboard },
+      { key: "formations", label: "Formations", href: "/espace/formations", icon: BookOpen },
+      { key: "agenda", label: "Agenda", href: "/espace/agenda", icon: CalendarDays },
+      { key: "communaute", label: "Communauté", href: "/espace/communaute", icon: MessagesSquare },
       menuTab,
     ];
-  }, [authed]);
+  }, [authed, isInstructor, isAdminRole]);
 
-  const roleLinks = React.useMemo(() => {
-    const links: { label: string; href: string; Icon: typeof GraduationCap }[] = [];
-    if (hasAny(roles, [...ADMIN_ROLES, "INSTRUCTOR"])) links.push({ label: "Studio formateur", href: "/formateur", Icon: GraduationCap });
-    if (hasAny(roles, [...ADMIN_ROLES, "MENTOR"])) links.push({ label: "Mentorat", href: "/mentorat", Icon: UsersRound });
-    if (hasAny(roles, [...ADMIN_ROLES, "GRADER", "INSTRUCTOR"])) links.push({ label: "Correction", href: "/correction", Icon: ClipboardCheck });
-    if (hasAny(roles, ADMIN_ROLES)) links.push({ label: "Administration", href: "/admin", Icon: ShieldCheck });
-    return links;
-  }, [roles]);
+  const roleGroups = React.useMemo(() => navGroupsForRole(roles), [roles]);
+  const adminLink = hasAny(roles, ADMIN_ROLES);
 
   if (!mounted || hidden) return null;
 
@@ -119,7 +124,7 @@ export function MobileChrome({ roles, authed }: { roles: string[]; authed: boole
         <div className="overflow-y-auto px-4 pb-2">
           {authed ? (
             <>
-              {userNavGroups.map((group) => (
+              {roleGroups.map((group) => (
                 <div key={group.title} className="mb-4">
                   <p className="mb-1.5 px-1 text-[11px] font-bold uppercase tracking-wide text-text-muted">{group.title}</p>
                   <ul className="space-y-0.5">
@@ -134,17 +139,15 @@ export function MobileChrome({ roles, authed }: { roles: string[]; authed: boole
                 </div>
               ))}
 
-              {roleLinks.length > 0 && (
+              {adminLink && (
                 <div className="mb-4">
-                  <p className="mb-1.5 px-1 text-[11px] font-bold uppercase tracking-wide text-text-muted">Espaces pro</p>
+                  <p className="mb-1.5 px-1 text-[11px] font-bold uppercase tracking-wide text-text-muted">Administration</p>
                   <ul className="space-y-0.5">
-                    {roleLinks.map(({ label, href, Icon }) => (
-                      <li key={href}>
-                        <SheetLink href={href} active={isActive(href)} onNavigate={() => setMenuOpen(false)} icon={<Icon size={17} aria-hidden />}>
-                          {label}
-                        </SheetLink>
-                      </li>
-                    ))}
+                    <li>
+                      <SheetLink href="/admin" active={isActive("/admin")} onNavigate={() => setMenuOpen(false)} icon={<ShieldCheck size={17} aria-hidden />}>
+                        Back-office
+                      </SheetLink>
+                    </li>
                   </ul>
                 </div>
               )}

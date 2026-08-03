@@ -81,6 +81,69 @@ export const userNavGroups: { title: string; items: { label: string; href: strin
 /** Version à plat (barre latérale de l'espace, liens header, etc.). */
 export const userNav: { label: string; href: string }[] = userNavGroups.flatMap((g) => g.items);
 
+/* ─── Aiguillage par rôle ──────────────────────────────────────────────── */
+
+const ADMIN_ROLE_SET = ["ACADEMIC_ADMIN", "SALES_ADMIN", "SUPER_ADMIN"];
+
+export function roleHomePath(roles: string[]): string {
+  if (roles.some((r) => ADMIN_ROLE_SET.includes(r))) return "/admin";
+  if (roles.includes("INSTRUCTOR")) return "/formateur";
+  if (roles.includes("MENTOR")) return "/mentorat";
+  return "/espace";
+}
+
+export function isLearner(roles: string[]): boolean {
+  return roles.includes("LEARNER");
+}
+
+export function isInstructor(roles: string[]): boolean {
+  return roles.includes("INSTRUCTOR");
+}
+
+/** Navigation du studio formateur (menu utilisateur & mobile). */
+export const instructorNavGroups: { title: string; items: { label: string; href: string }[] }[] = [
+  {
+    title: "Studio formateur",
+    items: [
+      { label: "Tableau de bord", href: "/formateur" },
+      { label: "Mes formations", href: "/formateur/formations" },
+      { label: "Apprenants", href: "/formateur/apprenants" },
+      { label: "Cohortes", href: "/formateur/cohortes" },
+      { label: "Corrections", href: "/correction" },
+    ],
+  },
+  {
+    title: "Compte",
+    items: [
+      { label: "Paramètres", href: "/espace/parametres" },
+    ],
+  },
+];
+
+/** Navigation du mentor (menu utilisateur & mobile). */
+export const mentorNavGroups: { title: string; items: { label: string; href: string }[] }[] = [
+  {
+    title: "Mentorat",
+    items: [
+      { label: "Tableau de bord", href: "/mentorat" },
+    ],
+  },
+  {
+    title: "Compte",
+    items: [
+      { label: "Paramètres", href: "/espace/parametres" },
+    ],
+  },
+];
+
+/** Retourne les groupes de navigation adaptés au rôle principal de l'utilisateur. */
+export function navGroupsForRole(roles: string[]) {
+  if (roles.some((r) => ADMIN_ROLE_SET.includes(r))) return instructorNavGroups;
+  if (roles.includes("INSTRUCTOR")) return instructorNavGroups;
+  if (roles.includes("MENTOR")) return mentorNavGroups;
+  return userNavGroups;
+}
+
 /** Paiement Mobile Money manuel (numéros réels Digital Access). */
 export const paymentConfig = {
   operators: [

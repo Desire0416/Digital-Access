@@ -890,11 +890,11 @@ const reviewSchema = z.object({
   feedback: z.string().trim().max(5000).optional(),
 });
 
-/** Garde : administrateur frais OU rôle GRADER / INSTRUCTOR relu en base. */
+/** Garde : administrateur frais OU rôle INSTRUCTOR relu en base. */
 async function requireReviewer(): Promise<SessionUser | null> {
   const user = await currentUserFresh();
   if (!user) return null;
-  if (isAdmin(user) || hasRole(user, ["GRADER", "INSTRUCTOR"])) return user;
+  if (isAdmin(user) || hasRole(user, ["INSTRUCTOR"])) return user;
   return null;
 }
 

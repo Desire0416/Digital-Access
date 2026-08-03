@@ -17,7 +17,7 @@ const dateFmt = new Intl.DateTimeFormat("fr-FR", {
 });
 
 export default async function CorrectionQueuePage() {
-  const user = await requireRole(["GRADER", "INSTRUCTOR", "ACADEMIC_ADMIN", "SALES_ADMIN"], "/correction");
+  const user = await requireRole(["INSTRUCTOR", "ACADEMIC_ADMIN", "SALES_ADMIN"], "/correction");
   const [submissions, assignments] = await Promise.all([
     getSubmissionsToReview(user),
     getAssignmentsToReview(user),

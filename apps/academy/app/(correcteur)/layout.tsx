@@ -6,12 +6,12 @@ import { PageTransition } from "@/components/PageTransition";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Espace correcteur (cahier §7.4 / §19.4) — même chrome que le site public.
-   Accès réservé aux correcteurs, formateurs et administrateurs pédagogiques ;
+   Accès réservé aux formateurs et administrateurs pédagogiques ;
    SUPER_ADMIN est auto-autorisé par requireRole.
    ══════════════════════════════════════════════════════════════════════════ */
 
 export default async function CorrecteurLayout({ children }: { children: React.ReactNode }) {
-  const user = await requireRole(["GRADER", "INSTRUCTOR", "ACADEMIC_ADMIN", "SALES_ADMIN"], "/correction");
+  const user = await requireRole(["INSTRUCTOR", "ACADEMIC_ADMIN", "SALES_ADMIN"], "/correction");
   const notif = await getMyNotifications(user.id, { take: 8 });
 
   return (

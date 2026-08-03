@@ -31,7 +31,7 @@ import {
   Compass,
 } from "lucide-react";
 import { cn, buttonClasses, Avatar, useScrolled } from "@da/ui";
-import { mainNav, userNav, userNavGroups } from "@/lib/site";
+import { mainNav, navGroupsForRole } from "@/lib/site";
 import { NotificationBell, type NotificationItem } from "@/components/NotificationBell";
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -51,10 +51,8 @@ export interface SiteHeaderProps {
 }
 
 const ADMIN_ROLES = ["ACADEMIC_ADMIN", "SALES_ADMIN", "SUPER_ADMIN"];
-const REVIEWER_ROLES = ["GRADER", "INSTRUCTOR", "ACADEMIC_ADMIN", "SALES_ADMIN", "SUPER_ADMIN"];
-const MENTOR_ROLES = ["MENTOR", "ACADEMIC_ADMIN", "SALES_ADMIN", "SUPER_ADMIN"];
 
-const USER_NAV_ICONS: Record<string, React.ComponentType<{ size?: number | string; className?: string }>> = {
+const NAV_ICONS: Record<string, React.ComponentType<{ size?: number | string; className?: string }>> = {
   "/espace": LayoutDashboard,
   "/espace/formations": BookOpen,
   "/espace/parcours": Route,
@@ -69,6 +67,13 @@ const USER_NAV_ICONS: Record<string, React.ComponentType<{ size?: number | strin
   "/espace/favoris": Heart,
   "/espace/support": LifeBuoy,
   "/espace/parametres": Settings,
+  "/formateur": LayoutDashboard,
+  "/formateur/formations": BookOpen,
+  "/formateur/apprenants": UsersRound,
+  "/formateur/cohortes": UsersRound,
+  "/correction": ClipboardCheck,
+  "/mentorat": Compass,
+  "/admin": ShieldCheck,
 };
 
 function isActivePath(pathname: string, href: string): boolean {
@@ -150,16 +155,15 @@ function UserMenu({ user, overHero }: { user: HeaderUser; overHero?: boolean }) 
   const ref = React.useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const admin = user.roles.some((r) => ADMIN_ROLES.includes(r));
-  const reviewer = user.roles.some((r) => REVIEWER_ROLES.includes(r));
-  const instructor = user.roles.includes("INSTRUCTOR");
-  const mentor = user.roles.some((r) => MENTOR_ROLES.includes(r));
+
+  const groups = navGroupsForRole(user.roles);
 
   // Accordéon : la catégorie contenant la page active est ouverte par défaut.
   const activeGroup = React.useMemo(
     () =>
-      userNavGroups.find((g) => g.items.some((it) => isActivePath(pathname, it.href)))?.title ??
-      userNavGroups[0].title,
-    [pathname],
+      groups.find((g) => g.items.some((it) => isActivePath(pathname, it.href)))?.title ??
+      groups[0]?.title,
+    [pathname, groups],
   );
   const [openGroup, setOpenGroup] = React.useState<string | null>(activeGroup);
   React.useEffect(() => setOpenGroup(activeGroup), [activeGroup]);
@@ -221,7 +225,7 @@ function UserMenu({ user, overHero }: { user: HeaderUser; overHero?: boolean }) 
             </div>
 
             <nav className="p-1.5">
-              {userNavGroups.map((group) => {
+              {groups.map((group) => {
                 const isOpen = openGroup === group.title;
                 return (
                   <div key={group.title}>
@@ -249,7 +253,7 @@ function UserMenu({ user, overHero }: { user: HeaderUser; overHero?: boolean }) 
                         >
                           <div className="pb-1">
                             {group.items.map((item) => {
-                              const Icon = USER_NAV_ICONS[item.href] ?? LayoutDashboard;
+                              const Icon = NAV_ICONS[item.href] ?? LayoutDashboard;
                               const active = isActivePath(pathname, item.href);
                               return (
                                 <Link
@@ -277,54 +281,9 @@ function UserMenu({ user, overHero }: { user: HeaderUser; overHero?: boolean }) 
                 );
               })}
 
-              {reviewer && (
-                <>
-                  <span className="my-1.5 block h-px bg-navy/[0.06]" aria-hidden />
-                  <Link
-                    href="/correction"
-                    role="menuitem"
-                    onClick={() => setOpen(false)}
-                    className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-semibold text-brand-blue-royal transition-colors hover:bg-brand-blue-vif/[0.07]"
-                  >
-                    <ClipboardCheck size={15} aria-hidden />
-                    Corrections
-                  </Link>
-                </>
-              )}
-
-              {instructor && (
-                <>
-                  {!reviewer && <span className="my-1.5 block h-px bg-navy/[0.06]" aria-hidden />}
-                  <Link
-                    href="/formateur"
-                    role="menuitem"
-                    onClick={() => setOpen(false)}
-                    className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-semibold text-accent transition-colors hover:bg-accent/[0.08]"
-                  >
-                    <BookOpen size={15} aria-hidden />
-                    Studio formateur
-                  </Link>
-                </>
-              )}
-
-              {mentor && (
-                <>
-                  {!reviewer && !instructor && <span className="my-1.5 block h-px bg-navy/[0.06]" aria-hidden />}
-                  <Link
-                    href="/mentorat"
-                    role="menuitem"
-                    onClick={() => setOpen(false)}
-                    className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-semibold text-brand-blue-royal transition-colors hover:bg-brand-blue-vif/[0.07]"
-                  >
-                    <Compass size={15} aria-hidden />
-                    Mentorat
-                  </Link>
-                </>
-              )}
-
               {admin && (
                 <>
-                  {!reviewer && !instructor && !mentor && <span className="my-1.5 block h-px bg-navy/[0.06]" aria-hidden />}
+                  <span className="my-1.5 block h-px bg-navy/[0.06]" aria-hidden />
                   <Link
                     href="/admin"
                     role="menuitem"
@@ -387,9 +346,8 @@ export function SiteHeader({ user, notifications }: SiteHeaderProps) {
   const [mounted, setMounted] = React.useState(false);
   React.useEffect(() => setMounted(true), []);
   const admin = !!user && user.roles.some((r) => ADMIN_ROLES.includes(r));
-  const reviewer = !!user && user.roles.some((r) => REVIEWER_ROLES.includes(r));
-  const instructor = !!user && user.roles.includes("INSTRUCTOR");
-  const mentor = !!user && user.roles.some((r) => MENTOR_ROLES.includes(r));
+  const mobileGroups = user ? navGroupsForRole(user.roles) : [];
+  const mobileNavFlat = mobileGroups.flatMap((g) => g.items);
 
   // Accordéon du tiroir mobile : sections repliables. La section contenant la
   // page active est ouverte par défaut (et rouverte à chaque navigation).
@@ -711,8 +669,8 @@ export function SiteHeader({ user, notifications }: SiteHeaderProps) {
                               className="overflow-hidden"
                             >
                               <div className="pb-1.5">
-                                {userNav.map((item) => {
-                                  const Icon = USER_NAV_ICONS[item.href] ?? LayoutDashboard;
+                                {mobileNavFlat.map((item) => {
+                                  const Icon = NAV_ICONS[item.href] ?? LayoutDashboard;
                                   const active = isActivePath(pathname, item.href);
                                   return (
                                     <Link
@@ -729,33 +687,6 @@ export function SiteHeader({ user, notifications }: SiteHeaderProps) {
                                     </Link>
                                   );
                                 })}
-                                {reviewer && (
-                                  <Link
-                                    href="/correction"
-                                    className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold text-brand-blue-royal transition-colors hover:bg-brand-blue-vif/[0.06]"
-                                  >
-                                    <ClipboardCheck size={16} aria-hidden />
-                                    Corrections
-                                  </Link>
-                                )}
-                                {instructor && (
-                                  <Link
-                                    href="/formateur"
-                                    className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold text-accent transition-colors hover:bg-accent/[0.06]"
-                                  >
-                                    <BookOpen size={16} aria-hidden />
-                                    Studio formateur
-                                  </Link>
-                                )}
-                                {mentor && (
-                                  <Link
-                                    href="/mentorat"
-                                    className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold text-brand-blue-royal transition-colors hover:bg-brand-blue-vif/[0.06]"
-                                  >
-                                    <Compass size={16} aria-hidden />
-                                    Mentorat
-                                  </Link>
-                                )}
                                 {admin && (
                                   <Link
                                     href="/admin"

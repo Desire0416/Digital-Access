@@ -1,6 +1,7 @@
+import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/guards";
 import { getMyNotifications } from "@/lib/notify";
-import { userNav } from "@/lib/site";
+import { userNav, roleHomePath } from "@/lib/site";
 import { Container } from "@da/ui";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -8,13 +9,17 @@ import { EspaceNav } from "@/components/espace/EspaceNav";
 import { EspaceMobileBar } from "@/components/espace/EspaceMobileBar";
 
 /* ══════════════════════════════════════════════════════════════════════════
-   Coquille de l'espace apprenant (§16). Gardée : requireUser redirige les
-   visiteurs vers /connexion?callbackUrl=/espace. Header/footer du site +
-   sous-navigation latérale (desktop) ou onglets défilables (mobile).
+   Coquille de l'espace apprenant (§16). Réservé au rôle LEARNER. Les
+   autres rôles sont redirigés vers leur espace propre. Header/footer du
+   site + sous-navigation latérale (desktop) ou onglets défilables (mobile).
    ══════════════════════════════════════════════════════════════════════════ */
 
 export default async function EspaceLayout({ children }: { children: React.ReactNode }) {
   const user = await requireUser("/espace");
+  if (!user.roles.includes("LEARNER")) {
+    const home = roleHomePath(user.roles);
+    if (home !== "/espace") redirect(home);
+  }
   const notif = await getMyNotifications(user.id, { take: 8 });
 
   return (

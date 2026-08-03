@@ -40,7 +40,7 @@ const STATUS_LABEL: Record<string, { label: string; badge: string }> = {
 
 export default async function AssignmentCorrectionPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const user = await requireRole(["GRADER", "INSTRUCTOR", "ACADEMIC_ADMIN", "SALES_ADMIN"], `/correction/devoir/${id}`);
+  const user = await requireRole(["INSTRUCTOR", "ACADEMIC_ADMIN", "SALES_ADMIN"], `/correction/devoir/${id}`);
   const sub = await getAssignmentForReview(id, user);
   if (!sub) notFound();
 

@@ -3,20 +3,18 @@
 import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { prisma, type Role } from "@da/academy-db/client";
+import { prisma } from "@da/academy-db/client";
 import { signIn, AuthError } from "@/lib/auth";
+import { roleHomePath } from "@/lib/site";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Connexion (§15) — Server Actions locales.
    loginAction : credentials via signIn (@/lib/auth), gestion AuthError
-   (identifiants invalides / compte désactivé). Redirection par rôle :
-   admin → /admin, sinon callbackUrl || /espace.
+   (identifiants invalides / compte désactivé). Redirection par rôle.
    googleLoginAction : signIn Google (bouton conditionnel côté page).
    ══════════════════════════════════════════════════════════════════════════ */
 
 export type LoginState = { error?: string };
-
-const ADMIN_ROLES: Role[] = ["ACADEMIC_ADMIN", "SALES_ADMIN", "SUPER_ADMIN"];
 
 const schema = z.object({
   email: z.string().trim().toLowerCase().email("Adresse email invalide."),
@@ -65,7 +63,7 @@ export async function loginAction(_prev: LoginState, formData: FormData): Promis
 
   // Aiguillage par rôle — redirect() hors du try (il lève NEXT_REDIRECT).
   const roles = user?.roles ?? [];
-  const target = roles.some((r) => ADMIN_ROLES.includes(r)) ? "/admin" : callbackUrl ?? "/espace";
+  const target = callbackUrl ?? roleHomePath(roles);
   redirect(target);
 }
 

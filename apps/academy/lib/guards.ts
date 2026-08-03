@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { auth } from "./auth";
 import { prisma, type Role } from "@da/academy-db/client";
 import { readActAs } from "./impersonation";
+import { roleHomePath } from "./site";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Gardes serveur — contrôle d'accès par rôle (cahier §7 / §46).
@@ -120,7 +121,7 @@ export function hasRole(user: { roles: Role[] } | null, roles: Role[]): boolean 
 /** Garde de layout : exige l'un des rôles, sinon redirection. */
 export async function requireRole(roles: Role[], callbackUrl?: string): Promise<SessionUser> {
   const user = await requireUser(callbackUrl);
-  if (!hasRole(user, roles) && !user.roles.includes("SUPER_ADMIN")) redirect("/espace");
+  if (!hasRole(user, roles) && !user.roles.includes("SUPER_ADMIN")) redirect(roleHomePath(user.roles));
   return user;
 }
 
