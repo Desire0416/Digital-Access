@@ -200,6 +200,7 @@ export function AssignmentSubmission({ assignment }: { assignment: LearnerAssign
                 value={null}
                 onChange={addFile}
                 folder="submissions"
+                handleUploadUrl="/api/upload/submission"
                 hint="PDF, Word, Excel, image, zip… — 100 Mo max. Chaque envoi s'ajoute à la liste."
               />
             </div>

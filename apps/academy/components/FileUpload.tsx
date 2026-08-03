@@ -39,6 +39,7 @@ export function FileUpload({
   accept,
   hint = "PDF, PPTX, DOCX… — 100 Mo max",
   folder = "lessons",
+  handleUploadUrl = "/api/upload/asset",
   icon: Icon = FileText,
   className,
 }: {
@@ -48,6 +49,8 @@ export function FileUpload({
   accept?: string;
   hint?: string;
   folder?: string;
+  /** Route serveur qui délivre le jeton d'upload Blob. */
+  handleUploadUrl?: string;
   icon?: React.ComponentType<{ size?: number | string; className?: string }>;
   className?: string;
 }) {
@@ -70,7 +73,7 @@ export function FileUpload({
       try {
         const blob = await upload(`academy/${folder}/${sanitizeName(file.name)}`, file, {
           access: "public",
-          handleUploadUrl: "/api/upload/asset",
+          handleUploadUrl,
           onUploadProgress: (e) => setProgress(Math.round(e.percentage)),
         });
         onChange(blob.url);
@@ -80,7 +83,7 @@ export function FileUpload({
         setUploading(false);
       }
     },
-    [folder, onChange],
+    [folder, handleUploadUrl, onChange],
   );
 
   /* ── Asset présent : carte compacte avec remplacer / retirer ── */
