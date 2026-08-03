@@ -52,6 +52,12 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   "/espace/recommandations": Sparkles,
   "/espace/support": LifeBuoy,
   "/espace/parametres": Settings,
+  "/formateur": LayoutDashboard,
+  "/formateur/formations": BookOpen,
+  "/formateur/apprenants": UsersRound,
+  "/formateur/cohortes": UsersRound,
+  "/correction": ClipboardCheck,
+  "/mentorat": UsersRound,
 };
 
 const STORAGE_KEY = "da-espace-nav-collapsed";
