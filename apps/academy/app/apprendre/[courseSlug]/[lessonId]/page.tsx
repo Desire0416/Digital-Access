@@ -133,9 +133,13 @@ export default async function LessonPage({
   const meta = findAssessmentMeta(course, lessonId);
   if (!meta) notFound();
 
+  // Verrouillage séquentiel : si l'évaluation est verrouillée (leçons/évals
+  // précédentes non terminées), bloquer l'accès.
+  const assessmentLocked = meta.locked;
+
   // Devoir (dépôt de fichiers corrigé manuellement) — parcours distinct du quiz.
   if (meta.type === "ASSIGNMENT") {
-    const assignment = await getAssignmentForLearner(lessonId, userId);
+    const assignment = !assessmentLocked ? await getAssignmentForLearner(lessonId, userId) : null;
     return (
       <PlayerShell course={course} currentId={lessonId} lessonNav={null} banner={null}>
         <div className="mx-auto w-full max-w-3xl px-5 py-8 sm:px-8 sm:py-12">
@@ -151,6 +155,8 @@ export default async function LessonPage({
 
           {course.startsAt ? (
             <NotStartedNotice startsAt={course.startsAt} slug={courseSlug} />
+          ) : assessmentLocked ? (
+            <LockedNotice />
           ) : assignment && (assignment.enrolled || assignment.preview) ? (
             <AssignmentSubmission assignment={assignment} />
           ) : (
@@ -161,7 +167,7 @@ export default async function LessonPage({
     );
   }
 
-  const assessment = userId ? await getAssessmentForTaking(lessonId, userId) : null;
+  const assessment = !assessmentLocked && userId ? await getAssessmentForTaking(lessonId, userId) : null;
 
   return (
     <PlayerShell course={course} currentId={lessonId} lessonNav={null} banner={null}>
@@ -178,6 +184,8 @@ export default async function LessonPage({
 
         {course.startsAt ? (
           <NotStartedNotice startsAt={course.startsAt} slug={courseSlug} />
+        ) : assessmentLocked ? (
+          <LockedNotice />
         ) : !assessment ? (
           <EnrollNotice slug={courseSlug} assessment />
         ) : (
@@ -424,10 +432,10 @@ function LockedNotice() {
       <span className="mx-auto mb-4 grid h-14 w-14 place-items-center rounded-2xl bg-navy/[0.06] text-navy/60">
         <Lock size={26} aria-hidden />
       </span>
-      <h2 className="font-display text-lg font-bold text-navy">Leçon verrouillée</h2>
+      <h2 className="font-display text-lg font-bold text-navy">Contenu verrouillé</h2>
       <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-text-secondary">
         Cette formation suit une progression séquentielle. Terminez d&apos;abord les leçons
-        précédentes pour débloquer celle-ci.
+        et les évaluations des modules précédents pour débloquer la suite.
       </p>
     </div>
   );

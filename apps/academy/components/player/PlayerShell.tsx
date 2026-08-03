@@ -79,23 +79,45 @@ const LESSON_ICON: Record<string, React.ComponentType<{ size?: number | string; 
   LAB: FlaskConical,
 };
 
-/** Recalcule le verrouillage séquentiel côté client à partir des leçons terminées. */
-function computeLocked(flat: Lesson[], completed: Set<string>, seq: boolean, enrolled: boolean): Map<string, boolean> {
-  const map = new Map<string, boolean>();
+/** Recalcule le verrouillage séquentiel côté client à partir des leçons terminées
+ *  ET des évaluations réussies. Une évaluation obligatoire non réussie bloque
+ *  toutes les leçons et évaluations des modules suivants. */
+function computeLocks(
+  modules: ModuleT[],
+  completed: Set<string>,
+  seq: boolean,
+  enrolled: boolean,
+): { lessonLock: Map<string, boolean>; assessmentLock: Map<string, boolean> } {
+  const lessonLock = new Map<string, boolean>();
+  const assessmentLock = new Map<string, boolean>();
   let blocked = false;
-  for (const l of flat) {
-    if (!enrolled) {
-      map.set(l.id, !l.isPreview);
-      continue;
+  for (const mod of modules) {
+    for (const l of mod.lessons) {
+      if (!enrolled) {
+        lessonLock.set(l.id, !l.isPreview);
+        continue;
+      }
+      if (seq) {
+        lessonLock.set(l.id, blocked);
+        if (l.isRequired && !completed.has(l.id)) blocked = true;
+      } else {
+        lessonLock.set(l.id, false);
+      }
     }
-    if (seq) {
-      map.set(l.id, blocked);
-      if (l.isRequired && !completed.has(l.id)) blocked = true;
-    } else {
-      map.set(l.id, false);
+    for (const a of mod.assessments) {
+      if (!enrolled) {
+        assessmentLock.set(a.id, true);
+        continue;
+      }
+      if (seq) {
+        assessmentLock.set(a.id, blocked);
+        if (a.isRequired && !a.passed) blocked = true;
+      } else {
+        assessmentLock.set(a.id, false);
+      }
     }
   }
-  return map;
+  return { lessonLock, assessmentLock };
 }
 
 export function PlayerShell({ course, currentId, lessonNav, banner, children }: PlayerShellProps) {
@@ -115,9 +137,9 @@ export function PlayerShell({ course, currentId, lessonNav, banner, children }: 
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [deskCollapsed, setDeskCollapsed] = React.useState(false);
 
-  const lockMap = React.useMemo(
-    () => computeLocked(flat, completed, seq, course.enrolled),
-    [flat, completed, seq, course.enrolled],
+  const { lessonLock: lockMap, assessmentLock: aLockMap } = React.useMemo(
+    () => computeLocks(course.modules, completed, seq, course.enrolled),
+    [course.modules, completed, seq, course.enrolled],
   );
 
   // Module ouvert par défaut : celui qui contient l'élément courant.
@@ -270,6 +292,8 @@ export function PlayerShell({ course, currentId, lessonNav, banner, children }: 
                 currentId={currentId}
                 completed={completed}
                 lockMap={lockMap}
+                assessmentLockMap={aLockMap}
+                enrolled={course.enrolled}
                 open={openModules.has(m.id)}
                 onToggle={() => toggleModule(m.id)}
                 onNavigate={() => setMobileOpen(false)}
@@ -291,6 +315,7 @@ export function PlayerShell({ course, currentId, lessonNav, banner, children }: 
                     slug={course.slug}
                     active={a.id === currentId}
                     enrolled={course.enrolled}
+                    locked={a.locked}
                     onNavigate={() => setMobileOpen(false)}
                   />
                 ))}
@@ -455,6 +480,8 @@ function ModuleBlock({
   currentId,
   completed,
   lockMap,
+  assessmentLockMap,
+  enrolled,
   open,
   onToggle,
   onNavigate,
@@ -465,6 +492,8 @@ function ModuleBlock({
   currentId: string;
   completed: Set<string>;
   lockMap: Map<string, boolean>;
+  assessmentLockMap: Map<string, boolean>;
+  enrolled: boolean;
   open: boolean;
   onToggle: () => void;
   onNavigate: () => void;
@@ -529,7 +558,8 @@ function ModuleBlock({
                   assessment={a}
                   slug={slug}
                   active={a.id === currentId}
-                  enrolled
+                  enrolled={enrolled}
+                  locked={assessmentLockMap.get(a.id) ?? !enrolled}
                   onNavigate={onNavigate}
                 />
               ))}
@@ -623,48 +653,65 @@ function AssessmentRow({
   slug,
   active,
   enrolled,
+  locked,
   onNavigate,
 }: {
   assessment: AssessmentT;
   slug: string;
   active: boolean;
   enrolled: boolean;
+  locked: boolean;
   onNavigate: () => void;
 }) {
   const Icon = assessment.type === "ASSIGNMENT" ? FolderKanban : ClipboardList;
+  const inner = (
+    <>
+      <span className="grid h-5 w-5 shrink-0 place-items-center">
+        {assessment.passed ? (
+          <Trophy size={14} className="text-success" aria-hidden />
+        ) : locked || !enrolled ? (
+          <Lock size={13} className="text-white/30" aria-hidden />
+        ) : (
+          <Icon size={15} className={active ? "text-brand-cyan" : "text-brand-violet/80"} aria-hidden />
+        )}
+      </span>
+      <span
+        className={cn(
+          "min-w-0 flex-1 truncate text-sm",
+          active ? "font-semibold text-white" : "text-white/70",
+        )}
+      >
+        {assessment.title}
+      </span>
+      {assessment.passed && (
+        <span className="shrink-0 rounded bg-success/15 px-1.5 py-0.5 text-[10px] font-semibold text-success">
+          Réussi
+        </span>
+      )}
+    </>
+  );
+
+  const base = "flex items-center gap-2.5 rounded-lg px-2.5 py-2 transition-colors";
+
+  if (locked) {
+    return (
+      <li>
+        <div className={cn(base, "cursor-not-allowed opacity-70")} aria-disabled title="Évaluation verrouillée">
+          {inner}
+        </div>
+      </li>
+    );
+  }
+
   return (
     <li>
       <Link
         href={`/apprendre/${slug}/${assessment.id}`}
         onClick={onNavigate}
         aria-current={active ? "true" : undefined}
-        className={cn(
-          "flex items-center gap-2.5 rounded-lg px-2.5 py-2 transition-colors",
-          active ? "bg-gradient-to-r from-brand-violet/25 to-brand-blue-vif/10" : "hover:bg-white/[0.06]",
-        )}
+        className={cn(base, active ? "bg-gradient-to-r from-brand-violet/25 to-brand-blue-vif/10" : "hover:bg-white/[0.06]")}
       >
-        <span className="grid h-5 w-5 shrink-0 place-items-center">
-          {assessment.passed ? (
-            <Trophy size={14} className="text-success" aria-hidden />
-          ) : !enrolled ? (
-            <Lock size={13} className="text-white/30" aria-hidden />
-          ) : (
-            <Icon size={15} className={active ? "text-brand-cyan" : "text-brand-violet/80"} aria-hidden />
-          )}
-        </span>
-        <span
-          className={cn(
-            "min-w-0 flex-1 truncate text-sm",
-            active ? "font-semibold text-white" : "text-white/70",
-          )}
-        >
-          {assessment.title}
-        </span>
-        {assessment.passed && (
-          <span className="shrink-0 rounded bg-success/15 px-1.5 py-0.5 text-[10px] font-semibold text-success">
-            Réussi
-          </span>
-        )}
+        {inner}
       </Link>
     </li>
   );

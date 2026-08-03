@@ -23,6 +23,60 @@ import { getPrerequisiteStatus, unmetPrerequisitesMessage } from "./prerequisite
 
 const ACQUIRED: EnrollmentStatus[] = [...ACQUIRED_STATUSES];
 
+/** Vérifie si une évaluation est verrouillée par la progression séquentielle :
+ *  leçons obligatoires incomplètes OU évaluations obligatoires non réussies
+ *  dans les modules précédents (ou le même module, avant cette évaluation). */
+async function isAssessmentSequentiallyLocked(userId: string, courseId: string, assessmentId: string): Promise<boolean> {
+  const course = await prisma.course.findUnique({
+    where: { id: courseId },
+    select: { unlockMode: true },
+  });
+  if (!course || course.unlockMode !== "SEQUENTIAL") return false;
+
+  const modules = await prisma.module.findMany({
+    where: { courseId, status: "PUBLISHED" },
+    orderBy: { order: "asc" },
+    select: {
+      lessons: {
+        where: { status: "PUBLISHED" },
+        orderBy: { order: "asc" },
+        select: { id: true, isRequired: true },
+      },
+      assessments: {
+        where: { status: "PUBLISHED" },
+        orderBy: { order: "asc" },
+        select: { id: true, isRequired: true },
+      },
+    },
+  });
+
+  const allLessonIds = modules.flatMap((m) => m.lessons.map((l) => l.id));
+  const completedLessons = new Set(
+    (await prisma.lessonProgress.findMany({
+      where: { userId, lessonId: { in: allLessonIds } },
+      select: { lessonId: true },
+    })).map((r) => r.lessonId),
+  );
+  const passedAssessments = new Set(
+    (await prisma.assessmentAttempt.findMany({
+      where: { userId, passed: true, assessment: { courseId } },
+      select: { assessmentId: true },
+    })).map((r) => r.assessmentId),
+  );
+
+  let blocked = false;
+  for (const mod of modules) {
+    for (const l of mod.lessons) {
+      if (l.isRequired && !completedLessons.has(l.id)) blocked = true;
+    }
+    for (const a of mod.assessments) {
+      if (a.id === assessmentId) return blocked;
+      if (a.isRequired && !passedAssessments.has(a.id)) blocked = true;
+    }
+  }
+  return blocked;
+}
+
 export type ActionResult = { ok: true; message?: string } | { ok: false; error: string };
 export type EnrollResult =
   | { ok: true; already?: boolean }
@@ -432,7 +486,8 @@ export async function markLessonComplete(lessonId: string): Promise<MarkLessonRe
   }
 
   // Mode séquentiel : impossible de valider une leçon tant qu'une leçon
-  // obligatoire précédente n'est pas terminée.
+  // obligatoire précédente n'est pas terminée OU qu'une évaluation obligatoire
+  // d'un module précédent n'est pas réussie.
   if (lesson.module.course.unlockMode === "SEQUENTIAL") {
     const modules = await prisma.module.findMany({
       where: { courseId, status: "PUBLISHED" },
@@ -443,20 +498,39 @@ export async function markLessonComplete(lessonId: string): Promise<MarkLessonRe
           orderBy: { order: "asc" },
           select: { id: true, isRequired: true },
         },
+        assessments: {
+          where: { status: "PUBLISHED" },
+          orderBy: { order: "asc" },
+          select: { id: true, isRequired: true },
+        },
       },
     });
-    const flat = modules.flatMap((m) => m.lessons);
-    const priorRequired = [];
-    for (const l of flat) {
-      if (l.id === lesson.id) break;
-      if (l.isRequired) priorRequired.push(l.id);
+    const priorRequiredLessons: string[] = [];
+    const priorRequiredAssessments: string[] = [];
+    outer: for (const m of modules) {
+      for (const l of m.lessons) {
+        if (l.id === lesson.id) break outer;
+        if (l.isRequired) priorRequiredLessons.push(l.id);
+      }
+      for (const a of m.assessments) {
+        if (a.isRequired) priorRequiredAssessments.push(a.id);
+      }
     }
-    if (priorRequired.length > 0) {
+    if (priorRequiredLessons.length > 0) {
       const doneCount = await prisma.lessonProgress.count({
-        where: { userId: user.id, lessonId: { in: priorRequired } },
+        where: { userId: user.id, lessonId: { in: priorRequiredLessons } },
       });
-      if (doneCount < priorRequired.length) {
+      if (doneCount < priorRequiredLessons.length) {
         return { ok: false, error: "Terminez d'abord les leçons précédentes (progression séquentielle)." };
+      }
+    }
+    if (priorRequiredAssessments.length > 0) {
+      const passedCount = await prisma.assessmentAttempt.groupBy({
+        by: ["assessmentId"],
+        where: { userId: user.id, assessmentId: { in: priorRequiredAssessments }, passed: true },
+      });
+      if (passedCount.length < priorRequiredAssessments.length) {
+        return { ok: false, error: "Complétez d'abord les évaluations des modules précédents." };
       }
     }
   }
@@ -554,6 +628,12 @@ export async function submitQuiz(assessmentId: string, answers: unknown): Promis
   });
   if (!enrollment || !ACQUIRED.includes(enrollment.status)) {
     return { ok: false, error: "Vous n'êtes pas inscrit(e) à cette formation." };
+  }
+
+  // Garde séquentielle : évaluation inaccessible si les leçons/évals précédentes
+  // ne sont pas terminées.
+  if (await isAssessmentSequentiallyLocked(user.id, assessment.courseId, assessment.id)) {
+    return { ok: false, error: "Complétez d'abord les leçons et évaluations des modules précédents." };
   }
 
   // Garde des tentatives (attemptsAllowed = 0 → illimité).
@@ -963,6 +1043,10 @@ export async function submitAssignment(
     select: { status: true },
   });
   if (!e || !ACQUIRED.includes(e.status)) return { ok: false, error: "Vous devez être inscrit(e) à la formation." };
+
+  if (await isAssessmentSequentiallyLocked(user.id, assessment.courseId, assessment.id)) {
+    return { ok: false, error: "Complétez d'abord les leçons et évaluations des modules précédents." };
+  }
 
   const previous = await prisma.assessmentAttempt.findMany({
     where: { assessmentId: assessment.id, userId: user.id },

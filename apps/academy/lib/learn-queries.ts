@@ -785,29 +785,63 @@ export async function getPlayerCourse(slug: string, userId: string | null) {
   for (const a of attemptSummaries) attemptsByAssessment.set(a.assessmentId, (attemptsByAssessment.get(a.assessmentId) ?? 0) + 1);
 
   // Verrouillage : SEQUENTIAL → une leçon est verrouillée tant qu'une leçon
-  // obligatoire précédente n'est pas terminée. Non inscrit → tout sauf aperçus.
+  // obligatoire précédente n'est pas terminée OU qu'une évaluation obligatoire
+  // d'un module précédent n'est pas réussie. Non inscrit → tout sauf aperçus.
   let blockedFromHere = false;
   const lockMap = new Map<string, boolean>();
-  for (const lesson of flat) {
+  const assessmentLockMap = new Map<string, boolean>();
+  for (const mod of course.modules) {
+    // Verrouiller les leçons du module
+    for (const lesson of mod.lessons) {
+      if (privileged) {
+        lockMap.set(lesson.id, false);
+        continue;
+      }
+      if (startsAt) {
+        lockMap.set(lesson.id, true);
+        continue;
+      }
+      if (!enrolled) {
+        lockMap.set(lesson.id, !lesson.isPreview);
+        continue;
+      }
+      if (course.unlockMode === "SEQUENTIAL") {
+        lockMap.set(lesson.id, blockedFromHere);
+        if (lesson.isRequired && !completed.has(lesson.id)) blockedFromHere = true;
+      } else {
+        lockMap.set(lesson.id, false);
+      }
+    }
+    // Verrouiller les évaluations du module (même logique) puis vérifier si
+    // une évaluation obligatoire non réussie bloque le module suivant.
+    for (const a of mod.assessments) {
+      if (privileged) {
+        assessmentLockMap.set(a.id, false);
+        continue;
+      }
+      if (startsAt || !enrolled) {
+        assessmentLockMap.set(a.id, true);
+        continue;
+      }
+      if (course.unlockMode === "SEQUENTIAL") {
+        assessmentLockMap.set(a.id, blockedFromHere);
+        if (a.isRequired && !passedAssessments.has(a.id)) blockedFromHere = true;
+      } else {
+        assessmentLockMap.set(a.id, false);
+      }
+    }
+  }
+  // Évaluations finales du cours (sans module) : verrouillées si les modules
+  // précédents ont du contenu obligatoire non terminé.
+  for (const a of course.assessments) {
     if (privileged) {
-      // Admin/formateur : accès libre, rien n'est verrouillé.
-      lockMap.set(lesson.id, false);
-      continue;
-    }
-    if (startsAt) {
-      // Cohorte pas encore démarrée → tout est verrouillé jusqu'à la date.
-      lockMap.set(lesson.id, true);
-      continue;
-    }
-    if (!enrolled) {
-      lockMap.set(lesson.id, !lesson.isPreview);
-      continue;
-    }
-    if (course.unlockMode === "SEQUENTIAL") {
-      lockMap.set(lesson.id, blockedFromHere);
-      if (lesson.isRequired && !completed.has(lesson.id)) blockedFromHere = true;
+      assessmentLockMap.set(a.id, false);
+    } else if (startsAt || !enrolled) {
+      assessmentLockMap.set(a.id, true);
+    } else if (course.unlockMode === "SEQUENTIAL") {
+      assessmentLockMap.set(a.id, blockedFromHere);
     } else {
-      lockMap.set(lesson.id, false);
+      assessmentLockMap.set(a.id, false);
     }
   }
 
@@ -815,6 +849,7 @@ export async function getPlayerCourse(slug: string, userId: string | null) {
     ...a,
     passed: passedAssessments.has(a.id),
     attemptsUsed: attemptsByAssessment.get(a.id) ?? 0,
+    locked: assessmentLockMap.get(a.id) ?? !enrolled,
   });
 
   return {
@@ -905,14 +940,45 @@ export async function getPlayerLesson(lessonId: string, userId: string | null) {
   if (startsAt) hasAccess = false;
 
   // Verrouillage séquentiel pour l'apprenant inscrit (jamais pour admin/formateur).
+  // Prend en compte les leçons ET les évaluations obligatoires des modules
+  // précédents : un module dont l'évaluation n'est pas réussie bloque la suite.
   const flat = await getFlatLessons(course.id);
   const completed = userId ? await getCompletedLessonIds(userId, flat.map((l) => l.id)) : new Set<string>();
   if (enrolled && !privileged && course.unlockMode === "SEQUENTIAL") {
-    for (const l of flat) {
-      if (l.id === lesson.id) break;
-      if (l.isRequired && !completed.has(l.id)) {
-        locked = true;
-        break;
+    const modules = await prisma.module.findMany({
+      where: { courseId: course.id, status: "PUBLISHED" },
+      orderBy: { order: "asc" },
+      select: {
+        id: true,
+        lessons: {
+          where: { status: "PUBLISHED" },
+          orderBy: { order: "asc" },
+          select: { id: true, isRequired: true },
+        },
+        assessments: {
+          where: { status: "PUBLISHED" },
+          orderBy: { order: "asc" },
+          select: { id: true, isRequired: true },
+        },
+      },
+    });
+    const passedAssessmentIds = userId
+      ? new Set(
+          (await prisma.assessmentAttempt.findMany({
+            where: { userId, passed: true, assessment: { courseId: course.id } },
+            select: { assessmentId: true },
+          })).map((a) => a.assessmentId),
+        )
+      : new Set<string>();
+
+    let blocked = false;
+    outer: for (const mod of modules) {
+      for (const l of mod.lessons) {
+        if (l.id === lesson.id) { locked = blocked; break outer; }
+        if (l.isRequired && !completed.has(l.id)) blocked = true;
+      }
+      for (const a of mod.assessments) {
+        if (a.isRequired && !passedAssessmentIds.has(a.id)) blocked = true;
       }
     }
     if (locked) hasAccess = false;
