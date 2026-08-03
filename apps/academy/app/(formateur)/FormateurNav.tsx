@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, BookOpen, Users, ClipboardCheck } from "lucide-react";
+import { LayoutDashboard, BookOpen, Users, ClipboardCheck, UsersRound } from "lucide-react";
 import { cn } from "@da/ui";
 
 /* Sous-navigation du studio formateur — composant client pour l'état actif
@@ -12,6 +12,7 @@ const SUBNAV = [
   { label: "Tableau de bord", href: "/formateur", icon: LayoutDashboard, exact: true },
   { label: "Mes formations", href: "/formateur/formations", icon: BookOpen },
   { label: "Apprenants", href: "/formateur/apprenants", icon: Users },
+  { label: "Cohortes", href: "/formateur/cohortes", icon: UsersRound },
   { label: "Corrections", href: "/correction", icon: ClipboardCheck },
 ] as const;
 

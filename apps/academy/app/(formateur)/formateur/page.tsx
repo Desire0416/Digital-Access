@@ -3,16 +3,19 @@ import Link from "next/link";
 import {
   BookOpen,
   Users,
+  UsersRound,
   Star,
   CheckCircle2,
   ClipboardCheck,
   ArrowRight,
   Layers,
   ChevronRight,
+  Calendar,
 } from "lucide-react";
 import { StaggerGroup, StaggerItem } from "@da/ui";
 import { requireRole } from "@/lib/guards";
 import { getInstructorDashboard } from "@/lib/instructor-queries";
+import { getInstructorCohorts } from "@/lib/instructor-cohort-queries";
 import { LEVEL_LABEL } from "@/lib/site";
 import { EspaceHeader } from "@/components/espace/parts";
 import { StatusPill, CONTENT_STATUS_LABEL, CONTENT_STATUS_TONE } from "@/components/admin/ui";
@@ -61,7 +64,10 @@ function StatTile({
 
 export default async function FormateurDashboardPage() {
   const user = await requireRole(["INSTRUCTOR", "ACADEMIC_ADMIN", "SALES_ADMIN"], "/formateur");
-  const { courses, stats, pendingReviews } = await getInstructorDashboard(user);
+  const [{ courses, stats, pendingReviews }, cohorts] = await Promise.all([
+    getInstructorDashboard(user),
+    getInstructorCohorts(user),
+  ]);
 
   return (
     <div>
@@ -113,6 +119,56 @@ export default async function FormateurDashboardPage() {
             <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" aria-hidden />
           </span>
         </Link>
+      )}
+
+      {/* Mes cohortes */}
+      {cohorts.length > 0 && (
+        <div className="mt-8">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <h2 className="font-display text-lg font-bold text-navy">Mes cohortes</h2>
+            <Link
+              href="/formateur/cohortes"
+              className="inline-flex items-center gap-1 text-sm font-semibold text-brand-blue-royal transition-colors hover:text-brand-violet"
+            >
+              Tout voir
+              <ChevronRight size={15} aria-hidden />
+            </Link>
+          </div>
+          <StaggerGroup className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {cohorts.slice(0, 3).map((c) => (
+              <StaggerItem key={c.id}>
+                <Link
+                  href={`/formateur/cohortes/${c.id}`}
+                  className="group flex items-start gap-4 rounded-2xl border border-navy/[0.07] bg-surface-primary p-4 transition-shadow hover:shadow-lg"
+                >
+                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-brand-violet to-brand-blue-royal text-white shadow-sm">
+                    <UsersRound size={20} />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-display text-sm font-bold text-navy group-hover:text-brand-blue-royal">
+                      {c.name}
+                    </p>
+                    {(c.course || c.careerPath) && (
+                      <p className="mt-0.5 truncate text-xs text-text-secondary">
+                        {c.course?.title ?? c.careerPath?.title}
+                      </p>
+                    )}
+                    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-text-muted">
+                      <span className="inline-flex items-center gap-1">
+                        <Users size={11} aria-hidden />
+                        {c._count.members}
+                      </span>
+                      <span className="inline-flex items-center gap-1">
+                        <Calendar size={11} aria-hidden />
+                        {new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short" }).format(c.startDate)}
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              </StaggerItem>
+            ))}
+          </StaggerGroup>
+        </div>
       )}
 
       {/* Mes formations */}
