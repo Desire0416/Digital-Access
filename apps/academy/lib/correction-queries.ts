@@ -1,15 +1,17 @@
 import "server-only";
 import { prisma } from "@da/academy-db/client";
 import { isAdmin, type SessionUser } from "./guards";
+import { supervisedScope, supervisedCourseIds, isCourseSupervised } from "./supervision";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Espace correcteur — LECTURES (cahier §7.4 / §19.4).
    File d'attente et fiche de correction des soumissions de projet.
 
-   CLOISONNEMENT (identique à lib/learn-actions.ts:763-779) : un correcteur ou
-   formateur NON-admin ne voit QUE les soumissions des formations qu'il encadre
-   (CourseInstructor). Pour un projet transversal (rattaché à un parcours), il
-   est autorisé s'il encadre au moins une formation de ce parcours. Les
+   CLOISONNEMENT : un correcteur ou formateur NON-admin ne voit QUE les
+   soumissions des formations qu'il SUPERVISE — assignation directe
+   (CourseInstructor) OU encadrement d'une cohorte rattachée à la formation
+   (CohortInstructor). Cf. lib/supervision.ts. Pour un projet transversal
+   (rattaché à un parcours), il est autorisé s'il supervise ce parcours. Les
    administrateurs pédagogiques ne sont pas restreints.
    ══════════════════════════════════════════════════════════════════════════ */
 
@@ -21,19 +23,10 @@ type ProjectScope = { courseId: string | null; careerPathId: string | null };
 /** Reproduit la garde de cloisonnement de reviewSubmission pour un projet donné. */
 async function isReviewerAllowed(reviewer: SessionUser, project: ProjectScope): Promise<boolean> {
   if (isAdmin(reviewer)) return true;
-  if (project.courseId) {
-    return !!(await prisma.courseInstructor.findFirst({
-      where: { courseId: project.courseId, userId: reviewer.id },
-      select: { id: true },
-    }));
-  }
-  if (project.careerPathId) {
-    // Projet transversal : autorisé s'il encadre au moins une formation du parcours.
-    return !!(await prisma.courseInstructor.findFirst({
-      where: { userId: reviewer.id, course: { careerPaths: { some: { careerPathId: project.careerPathId } } } },
-      select: { id: true },
-    }));
-  }
+  const { courseIds, careerPathIds } = await supervisedScope(reviewer.id);
+  if (project.courseId) return courseIds.includes(project.courseId);
+  // Projet transversal : autorisé s'il supervise le parcours (ou une de ses formations).
+  if (project.careerPathId) return careerPathIds.includes(project.careerPathId);
   return false;
 }
 
@@ -45,15 +38,8 @@ async function isReviewerAllowed(reviewer: SessionUser, project: ProjectScope): 
 async function scopeProjectFilter(reviewer: SessionUser) {
   if (isAdmin(reviewer)) return null;
 
-  // Formations encadrées + parcours qui contiennent l'une d'elles.
-  const instructed = await prisma.courseInstructor.findMany({
-    where: { userId: reviewer.id },
-    select: { courseId: true, course: { select: { careerPaths: { select: { careerPathId: true } } } } },
-  });
-  const courseIds = [...new Set(instructed.map((c) => c.courseId))];
-  const careerPathIds = [
-    ...new Set(instructed.flatMap((c) => c.course.careerPaths.map((cp) => cp.careerPathId))),
-  ];
+  // Formations supervisées (assignation directe + cohortes) + parcours associés.
+  const { courseIds, careerPathIds } = await supervisedScope(reviewer.id);
 
   // Le terme parcours ne matche QUE les projets sans courseId, pour rester
   // aligné sur la garde autoritative isReviewerAllowed (branche courseId
@@ -250,17 +236,14 @@ export async function countSubmissionsToReview(reviewer: SessionUser): Promise<n
    DEVOIRS (AssessmentType.ASSIGNMENT) — dépôts déposés dans le lecteur, corrigés
    manuellement (§18). Même cloisonnement que les projets, mais un devoir est
    TOUJOURS rattaché à une formation (assessment.courseId) : le correcteur voit
-   uniquement les dépôts des formations qu'il encadre (CourseInstructor).
+   les dépôts des formations qu'il SUPERVISE — assignation directe OU cohorte
+   qu'il encadre (cf. lib/supervision.ts).
    ══════════════════════════════════════════════════════════════════════════ */
 
-/** Identifiants des formations encadrées par ce correcteur. `null` = admin (aucune restriction). */
+/** Identifiants des formations supervisées par ce correcteur. `null` = admin (aucune restriction). */
 async function scopeCourseIds(reviewer: SessionUser): Promise<string[] | null> {
   if (isAdmin(reviewer)) return null;
-  const instructed = await prisma.courseInstructor.findMany({
-    where: { userId: reviewer.id },
-    select: { courseId: true },
-  });
-  return [...new Set(instructed.map((c) => c.courseId))];
+  return supervisedCourseIds(reviewer.id);
 }
 
 /** Dépôts de devoir à corriger (status SUBMITTED) visibles par ce correcteur. */
@@ -351,10 +334,7 @@ export async function getAssignmentForReview(id: string, reviewer: SessionUser) 
   if (attempt.status !== "SUBMITTED") return null;
 
   if (!isAdmin(reviewer)) {
-    const allowed = await prisma.courseInstructor.findFirst({
-      where: { courseId: attempt.assessment.courseId, userId: reviewer.id },
-      select: { id: true },
-    });
+    const allowed = await isCourseSupervised(reviewer.id, attempt.assessment.courseId);
     if (!allowed) return null;
   }
 

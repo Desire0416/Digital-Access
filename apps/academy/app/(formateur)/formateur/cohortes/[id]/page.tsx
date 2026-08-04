@@ -12,7 +12,11 @@ import {
   Megaphone,
   CalendarDays,
   ArrowLeft,
+  ArrowRight,
   ExternalLink,
+  ClipboardCheck,
+  FileText,
+  FolderKanban,
 } from "lucide-react";
 import { StaggerGroup, StaggerItem, Avatar } from "@da/ui";
 import { requireRole } from "@/lib/guards";
@@ -104,6 +108,9 @@ export default async function FormateurCohortDetailPage({ params }: { params: Pr
   const target = cohort.course ?? cohort.careerPath;
   const targetType = cohort.course ? "formation" : "parcours";
 
+  // Les participants ayant des dépôts à corriger remontent en tête (action à mener).
+  const members = [...cohort.membersWithProgress].sort((a, b) => b.pendingReviews - a.pendingReviews);
+
   return (
     <div>
       {/* Breadcrumb */}
@@ -164,6 +171,80 @@ export default async function FormateurCohortDetailPage({ params }: { params: Pr
         </StaggerItem>
       </StaggerGroup>
 
+      {/* Livrables à corriger — action concrète : lien direct vers chaque fiche */}
+      {cohort.pendingReviews.length > 0 && (
+        <section className="mt-6">
+          <div className="overflow-hidden rounded-2xl border border-warning/30 bg-warning/[0.04]">
+            <div className="flex items-center gap-3 border-b border-warning/20 px-5 py-4">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-warning/15 text-[#b45309]" aria-hidden>
+                <ClipboardCheck size={20} />
+              </span>
+              <div className="min-w-0">
+                <h2 className="font-display text-base font-bold text-navy">
+                  {cohort.pendingReviews.length} livrable{cohort.pendingReviews.length > 1 ? "s" : ""} à corriger
+                </h2>
+                <p className="text-xs text-text-secondary">
+                  Déposés par les participants de cette cohorte. Chaque validation débloque la suite de leur parcours.
+                </p>
+              </div>
+            </div>
+            <ul className="divide-y divide-navy/[0.06]">
+              {cohort.pendingReviews.map((r) => (
+                <li key={`${r.kind}-${r.id}`}>
+                  <Link
+                    href={r.href}
+                    className="group flex items-center gap-3 px-5 py-3.5 transition-colors hover:bg-surface-primary"
+                  >
+                    <Avatar name={r.learnerName} src={r.learnerAvatar ?? undefined} className="h-9 w-9 shrink-0" />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold text-navy">{r.learnerName}</p>
+                      <p className="mt-0.5 flex items-center gap-1.5 truncate text-xs text-text-secondary">
+                        {r.kind === "assignment" ? (
+                          <FileText size={12} className="shrink-0 text-brand-blue-royal" aria-hidden />
+                        ) : (
+                          <FolderKanban size={12} className="shrink-0 text-brand-violet" aria-hidden />
+                        )}
+                        <span className="truncate">{r.title}</span>
+                      </p>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-3">
+                      <StatusPill
+                        label={r.kind === "assignment" ? "Devoir" : "Projet"}
+                        tone={r.kind === "assignment" ? "info" : "violet"}
+                      />
+                      {r.submittedAt && (
+                        <span className="hidden text-[11px] text-text-muted sm:inline">{dateFmt.format(r.submittedAt)}</span>
+                      )}
+                      <span className="inline-flex items-center gap-1 text-sm font-semibold text-[#b45309]">
+                        Corriger
+                        <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" aria-hidden />
+                      </span>
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
+
+      {/* Tout corrigé — état positif quand la cohorte cible une formation avec des membres */}
+      {cohort.pendingReviews.length === 0 && cohort.courseId && cohort.stats.totalMembers > 0 && (
+        <section className="mt-6">
+          <div className="flex items-center gap-3 rounded-2xl border border-success/25 bg-success/[0.05] px-5 py-4">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-success/15 text-success" aria-hidden>
+              <CheckCircle2 size={20} />
+            </span>
+            <div className="min-w-0">
+              <p className="font-display text-sm font-bold text-navy">Tout est corrigé</p>
+              <p className="text-xs text-text-secondary">
+                Aucun livrable en attente. Les nouveaux dépôts des participants apparaîtront ici.
+              </p>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Encadrants */}
       {cohort.instructors.length > 1 && (
         <section className="mt-8">
@@ -191,24 +272,33 @@ export default async function FormateurCohortDetailPage({ params }: { params: Pr
           <h2 className="font-display text-base font-bold text-navy">
             Participants ({cohort.stats.totalMembers})
           </h2>
-          {target && targetType === "formation" && (
+          <div className="flex items-center gap-4">
             <Link
-              href={`/cours/${(cohort.course!).slug}`}
+              href="/correction"
               className="inline-flex items-center gap-1 text-xs font-semibold text-brand-blue-royal transition-colors hover:text-brand-violet"
             >
-              Voir la formation
-              <ExternalLink size={12} aria-hidden />
+              <ClipboardCheck size={12} aria-hidden />
+              File de correction
             </Link>
-          )}
+            {target && targetType === "formation" && (
+              <Link
+                href={`/cours/${(cohort.course!).slug}`}
+                className="inline-flex items-center gap-1 text-xs font-semibold text-brand-blue-royal transition-colors hover:text-brand-violet"
+              >
+                Voir la formation
+                <ExternalLink size={12} aria-hidden />
+              </Link>
+            )}
+          </div>
         </div>
 
-        {cohort.membersWithProgress.length === 0 ? (
+        {members.length === 0 ? (
           <p className="rounded-xl bg-surface-secondary/60 py-8 text-center text-sm text-text-muted">
             Aucun participant inscrit pour le moment.
           </p>
         ) : (
           <StaggerGroup className="space-y-3">
-            {cohort.membersWithProgress.map((m) => (
+            {members.map((m) => (
               <StaggerItem key={m.id}>
                 <article className="rounded-2xl border border-navy/[0.07] bg-surface-primary p-4 sm:p-5">
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
@@ -221,8 +311,17 @@ export default async function FormateurCohortDetailPage({ params }: { params: Pr
                       </div>
                     </div>
 
-                    {/* Statut membre */}
-                    <div className="shrink-0">
+                    {/* Statut membre + dépôts à corriger */}
+                    <div className="flex shrink-0 items-center gap-2">
+                      {m.pendingReviews > 0 && (
+                        <Link
+                          href="/correction"
+                          className="inline-flex items-center gap-1 rounded-full bg-warning/15 px-2.5 py-1 text-[11px] font-bold text-[#b45309] transition-colors hover:bg-warning/25"
+                        >
+                          <ClipboardCheck size={12} aria-hidden />
+                          {m.pendingReviews} à corriger
+                        </Link>
+                      )}
                       <StatusPill
                         label={MEMBER_STATUS_LABEL[m.status] ?? m.status}
                         tone={MEMBER_STATUS_TONE[m.status] ?? "neutral"}

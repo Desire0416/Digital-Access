@@ -9,6 +9,7 @@ import { ACQUIRED_STATUSES, computeCareerPathPricing } from "./pricing";
 import { issueCourseCertificate, issueCareerPathCertificate } from "./certification";
 import { createNotification } from "./notify";
 import { getPrerequisiteStatus, unmetPrerequisitesMessage } from "./prerequisites";
+import { supervisedScope, isCourseSupervised } from "./supervision";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Actions apprenant — inscriptions, progression, quiz, projets (cahier §16-19).
@@ -924,23 +925,17 @@ export async function reviewSubmission(
   }
 
   // Cloisonnement : un correcteur/formateur NON-admin ne corrige que les
-  // soumissions des formations qu'il encadre (CourseInstructor). L'admin
-  // pédagogique n'est pas restreint.
+  // soumissions des formations qu'il SUPERVISE — assignation directe
+  // (CourseInstructor) OU cohorte qu'il encadre (cf. lib/supervision.ts).
+  // L'admin pédagogique n'est pas restreint.
   if (!isAdmin(reviewer)) {
     const proj = submission.project;
-    let allowed = false;
-    if (proj.courseId) {
-      allowed = !!(await prisma.courseInstructor.findFirst({
-        where: { courseId: proj.courseId, userId: reviewer.id },
-        select: { id: true },
-      }));
-    } else if (proj.careerPathId) {
-      // Projet transversal : autorisé s'il encadre au moins une formation du parcours.
-      allowed = !!(await prisma.courseInstructor.findFirst({
-        where: { userId: reviewer.id, course: { careerPaths: { some: { careerPathId: proj.careerPathId } } } },
-        select: { id: true },
-      }));
-    }
+    const { courseIds, careerPathIds } = await supervisedScope(reviewer.id);
+    const allowed = proj.courseId
+      ? courseIds.includes(proj.courseId)
+      : proj.careerPathId
+        ? careerPathIds.includes(proj.careerPathId)
+        : false;
     if (!allowed) return { ok: false, error: "Vous n'encadrez pas la formation liée à cette soumission." };
   }
 
@@ -1118,12 +1113,10 @@ export async function gradeAssignment(
   if (attempt.status !== "SUBMITTED") return { ok: false, error: "Ce dépôt a déjà été corrigé." };
 
   // Cloisonnement : un correcteur/formateur NON-admin ne corrige que les dépôts
-  // des formations qu'il encadre (CourseInstructor). L'admin n'est pas restreint.
+  // des formations qu'il SUPERVISE — assignation directe (CourseInstructor) OU
+  // cohorte qu'il encadre (cf. lib/supervision.ts). L'admin n'est pas restreint.
   if (!isAdmin(reviewer)) {
-    const allowed = !!(await prisma.courseInstructor.findFirst({
-      where: { courseId: attempt.assessment.courseId, userId: reviewer.id },
-      select: { id: true },
-    }));
+    const allowed = await isCourseSupervised(reviewer.id, attempt.assessment.courseId);
     if (!allowed) return { ok: false, error: "Vous n'encadrez pas la formation liée à ce dépôt." };
   }
 
