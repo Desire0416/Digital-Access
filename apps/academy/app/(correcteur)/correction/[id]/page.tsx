@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import {
   ChevronLeft,
   ClipboardList,
@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { Avatar } from "@da/ui";
 import { requireRole } from "@/lib/guards";
-import { getSubmissionForReview } from "@/lib/correction-queries";
+import { getSubmissionForReview, submissionAlreadyReviewed } from "@/lib/correction-queries";
 import { Markdown } from "@/components/Markdown";
 import { Panel } from "@/components/espace/parts";
 import { SUBMISSION_META } from "@/components/submission-meta";
@@ -36,7 +36,12 @@ export default async function CorrectionDetailPage({ params }: { params: Promise
   const { id } = await params;
   const user = await requireRole(["INSTRUCTOR", "ACADEMIC_ADMIN", "SALES_ADMIN"], `/correction/${id}`);
   const sub = await getSubmissionForReview(id, user);
-  if (!sub) notFound();
+  if (!sub) {
+    // Déjà corrigée (la fiche se recharge après notation) → retour à la file,
+    // pas un 404. Sinon (introuvable / non autorisé) → 404.
+    if (await submissionAlreadyReviewed(id, user)) redirect("/correction");
+    notFound();
+  }
 
   const project = sub.project;
   const source = project.course ?? project.careerPath ?? null;

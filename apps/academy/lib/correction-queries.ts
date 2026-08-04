@@ -218,6 +218,24 @@ export async function getSubmissionForReview(id: string, reviewer: SessionUser) 
 
 export type SubmissionReviewDetail = NonNullable<Awaited<ReturnType<typeof getSubmissionForReview>>>;
 
+/**
+ * Une soumission de projet existe-t-elle, visible par ce correcteur, MAIS déjà
+ * corrigée ? Même rôle que assignmentAlreadyReviewed : distinguer « déjà
+ * corrigé » (→ retour à la file) d'un introuvable/non autorisé (→ 404).
+ */
+export async function submissionAlreadyReviewed(id: string, reviewer: SessionUser): Promise<boolean> {
+  const submission = await prisma.submission.findUnique({
+    where: { id },
+    select: { status: true, project: { select: { courseId: true, careerPathId: true } } },
+  });
+  if (!submission) return false;
+  if (["SUBMITTED", "UNDER_REVIEW"].includes(submission.status)) return false; // encore à corriger
+  return isReviewerAllowed(reviewer, {
+    courseId: submission.project.courseId,
+    careerPathId: submission.project.careerPathId,
+  });
+}
+
 /* ─── Compteur (badge) ─────────────────────────────────────────────────────── */
 
 /** Nombre de soumissions à corriger visibles par ce correcteur (pour un badge). */
@@ -368,6 +386,23 @@ export async function getAssignmentForReview(id: string, reviewer: SessionUser) 
 }
 
 export type AssignmentReviewDetail = NonNullable<Awaited<ReturnType<typeof getAssignmentForReview>>>;
+
+/**
+ * Un dépôt de devoir existe-t-il, supervisé par ce correcteur, MAIS déjà corrigé ?
+ * Sert à distinguer « déjà corrigé » (→ retour à la file) d'un vrai introuvable/
+ * non autorisé (→ 404) : après notation, la fiche se recharge et le dépôt n'est
+ * plus SUBMITTED — sans ce test, la page renverrait un 404 trompeur.
+ */
+export async function assignmentAlreadyReviewed(id: string, reviewer: SessionUser): Promise<boolean> {
+  const attempt = await prisma.assessmentAttempt.findUnique({
+    where: { id },
+    select: { status: true, assessment: { select: { type: true, courseId: true } } },
+  });
+  if (!attempt || attempt.assessment.type !== "ASSIGNMENT") return false;
+  if (attempt.status === "SUBMITTED") return false; // encore à corriger → pas ce cas
+  if (isAdmin(reviewer)) return true;
+  return isCourseSupervised(reviewer.id, attempt.assessment.courseId);
+}
 
 /** Nombre de dépôts de devoir à corriger visibles par ce correcteur (badge). */
 export async function countAssignmentsToReview(reviewer: SessionUser): Promise<number> {

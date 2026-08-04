@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import {
   ChevronLeft,
   ClipboardList,
@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { Avatar } from "@da/ui";
 import { requireRole } from "@/lib/guards";
-import { getAssignmentForReview } from "@/lib/correction-queries";
+import { getAssignmentForReview, assignmentAlreadyReviewed } from "@/lib/correction-queries";
 import { Markdown } from "@/components/Markdown";
 import { Panel } from "@/components/espace/parts";
 import { AssignmentReviewForm } from "./AssignmentReviewForm";
@@ -42,7 +42,12 @@ export default async function AssignmentCorrectionPage({ params }: { params: Pro
   const { id } = await params;
   const user = await requireRole(["INSTRUCTOR", "ACADEMIC_ADMIN", "SALES_ADMIN"], `/correction/devoir/${id}`);
   const sub = await getAssignmentForReview(id, user);
-  if (!sub) notFound();
+  if (!sub) {
+    // Déjà corrigé (la fiche se recharge après notation) → retour à la file,
+    // pas un 404. Sinon (introuvable / non supervisé) → 404.
+    if (await assignmentAlreadyReviewed(id, user)) redirect("/correction");
+    notFound();
+  }
 
   const a = sub.assessment;
 
