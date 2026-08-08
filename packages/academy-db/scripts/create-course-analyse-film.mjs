@@ -63,7 +63,7 @@ const FICHE = {
   ],
   tools: [],
   level: "BEGINNER",
-  price: 0, // Tarif non précisé dans le dossier (« soumis à validation ») → gratuit par défaut, à ajuster en admin.
+  price: 10000, // FCFA — tarif fixé par le porteur du projet.
   durationHours: 5, // Estimation : ~2 h 30 par module (à préciser par le formateur).
   certificateTitle: "Certificat de réussite — Cours pratique d'analyse de film",
   badgeTitle: "Analyste de film",
