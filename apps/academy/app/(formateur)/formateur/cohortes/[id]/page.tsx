@@ -282,7 +282,7 @@ export default async function FormateurCohortDetailPage({ params }: { params: Pr
             </Link>
             {target && targetType === "formation" && (
               <Link
-                href={`/cours/${(cohort.course!).slug}`}
+                href={`/formations/${(cohort.course!).slug}`}
                 className="inline-flex items-center gap-1 text-xs font-semibold text-brand-blue-royal transition-colors hover:text-brand-violet"
               >
                 Voir la formation
