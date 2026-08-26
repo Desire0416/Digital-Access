@@ -4,9 +4,9 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { SlidersHorizontal, Power, Loader2, Check, X, ShieldAlert, UserCog, Trash2, RotateCcw, GraduationCap, Search, ArrowRight } from "lucide-react";
+import { SlidersHorizontal, Power, Loader2, Check, X, ShieldAlert, UserCog, Trash2, RotateCcw, GraduationCap, Search, ArrowRight, MailCheck } from "lucide-react";
 import { cn } from "@da/ui";
-import { setUserRoles, toggleUserActive, deleteUser, restoreUser, adminEnrollUserInCourse } from "@/lib/admin-actions";
+import { setUserRoles, toggleUserActive, deleteUser, restoreUser, adminEnrollUserInCourse, verifyUserEmailManually } from "@/lib/admin-actions";
 import { startImpersonation } from "@/lib/impersonation-actions";
 import { formatFCFA } from "@/lib/site";
 import type { Role } from "@da/academy-db/client";
@@ -57,7 +57,7 @@ export function UserActions({
   isSelf,
   courses = [],
 }: {
-  user: { id: string; name: string; roles: Role[]; isActive: boolean; isDeleted?: boolean };
+  user: { id: string; name: string; roles: Role[]; isActive: boolean; isDeleted?: boolean; emailVerified?: boolean };
   actorIsSuper: boolean;
   isSelf: boolean;
   courses?: EnrollCourseOption[];
@@ -138,6 +138,14 @@ export function UserActions({
     });
   }
 
+  function unblockEmail() {
+    startTransition(async () => {
+      const res = await verifyUserEmailManually(user.id);
+      setMsg(res.ok ? { ok: true, text: res.message ?? "Compte débloqué." } : { ok: false, text: res.error });
+      if (res.ok) router.refresh();
+    });
+  }
+
   function impersonate() {
     startTransition(async () => {
       const res = await startImpersonation(user.id);
@@ -176,6 +184,23 @@ export function UserActions({
         <SlidersHorizontal size={13} />
         Rôles
       </button>
+
+      {/* Débloquer : valide l'email à la main (inscription/paiement possibles) */}
+      {user.emailVerified === false && !user.isDeleted && (
+        <button
+          type="button"
+          onClick={unblockEmail}
+          disabled={pending}
+          title="Valider l'email manuellement — débloque l'inscription et le paiement"
+          className={cn(
+            "inline-flex items-center gap-1.5 rounded-lg border border-warning/30 bg-warning/[0.06] px-2.5 py-1.5 text-xs font-semibold text-[#b45309] transition-colors hover:bg-warning/[0.12]",
+            pending && "cursor-not-allowed opacity-40",
+          )}
+        >
+          {pending ? <Loader2 size={13} className="animate-spin" /> : <MailCheck size={13} />}
+          Débloquer
+        </button>
+      )}
 
       {/* Inscrire à une formation (accès administrateur) */}
       {canEnroll && (

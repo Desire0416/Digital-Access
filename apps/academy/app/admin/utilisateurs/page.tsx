@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Search, Users } from "lucide-react";
 import { Avatar } from "@da/ui";
 import type { Role } from "@da/academy-db/client";
@@ -159,20 +160,30 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
                   {users.map((u) => (
                     <tr key={u.id} className="transition-colors hover:bg-surface-secondary/50">
                       <td className="px-5 py-3">
-                        <div className="flex items-center gap-3">
+                        <Link href={`/admin/utilisateurs/${u.id}`} className="group flex items-center gap-3">
                           <Avatar name={u.name} src={u.avatar ?? undefined} className="h-9 w-9 shrink-0" />
                           <div className="min-w-0">
-                            <p className="truncate font-semibold text-navy">{u.name}</p>
+                            <p className="truncate font-semibold text-navy group-hover:text-brand-blue-royal">{u.name}</p>
                             <p className="truncate text-xs text-text-muted">{u.email}</p>
                           </div>
-                        </div>
+                        </Link>
                       </td>
                       <td className="px-4 py-3"><RoleChips roles={u.roles} /></td>
                       <td className="px-4 py-3">
-                        <StatusPill
-                          label={u.deletedAt ? "Supprimé" : u.isActive ? "Actif" : "Inactif"}
-                          tone={u.deletedAt ? "danger" : u.isActive ? "success" : "neutral"}
-                        />
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <StatusPill
+                            label={u.deletedAt ? "Supprimé" : u.isActive ? "Actif" : "Inactif"}
+                            tone={u.deletedAt ? "danger" : u.isActive ? "success" : "neutral"}
+                          />
+                          {!u.emailVerified && !u.deletedAt && (
+                            <span
+                              title="Ne peut ni s'inscrire ni payer tant que l'email n'est pas validé"
+                              className="rounded-full bg-warning/10 px-2 py-0.5 text-[10px] font-semibold text-[#b45309]"
+                            >
+                              Email non vérifié
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td className="px-4 py-3 text-xs text-text-secondary">
                         {u._count.enrollments} formation{u._count.enrollments > 1 ? "s" : ""}
@@ -180,7 +191,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
                       <td className="px-4 py-3 text-xs text-text-secondary">{dateFmt.format(u.createdAt)}</td>
                       <td className="px-5 py-3">
                         <UserActions
-                          user={{ id: u.id, name: u.name, roles: u.roles, isActive: u.isActive, isDeleted: !!u.deletedAt }}
+                          user={{ id: u.id, name: u.name, roles: u.roles, isActive: u.isActive, isDeleted: !!u.deletedAt, emailVerified: !!u.emailVerified }}
                           actorIsSuper={actorIsSuper}
                           isSelf={u.id === me?.id}
                           courses={enrollCourses}
@@ -199,8 +210,10 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
                   <div className="flex items-start gap-3">
                     <Avatar name={u.name} src={u.avatar ?? undefined} className="h-10 w-10 shrink-0" />
                     <div className="min-w-0 flex-1">
-                      <p className="truncate font-semibold text-navy">{u.name}</p>
-                      <p className="truncate text-xs text-text-muted">{u.email}</p>
+                      <Link href={`/admin/utilisateurs/${u.id}`} className="block">
+                        <p className="truncate font-semibold text-navy">{u.name}</p>
+                        <p className="truncate text-xs text-text-muted">{u.email}</p>
+                      </Link>
                       <div className="mt-2"><RoleChips roles={u.roles} /></div>
                       <div className="mt-2 flex items-center gap-2 text-xs text-text-secondary">
                         <StatusPill label={u.deletedAt ? "Supprimé" : u.isActive ? "Actif" : "Inactif"} tone={u.deletedAt ? "danger" : u.isActive ? "success" : "neutral"} />
@@ -211,7 +224,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
                   </div>
                   <div className="mt-3">
                     <UserActions
-                      user={{ id: u.id, name: u.name, roles: u.roles, isActive: u.isActive, isDeleted: !!u.deletedAt }}
+                      user={{ id: u.id, name: u.name, roles: u.roles, isActive: u.isActive, isDeleted: !!u.deletedAt, emailVerified: !!u.emailVerified }}
                       actorIsSuper={actorIsSuper}
                       isSelf={u.id === me?.id}
                       courses={enrollCourses}

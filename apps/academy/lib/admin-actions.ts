@@ -491,7 +491,7 @@ export async function toggleUserActive(userId: string): Promise<AdminActionResul
 
   const target = await prisma.user.findUnique({
     where: { id: parsed.data },
-    select: { id: true, name: true, roles: true, isActive: true },
+    select: { id: true, name: true, roles: true, isActive: true, emailVerified: true },
   });
   if (!target) return { ok: false, error: "Utilisateur introuvable." };
   if (target.id === admin.id) return { ok: false, error: "Vous ne pouvez pas désactiver votre propre compte." };
@@ -500,11 +500,55 @@ export async function toggleUserActive(userId: string): Promise<AdminActionResul
   }
 
   const next = !target.isActive;
-  await prisma.user.update({ where: { id: target.id }, data: { isActive: next } });
+  // ACTIVATION MANUELLE = compte PLEINEMENT utilisable. L'inscription et le
+  // paiement exigent `emailVerified` : sans cette validation, un compte activé
+  // à la main restait bloqué sur « Confirmez votre adresse email ».
+  // L'admin se porte garant du compte : on valide donc aussi l'email.
+  const alsoVerify = next && !target.emailVerified;
+  await prisma.user.update({
+    where: { id: target.id },
+    data: { isActive: next, ...(alsoVerify ? { emailVerified: new Date() } : {}) },
+  });
   await audit(admin.id, next ? "user.activate" : "user.deactivate", "User", target.id);
+  if (alsoVerify) await audit(admin.id, "user.email_verified_by_admin", "User", target.id);
 
   revalidatePath("/admin/utilisateurs");
-  return { ok: true, message: `${target.name} ${next ? "réactivé(e)" : "désactivé(e)"}.` };
+  revalidatePath(`/admin/utilisateurs/${target.id}`);
+  return {
+    ok: true,
+    message: `${target.name} ${next ? "activé(e)" : "désactivé(e)"}${alsoVerify ? " — email validé, le compte est pleinement utilisable." : "."}`,
+  };
+}
+
+/**
+ * Valide MANUELLEMENT l'adresse email d'un compte (sans toucher à l'activation).
+ * Utile pour débloquer un inscrit qui n'a pas reçu / pas cliqué le lien de
+ * confirmation : l'inscription et le paiement redeviennent immédiatement possibles.
+ */
+export async function verifyUserEmailManually(userId: string): Promise<AdminActionResult> {
+  const parsed = z.string().min(1).safeParse(userId);
+  if (!parsed.success) return { ok: false, error: "Utilisateur invalide." };
+  const admin = await requireAdminFresh();
+  if (!admin) return DENIED;
+
+  const target = await prisma.user.findUnique({
+    where: { id: parsed.data },
+    select: { id: true, name: true, emailVerified: true, isActive: true, deletedAt: true },
+  });
+  if (!target || target.deletedAt) return { ok: false, error: "Utilisateur introuvable." };
+  if (target.emailVerified && target.isActive) {
+    return { ok: false, error: "Ce compte est déjà vérifié et actif." };
+  }
+
+  await prisma.user.update({
+    where: { id: target.id },
+    data: { emailVerified: target.emailVerified ?? new Date(), isActive: true },
+  });
+  await audit(admin.id, "user.email_verified_by_admin", "User", target.id);
+
+  revalidatePath("/admin/utilisateurs");
+  revalidatePath(`/admin/utilisateurs/${target.id}`);
+  return { ok: true, message: `Compte de ${target.name} débloqué : email validé et compte actif.` };
 }
 
 /** Suppression LOGIQUE d'un compte (rétention). Réservé au SUPER_ADMIN. */
