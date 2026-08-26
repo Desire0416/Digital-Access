@@ -180,6 +180,84 @@ export async function listUsersAdmin(filters: { q?: string; role?: Role } = {}) 
   });
 }
 
+/** Fiche détaillée d'un utilisateur pour l'admin : profil complet + engagement. */
+export async function getUserDetailAdmin(userId: string) {
+  await guard();
+  return prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      firstName: true,
+      lastName: true,
+      name: true,
+      email: true,
+      avatar: true,
+      bio: true,
+      country: true,
+      phone: true,
+      objective: true,
+      experienceLevel: true,
+      roles: true,
+      emailVerified: true,
+      isActive: true,
+      deletedAt: true,
+      lastActiveAt: true,
+      createdAt: true,
+      updatedAt: true,
+      enrollments: {
+        orderBy: { enrolledAt: "desc" },
+        take: 50,
+        select: {
+          id: true,
+          status: true,
+          progress: true,
+          enrolledAt: true,
+          completedAt: true,
+          course: { select: { title: true, slug: true } },
+        },
+      },
+      cohortMemberships: {
+        orderBy: { joinedAt: "desc" },
+        take: 20,
+        select: { id: true, status: true, joinedAt: true, cohort: { select: { name: true, slug: true } } },
+      },
+      payments: {
+        orderBy: { createdAt: "desc" },
+        take: 20,
+        select: {
+          id: true,
+          amount: true,
+          currency: true,
+          status: true,
+          provider: true,
+          reference: true,
+          createdAt: true,
+          course: { select: { title: true } },
+        },
+      },
+      certificates: {
+        orderBy: { issuedAt: "desc" },
+        take: 20,
+        select: { id: true, type: true, status: true, issuedAt: true, verifyCode: true, course: { select: { title: true } } },
+      },
+      _count: {
+        select: {
+          enrollments: true,
+          certificates: true,
+          payments: true,
+          attempts: true,
+          submissions: true,
+          reviews: true,
+          notifications: true,
+          cohortMemberships: true,
+        },
+      },
+    },
+  });
+}
+
+export type AdminUserDetail = NonNullable<Awaited<ReturnType<typeof getUserDetailAdmin>>>;
+
 export async function listPaymentsAdmin(filters: { status?: PaymentStatus } = {}) {
   await guard();
   return prisma.payment.findMany({

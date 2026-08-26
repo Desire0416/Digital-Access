@@ -4,6 +4,7 @@ import { siteConfig } from "@/lib/site";
 import { currentUser } from "@/lib/guards";
 import { ImpersonationBanner } from "@/components/ImpersonationBanner";
 import { MobileChrome } from "@/components/MobileChrome";
+import { VisitTracker } from "@/components/VisitTracker";
 import "./globals.css";
 
 // Plateforme vivante : rendu dynamique (données réelles à chaque requête).
@@ -62,6 +63,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <ImpersonationBanner />
         {children}
         <MobileChrome roles={user?.roles ?? []} authed={!!user} />
+        <VisitTracker />
       </body>
     </html>
   );

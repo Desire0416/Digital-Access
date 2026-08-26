@@ -96,6 +96,8 @@ model User {
   ticketMessages        TicketMessage[]        @relation("TicketMessageAuthor")
   mentorAssignments     MentorAssignment[]     @relation("MentorOf")
   mentorships           MentorAssignment[]     @relation("MenteeOf")
+  reengagementReceived  ReengagementMessage[]  @relation("ReengagementTarget")
+  reengagementSent      ReengagementMessage[]  @relation("ReengagementSender")
 }
 
 enum TokenType {
@@ -1548,4 +1550,41 @@ model CareerPathProgram {
 
   @@id([careerPathId, programId])
   @@index([programId])
+}
+
+// ─── Analytics de fréquentation (compteur de visites back-office) ────────────
+// Une ligne par vue de page (navigation), anonyme ou rattachée à un compte.
+// `sessionId` (cookie da_sid) approxime le visiteur unique. Aucune donnée
+// personnelle au-delà de l'identifiant de compte éventuel.
+model PageView {
+  id        String   @id @default(cuid())
+  path      String
+  userId    String? // null = visiteur anonyme (non connecté)
+  sessionId String // cookie da_sid — visiteur unique (approximatif)
+  referrer  String?
+  device    String? // "mobile" | "desktop"
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([sessionId])
+  @@index([userId])
+}
+
+// ─── Messages de relance (réengagement des inscrits inactifs, assistés par IA) ─
+// Journal des relances générées par l'IA et envoyées (email et/ou notification
+// in-app) à un utilisateur qui ne s'est pas encore connecté ou n'est pas revenu.
+model ReengagementMessage {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation("ReengagementTarget", fields: [userId], references: [id], onDelete: Cascade)
+  channel   String // "EMAIL" | "IN_APP" | "BOTH"
+  subject   String
+  body      String
+  emailSent Boolean  @default(false)
+  sentById  String?
+  sentBy    User?    @relation("ReengagementSender", fields: [sentById], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
 }

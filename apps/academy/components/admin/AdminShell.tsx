@@ -31,6 +31,8 @@ import {
   HelpCircle,
   ChevronDown,
   Compass,
+  BarChart3,
+  MailPlus,
 } from "lucide-react";
 import { cn, Avatar } from "@da/ui";
 
@@ -278,7 +280,10 @@ export function AdminShell({
     () => [
       {
         title: "Pilotage",
-        items: [{ label: "Tableau de bord", href: "/admin", icon: LayoutDashboard, exact: true }],
+        items: [
+          { label: "Tableau de bord", href: "/admin", icon: LayoutDashboard, exact: true },
+          { label: "Fréquentation", href: "/admin/analytics", icon: BarChart3 },
+        ],
       },
       {
         title: "Contenus",
@@ -315,6 +320,7 @@ export function AdminShell({
         title: "Comptes & validations",
         items: [
           { label: "Utilisateurs", href: "/admin/utilisateurs", icon: Users },
+          { label: "Relance inscrits", href: "/admin/relance", icon: MailPlus },
           { label: "Mentorat", href: "/admin/mentorat", icon: Compass },
           { label: "Équivalences", href: "/admin/equivalences", icon: BadgeCheck, badge: pendingEquivalences || undefined },
           { label: "Certificats", href: "/admin/certificats", icon: Award },
