@@ -80,6 +80,40 @@ export async function supervisedCourseIds(userId: string): Promise<string[]> {
   return (await supervisedScope(userId)).courseIds;
 }
 
+/**
+ * Réciproque : qui encadre CETTE formation ? Réunit les formateurs assignés
+ * directement (CourseInstructor) et les encadrants des cohortes qui la ciblent
+ * (CohortInstructor). Sert à prévenir les bonnes personnes d'un dépôt de devoir.
+ */
+export async function courseSupervisors(
+  courseId: string,
+): Promise<{ id: string; name: string; email: string }[]> {
+  const [direct, viaCohort] = await Promise.all([
+    prisma.courseInstructor.findMany({
+      where: { courseId },
+      select: { user: { select: { id: true, name: true, email: true, deletedAt: true } } },
+    }),
+    prisma.cohortInstructor.findMany({
+      where: {
+        cohort: {
+          OR: [
+            { courseId },
+            { careerPath: { courses: { some: { courseId } } } },
+          ],
+        },
+      },
+      select: { user: { select: { id: true, name: true, email: true, deletedAt: true } } },
+    }),
+  ]);
+
+  const byId = new Map<string, { id: string; name: string; email: string }>();
+  for (const { user } of [...direct, ...viaCohort]) {
+    if (!user || user.deletedAt) continue;
+    byId.set(user.id, { id: user.id, name: user.name, email: user.email });
+  }
+  return [...byId.values()];
+}
+
 /** Ce formateur supervise-t-il cette formation ? (assignation directe OU cohorte) */
 export async function isCourseSupervised(userId: string, courseId: string | null): Promise<boolean> {
   if (!courseId) return false;

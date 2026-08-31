@@ -7,6 +7,8 @@ import { requireAdminFresh, requireCourseEditor, currentUserFresh, isAdmin, hasR
 import { createNotification } from "./notify";
 import { revokeCertificate, restoreCertificate } from "./certification";
 import { searchUsersForCourse } from "./admin-queries";
+import { sendEnrollmentGrantedEmail } from "@da/email";
+import { siteConfig } from "./site";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Back-office — MUTATIONS (cahier §30, workflow §31). Chaque mutation passe
@@ -607,7 +609,10 @@ export async function adminEnrollUserInCourse(userId: string, courseId: string):
   if (!admin) return DENIED;
 
   const [user, course] = await Promise.all([
-    prisma.user.findFirst({ where: { id: parsed.data.userId, deletedAt: null }, select: { id: true, name: true } }),
+    prisma.user.findFirst({
+      where: { id: parsed.data.userId, deletedAt: null },
+      select: { id: true, name: true, email: true },
+    }),
     prisma.course.findUnique({ where: { id: parsed.data.courseId }, select: { id: true, title: true, slug: true } }),
   ]);
   if (!user) return { ok: false, error: "Utilisateur introuvable ou supprimé." };
@@ -640,6 +645,18 @@ export async function adminEnrollUserInCourse(userId: string, courseId: string):
     message: `Un administrateur vous a inscrit·e à « ${course.title} ». Bonne formation !`,
     link: `/apprendre/${course.slug}`,
   });
+
+  // L'apprenant doit être prévenu PAR EMAIL : sans cela, une inscription faite
+  // depuis le back-office resterait totalement invisible pour lui. Non bloquant.
+  try {
+    await sendEnrollmentGrantedEmail(user.email, {
+      name: user.name,
+      courseTitle: course.title,
+      courseUrl: `${siteConfig.url}/apprendre/${course.slug}`,
+    });
+  } catch {
+    /* non bloquant */
+  }
 
   revalidatePath("/admin/utilisateurs");
   revalidatePath(`/admin/formations/${course.id}`);

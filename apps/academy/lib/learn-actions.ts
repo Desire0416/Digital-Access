@@ -9,7 +9,9 @@ import { ACQUIRED_STATUSES, computeCareerPathPricing } from "./pricing";
 import { issueCourseCertificate, issueCareerPathCertificate } from "./certification";
 import { createNotification } from "./notify";
 import { getPrerequisiteStatus, unmetPrerequisitesMessage } from "./prerequisites";
-import { supervisedScope, isCourseSupervised } from "./supervision";
+import { supervisedScope, isCourseSupervised, courseSupervisors } from "./supervision";
+import { sendAssignmentSubmittedEmail } from "@da/email";
+import { siteConfig } from "./site";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Actions apprenant — inscriptions, progression, quiz, projets (cahier §16-19).
@@ -1027,7 +1029,11 @@ export async function submitAssignment(
 
   const assessment = await prisma.assessment.findUnique({
     where: { id: idParsed.data },
-    select: { id: true, title: true, type: true, status: true, attemptsAllowed: true, courseId: true },
+    select: {
+      id: true, title: true, type: true, status: true, attemptsAllowed: true, courseId: true,
+      module: { select: { title: true } },
+      course: { select: { title: true } },
+    },
   });
   if (!assessment || assessment.status !== "PUBLISHED" || assessment.type !== "ASSIGNMENT") {
     return { ok: false, error: "Devoir introuvable." };
@@ -1056,18 +1062,55 @@ export async function submitAssignment(
     return { ok: false, error: `Nombre maximal de dépôts atteint (${assessment.attemptsAllowed}).` };
   }
 
-  await prisma.assessmentAttempt.create({
+  const attemptNumber = (previous[0]?.attemptNumber ?? 0) + 1;
+  const attempt = await prisma.assessmentAttempt.create({
     data: {
       assessmentId: assessment.id,
       userId: user.id,
-      attemptNumber: (previous[0]?.attemptNumber ?? 0) + 1,
+      attemptNumber,
       content: content || null,
       links,
       files,
       status: "SUBMITTED",
       submittedAt: new Date(),
     },
+    select: { id: true },
   });
+
+  // Prévient les encadrants de la formation (assignation directe OU cohorte) :
+  // notification in-app + email. Non bloquant — un échec d'envoi ne doit jamais
+  // faire échouer le dépôt de l'apprenant.
+  try {
+    const supervisors = await courseSupervisors(assessment.courseId);
+    if (supervisors.length) {
+      const reviewUrl = `${siteConfig.url}/correction/devoir/${attempt.id}`;
+      await Promise.all([
+        ...supervisors.map((s) =>
+          createNotification({
+            userId: s.id,
+            type: "ASSESSMENT",
+            title: "Nouveau devoir à corriger",
+            message: `${user.name} a déposé son travail pour « ${assessment.title} ».`,
+            link: `/correction/devoir/${attempt.id}`,
+          }),
+        ),
+        sendAssignmentSubmittedEmail(
+          supervisors.map((s) => s.email),
+          {
+            instructorName: supervisors.length === 1 ? supervisors[0].name : "chers formateurs",
+            learnerName: user.name,
+            assignmentTitle: assessment.title,
+            courseTitle: assessment.course.title,
+            moduleTitle: assessment.module?.title ?? null,
+            attemptNumber,
+            reviewUrl,
+          },
+        ),
+      ]);
+    }
+  } catch {
+    /* non bloquant */
+  }
 
   await createNotification({
     userId: user.id,

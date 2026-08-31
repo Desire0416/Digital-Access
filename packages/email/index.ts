@@ -10,6 +10,8 @@ import {
   paymentRejectedEmail,
   certificateEmail,
   invoiceEmail,
+  assignmentSubmittedEmail,
+  enrollmentGrantedEmail,
 } from "./src/templates";
 
 export { sendEmail } from "./src/send";
@@ -76,6 +78,24 @@ export function sendInvoiceEmail(
 ) {
   const { invoiceId, ...rest } = data;
   const { subject, html } = invoiceEmail({ ...rest, invoiceUrl: `${WEB_URL()}/factures/${invoiceId}` });
+  return sendEmail({ to, subject, html });
+}
+
+/** Prévient le(s) formateur(s) qu'un devoir vient d'être déposé. */
+export function sendAssignmentSubmittedEmail(
+  to: string | string[],
+  data: Parameters<typeof assignmentSubmittedEmail>[0],
+) {
+  const { subject, html } = assignmentSubmittedEmail(data);
+  return sendEmail({ to, subject, html });
+}
+
+/** Prévient l'apprenant qu'un accès à une formation vient de lui être ouvert. */
+export function sendEnrollmentGrantedEmail(
+  to: string,
+  data: Parameters<typeof enrollmentGrantedEmail>[0],
+) {
+  const { subject, html } = enrollmentGrantedEmail(data);
   return sendEmail({ to, subject, html });
 }
 

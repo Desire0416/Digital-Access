@@ -348,3 +348,51 @@ export function leadConfirmationEmail(opts: { name: string; reference: string })
     }),
   };
 }
+
+/** Au FORMATEUR : un apprenant vient de déposer un devoir à corriger. */
+export function assignmentSubmittedEmail(opts: {
+  instructorName: string;
+  learnerName: string;
+  assignmentTitle: string;
+  courseTitle: string;
+  moduleTitle?: string | null;
+  attemptNumber: number;
+  reviewUrl: string;
+}) {
+  const attempt =
+    opts.attemptNumber > 1
+      ? `<b>${opts.attemptNumber}<sup>e</sup> dépôt</b> de cet apprenant sur ce devoir`
+      : "premier dépôt";
+  return {
+    subject: `📥 Nouveau devoir à corriger — ${opts.learnerName} · ${opts.assignmentTitle}`,
+    html: layout({
+      heading: `Un livrable vous attend, ${opts.instructorName}`,
+      body: `
+        ${p(`<b>${opts.learnerName}</b> vient de déposer son travail pour <b>${opts.assignmentTitle}</b>${opts.moduleTitle ? ` (${opts.moduleTitle})` : ""}, dans la formation <b>${opts.courseTitle}</b>. Il s'agit du ${attempt}.`)}
+        <div style="margin:24px 0;">${button(opts.reviewUrl, "Corriger ce livrable")}</div>
+        ${p(`<span style="color:${BRAND.muted};font-size:13.5px;">Chaque correction débloque la suite du parcours de l'apprenant : plus votre retour arrive vite, plus il reste dans son élan.</span>`)}
+      `,
+    }),
+  };
+}
+
+/** À L'APPRENANT : un accès à une formation vient de lui être ouvert. */
+export function enrollmentGrantedEmail(opts: {
+  name: string;
+  courseTitle: string;
+  courseUrl: string;
+  note?: string | null;
+}) {
+  return {
+    subject: `🎓 Votre accès à « ${opts.courseTitle} » est ouvert`,
+    html: layout({
+      heading: `Bonne nouvelle, ${opts.name} !`,
+      body: `
+        ${p(`Votre accès à la formation <b>${opts.courseTitle}</b> vient d'être activé. Vous pouvez commencer dès maintenant, à votre rythme, depuis n'importe quel appareil.`)}
+        ${opts.note ? p(opts.note) : ""}
+        <div style="margin:24px 0;">${button(opts.courseUrl, "Commencer la formation")}</div>
+        ${p(`<span style="color:${BRAND.muted};font-size:13.5px;">Votre progression est enregistrée automatiquement : vous pouvez interrompre et reprendre quand vous voulez. Une question ? Répondez simplement à cet email.</span>`)}
+      `,
+    }),
+  };
+}
