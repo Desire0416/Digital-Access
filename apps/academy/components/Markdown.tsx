@@ -1,8 +1,17 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { cn } from "@da/ui";
+import { isLessonBlock } from "./lesson-blocks/registry";
+import { LessonBlock } from "./lesson-blocks/LessonBlocks";
 
-/** Rendu markdown riche des chapitres — typographie soignée, tableaux, code. */
+/** Rendu markdown riche des chapitres — typographie soignée, tableaux, code.
+ *
+ *  Les blocs de code balisés `da-*` (da-etapes, da-quiz, da-comparatif,
+ *  da-checklist, da-onglets) sont rendus comme composants interactifs au lieu
+ *  d'un bloc de code. Tout autre langage garde le rendu habituel, et un bloc
+ *  `da-*` mal formé n'affiche rien plutôt que de casser la leçon.
+ *  Aucun HTML brut n'est interprété : le contenu reste non injectable.
+ */
 export function Markdown({
   children,
   className,
@@ -22,10 +31,37 @@ export function Markdown({
         "prose-pre:rounded-xl prose-pre:bg-surface-dark prose-pre:text-white/90",
         "prose-th:text-navy prose-td:text-navy/80",
         "prose-li:marker:text-brand-blue-vif",
+        "prose-img:rounded-xl prose-img:border prose-img:border-navy/[0.08]",
         className,
       )}
     >
-      <ReactMarkdown remarkPlugins={[remarkGfm]}>{children}</ReactMarkdown>
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        components={{
+          code({ className: cls, children: kids, ...props }) {
+            const lang = /language-(\S+)/.exec(cls || "")?.[1];
+            if (isLessonBlock(lang)) {
+              return <LessonBlock lang={lang!} source={String(kids)} />;
+            }
+            return (
+              <code className={cls} {...props}>
+                {kids}
+              </code>
+            );
+          },
+          // Un bloc interactif remplace le <pre> : sans cela il resterait
+          // encapsulé dans le fond sombre réservé au code.
+          pre({ children: kids }) {
+            const el = Array.isArray(kids) ? kids[0] : kids;
+            const cls = (el as { props?: { className?: string } })?.props?.className;
+            const lang = /language-(\S+)/.exec(cls || "")?.[1];
+            if (isLessonBlock(lang)) return <>{kids}</>;
+            return <pre>{kids}</pre>;
+          },
+        }}
+      >
+        {children}
+      </ReactMarkdown>
     </div>
   );
 }
