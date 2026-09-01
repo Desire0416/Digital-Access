@@ -9,6 +9,9 @@ export const LESSON_BLOCKS = [
   "da-comparatif",
   "da-checklist",
   "da-onglets",
+  "da-schema",
+  "da-anatomie",
+  "da-graphique",
 ] as const;
 
 export type LessonBlockName = (typeof LESSON_BLOCKS)[number];

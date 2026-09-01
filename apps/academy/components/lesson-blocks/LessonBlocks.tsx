@@ -12,6 +12,7 @@ import {
   Lightbulb,
 } from "lucide-react";
 import { cn } from "@da/ui";
+import { Schema, Anatomie, Graphique, type SchemaData, type AnatomieData, type GraphiqueData } from "./VisualBlocks";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Blocs interactifs de leçon (§12.2). Ils sont écrits dans le markdown du
@@ -383,6 +384,12 @@ export function LessonBlock({ lang, source }: { lang: string; source: string }) 
         return Array.isArray(d.items) && d.items.length ? <Checklist data={data as ChecklistData} /> : null;
       case "da-onglets":
         return Array.isArray(d.onglets) && d.onglets.length ? <Onglets data={data as OngletsData} /> : null;
+      case "da-schema":
+        return Array.isArray(d.etapes) && d.etapes.length ? <Schema data={data as SchemaData} /> : null;
+      case "da-anatomie":
+        return Array.isArray(d.zones) && d.zones.length ? <Anatomie data={data as AnatomieData} /> : null;
+      case "da-graphique":
+        return Array.isArray(d.barres) && d.barres.length ? <Graphique data={data as GraphiqueData} /> : null;
       default:
         return null;
     }
