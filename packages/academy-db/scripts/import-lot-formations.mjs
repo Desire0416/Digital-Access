@@ -33,6 +33,7 @@ const BLOCS = new Set(["da-etapes", "da-quiz", "da-comparatif", "da-checklist", 
    Un bloc invalide ne s'afficherait pas côté apprenant : on refuse d'importer. */
 function verifierBlocs() {
   const erreurs = [];
+  const reparations = [];
   let total = 0;
   const parLot = {};
   for (const lot of data.ecrits) {
@@ -46,13 +47,30 @@ function verifierBlocs() {
           parLot[lang] = (parLot[lang] || 0) + 1;
           if (!BLOCS.has(lang)) { erreurs.push(`${lot.slug} M${m.order} « ${l.title} » : bloc inconnu ${lang}`); continue; }
           try { JSON.parse(body); } catch (e) {
-            erreurs.push(`${lot.slug} M${m.order} « ${l.title} » : ${lang} JSON invalide (${e.message.slice(0, 60)})`);
+            const repare = lang === "da-comparatif" ? reparerComparatif(body) : null;
+            if (repare) {
+              l.content = l.content.replace(body, repare);
+              reparations.push(`${lot.slug} M${m.order} « ${l.title} » : ${lang} objet « gauche » refermé`);
+            } else {
+              erreurs.push(`${lot.slug} M${m.order} « ${l.title} » : ${lang} JSON invalide (${e.message.slice(0, 60)})`);
+            }
           }
         }
       }
     }
   }
-  return { total, parLot, erreurs };
+  return { total, parLot, erreurs, reparations };
+}
+
+/* Réparation ciblée d'une malformation récurrente : dans un bloc da-comparatif,
+   l'objet « gauche » n'est pas refermé avant « droite » (]  au lieu de ]} ).
+   Observée sur deux lots consécutifs. On ne répare QUE si le bloc est invalide
+   AVANT et devient valide APRÈS — toute autre erreur reste bloquante. */
+function reparerComparatif(corps) {
+  try { JSON.parse(corps); return null; } catch { /* invalide : on tente */ }
+  const tentative = corps.replace(/\](\s*),(\s*)"droite"/, "]}$1,$2\"droite\"");
+  if (tentative === corps) return null;
+  try { JSON.parse(tentative); return tentative; } catch { return null; }
 }
 
 const LESSON_TYPES = new Set(["TEXT", "WORKSHOP", "LAB", "CASE_STUDY"]);
@@ -63,6 +81,11 @@ async function main() {
 
   const ctrl = verifierBlocs();
   console.log(`Blocs interactifs : ${ctrl.total}`, JSON.stringify(ctrl.parLot));
+  if (ctrl.reparations.length) {
+    console.log(`
+⚠️  ${ctrl.reparations.length} bloc(s) réparé(s) automatiquement :`);
+    ctrl.reparations.forEach((r) => console.log("   -", r));
+  }
   if (ctrl.erreurs.length) {
     console.error(`\n❌ ${ctrl.erreurs.length} bloc(s) invalide(s) — import annulé :`);
     ctrl.erreurs.slice(0, 20).forEach((e) => console.error("   -", e));
