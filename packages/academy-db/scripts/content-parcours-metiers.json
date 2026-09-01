@@ -1,0 +1,446 @@
+[
+ {
+  "description": "Le parcours qui forme un **assistant administratif numérique** immédiatement opérationnel : poste de travail et Internet maîtrisés, documents Word irréprochables, tableaux de suivi Excel, classement et nommage des fichiers, messagerie professionnelle, tenue de l'agenda, organisation des réunions et rédaction des comptes rendus, jusqu'à la rédaction administrative (courriers, notes de service, procédures). Sept formations s'enchaînent du plus simple au plus avancé, puis un projet final reconstitue le secrétariat complet d'une structure ivoirienne. Chaque formation validée reste acquise définitivement — si vous avez déjà validé une brique, elle est reconnue et déduite du prix du parcours.",
+  "missions": [
+   "Traiter le courrier entrant et sortant, électronique comme physique, et l'orienter vers les bons interlocuteurs",
+   "Produire les documents officiels de la structure : courriers, notes de service, rapports et modèles réutilisables",
+   "Tenir les tableaux de suivi Excel : présences, fournitures, dépenses et échéances",
+   "Gérer l'agenda de la direction, préparer les réunions et en rédiger les comptes rendus",
+   "Classer, nommer et archiver les fichiers pour qu'un dossier se retrouve en moins d'une minute",
+   "Assurer la circulation de l'information entre la direction, les équipes et les partenaires externes"
+  ],
+  "outcomes": [
+   "La certification métier interne Access Academy « Assistant administratif numérique » — une attestation de réussite délivrée par l’académie, ni diplôme d’État ni certification officielle",
+   "Sept certificats de formation, un pour chaque brique validée du parcours",
+   "Un portfolio administratif complet : plan de classement, modèles de courrier, classeur de suivi, comptes rendus",
+   "Une bibliothèque de modèles prêts à l'emploi, réutilisables dès le premier jour en poste",
+   "Les réflexes du secrétariat moderne : nommage rigoureux, relecture systématique, confidentialité et traçabilité des échanges"
+  ],
+  "phases": [
+   {
+    "title": "Fondations",
+    "description": "Prendre en main l'ordinateur, le système de fichiers et Internet — le socle sans lequel aucun outil bureautique ne s'apprend sereinement.",
+    "courseSlugs": [
+     "initiation-a-lordinateur-et-a-internet"
+    ]
+   },
+   {
+    "title": "Compétences principales",
+    "description": "Produire les documents, tenir les tableaux de suivi et organiser les fichiers de la structure : le cœur du travail administratif quotidien.",
+    "courseSlugs": [
+     "microsoft-word-professionnel",
+     "excel-pour-les-activites-administratives",
+     "gestion-documentaire-et-organisation-des-fichiers"
+    ]
+   },
+   {
+    "title": "Spécialisation",
+    "description": "Tenir le poste de secrétariat lui-même : messagerie professionnelle, agenda, préparation des réunions et comptes rendus diffusés dans les délais.",
+    "courseSlugs": [
+     "messagerie-et-communication-administrative",
+     "gestion-dagenda-reunions-et-comptes-rendus"
+    ]
+   },
+   {
+    "title": "Professionnalisation",
+    "description": "Écrire comme l'administration l'attend : courriers officiels, notes de service et procédures, avec le ton, la structure et les formules justes.",
+    "courseSlugs": [
+     "redaction-administrative-professionnelle"
+    ]
+   },
+   {
+    "title": "Projet final",
+    "description": "Reprendre le secrétariat complet d'une structure ivoirienne, le réorganiser de bout en bout et le défendre en soutenance.",
+    "courseSlugs": []
+   }
+  ],
+  "project": {
+   "title": "Le secrétariat numérique d'une structure ivoirienne",
+   "context": "## Le projet final du parcours Assistant administratif numérique\n\nVous prenez le poste d'assistant administratif dans une structure ivoirienne de votre choix : PME d'Abidjan, coopérative agricole de Daloa, cabinet médical de Bouaké ou école privée de Yopougon. Vous héritez d'un secrétariat désorganisé : des fichiers « Copie de rapport final (2).docx » éparpillés sur le bureau, une boîte mail où les demandes se perdent, des réunions sans compte rendu, des courriers rédigés au cas par cas et un suivi des dépenses tenu sur papier.\n\nVotre mission : **remettre à plat toute l'organisation administrative**, puis la faire tourner sur un mois type — courrier entrant, agenda, réunions, tableaux de suivi et classement — en mobilisant l'ensemble des compétences du parcours.\n\nProjet individuel, 3 à 4 semaines. Chaque document produit doit être réutilisable par la structure après votre départ, et chaque choix d'organisation doit être justifié en soutenance.",
+   "deliverables": [
+    "Plan de classement complet : arborescence des dossiers, règle de nommage écrite et procédure d'archivage",
+    "Trois modèles Word verrouillés et prêts à l'emploi : courrier officiel, note de service, compte rendu de réunion",
+    "Classeur Excel de suivi (dépenses, fournitures, échéances) avec formules, mise en forme conditionnelle et mode d'emploi",
+    "Boîte mail professionnelle réorganisée : dossiers, règles de tri, signature et cinq réponses types documentées",
+    "Agenda du mois type et convocation d'une réunion avec son ordre du jour et sa liste de diffusion",
+    "Compte rendu d'une réunion réelle ou simulée, rédigé puis diffusé selon la procédure définie",
+    "Courrier officiel et note de service rédigés, relus et corrigés selon une grille de rédaction administrative",
+    "Soutenance de 15 minutes devant jury : démonstration en direct du poste de travail réorganisé"
+   ]
+  },
+  "slug": "assistant-administratif-numerique",
+  "sumOfCoursePrices": 95000,
+  "suggestedPrice": 75000
+ },
+ {
+  "description": "Le **Gestionnaire documentaire numérique** met de l'ordre dans les documents d'une organisation : il classe, nomme, modélise, collecte, partage et archive.\n\nEn 4 mois, vous partez des bases de l'ordinateur et d'Internet, puis vous installez le cœur du métier : une arborescence de classement tenable et des documents professionnels propres. Vous passez ensuite à la collecte structurée par formulaires, aux modèles réutilisables et au partage sécurisé dans le cloud, avant de professionnaliser vos réflexes de travail en équipe.\n\nChaque formation validée reste acquise définitivement : si vous avez déjà validé une brique de ce parcours, elle est reconnue et déduite du prix du parcours.",
+  "missions": [
+   "Concevoir et faire vivre le plan de classement d'une organisation : arborescence, règles de nommage, gestion des versions.",
+   "Produire les documents officiels de la structure — courriers, notes de service, rapports, comptes rendus — avec une mise en forme constante.",
+   "Créer des modèles réutilisables pour que toute l'équipe produise des documents de même qualité, sans repartir d'une page blanche.",
+   "Collecter les informations du terrain au moyen de formulaires numériques et en tirer des données directement exploitables.",
+   "Organiser le partage dans le cloud : dossiers d'équipe, droits d'accès par rôle, coédition et sauvegardes.",
+   "Archiver, conserver et retrouver un document sur demande, y compris plusieurs mois après sa clôture."
+  ],
+  "optionalCourseSlugs": [
+   "initiation-a-lordinateur-et-a-internet"
+  ],
+  "outcomes": [
+   "Une attestation de réussite Access Academy « Gestionnaire documentaire numérique » — certificat interne à l'académie, qui n'est ni un diplôme d'État ni une certification officielle.",
+   "Le certificat de chaque formation validée, acquis définitivement et réutilisable dans un autre parcours.",
+   "Un portfolio concret : plan de classement, bibliothèque de modèles, formulaire de collecte et espace cloud organisé.",
+   "Un projet final complet, documenté et soutenu, présentable en entretien ou à un employeur.",
+   "Des réflexes de métier durables : nommer, versionner, restreindre les accès, sauvegarder et savoir retrouver."
+  ],
+  "phases": [
+   {
+    "title": "Fondations",
+    "description": "Vous sécurisez les bases — ordinateur, fichiers, navigateur, vocabulaire numérique — pour aborder la suite sans blocage.",
+    "courseSlugs": [
+     "initiation-a-lordinateur-et-a-internet"
+    ]
+   },
+   {
+    "title": "Le cœur du métier : classer et rédiger",
+    "description": "Vous installez un plan de classement tenable dans la durée et vous produisez des documents professionnels propres et cohérents.",
+    "courseSlugs": [
+     "gestion-documentaire-et-organisation-des-fichiers",
+     "microsoft-word-professionnel"
+    ]
+   },
+   {
+    "title": "Spécialisation : collecte, modèles et cloud",
+    "description": "Vous industrialisez le cycle de vie du document — formulaires de collecte, modèles réutilisables, partage et archivage dans le cloud.",
+    "courseSlugs": [
+     "formulaires-numeriques-et-collecte-de-donnees",
+     "creation-de-modeles-de-documents-professionnels",
+     "google-workspace-professionnel"
+    ]
+   },
+   {
+    "title": "Professionnalisation",
+    "description": "Vous apprenez à faire adopter vos règles par une équipe : conventions communes, coédition et suivi des demandes documentaires.",
+    "courseSlugs": [
+     "travail-collaboratif-et-outils-dequipe"
+    ]
+   },
+   {
+    "title": "Projet final",
+    "description": "Vous réorganisez de bout en bout la documentation d'une structure réelle, puis vous soutenez votre travail devant un jury interne.",
+    "courseSlugs": []
+   }
+  ],
+  "project": {
+   "title": "Refonte documentaire d'une coopérative agricole à Gagnoa",
+   "context": "Une coopérative de producteurs de cacao basée à **Gagnoa** regroupe environ 400 planteurs. Ses documents sont éparpillés : les contrats de livraison dorment dans un classeur papier, les fiches de pesée sont saisies au fil de l'eau sur deux ordinateurs du bureau, les comptes rendus d'assemblée générale circulent par WhatsApp et les reçus sont photographiés sur le téléphone du secrétaire. Personne ne sait quelle version du règlement intérieur fait foi, et la préparation de l'audit annuel mobilise le bureau pendant trois semaines.\n\nLa direction vous confie la refonte documentaire de la coopérative. Vous devez livrer un système que le secrétariat pourra tenir seul après votre départ : un classement clair, des documents produits à partir de modèles, une collecte des pesées qui ne repose plus sur des papiers volants, et un espace cloud partagé où le président, le secrétaire et le comptable trouvent chacun ce qui les concerne — sans se marcher dessus ni tout pouvoir supprimer.",
+   "deliverables": [
+    "Un audit de l'existant : inventaire des documents, de leurs formats, de leurs emplacements et des points de perte constatés.",
+    "Un plan de classement complet : arborescence, règles de nommage, politique de versions et durées de conservation.",
+    "Une bibliothèque de cinq modèles de documents (courrier officiel, note de service, compte rendu d'assemblée, fiche de pesée, reçu de livraison).",
+    "Un formulaire numérique de collecte des pesées, testé sur un lot de données réelles et alimentant un tableau exploitable.",
+    "Un espace cloud partagé structuré, accompagné d'une matrice des droits d'accès par rôle (président, secrétaire, comptable).",
+    "Une procédure écrite d'archivage et de sauvegarde, incluant un test de restauration documenté.",
+    "Un guide d'utilisation de quatre pages rédigé pour le secrétariat, avec captures d'écran et marche à suivre pas à pas.",
+    "Une soutenance de 15 minutes devant un jury interne Access Academy, avec démonstration en direct de la recherche d'un document demandé par le jury."
+   ]
+  },
+  "slug": "gestionnaire-documentaire-numerique",
+  "suggestedPrice": 75000,
+  "sumOfCoursePrices": 92500
+ },
+ {
+  "slug": "specialiste-bureautique-et-reporting",
+  "description": "Le parcours qui transforme une pratique approximative des outils bureautiques en **compétence professionnelle de production** : des documents Word irréprochables, des classeurs Excel fiables, des présentations qui portent un message — puis la vraie valeur ajoutée du métier : collecter des données propres, les consolider et produire chaque mois un tableau de bord que la direction lit en cinq minutes. Vous terminez en industrialisant votre travail avec une bibliothèque de modèles aux normes de votre organisation. Chaque formation validée reste acquise définitivement — si vous avez déjà validé une brique, elle est reconnue et déduite du prix du parcours.",
+  "missions": [
+   "Produire les documents officiels de l'organisation : courriers, notes de service, comptes rendus, rapports",
+   "Construire et maintenir les classeurs Excel de suivi (activités, budgets, stocks, présences)",
+   "Collecter des données fiables sur le terrain grâce à des formulaires numériques, puis les consolider",
+   "Concevoir des tableaux de bord et produire le reporting périodique attendu par la direction",
+   "Préparer les supports de présentation des réunions, comités de suivi et bilans d'activité",
+   "Créer et faire vivre une bibliothèque de modèles de documents aux normes de l'organisation"
+  ],
+  "outcomes": [
+   "La certification métier interne Access Academy « Spécialiste bureautique et reporting » — une attestation de réussite délivrée par l'académie, ni diplôme d'État ni certification officielle",
+   "Un certificat Access Academy pour chaque formation validée du parcours, acquis définitivement",
+   "Un portfolio démontrable : formulaire de collecte, classeur consolidé, tableau de bord mensuel et rapport mis en page",
+   "Un kit de modèles de documents réutilisables, prêt à être déployé dans votre structure dès le premier jour",
+   "Les réflexes de fiabilité du métier : données sourcées, formules contrôlées, mise en page cohérente, procédure transmissible"
+  ],
+  "phases": [
+   {
+    "title": "Fondations",
+    "description": "Sécuriser le socle — ordinateur, fichiers, navigateur et Internet — pour travailler sans blocage ni perte de données.",
+    "courseSlugs": [
+     "initiation-a-lordinateur-et-a-internet"
+    ]
+   },
+   {
+    "title": "Compétences principales",
+    "description": "Maîtriser en profondeur le trio du quotidien : Word pour les documents officiels, Excel pour les données, PowerPoint pour convaincre.",
+    "courseSlugs": [
+     "microsoft-word-professionnel",
+     "excel-pour-les-activites-administratives",
+     "powerpoint-professionnel"
+    ]
+   },
+   {
+    "title": "Spécialisation",
+    "description": "Passer de l'outil au métier : collecter des données fiables, puis les transformer en tableaux de bord et en reporting lisible par la direction.",
+    "courseSlugs": [
+     "formulaires-numeriques-et-collecte-de-donnees",
+     "rapports-tableaux-de-bord-et-reporting-administratif"
+    ]
+   },
+   {
+    "title": "Professionnalisation",
+    "description": "Industrialiser sa production avec des modèles de documents normalisés qui font gagner du temps à toute l'équipe.",
+    "courseSlugs": [
+     "creation-de-modeles-de-documents-professionnels"
+    ]
+   },
+   {
+    "title": "Projet final",
+    "description": "Construire la chaîne complète collecte → tableau de bord → rapport pour une organisation ivoirienne, puis la défendre en soutenance.",
+    "courseSlugs": []
+   }
+  ],
+  "project": {
+   "title": "La chaîne de reporting d'une coopérative agricole du Gbêkê",
+   "context": "## Le projet final du parcours Spécialiste bureautique et reporting\n\nVous intervenez pour une coopérative agricole de la région du Gbêkê, près de Bouaké, qui regroupe des centaines de producteurs d'anacarde. Les livraisons sont notées sur des cahiers, chaque agent de terrain tient son propre fichier, les courriers officiels sont retapés à chaque fois et le rapport mensuel au conseil arrive avec des semaines de retard.\n\nVotre mission : **construire la chaîne complète, de la collecte de terrain au tableau de bord de direction**, et la rendre tenable par une équipe qui n'est pas informaticienne.\n\n## Périmètre imposé\n\n1. Un formulaire numérique de collecte utilisable sur téléphone par les agents, avec règles de saisie.\n2. Un classeur Excel de consolidation : données brutes séparées des calculs, contrôles de cohérence.\n3. Un tableau de bord mensuel : indicateurs justifiés, graphiques lisibles, commentaire d'analyse.\n4. Le rapport d'activité et les modèles de documents officiels aux normes de la coopérative.\n5. La restitution au conseil d'administration et le mode d'emploi laissé à l'équipe.\n\nProjet individuel, 3 à 4 semaines, sur un jeu de données fourni ou anonymisé.",
+   "deliverables": [
+    "Formulaire numérique de collecte terrain : questions, règles de saisie, export exploitable",
+    "Classeur Excel de consolidation : feuille de données brutes, feuille de calcul, contrôles de cohérence documentés",
+    "Tableau de bord mensuel : six indicateurs clés justifiés, graphiques lisibles et commentaire d'analyse",
+    "Rapport mensuel d'activité rédigé et mis en page sous Word, aux normes de la coopérative",
+    "Bibliothèque de quatre modèles de documents (courrier, note de service, compte rendu, rapport) prêts à l'emploi",
+    "Support PowerPoint de restitution au conseil d'administration, dix diapositives maximum",
+    "Mode d'emploi de la chaîne de reporting, rédigé pour une personne qui ne l'a pas construite",
+    "Soutenance finale de 15 minutes avec démonstration en direct du formulaire, du classeur et du tableau de bord"
+   ]
+  },
+  "optionalCourseSlugs": [
+   "initiation-a-lordinateur-et-a-internet"
+  ],
+  "sumOfCoursePrices": 100000,
+  "suggestedPrice": 79000
+ },
+ {
+  "description": "Le parcours qui transforme des compétences bureautiques éparses en un **véritable poste d'assistant virtuel**, exercé à distance pour plusieurs clients à la fois. Vous partez de la culture numérique professionnelle, puis vous prenez en main le quotidien du métier : messagerie et courriers, agendas, réunions et comptes rendus, suivi des tâches sous Notion et Trello. Vous entrez ensuite dans les environnements collaboratifs des clients avec Google Workspace et dans les règles du travail à distance, avant d'automatiser les tâches répétitives grâce à l'IA de productivité. Le tout se conclut par une mission complète menée pour une organisation ivoirienne, défendue en soutenance. Chaque formation validée reste acquise définitivement — si vous avez déjà validé une brique, elle est reconnue et déduite du prix du parcours.",
+  "missions": [
+   "Gérer la messagerie professionnelle de plusieurs clients : tri, réponses, relances et modèles de courriers",
+   "Tenir les agendas, organiser les réunions en ligne et produire les comptes rendus qui en découlent",
+   "Suivre les tâches, les échéances et les projets de chaque client dans Notion et Trello",
+   "Administrer les espaces collaboratifs des clients : fichiers partagés, règles de nommage, droits d'accès",
+   "Automatiser les tâches répétitives et s'appuyer sur l'IA de productivité pour tenir les délais",
+   "Rendre compte de son activité à distance : point d'avancement, temps passé et livrables par client"
+  ],
+  "outcomes": [
+   "Une attestation de réussite du parcours « Assistant virtuel professionnel », délivrée par Access Academy (certificat interne, sans valeur de diplôme d'État)",
+   "Les certificats de réussite de chaque formation suivie, acquis définitivement et réutilisables dans d'autres parcours",
+   "Un portfolio d'assistance virtuelle : espace de travail livré, procédures documentées, modèles de courriers et de comptes rendus",
+   "Une trousse d'outils prête à l'emploi : arborescence de fichiers, tableaux de suivi, automatisations et prompts IA déjà testés",
+   "Les réflexes du travail à distance : délais annoncés et tenus, traçabilité des échanges, confidentialité des données des clients"
+  ],
+  "phases": [
+   {
+    "title": "Fondations",
+    "description": "Poser le socle numérique du poste : outils, vocabulaire, sécurité élémentaire et bonnes pratiques du travail en ligne.",
+    "courseSlugs": [
+     "culture-numerique-professionnelle"
+    ]
+   },
+   {
+    "title": "Compétences principales",
+    "description": "Prendre en main le quotidien de l'assistant : messagerie et courriers, agendas et comptes rendus, suivi des tâches sous Notion et Trello.",
+    "courseSlugs": [
+     "messagerie-et-communication-administrative",
+     "gestion-dagenda-reunions-et-comptes-rendus",
+     "notion-et-trello-pour-organiser-le-travail"
+    ]
+   },
+   {
+    "title": "Spécialisation",
+    "description": "Travailler réellement à distance pour plusieurs clients, dans leurs environnements collaboratifs Google Workspace.",
+    "courseSlugs": [
+     "google-workspace-professionnel",
+     "assistance-virtuelle-et-travail-a-distance"
+    ]
+   },
+   {
+    "title": "Professionnalisation",
+    "description": "Gagner du temps facturable en automatisant les tâches répétitives et en utilisant l'IA de productivité avec méthode.",
+    "courseSlugs": [
+     "automatisation-bureautique-et-ia-de-productivite"
+    ]
+   },
+   {
+    "title": "Projet final",
+    "description": "Prendre en charge à distance le back-office d'une organisation ivoirienne et défendre le résultat en soutenance.",
+    "courseSlugs": []
+   }
+  ],
+  "project": {
+   "title": "Prise en charge à distance du back-office d'une PME abidjanaise",
+   "context": "## La situation\n\nUne PME abidjanaise de huit personnes (import-export, cabinet de formation ou clinique — au choix) fonctionne **sans secrétariat**. Une seule boîte mail pour tout le monde, des rendez-vous notés sur WhatsApp et sur papier, des fichiers éparpillés entre clés USB et téléphones, aucun suivi des tâches : les relances clients passent à la trappe et les réunions se tiennent sans compte rendu.\n\nLa direction vous recrute comme **assistant virtuel indépendant**, à distance, deux demi-journées par semaine.\n\n## Votre mission\n\nRemettre le back-office d'aplomb en quatre semaines, sans jamais vous rendre sur place : organiser la messagerie et les courriers, rendre l'agenda fiable, installer un suivi des tâches partagé, ranger les fichiers dans un espace collaboratif, puis automatiser ce qui revient chaque semaine.\n\n## Conditions\n\nProjet individuel, 3 à 4 semaines, outils gratuits acceptés, connexion mobile assumée. Chaque livrable doit être **démontrable en direct** pendant la soutenance.",
+   "deliverables": [
+    "Diagnostic d'organisation du client : état des lieux, irritants prioritaires et plan d'action (2 pages)",
+    "Boîte mail réorganisée : arborescence de dossiers, filtres, signature et cinq modèles de réponses",
+    "Agenda partagé opérationnel, procédure d'organisation de réunion et modèle de compte rendu rempli une fois",
+    "Espace de suivi des tâches sous Notion ou Trello : tableau, échéances, responsables et rituel de mise à jour",
+    "Arborescence de fichiers partagés Google Workspace avec règles de nommage et droits d'accès justifiés",
+    "Deux automatisations documentées, avec mesure du temps gagné avant/après, et trois prompts IA validés",
+    "Charte de collaboration à distance : canaux, horaires, délais de réponse et règles de confidentialité",
+    "Soutenance de 15 minutes devant jury, avec démonstration en direct de l'espace de travail livré"
+   ]
+  },
+  "slug": "assistant-virtuel-professionnel",
+  "sumOfCoursePrices": 92500,
+  "suggestedPrice": 75000
+ },
+ {
+  "slug": "coordinateur-administratif-numerique",
+  "description": "Le parcours qui forme un **coordinateur administratif numérique** capable de piloter les processus d'une organisation, et pas seulement d'exécuter des tâches. Vous partez des réflexes numériques et du travail d'équipe, puis vous prenez en main l'agenda, les réunions et les comptes rendus, la collecte de données par formulaires, la conduite d'un projet numérique interne, le reporting et les tableaux de bord, jusqu'à l'animation d'un espace de travail collaboratif Microsoft 365. Le parcours se termine par un projet transversal soutenu devant un jury. Chaque formation validée reste acquise définitivement — si vous avez déjà validé une brique, elle est reconnue et déduite du prix du parcours.",
+  "missions": [
+   "Piloter les processus administratifs de l'organisation : circuits de validation, procédures écrites, échéances",
+   "Organiser les agendas et les réunions, puis rédiger des comptes rendus qui engagent les décisions prises",
+   "Concevoir des formulaires numériques et fiabiliser la collecte des données internes",
+   "Coordonner les projets numériques internes : cadrage, planning, répartition des tâches, points d'avancement",
+   "Produire les rapports et tableaux de bord de suivi attendus par la direction",
+   "Animer les espaces de travail partagés et accompagner les équipes dans leur usage au quotidien"
+  ],
+  "outcomes": [
+   "L'attestation de réussite du parcours Coordinateur administratif numérique, délivrée par Access Academy (certificat interne, vérifiable en ligne par QR code et numéro unique)",
+   "Les certificats internes des sept formations du parcours, acquis définitivement et réutilisables dans un autre parcours",
+   "Un portfolio professionnel : procédures écrites, formulaires en ligne, planning de projet et tableau de bord de suivi réellement produits",
+   "Un espace de travail collaboratif complet (agenda partagé, bibliothèque de documents, modèles de courriers et de comptes rendus) réutilisable dès votre prise de poste",
+   "Les réflexes du métier : tout écrire, tout dater, tout tracer — et savoir dire en une minute où en est n'importe quel dossier"
+  ],
+  "phases": [
+   {
+    "title": "Fondations",
+    "description": "Installer les réflexes numériques professionnels et les règles du travail en équipe, socle de toute coordination.",
+    "courseSlugs": [
+     "culture-numerique-professionnelle",
+     "travail-collaboratif-et-outils-dequipe"
+    ]
+   },
+   {
+    "title": "Compétences principales",
+    "description": "Tenir le cœur du métier au quotidien : agendas, réunions, comptes rendus et collecte de données par formulaires numériques.",
+    "courseSlugs": [
+     "gestion-dagenda-reunions-et-comptes-rendus",
+     "formulaires-numeriques-et-collecte-de-donnees"
+    ]
+   },
+   {
+    "title": "Spécialisation",
+    "description": "Passer de l'exécution au pilotage : conduire un projet numérique interne et rendre compte par des rapports et tableaux de bord.",
+    "courseSlugs": [
+     "gestion-de-projet-numerique-fondamentaux",
+     "rapports-tableaux-de-bord-et-reporting-administratif"
+    ]
+   },
+   {
+    "title": "Professionnalisation",
+    "description": "S'outiller comme un professionnel en faisant vivre un espace de travail collaboratif Microsoft 365 pour toute l'équipe.",
+    "courseSlugs": [
+     "microsoft-365-pour-le-travail-collaboratif"
+    ]
+   },
+   {
+    "title": "Projet final",
+    "description": "Refondre un processus administratif complet dans une organisation ivoirienne réelle ou réaliste, et le défendre en soutenance.",
+    "courseSlugs": []
+   }
+  ],
+  "project": {
+   "title": "Refonte numérique d'un processus administratif",
+   "context": "## Mise en situation\n\nUne organisation ivoirienne de votre choix — coopérative agricole de Divo, cabinet comptable à Cocody, ONG basée à Bouaké ou établissement scolaire privé de Yopougon — vous confie la coordination de son administration. Aujourd'hui, les demandes arrivent par WhatsApp et par téléphone, les fichiers vivent sur trois clés USB et deux ordinateurs, les réunions se tiennent sans ordre du jour, et personne ne sait où en est un dossier sans appeler trois personnes. La direction veut un point d'avancement hebdomadaire fiable et pouvoir travailler depuis le terrain, y compris quand la connexion est mauvaise.\n\nVotre mission : **remettre à plat un processus administratif complet** — demande de congé, commande de fournitures, inscription d'un bénéficiaire ou collecte des livraisons des producteurs — du formulaire d'entrée jusqu'au tableau de bord de direction, puis conduire sa mise en place comme un véritable projet sur 4 à 6 semaines.",
+   "deliverables": [
+    "Note de cadrage : processus retenu, acteurs concernés, dysfonctionnements constatés, objectifs mesurables",
+    "Cartographie du processus existant et du processus cible (étapes, responsables, délais, points de validation)",
+    "Formulaire numérique de collecte en service, testé avec au moins 20 réponses et sa procédure de traitement",
+    "Plan de classement et espace de travail partagé : arborescence, règle de nommage, droits d'accès documentés",
+    "Planning de projet et suivi des tâches sur un outil de gestion : jalons, responsables, état d'avancement",
+    "Kit de modèles prêts à l'emploi : ordre du jour, compte rendu type, courriel de relance, note de service",
+    "Tableau de bord de suivi tenu à jour, avec au moins cinq indicateurs et leur mode de calcul expliqué",
+    "Soutenance de 15 minutes devant jury : démonstration en direct du formulaire, de l'espace partagé et du tableau de bord"
+   ]
+  },
+  "sumOfCoursePrices": 85000,
+  "suggestedPrice": 68000
+ },
+ {
+  "description": "Le Community Manager est la voix quotidienne d'une marque : il publie, répond, anime et vend. Ce parcours de **4 mois** vous mène des bases de la culture numérique et de l'expression professionnelle jusqu'à la production de contenus publicitaires assistés par l'IA. Vous apprenez d'abord à écrire clair et à parler juste, puis à piloter **WhatsApp Business** et une véritable **stratégie de réseaux sociaux**, avant de créer vos propres vidéos publicitaires avec l'IA et de rendre vos contenus visibles grâce au référencement naturel. Chaque formation validée reste acquise définitivement : si vous avez déjà validé une brique du parcours, elle est reconnue et déduite du prix. Vous terminez en construisant, puis en défendant devant un jury interne, la stratégie complète d'une PME ivoirienne.",
+  "missions": [
+   "Concevoir et tenir le calendrier éditorial mensuel d'une marque, d'une administration ou d'une association : sujets, formats, moments de publication.",
+   "Rédiger les publications, légendes et réponses dans un français professionnel, adapté au public ivoirien et au ton de la marque.",
+   "Animer la communauté au quotidien : modérer les commentaires, traiter les messages privés, désamorcer les avis négatifs.",
+   "Piloter un compte WhatsApp Business de bout en bout : catalogue, réponses rapides, listes de diffusion, suivi des demandes jusqu'à la commande.",
+   "Produire des visuels et de courtes vidéos publicitaires avec des outils d'IA, du script jusqu'au montage vertical prêt à publier.",
+   "Mesurer les résultats (portée, engagement, messages reçus, commandes) et ajuster la stratégie dans un rapport mensuel clair pour la direction."
+  ],
+  "outcomes": [
+   "Une attestation de réussite Access Academy pour chaque formation validée, plus l'attestation du parcours « Community Manager professionnel » — des certificats internes vérifiables en ligne, qui ne sont ni un diplôme d'État ni une certification officielle.",
+   "Un portfolio présentable en entretien : stratégie éditoriale complète, calendrier d'un mois, deux vidéos publicitaires produites avec l'IA et un tableau de bord de résultats.",
+   "Un kit d'outils réutilisables : modèle de calendrier éditorial, charte de ton, bibliothèque de prompts, jeu de réponses rapides WhatsApp, modèle de rapport mensuel.",
+   "Des réflexes de métier : veille, cohérence de ton, gestion des commentaires sensibles, rythme de publication réellement tenable avec une petite équipe.",
+   "La capacité de cadrer, chiffrer et présenter une prestation de community management, que vous soyez en poste ou indépendant."
+  ],
+  "phases": [
+   {
+    "title": "Fondations",
+    "description": "Vous posez les bases : repères du numérique professionnel, hygiène des comptes et outils, puis une expression écrite et orale nette, à l'écrit comme face à un client.",
+    "courseSlugs": [
+     "culture-numerique-professionnelle",
+     "communication-professionnelle-ecrite-et-orale"
+    ]
+   },
+   {
+    "title": "Compétences principales",
+    "description": "Vous apprenez le cœur du métier : la conversation commerciale sur WhatsApp Business et le pilotage d'une stratégie de réseaux sociaux, du calendrier éditorial aux indicateurs de suivi.",
+    "courseSlugs": [
+     "whatsapp-business-pour-les-organisations",
+     "strategie-de-reseaux-sociaux"
+    ]
+   },
+   {
+    "title": "Spécialisation",
+    "description": "Vous passez à la production : dialoguer efficacement avec les outils d'IA, puis écrire, générer et monter de véritables vidéos publicitaires.",
+    "courseSlugs": [
+     "prompt-engineering-fondamentaux",
+     "creation-de-videos-publicitaires-avec-lia"
+    ]
+   },
+   {
+    "title": "Professionnalisation",
+    "description": "Vous rendez vos contenus trouvables et durables : recherche de mots-clés, rédaction optimisée et visibilité locale sur les moteurs de recherche.",
+    "courseSlugs": [
+     "referencement-naturel-fondamentaux"
+    ]
+   },
+   {
+    "title": "Projet final",
+    "description": "Pendant les dernières semaines, vous construisez puis défendez la stratégie sociale complète d'une PME ivoirienne, livrables à l'appui.",
+    "courseSlugs": []
+   }
+  ],
+  "project": {
+   "title": "Stratégie sociale et campagne vidéo pour une PME abidjanaise",
+   "context": "**Kadi Cosmétiques** est une petite entreprise installée à Yopougon : quatre personnes qui fabriquent des savons et des baumes au beurre de karité, vendus en boutique et livrés à Cocody, Marcory et Bingerville. La gérante publie de temps en temps sur Facebook, reçoit ses commandes sur WhatsApp et note tout dans un cahier. Résultat : des messages sans réponse le week-end, des promotions annoncées la veille, et aucune idée de ce qui fonctionne réellement.\n\nElle vous confie la communication de la marque pour un mois, avec trois attentes : **être visible, répondre vite, vendre davantage sans gros budget publicitaire**. Vous travaillez avec ce qui existe vraiment — un smartphone, une connexion parfois lente, des photos de produits prises en boutique — et vous devez livrer une organisation que l'équipe saura tenir seule après votre départ.",
+   "deliverables": [
+    "Un audit de la présence actuelle (page Facebook, échanges WhatsApp, avis clients) assorti de deux personas de la clientèle cible.",
+    "Une charte éditoriale : ton de la marque, formats retenus, règles de réponse aux commentaires et aux avis négatifs.",
+    "Un calendrier éditorial d'un mois, prêt à publier : dates, formats, textes rédigés et visuels associés.",
+    "Un compte WhatsApp Business configuré : catalogue produits, message d'accueil et d'absence, réponses rapides, parcours de commande documenté.",
+    "Deux vidéos publicitaires courtes (moins de 30 secondes) produites avec l'IA, script et déclinaison verticale comprises.",
+    "Un volet visibilité : fiche établissement complétée et une page ou un article optimisé pour les recherches locales du type « savon karité Abidjan ».",
+    "Un tableau de bord de suivi mensuel : indicateurs choisis, méthode de relevé et modèle de rapport remis à la gérante.",
+    "Une soutenance de 20 minutes devant un jury interne : présentation de la stratégie, démonstration des livrables et réponses aux objections de budget et de temps."
+   ]
+  },
+  "sumOfCoursePrices": 117500,
+  "suggestedPrice": 99000,
+  "slug": "community-manager-professionnel"
+ }
+]
