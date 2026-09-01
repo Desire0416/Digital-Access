@@ -27,7 +27,11 @@ async function wake() {
 }
 
 const data = JSON.parse(readFileSync(SRC, "utf8"));
-const BLOCS = new Set(["da-etapes", "da-quiz", "da-comparatif", "da-checklist", "da-onglets"]);
+/* Doit rester aligné sur apps/academy/components/lesson-blocks/registry.ts */
+const BLOCS = new Set([
+  "da-etapes", "da-quiz", "da-comparatif", "da-checklist", "da-onglets",
+  "da-schema", "da-anatomie", "da-graphique", "da-figure",
+]);
 
 /* ── Contrôle : TOUS les blocs da-* doivent contenir du JSON valide ──────────
    Un bloc invalide ne s'afficherait pas côté apprenant : on refuse d'importer. */
@@ -47,10 +51,10 @@ function verifierBlocs() {
           parLot[lang] = (parLot[lang] || 0) + 1;
           if (!BLOCS.has(lang)) { erreurs.push(`${lot.slug} M${m.order} « ${l.title} » : bloc inconnu ${lang}`); continue; }
           try { JSON.parse(body); } catch (e) {
-            const repare = lang === "da-comparatif" ? reparerComparatif(body) : null;
+            const repare = (lang === "da-comparatif" ? reparerComparatif(body) : null) ?? reparerFermeturePrecoce(body);
             if (repare) {
               l.content = l.content.replace(body, repare);
-              reparations.push(`${lot.slug} M${m.order} « ${l.title} » : ${lang} objet « gauche » refermé`);
+              reparations.push(`${lot.slug} M${m.order} « ${l.title} » : ${lang} structure JSON refermée`);
             } else {
               erreurs.push(`${lot.slug} M${m.order} « ${l.title} » : ${lang} JSON invalide (${e.message.slice(0, 60)})`);
             }
@@ -66,6 +70,16 @@ function verifierBlocs() {
    l'objet « gauche » n'est pas refermé avant « droite » (]  au lieu de ]} ).
    Observée sur deux lots consécutifs. On ne répare QUE si le bloc est invalide
    AVANT et devient valide APRÈS — toute autre erreur reste bloquante. */
+/* Seconde malformation récurrente : un objet refermé trop tôt juste après un
+   tableau — « ]},"bonne" » au lieu de « ],"bonne" ». Observée sur les blocs
+   da-quiz du lot 3. Même prudence : on ne répare que si cela rend le JSON valide. */
+function reparerFermeturePrecoce(corps) {
+  try { JSON.parse(corps); return null; } catch { /* invalide : on tente */ }
+  const tentative = corps.replace(/\]\}(\s*,\s*")/g, "]$1");
+  if (tentative === corps) return null;
+  try { JSON.parse(tentative); return tentative; } catch { return null; }
+}
+
 function reparerComparatif(corps) {
   try { JSON.parse(corps); return null; } catch { /* invalide : on tente */ }
   const tentative = corps.replace(/\](\s*),(\s*)"droite"/, "]}$1,$2\"droite\"");
