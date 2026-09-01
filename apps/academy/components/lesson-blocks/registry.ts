@@ -12,6 +12,7 @@ export const LESSON_BLOCKS = [
   "da-schema",
   "da-anatomie",
   "da-graphique",
+  "da-figure",
 ] as const;
 
 export type LessonBlockName = (typeof LESSON_BLOCKS)[number];

@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { cn } from "@da/ui";
 import { Schema, Anatomie, Graphique, type SchemaData, type AnatomieData, type GraphiqueData } from "./VisualBlocks";
+import { Figure, type FigureData } from "./Figures";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Blocs interactifs de leçon (§12.2). Ils sont écrits dans le markdown du
@@ -390,6 +391,8 @@ export function LessonBlock({ lang, source }: { lang: string; source: string }) 
         return Array.isArray(d.zones) && d.zones.length ? <Anatomie data={data as AnatomieData} /> : null;
       case "da-graphique":
         return Array.isArray(d.barres) && d.barres.length ? <Graphique data={data as GraphiqueData} /> : null;
+      case "da-figure":
+        return Array.isArray(d.items) && d.items.length ? <Figure data={data as FigureData} /> : null;
       default:
         return null;
     }
