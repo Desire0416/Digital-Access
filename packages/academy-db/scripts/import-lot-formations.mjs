@@ -1,7 +1,8 @@
-// Importe le lot pilote Marketing : fiches, modules, leçons (avec blocs
-// interactifs), quiz, devoirs et ressources CSV téléchargeables.
+// Importe un LOT de formations : fiches, modules, leçons (avec blocs interactifs),
+// quiz, devoirs et ressources CSV téléchargeables.
 // Idempotent : reconstruit intégralement le curriculum des formations visées.
-//   node --env-file=../../.env scripts/import-pilote-marketing.mjs [--publier]
+//   node --env-file=../../.env scripts/import-lot-formations.mjs <fichier.json> [--publier]
+// Refuse l'import si UN SEUL bloc interactif contient du JSON invalide.
 import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { put } from "@vercel/blob";
@@ -9,8 +10,9 @@ const require = createRequire(import.meta.url);
 const { PrismaClient } = require("../generated/client");
 
 const PUBLIER = process.argv.includes("--publier");
-const SRC = "scripts/content-pilote-marketing.json";
-const PREFIX = "ressources/marketing";
+const SRC = process.argv.find((a) => a.endsWith(".json"));
+if (!SRC) { console.error("Usage : node scripts/import-lot-formations.mjs <fichier.json> [--publier]"); process.exit(1); }
+const PREFIX = "ressources/formations";
 
 /* Le .env contient deux jetons Blob ; l'application sert depuis le second. */
 const env = readFileSync("../../.env", "utf8");
