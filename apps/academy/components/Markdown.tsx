@@ -6,9 +6,10 @@ import { LessonBlock } from "./lesson-blocks/LessonBlocks";
 
 /** Rendu markdown riche des chapitres — typographie soignée, tableaux, code.
  *
- *  Les blocs de code balisés `da-*` (da-etapes, da-quiz, da-comparatif,
- *  da-checklist, da-onglets) sont rendus comme composants interactifs au lieu
- *  d'un bloc de code. Tout autre langage garde le rendu habituel, et un bloc
+ *  Les blocs de code balisés `da-*` sont rendus comme composants interactifs au
+ *  lieu d'un bloc de code : blocs pédagogiques (da-etapes, da-quiz, da-comparatif,
+ *  da-checklist, da-onglets) et visuels (da-schema, da-anatomie, da-graphique,
+ *  da-figure). La liste fait foi dans lesson-blocks/registry.ts. Tout autre langage garde le rendu habituel, et un bloc
  *  `da-*` mal formé n'affiche rien plutôt que de casser la leçon.
  *  Aucun HTML brut n'est interprété : le contenu reste non injectable.
  */
